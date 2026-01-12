@@ -1,0 +1,124 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+
+import { signupSchema, type SignupValues } from "@/lib/validators";
+
+export default function SignupPage() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting, isValid, submitCount },
+    } = useForm<SignupValues>({
+        resolver: zodResolver(signupSchema),
+        defaultValues: { email: "", password: "", confirmPassword: "" },
+        mode: "onChange",
+    });
+
+    const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
+    const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
+
+    const onSubmit = async (values: SignupValues) => {
+        setStatus(null);
+        await new Promise((r) => setTimeout(r, 800));
+        console.log("signup:", values);
+        setStatus({
+            type: "ok",
+            msg: "Account data looks good. Next step: connect Supabase sign up.",
+        });
+    };
+
+    return (
+        <div className={shouldShake ? "gc-shake" : ""}>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">
+                Create account
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-black/55">
+                Sign up to manage bookings and access your cleaning records.
+            </p>
+
+            <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+                {/* Email */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-black/70">Email</label>
+                    <input
+                        type="email"
+                        placeholder="name@domain.com"
+                        className={[
+                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+                            "placeholder:text-black/35",
+                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
+                            errors.email ? "border-red-400/80" : "border-black/10",
+                        ].join(" ")}
+                        {...register("email")}
+                    />
+                    {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-black/70">Password</label>
+                    <input
+                        type="password"
+                        placeholder="Minimum 8 characters"
+                        className={[
+                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+                            "placeholder:text-black/35",
+                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
+                            errors.password ? "border-red-400/80" : "border-black/10",
+                        ].join(" ")}
+                        {...register("password")}
+                    />
+                    {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+                </div>
+
+                {/* Confirm */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-black/70">Confirm password</label>
+                    <input
+                        type="password"
+                        placeholder="Repeat your password"
+                        className={[
+                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+                            "placeholder:text-black/35",
+                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
+                            errors.confirmPassword ? "border-red-400/80" : "border-black/10",
+                        ].join(" ")}
+                        {...register("confirmPassword")}
+                    />
+                    {errors.confirmPassword && (
+                        <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+                    )}
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={!isValid || isSubmitting}
+                    className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                    {isSubmitting ? "Creating…" : "Sign up"}
+                </button>
+
+                {status && (
+                    <p
+                        className={[
+                            "text-sm text-center",
+                            status.type === "ok" ? "text-emerald-600" : "text-red-600",
+                        ].join(" ")}
+                    >
+                        {status.msg}
+                    </p>
+                )}
+
+                <p className="pt-2 text-center text-sm text-black/55">
+                    Already have an account?{" "}
+                    <a className="text-black hover:underline" href="/login">
+                        Log in
+                    </a>
+                </p>
+            </form>
+        </div>
+    );
+}
