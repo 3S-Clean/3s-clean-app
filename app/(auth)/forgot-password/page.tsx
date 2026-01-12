@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators";
+import { supabase } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
     const {
@@ -21,12 +22,17 @@ export default function ForgotPasswordPage() {
 
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
-        await new Promise((r) => setTimeout(r, 800));
-        console.log("forgot-password:", values);
-        setStatus({
-            type: "ok",
-            msg: "If this email exists, we’ll send you a reset link.",
+
+        const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+            redirectTo: "http://localhost:3000/reset-password",
         });
+
+        if (error) {
+            setStatus({ type: "error", msg: error.message });
+            return;
+        }
+
+        setStatus({ type: "ok", msg: "If this email exists, we’ll send you a reset link." });
     };
 
     return (

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginValues } from "@/lib/validators";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
     const {
@@ -21,9 +22,19 @@ export default function LoginPage() {
 
     const onSubmit = async (values: LoginValues) => {
         setStatus(null);
-        await new Promise((r) => setTimeout(r, 800));
-        console.log("login:", values);
-        setStatus({ type: "ok", msg: "Looks good. Next step: connect Supabase." });
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: values.email,
+            password: values.password,
+        });
+
+        if (error) {
+            setStatus({ type: "error", msg: error.message });
+            return;
+        }
+
+        setStatus({ type: "ok", msg: "Logged in successfully." });
+        // позже: redirect на /account
     };
 
     return (

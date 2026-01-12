@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-
+import { supabase } from "@/lib/supabase";
 import { signupSchema, type SignupValues } from "@/lib/validators";
 
 export default function SignupPage() {
@@ -22,11 +22,20 @@ export default function SignupPage() {
 
     const onSubmit = async (values: SignupValues) => {
         setStatus(null);
-        await new Promise((r) => setTimeout(r, 800));
-        console.log("signup:", values);
+
+        const { error } = await supabase.auth.signUp({
+            email: values.email,
+            password: values.password,
+        });
+
+        if (error) {
+            setStatus({ type: "error", msg: error.message });
+            return;
+        }
+
         setStatus({
             type: "ok",
-            msg: "Account data looks good. Next step: connect Supabase sign up.",
+            msg: "Check your email to confirm your account.",
         });
     };
 
