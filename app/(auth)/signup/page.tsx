@@ -37,10 +37,10 @@ export default function SignupClient() {
     const onSubmit = async (values: SignupValues) => {
         setStatus(null);
 
-        const origin =
+        const originRaw =
             process.env.NEXT_PUBLIC_SITE_URL ||
             (typeof window !== "undefined" ? window.location.origin : "");
-
+        const origin = originRaw.replace(/\/+$/, "");
         const { error } = await supabase.auth.signUp({
             email: values.email,
             password: values.password,

@@ -10,7 +10,7 @@ export default function EmailConfirmPage() {
 
     useEffect(() => {
         const t = setInterval(() => setSec((s) => (s > 0 ? s - 1 : 0)), 1000);
-        const go = setTimeout(() => router.replace("/login"), 4200);
+        const go = setTimeout(() => router.replace("/login"), 9200);
         return () => { clearInterval(t); clearTimeout(go); };
     }, [router]);
 
