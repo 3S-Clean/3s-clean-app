@@ -12,7 +12,9 @@ export default async function AuthCallbackPage({
     const next = searchParams.next ?? "/account";
 
     if (code) {
-        await supabase.auth.exchangeCodeForSession(code);
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        // если ошибка — отправь на логин с ошибкой
+        if (error) redirect("/login?error=confirm_failed");
     }
 
     redirect(next);
