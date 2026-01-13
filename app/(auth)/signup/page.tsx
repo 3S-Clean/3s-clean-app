@@ -43,7 +43,6 @@ export default function SignupPage() {
             email: values.email,
             password: values.password,
             options: {
-                // куда вернётся пользователь после подтверждения email
                 emailRedirectTo: `${origin}/callback`,
             },
         });
@@ -51,7 +50,10 @@ export default function SignupPage() {
         if (error) {
             const low = error.message.toLowerCase();
             const msg =
-                low.includes("user already registered") || low.includes("already")
+                low.includes("already registered") ||
+                low.includes("already exists") ||
+                low.includes("duplicate") ||
+                low.includes("already")
                     ? "This email is already registered. Try logging in."
                     : error.message;
 
@@ -59,13 +61,9 @@ export default function SignupPage() {
             return;
         }
 
-        setStatus({
-            type: "ok",
-            msg: "Check your email to confirm your account.",
-        });
-
-// 👉 сразу уводим со страницы signup
+        // ✅ успех: уводим на страницу инструкции
         router.replace("/confirmed");
+        return;
     };
 
     return (
