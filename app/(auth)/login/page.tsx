@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
 import { loginSchema, type LoginValues } from "@/lib/validators";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -52,7 +52,7 @@ export default function LoginPage() {
         }
 
         setStatus({ type: "ok", msg: "Logged in successfully." });
-        router.push("/account");
+        router.replace("/account");
         router.refresh();
     };
 

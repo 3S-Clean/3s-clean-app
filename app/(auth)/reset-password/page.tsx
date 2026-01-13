@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { resetPasswordSchema, type ResetPasswordValues } from "@/lib/validators";
 
 export default function ResetPasswordPage() {

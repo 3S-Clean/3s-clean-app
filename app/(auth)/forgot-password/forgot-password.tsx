@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
     const {

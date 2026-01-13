@@ -5,7 +5,7 @@ const WEBFLOW_URL = "https://s3-final.webflow.io/";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
     return (
-        <main className="min-h-screen px-4 py-10 flex items-center justify-center bg-[radial-gradient(1200px_800px_at_20%_20%,#EAF7FF_0%,transparent_60%),radial-gradient(900px_700px_at_80%_30%,#F2FBF7_0%,transparent_55%),linear-gradient(180deg,#FFFFFF_0%,#F2FBF7_40%,#EAF7FF_100%)]">
+        <main className="min-h-screen px-4 py-10 flex items-center justify-center bg-[#fafafa]]">
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="mb-10 flex items-center justify-center">
