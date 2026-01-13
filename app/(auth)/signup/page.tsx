@@ -9,6 +9,7 @@ import { signupSchema, type SignupValues } from "@/lib/validators";
 
 export default function SignupPage() {
     const router = useRouter();
+
     const {
         register,
         handleSubmit,
@@ -43,6 +44,7 @@ export default function SignupPage() {
             email: values.email,
             password: values.password,
             options: {
+                // ссылка из письма ведёт сюда
                 emailRedirectTo: `${origin}/callback`,
             },
         });
@@ -61,9 +63,13 @@ export default function SignupPage() {
             return;
         }
 
-        // ✅ успех: уводим на страницу инструкции
-        router.replace("/confirmed");
-        return;
+        // ✅ успех: говорим что письмо отправлено и уводим на логин
+        setStatus({ type: "ok", msg: "Check your email to confirm your account." });
+
+        // небольшая пауза, чтобы текст успел отрисоваться
+        setTimeout(() => {
+            router.replace("/login?justSignedUp=1");
+        }, 400);
     };
 
     return (

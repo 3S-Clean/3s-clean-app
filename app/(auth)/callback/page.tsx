@@ -4,18 +4,22 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export default async function AuthCallbackPage({
                                                    searchParams,
                                                }: {
-    searchParams: { code?: string; next?: string };
+    searchParams: { code?: string };
 }) {
     const supabase = await createSupabaseServerClient();
 
     const code = searchParams.code;
-    const next = searchParams.next ?? "/confirmed";
 
-    if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        // если ошибка — отправь на логин с ошибкой
-        if (error) redirect("/login?error=confirm_failed");
+    if (!code) {
+        redirect("/login?error=missing_code");
     }
 
-    redirect(next);
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+        redirect("/login?error=confirm_failed");
+    }
+
+    // ✅ email подтверждён → отдельная страница "спасибо"
+    redirect("/email-confirmed");
 }
