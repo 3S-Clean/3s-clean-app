@@ -7,7 +7,6 @@ export default async function AuthCallbackPage({
     searchParams: { code?: string };
 }) {
     const supabase = await createSupabaseServerClient();
-
     const code = searchParams.code;
 
     if (!code) {
@@ -20,6 +19,5 @@ export default async function AuthCallbackPage({
         redirect("/login?error=confirm_failed");
     }
 
-    // ✅ подтверждено → спасибо-страница
     redirect("/confirmed");
 }
