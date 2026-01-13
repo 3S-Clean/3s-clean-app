@@ -9,11 +9,17 @@ export default async function AuthCallbackPage({
     const supabase = await createSupabaseServerClient();
 
     const code = searchParams.code;
-    if (!code) redirect("/login?error=missing_code");
+
+    if (!code) {
+        redirect("/login?error=missing_code");
+    }
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) redirect("/login?error=confirm_failed");
 
-    // ✅ подтверждено → сразу на логин
-    redirect("/login?confirmed=1");
+    if (error) {
+        redirect("/login?error=confirm_failed");
+    }
+
+    // ✅ письмо → callback → confirmed (спасибо)
+    redirect("/confirmed");
 }

@@ -1,17 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { supabase } from "@/lib/supabase/client";
 import { signupSchema, type SignupValues } from "@/lib/validators";
 
-export default function SignupPage() {
+export default function SignupClient() {
     const router = useRouter();
 
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitting, isValid, submitCount },
     } = useForm<SignupValues>({
         resolver: zodResolver(signupSchema),
@@ -19,9 +22,21 @@ export default function SignupPage() {
         mode: "onChange",
     });
 
+    const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
+    const email = watch("email");
+    const password = watch("password");
+    const confirmPassword = watch("confirmPassword");
+
+    useEffect(() => {
+        if (status?.type === "error") setStatus(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [email, password, confirmPassword]);
+
     const onSubmit = async (values: SignupValues) => {
+        setStatus(null);
+
         const origin =
             process.env.NEXT_PUBLIC_SITE_URL ||
             (typeof window !== "undefined" ? window.location.origin : "");
@@ -30,6 +45,7 @@ export default function SignupPage() {
             email: values.email,
             password: values.password,
             options: {
+                // 👇 ссылка из письма ведёт сюда
                 emailRedirectTo: `${origin}/callback`,
             },
         });
@@ -44,13 +60,12 @@ export default function SignupPage() {
                     ? "This email is already registered. Try logging in."
                     : error.message;
 
-            // самый простой способ показать ошибку — через alert (или можешь вернуть status обратно)
-            alert(msg);
+            setStatus({ type: "error", msg });
             return;
         }
 
-        // ✅ после регистрации — на страницу "проверь почту"
-        router.replace(`/email-confirmed?email=${encodeURIComponent(values.email)}`);
+        // ✅ успех: уводим на страницу "подтвердите email"
+        router.replace("/email-confirmed");
     };
 
     return (
@@ -61,7 +76,6 @@ export default function SignupPage() {
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-                {/* Email */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-black/70">Email</label>
                     <input
@@ -78,7 +92,6 @@ export default function SignupPage() {
                     {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
-                {/* Password */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-black/70">Password</label>
                     <input
@@ -95,7 +108,6 @@ export default function SignupPage() {
                     {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
                 </div>
 
-                {/* Confirm */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-black/70">Confirm password</label>
                     <input
@@ -121,6 +133,12 @@ export default function SignupPage() {
                 >
                     {isSubmitting ? "Creating…" : "Sign up"}
                 </button>
+
+                {status && (
+                    <p className={["text-sm text-center", status.type === "ok" ? "text-black" : "text-red-600"].join(" ")}>
+                        {status.msg}
+                    </p>
+                )}
 
                 <p className="pt-2 text-center text-sm text-black/55">
                     Already have an account?{" "}
