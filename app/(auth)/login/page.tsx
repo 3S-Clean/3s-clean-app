@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { supabase } from "@/lib/supabase/client";
 
@@ -25,7 +24,6 @@ export default function LoginPage() {
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
-    // UX: если пользователь меняет поля после ошибки — убираем сообщение
     const email = watch("email");
     const password = watch("password");
     useEffect(() => {
@@ -51,7 +49,7 @@ export default function LoginPage() {
             return;
         }
 
-        setStatus({ type: "ok", msg: "Logged in successfully." });
+        // ✅ сразу уходим на аккаунт (без "залипания" UI)
         router.replace("/account");
         router.refresh();
     };
@@ -64,7 +62,6 @@ export default function LoginPage() {
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-                {/* Email */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-black/70">Email</label>
                     <input
@@ -81,7 +78,6 @@ export default function LoginPage() {
                     {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
-                {/* Password */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-black/70">Password</label>
                     <input
@@ -113,12 +109,7 @@ export default function LoginPage() {
                 </button>
 
                 {status && (
-                    <p
-                        className={[
-                            "text-sm text-center",
-                            status.type === "ok" ? "text-emerald-600" : "text-red-600",
-                        ].join(" ")}
-                    >
+                    <p className={["text-sm text-center", status.type === "ok" ? "text-emerald-600" : "text-red-600"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
