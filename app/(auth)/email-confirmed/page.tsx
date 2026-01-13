@@ -6,17 +6,17 @@ import { useRouter } from "next/navigation";
 
 export default function EmailConfirmPage() {
     const router = useRouter();
-    const [sec, setSec] = useState(4);
+    const [sec, setSec] = useState(8);
 
     useEffect(() => {
         const t = setInterval(() => setSec((s) => (s > 0 ? s - 1 : 0)), 1000);
-        const go = setTimeout(() => router.replace("/login"), 9200);
+        const go = setTimeout(() => router.replace("/login"), 3200);
         return () => { clearInterval(t); clearTimeout(go); };
     }, [router]);
 
     return (
         <main className="min-h-screen px-4 py-10 flex items-center justify-center bg-white">
-            <div className="w-full max-w-md rounded-[28px] border border-black/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)] p-8 md:p-10 text-center">
+            <div>
                 <h1 className="text-3xl font-semibold tracking-tight text-black">Confirm your email</h1>
 
                 <p className="mt-4 text-sm text-black/55">
