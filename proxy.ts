@@ -39,9 +39,7 @@ export async function proxy(req: NextRequest) {
 
     const pathname = req.nextUrl.pathname;
 
-    const isProtected =
-        pathname.startsWith("/account") ||
-        pathname.startsWith("/confirmed");
+    const isProtected = pathname.startsWith("/account");
 
     const isAuthPage =
         pathname === "/login" ||

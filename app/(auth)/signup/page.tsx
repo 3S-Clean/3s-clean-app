@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/lib/supabase/client";
 import { signupSchema, type SignupValues } from "@/lib/validators";
 
 export default function SignupPage() {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -61,6 +63,9 @@ export default function SignupPage() {
             type: "ok",
             msg: "Check your email to confirm your account.",
         });
+
+// 👉 сразу уводим со страницы signup
+        router.replace("/confirmed");
     };
 
     return (
