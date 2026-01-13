@@ -1,7 +1,7 @@
 // proxy.ts
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import type { CookieOptions } from "@supabase/ssr"; // ✅ тип для options
+import type { CookieOptions } from "@supabase/ssr";
 
 type CookieToSet = {
     name: string;
@@ -39,8 +39,10 @@ export async function proxy(req: NextRequest) {
 
     const pathname = req.nextUrl.pathname;
 
+    // ✅ защищаем ТОЛЬКО account
     const isProtected = pathname.startsWith("/account");
 
+    // ✅ auth-страницы (где залогиненного логично уводить в account)
     const isAuthPage =
         pathname === "/login" ||
         pathname === "/signup" ||
@@ -49,6 +51,7 @@ export async function proxy(req: NextRequest) {
 
     let response = NextResponse.next();
 
+    // ✅ не залогинен → нельзя на account
     if (!user && isProtected) {
         const url = req.nextUrl.clone();
         url.pathname = "/login";
@@ -56,12 +59,14 @@ export async function proxy(req: NextRequest) {
         response = NextResponse.redirect(url);
     }
 
+    // ✅ залогинен → нечего делать на login/signup
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
         url.pathname = "/account";
         response = NextResponse.redirect(url);
     }
 
+    // ✅ применяем куки, которые Supabase попросил установить
     cookiesToSet.forEach(({ name, value, options }) => {
         response.cookies.set(name, value, options);
     });
@@ -69,6 +74,8 @@ export async function proxy(req: NextRequest) {
     return response;
 }
 
+// ✅ matcher НЕ должен включать /confirmed и /callback
+// потому что эти страницы должны быть “нейтральными” и не ломать flow.
 export const config = {
     matcher: [
         "/account/:path*",
@@ -76,7 +83,5 @@ export const config = {
         "/signup",
         "/forgot-password",
         "/reset-password",
-        "/auth/callback",
-        "/confirmed"
     ],
 };
