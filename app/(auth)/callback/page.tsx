@@ -9,7 +9,7 @@ export default async function AuthCallbackPage({
     const supabase = await createSupabaseServerClient();
 
     const code = searchParams.code;
-    const next = searchParams.next ?? "/account";
+    const next = searchParams.next ?? "/confirmed";
 
     if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);

@@ -39,7 +39,10 @@ export async function proxy(req: NextRequest) {
 
     const pathname = req.nextUrl.pathname;
 
-    const isProtected = pathname.startsWith("/account");
+    const isProtected =
+        pathname.startsWith("/account") ||
+        pathname.startsWith("/confirmed");
+
     const isAuthPage =
         pathname === "/login" ||
         pathname === "/signup" ||
@@ -76,5 +79,6 @@ export const config = {
         "/forgot-password",
         "/reset-password",
         "/auth/callback",
+        "/confirmed"
     ],
 };
