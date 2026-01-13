@@ -13,7 +13,7 @@ export default function EmailConfirmedPage() {
         const t2 = window.setTimeout(() => {
             router.replace("/login?justSignedUp=1");
             router.refresh();
-        }, 3000);
+        }, 6000);
 
         return () => {
             window.clearInterval(t1);
@@ -34,17 +34,6 @@ export default function EmailConfirmedPage() {
                 </p>
 
                 <div className="mt-8 space-y-3">
-                    <a
-                        className="inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90"
-                        href="mailto:"
-                    >
-                        Open Mail
-                    </a>
-
-                    <p className="text-xs text-black/45">
-                        On iPhone, “Open Mail” may start a new draft — just close it and open your Inbox.
-                    </p>
-
                     <p className="pt-2 text-sm text-black/55">
                         Already confirmed?{" "}
                         <Link className="text-black hover:underline" href="/login">

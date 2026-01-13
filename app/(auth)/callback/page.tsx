@@ -20,6 +20,6 @@ export default async function AuthCallbackPage({
         redirect("/login?error=confirm_failed");
     }
 
-    // ✅ письмо → callback → confirmed (спасибо)
+    // ✅ подтверждено → спасибо-страница
     redirect("/confirmed");
 }
