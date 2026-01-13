@@ -43,7 +43,7 @@ export default function SignupPage() {
             password: values.password,
             options: {
                 // куда вернётся пользователь после подтверждения email
-                emailRedirectTo: `${origin}/account`,
+                emailRedirectTo: `${origin}/auth/callback`,
             },
         });
 

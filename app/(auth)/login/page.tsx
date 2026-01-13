@@ -40,10 +40,14 @@ export default function LoginPage() {
         });
 
         if (error) {
+            const msgLower = error.message.toLowerCase();
+
             const msg =
-                error.message.toLowerCase().includes("invalid login credentials")
-                    ? "Wrong email or password."
-                    : error.message;
+                msgLower.includes("email not confirmed") || msgLower.includes("not confirmed")
+                    ? "Please confirm your email first. Check your inbox."
+                    : msgLower.includes("invalid login credentials")
+                        ? "Wrong email or password."
+                        : error.message;
 
             setStatus({ type: "error", msg });
             return;
