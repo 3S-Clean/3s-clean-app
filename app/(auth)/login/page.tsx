@@ -109,7 +109,7 @@ export default function LoginPage() {
                 </button>
 
                 {status && (
-                    <p className={["text-sm text-center", status.type === "ok" ? "text-emerald-600" : "text-red-600"].join(" ")}>
+                    <p className={["text-sm text-center", status.type === "ok" ? "text-black" : "text-red-600"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
