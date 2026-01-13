@@ -1,15 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
+    const router = useRouter();
+
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitting, isValid, submitCount },
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
@@ -20,6 +25,14 @@ export default function LoginPage() {
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
+    // UX: если пользователь меняет поля после ошибки — убираем сообщение
+    const email = watch("email");
+    const password = watch("password");
+    useEffect(() => {
+        if (status?.type === "error") setStatus(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [email, password]);
+
     const onSubmit = async (values: LoginValues) => {
         setStatus(null);
 
@@ -29,19 +42,23 @@ export default function LoginPage() {
         });
 
         if (error) {
-            setStatus({ type: "error", msg: error.message });
+            const msg =
+                error.message.toLowerCase().includes("invalid login credentials")
+                    ? "Wrong email or password."
+                    : error.message;
+
+            setStatus({ type: "error", msg });
             return;
         }
 
         setStatus({ type: "ok", msg: "Logged in successfully." });
-        // позже: redirect на /account
+        router.push("/account");
+        router.refresh();
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">
-                Welcome back
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Welcome back</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
                 Log in to manage bookings and access your cleaning records.
             </p>

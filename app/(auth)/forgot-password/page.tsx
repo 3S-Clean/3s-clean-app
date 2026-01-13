@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators";
 import { supabase } from "@/lib/supabase";
 
@@ -10,6 +11,7 @@ export default function ForgotPasswordPage() {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitting, isValid, submitCount },
     } = useForm<ForgotPasswordValues>({
         resolver: zodResolver(forgotPasswordSchema),
@@ -20,11 +22,22 @@ export default function ForgotPasswordPage() {
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
+    // UX: если пользователь меняет поле после ошибки — убираем сообщение
+    const email = watch("email");
+    useEffect(() => {
+        if (status?.type === "error") setStatus(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [email]);
+
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
+        const origin =
+            process.env.NEXT_PUBLIC_SITE_URL ||
+            (typeof window !== "undefined" ? window.location.origin : "");
+
         const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-            redirectTo: "http://localhost:3000/reset-password",
+            redirectTo: `${origin}/reset-password`,
         });
 
         if (error) {
@@ -32,14 +45,13 @@ export default function ForgotPasswordPage() {
             return;
         }
 
+        // одинаковое сообщение — безопаснее (не палит, существует email или нет)
         setStatus({ type: "ok", msg: "If this email exists, we’ll send you a reset link." });
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">
-                Reset password
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Reset password</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
                 Enter your email and we’ll send you a reset link.
             </p>

@@ -1,97 +1,70 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { supabase } from "@/lib/supabase";
-import { signupSchema, type SignupValues } from "@/lib/validators";
+import { resetPasswordSchema, type ResetPasswordValues } from "@/lib/validators";
 
-export default function SignupPage() {
+export default function ResetPasswordPage() {
+    const router = useRouter();
+
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors, isSubmitting, isValid, submitCount },
-    } = useForm<SignupValues>({
-        resolver: zodResolver(signupSchema),
-        defaultValues: { email: "", password: "", confirmPassword: "" },
+    } = useForm<ResetPasswordValues>({
+        resolver: zodResolver(resetPasswordSchema),
+        defaultValues: { password: "", confirmPassword: "" },
         mode: "onChange",
     });
 
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
-    // UX: если пользователь меняет поля после ошибки — убираем сообщение
-    const email = watch("email");
+    // UX: если после ошибки пользователь начинает печатать — чистим статус
     const password = watch("password");
     const confirmPassword = watch("confirmPassword");
     useEffect(() => {
         if (status?.type === "error") setStatus(null);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [email, password, confirmPassword]);
+    }, [password, confirmPassword]);
 
-    const onSubmit = async (values: SignupValues) => {
+    const onSubmit = async (values: ResetPasswordValues) => {
         setStatus(null);
 
-        const origin =
-            process.env.NEXT_PUBLIC_SITE_URL ||
-            (typeof window !== "undefined" ? window.location.origin : "");
-
-        const { error } = await supabase.auth.signUp({
-            email: values.email,
+        const { error } = await supabase.auth.updateUser({
             password: values.password,
-            options: {
-                // куда вернётся пользователь после подтверждения email
-                emailRedirectTo: `${origin}/account`,
-            },
         });
 
         if (error) {
-            const low = error.message.toLowerCase();
-            const msg =
-                low.includes("user already registered") || low.includes("already")
-                    ? "This email is already registered. Try logging in."
-                    : error.message;
-
-            setStatus({ type: "error", msg });
+            setStatus({ type: "error", msg: error.message });
             return;
         }
 
-        setStatus({
-            type: "ok",
-            msg: "Check your email to confirm your account.",
-        });
+        setStatus({ type: "ok", msg: "Password updated. Redirecting…" });
+
+        // чуть подождём для UX, потом на логин
+        setTimeout(() => {
+            router.push("/login");
+            router.refresh();
+        }, 600);
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">Create account</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Set new password</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-                Sign up to manage bookings and access your cleaning records.
+                Choose a new password for your account.
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-                {/* Email */}
+                {/* New password */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-black/70">Email</label>
-                    <input
-                        type="email"
-                        placeholder="name@domain.com"
-                        className={[
-                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
-                            "placeholder:text-black/35",
-                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
-                            errors.email ? "border-red-400/80" : "border-black/10",
-                        ].join(" ")}
-                        {...register("email")}
-                    />
-                    {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
-                </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-black/70">Password</label>
+                    <label className="text-sm font-medium text-black/70">New password</label>
                     <input
                         type="password"
                         placeholder="Minimum 8 characters"
@@ -108,7 +81,7 @@ export default function SignupPage() {
 
                 {/* Confirm */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-black/70">Confirm password</label>
+                    <label className="text-sm font-medium text-black/70">Confirm new password</label>
                     <input
                         type="password"
                         placeholder="Repeat your password"
@@ -130,7 +103,7 @@ export default function SignupPage() {
                     disabled={!isValid || isSubmitting}
                     className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    {isSubmitting ? "Creating…" : "Sign up"}
+                    {isSubmitting ? "Saving…" : "Update password"}
                 </button>
 
                 {status && (
@@ -145,7 +118,7 @@ export default function SignupPage() {
                 )}
 
                 <p className="pt-2 text-center text-sm text-black/55">
-                    Already have an account?{" "}
+                    Back to{" "}
                     <a className="text-black hover:underline" href="/login">
                         Log in
                     </a>
