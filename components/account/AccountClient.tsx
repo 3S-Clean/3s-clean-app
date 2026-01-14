@@ -4,6 +4,7 @@ import { useState } from "react";
 import { User, Video, BookOpen, LogOut, Film } from "lucide-react";
 import LogoutButton from "@/components/auth/LogoutButton";
 import { Logo } from "@/components/ui/Logo";
+import PersonalInfoClient from "@/app/account/PersonalInfoClient";
 
 type Tab = "personal" | "live" | "history" | "orders";
 
@@ -14,41 +15,13 @@ const tabs = [
     { id: "orders" as const, label: "Order History", icon: BookOpen },
 ];
 
-// ----- типы адреса (потом заменишь на supabase)
-interface Address {
-    id: string;
-    firstName: string;
-    lastName: string;
-    street: string;
-    city: string;
-    country: string;
-    postalCode: string;
-    phone: string;
-    email: string;
-}
-
-// мок (потом заменишь)
-const mockAddress: Address = {
-    id: "1",
-    firstName: "John",
-    lastName: "John",
-    street: "Mainstraße",
-    city: "Berlin",
-    country: "Germany",
-    postalCode: "70111",
-    phone: "176999907551",
-    email: "mail@icloud.com",
-};
-
 export default function AccountClient({ email }: { email: string }) {
     const [activeTab, setActiveTab] = useState<Tab>("personal");
-    const [address] = useState<Address | null>(mockAddress);
 
     return (
         <div className="min-h-screen bg-[#f8f8f8] px-4 py-8 md:px-6 lg:px-8">
             <div className="mx-auto max-w-5xl space-y-6">
-
-                {/* ✅ Верхняя карточка: без logout на мобиле */}
+                {/* Верхняя карточка: без logout на мобиле */}
                 <header className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
@@ -66,12 +39,9 @@ export default function AccountClient({ email }: { email: string }) {
                             </div>
                         </div>
 
-                        {/* ✅ Logout показываем только на md+ (десктоп) */}
+                        {/* Logout только md+ */}
                         <div className="hidden md:flex items-center gap-2">
-                            <LogoutButton
-                                label="Logout"
-                                className="gap-2"
-                            />
+                            <LogoutButton label="Logout" className="gap-2" />
                             <span className="sr-only">Logout</span>
                         </div>
                     </div>
@@ -110,7 +80,7 @@ export default function AccountClient({ email }: { email: string }) {
                         </div>
                     </div>
 
-                    {/* Mobile: вертикально + logout внизу */}
+                    {/* Mobile: вертикально + logout внизу (но НЕ в верхней карточке) */}
                     <div className="flex flex-col gap-1 md:hidden">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
@@ -122,9 +92,7 @@ export default function AccountClient({ email }: { email: string }) {
                                     onClick={() => setActiveTab(tab.id)}
                                     className={[
                                         "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                        isActive
-                                            ? "bg-black/5 text-black"
-                                            : "text-black/70 hover:bg-black/5",
+                                        isActive ? "bg-black/5 text-black" : "text-black/70 hover:bg-black/5",
                                     ].join(" ")}
                                 >
                                     <Icon size={20} strokeWidth={1.5} />
@@ -144,73 +112,10 @@ export default function AccountClient({ email }: { email: string }) {
 
                 {/* Content */}
                 <div className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
-                    {activeTab === "personal" && (
-                        <PersonalInformation address={address} />
-                    )}
-
+                    {activeTab === "personal" && <PersonalInfoClient email={email} />}
                     {activeTab === "live" && <LiveCleaningVideo />}
-
                     {activeTab === "history" && <VideoHistory />}
-
                     {activeTab === "orders" && <OrderHistory />}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function PersonalInformation({ address }: { address: Address | null }) {
-    if (!address) {
-        return (
-            <div className="text-center">
-                <h2 className="text-xl font-semibold text-black md:text-2xl">
-                    Personal Information
-                </h2>
-                <p className="mt-4 text-black/55">
-                    No address saved yet. Add one during your first booking.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <h2 className="text-center text-xl font-semibold text-black md:text-2xl">
-                Personal Information
-            </h2>
-
-            <div className="mt-6 md:mt-8">
-                <div className="flex items-start justify-between">
-                    <h3 className="text-base font-medium text-black md:text-lg">
-                        Current Address
-                    </h3>
-
-                    <div className="flex gap-3">
-                        <button className="text-sm text-black/60 transition hover:text-black">
-                            Edit
-                        </button>
-                        <button className="text-sm text-black/60 transition hover:text-red-600">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-
-                <div className="mt-4 space-y-1 text-[15px] text-black/80">
-                    <p className="font-medium text-black">
-                        {address.firstName} {address.lastName}
-                    </p>
-                    <p>{address.street}</p>
-                    <p>{address.city}</p>
-                    <p>
-                        {address.country} {address.postalCode}
-                    </p>
-                    <a
-                        href={`tel:${address.phone}`}
-                        className="block text-black underline decoration-black/30 underline-offset-2 hover:decoration-black"
-                    >
-                        {address.phone}
-                    </a>
-                    <p>{address.email}</p>
                 </div>
             </div>
         </div>
@@ -220,12 +125,8 @@ function PersonalInformation({ address }: { address: Address | null }) {
 function LiveCleaningVideo() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Live Cleaning Video
-            </h2>
-            <p className="mt-4 text-black/55">
-                Your live stream will appear here during an active service.
-            </p>
+            <h2 className="text-xl font-semibold text-black md:text-2xl">Live Cleaning Video</h2>
+            <p className="mt-4 text-black/55">Your live stream will appear here during an active service.</p>
         </div>
     );
 }
@@ -233,12 +134,8 @@ function LiveCleaningVideo() {
 function VideoHistory() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Video History
-            </h2>
-            <p className="mt-4 text-black/55">
-                Saved recordings will appear here after your service.
-            </p>
+            <h2 className="text-xl font-semibold text-black md:text-2xl">Video History</h2>
+            <p className="mt-4 text-black/55">Saved recordings will appear here after your service.</p>
         </div>
     );
 }
@@ -246,12 +143,8 @@ function VideoHistory() {
 function OrderHistory() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Order History
-            </h2>
-            <p className="mt-4 text-black/55">
-                Your past orders will appear here.
-            </p>
+            <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
+            <p className="mt-4 text-black/55">Your past orders will appear here.</p>
         </div>
     );
 }

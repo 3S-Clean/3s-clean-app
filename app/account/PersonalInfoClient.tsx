@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Profile = {
@@ -8,14 +8,24 @@ type Profile = {
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
-    street: string | null;
-    city: string | null;
-    postal_code: string | null;
-    country: string | null;
 };
 
-export default function PersonalInfoClient() {
-    const supabase = createClient();
+type Address = {
+    id: string;
+    user_id: string;
+    is_default: boolean;
+    first_name: string | null;
+    last_name: string | null;
+    phone: string | null;
+    email: string | null;
+    street: string;
+    city: string;
+    postal_code: string;
+    country: string;
+};
+
+export default function PersonalInfoClient({ email }: { email: string }) {
+    const supabase = useMemo(() => createClient(), []);
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -23,8 +33,8 @@ export default function PersonalInfoClient() {
     const [error, setError] = useState<string | null>(null);
 
     const [profile, setProfile] = useState<Profile | null>(null);
+    const [address, setAddress] = useState<Address | null>(null);
 
-    // локальная форма
     const [form, setForm] = useState({
         first_name: "",
         last_name: "",
@@ -35,95 +45,163 @@ export default function PersonalInfoClient() {
         country: "Germany",
     });
 
-    // 1) загрузка профиля
-    useEffect(() => {
-        let cancelled = false;
+    const load = async () => {
+        setLoading(true);
+        setError(null);
 
-        (async () => {
-            setLoading(true);
-            setError(null);
+        const { data: u, error: uErr } = await supabase.auth.getUser();
+        const user = u?.user;
 
-            const { data: u, error: uErr } = await supabase.auth.getUser();
-            if (uErr || !u.user) {
-                if (!cancelled) setError("Not authenticated.");
-                if (!cancelled) setLoading(false);
-                return;
-            }
-
-            const { data, error } = await supabase
-                .from("profiles")
-                .select("*")
-                .eq("user_id", u.user.id)
-                .maybeSingle();
-
-            if (cancelled) return;
-
-            if (error) {
-                setError(error.message);
-                setLoading(false);
-                return;
-            }
-
-            setProfile(data ?? null);
-
-            // заполняем форму
-            setForm({
-                first_name: data?.first_name ?? "",
-                last_name: data?.last_name ?? "",
-                phone: data?.phone ?? "",
-                street: data?.street ?? "",
-                city: data?.city ?? "",
-                postal_code: data?.postal_code ?? "",
-                country: data?.country ?? "Germany",
-            });
-
+        if (uErr || !user) {
+            setError("Not authenticated.");
             setLoading(false);
-        })();
+            return;
+        }
 
-        return () => {
-            cancelled = true;
-        };
-    }, [supabase]);
+        // PROFILE
+        const p = await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name, phone")
+            .eq("user_id", user.id)
+            .maybeSingle();
 
-    // 2) сохранение
+        // если профиля нет — создаём пустой
+        if (!p.data && !p.error) {
+            await supabase.from("profiles").insert({ user_id: user.id });
+        }
+
+        const p2 = await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name, phone")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        // DEFAULT ADDRESS
+        const a = await supabase
+            .from("addresses")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("is_default", true)
+            .order("created_at", { ascending: false })
+            .maybeSingle();
+
+        if (p2.error) setError(p2.error.message);
+        if (a.error) setError(a.error.message);
+
+        setProfile(p2.data ?? null);
+        setAddress(a.data ?? null);
+
+        // заполняем форму
+        const firstName = p2.data?.first_name ?? a.data?.first_name ?? "";
+        const lastName = p2.data?.last_name ?? a.data?.last_name ?? "";
+        const phone = p2.data?.phone ?? a.data?.phone ?? "";
+
+        setForm({
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone,
+            street: a.data?.street ?? "",
+            city: a.data?.city ?? "",
+            postal_code: a.data?.postal_code ?? "",
+            country: a.data?.country ?? "Germany",
+        });
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        load();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const onSave = async () => {
         setSaving(true);
         setError(null);
 
-        const { data: u, error: uErr } = await supabase.auth.getUser();
-        if (uErr || !u.user) {
+        const { data: u } = await supabase.auth.getUser();
+        const user = u?.user;
+        if (!user) {
             setError("Not authenticated.");
             setSaving(false);
             return;
         }
 
-        const payload = {
-            user_id: u.user.id,
-            first_name: form.first_name || null,
-            last_name: form.last_name || null,
-            phone: form.phone || null,
-            street: form.street || null,
-            city: form.city || null,
-            postal_code: form.postal_code || null,
-            country: form.country || null,
-            updated_at: new Date().toISOString(),
-        };
-
-        const { data, error } = await supabase
-            .from("profiles")
-            .upsert(payload, { onConflict: "user_id" })
-            .select()
-            .single();
-
-        if (error) {
-            setError(error.message);
+        // минимальная валидация
+        if (!form.first_name.trim() || !form.last_name.trim()) {
+            setError("Please fill first name and last name.");
             setSaving(false);
             return;
         }
 
-        setProfile(data);
-        setEditing(false);
+        // 1) PROFILE upsert
+        const upP = await supabase.from("profiles").upsert(
+            {
+                user_id: user.id,
+                first_name: form.first_name.trim(),
+                last_name: form.last_name.trim(),
+                phone: form.phone.trim() || null,
+            },
+            { onConflict: "user_id" }
+        );
+
+        if (upP.error) {
+            setError(upP.error.message);
+            setSaving(false);
+            return;
+        }
+
+        // 2) ADDRESS (default)
+        if (address?.id) {
+            const upA = await supabase
+                .from("addresses")
+                .update({
+                    first_name: form.first_name.trim(),
+                    last_name: form.last_name.trim(),
+                    phone: form.phone.trim() || null,
+                    email: email || null,
+                    street: form.street.trim(),
+                    city: form.city.trim(),
+                    postal_code: form.postal_code.trim(),
+                    country: form.country.trim() || "Germany",
+                })
+                .eq("id", address.id);
+
+            if (upA.error) {
+                setError(upA.error.message);
+                setSaving(false);
+                return;
+            }
+        } else {
+            // если адреса нет — создаём default
+            if (!form.street.trim() || !form.city.trim() || !form.postal_code.trim()) {
+                setError("Please fill street, city and postal code.");
+                setSaving(false);
+                return;
+            }
+
+            const insA = await supabase.from("addresses").insert({
+                user_id: user.id,
+                is_default: true,
+                first_name: form.first_name.trim(),
+                last_name: form.last_name.trim(),
+                phone: form.phone.trim() || null,
+                email: email || null,
+                street: form.street.trim(),
+                city: form.city.trim(),
+                postal_code: form.postal_code.trim(),
+                country: form.country.trim() || "Germany",
+            });
+
+            if (insA.error) {
+                setError(insA.error.message);
+                setSaving(false);
+                return;
+            }
+        }
+
         setSaving(false);
+        setEditing(false);
+        await load();
     };
 
     if (loading) {
@@ -136,6 +214,11 @@ export default function PersonalInfoClient() {
             </div>
         );
     }
+
+    const fullName =
+        (profile?.first_name ?? address?.first_name ?? "—") +
+        " " +
+        (profile?.last_name ?? address?.last_name ?? "");
 
     return (
         <div>
@@ -155,7 +238,20 @@ export default function PersonalInfoClient() {
                 ) : (
                     <button
                         type="button"
-                        onClick={() => setEditing(false)}
+                        onClick={() => {
+                            setEditing(false);
+                            setError(null);
+                            // откатим поля на текущие значения
+                            setForm({
+                                first_name: profile?.first_name ?? address?.first_name ?? "",
+                                last_name: profile?.last_name ?? address?.last_name ?? "",
+                                phone: profile?.phone ?? address?.phone ?? "",
+                                street: address?.street ?? "",
+                                city: address?.city ?? "",
+                                postal_code: address?.postal_code ?? "",
+                                country: address?.country ?? "Germany",
+                            });
+                        }}
                         className="text-sm text-black/60 transition hover:text-black"
                     >
                         Cancel
@@ -167,15 +263,14 @@ export default function PersonalInfoClient() {
 
             {!editing ? (
                 <div className="mt-6 space-y-1 text-[15px] text-black/80">
-                    <p className="font-medium text-black">
-                        {(profile?.first_name ?? "—")} {(profile?.last_name ?? "")}
-                    </p>
-                    <p>{profile?.street ?? "—"}</p>
-                    <p>{profile?.city ?? "—"}</p>
+                    <p className="font-medium text-black">{fullName}</p>
+                    <p>{address?.street ?? "—"}</p>
+                    <p>{address?.city ?? "—"}</p>
                     <p>
-                        {(profile?.country ?? "—")} {(profile?.postal_code ?? "")}
+                        {(address?.country ?? "Germany")} {address?.postal_code ?? ""}
                     </p>
-                    <p>{profile?.phone ?? "—"}</p>
+                    <p>{profile?.phone ?? address?.phone ?? "—"}</p>
+                    <p>{address?.email ?? email}</p>
                 </div>
             ) : (
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
