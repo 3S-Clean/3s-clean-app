@@ -41,11 +41,12 @@ export default function SignupClient() {
             process.env.NEXT_PUBLIC_SITE_URL ||
             (typeof window !== "undefined" ? window.location.origin : "");
         const origin = originRaw.replace(/\/+$/, "");
-        const { error } = await supabase.auth.signUp({
+
+        const {error} = await supabase.auth.signUp({
             email: values.email,
             password: values.password,
             options: {
-                // 👇 ссылка из письма ведёт сюда
+                // 👇 ссылка из письма
                 emailRedirectTo: `${origin}/callback`,
             },
         });
@@ -60,14 +61,16 @@ export default function SignupClient() {
                     ? "This email is already registered. Try logging in."
                     : error.message;
 
-            setStatus({ type: "error", msg });
+            setStatus({type: "error", msg});
             return;
         }
 
-        // ✅ успех: уводим на страницу "подтвердите email"
-        router.replace("/email-confirmed");
-    };
+// ✅ ВОТ ЭТА СТРОКА НУЖНА
+        localStorage.setItem("pendingEmail", values.email);
 
+// ✅ уводим на страницу "подтвердите email"
+        router.replace("/email-confirmed");
+    }
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
             <h1 className="text-4xl font-semibold tracking-tight text-black">Create account</h1>
