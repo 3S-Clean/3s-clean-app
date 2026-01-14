@@ -1,26 +1,29 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LogoutButton() {
+export default function LogoutButton({
+                                         className = "",
+                                         label = "Logout",
+                                     }: {
+    className?: string;
+    label?: string;
+}) {
     const router = useRouter();
-    const supabase = useMemo(() => createClient(), []);
+    const supabase = createClient();
     const [loading, setLoading] = useState(false);
 
     const onLogout = async () => {
-        try {
-            setLoading(true);
+        setLoading(true);
 
-            // ✅ разлогиниваемся ВЕЗДЕ (все сессии)
-            await supabase.auth.signOut();
+        // ✅ разлогинить ВЕЗДЕ (все устройства/сессии)
+        await supabase.auth.signOut({ scope: "global" });
 
-            router.replace("/login");
-            router.refresh();
-        } finally {
-            setLoading(false);
-        }
+        setLoading(false);
+        router.replace("/login");
+        router.refresh();
     };
 
     return (
@@ -28,9 +31,14 @@ export default function LogoutButton() {
             type="button"
             onClick={onLogout}
             disabled={loading}
-            className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
+            className={[
+                "inline-flex items-center justify-center rounded-xl px-5 py-3 text-[15px] font-medium transition",
+                "text-black/70 hover:bg-black/5 hover:text-black",
+                "disabled:opacity-40 disabled:cursor-not-allowed",
+                className,
+            ].join(" ")}
         >
-            {loading ? "Signing out…" : "Log out"}
+            {loading ? "Signing out…" : label}
         </button>
     );
 }
