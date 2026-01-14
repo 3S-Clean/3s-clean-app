@@ -36,14 +36,9 @@ export default function ForgotPasswordPage() {
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
-        const originRaw =
-            process.env.NEXT_PUBLIC_SITE_URL ||
-            (typeof window !== "undefined" ? window.location.origin : "");
-
-        const origin = originRaw.replace(/\/+$/, ""); // ✅ убираем хвостовые /
-
         const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-            redirectTo: `${origin}/reset-password`,
+            // ✅ ЯВНО: чтобы не было preview/localhost/origin багов
+            redirectTo: "https://app.3s-clean.com/reset-password",
         });
 
         if (error) {
@@ -82,9 +77,7 @@ export default function ForgotPasswordPage() {
                         ].join(" ")}
                         {...register("email")}
                     />
-                    {errors.email && (
-                        <p className="text-sm text-red-600">{errors.email.message}</p>
-                    )}
+                    {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
                 <button

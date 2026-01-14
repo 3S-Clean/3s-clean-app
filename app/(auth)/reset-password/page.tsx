@@ -24,10 +24,21 @@ interface HashParams {
 function readHash(): HashParams {
     const hash = typeof window !== "undefined" ? window.location.hash || "" : "";
     const params = new URLSearchParams(hash.replace(/^#/, ""));
-
     return {
         access_token: params.get("access_token"),
         refresh_token: params.get("refresh_token"),
+        type: params.get("type"),
+        error: params.get("error"),
+        error_code: params.get("error_code"),
+        error_description: params.get("error_description"),
+    };
+}
+
+function readQuery() {
+    const qs = typeof window !== "undefined" ? window.location.search || "" : "";
+    const params = new URLSearchParams(qs.replace(/^\?/, ""));
+    return {
+        token_hash: params.get("token_hash"),
         type: params.get("type"),
         error: params.get("error"),
         error_code: params.get("error_code"),
@@ -55,14 +66,69 @@ export default function ResetPasswordPage() {
 
     const shouldShake = submitCount > 0 && !isValid;
 
-    // 1) Инициализируем сессию из hash (recovery link)
+    // 1) Init session:
+    // A) ?token_hash=... -> verifyOtp (лучшее, не сгорает от превью)
+    // B) #access_token... -> setSession (fallback)
     useEffect(() => {
         let cancelled = false;
 
         (async () => {
+            // --- token_hash flow (query)
+            const qp = readQuery();
+
+            if (qp.error) {
+                const msg =
+                    qp.error_code === "otp_expired"
+                        ? "This reset link has expired. Please request a new one."
+                        : qp.error_description || "Reset link is invalid.";
+
+                if (!cancelled) {
+                    setStatus({ type: "error", msg });
+                    setStep("error");
+                }
+                return;
+            }
+
+            if (qp.token_hash) {
+                if (qp.type && qp.type !== "recovery") {
+                    if (!cancelled) {
+                        setStatus({
+                            type: "error",
+                            msg: "Invalid reset link type. Please request a new password reset.",
+                        });
+                        setStep("error");
+                    }
+                    return;
+                }
+
+                const { error } = await supabase.auth.verifyOtp({
+                    type: "recovery",
+                    token_hash: qp.token_hash,
+                });
+
+                if (cancelled) return;
+
+                if (error) {
+                    const low = (error.message || "").toLowerCase();
+                    setStatus({
+                        type: "error",
+                        msg: low.includes("expired")
+                            ? "This reset link has expired. Please request a new one."
+                            : error.message || "Reset link is invalid.",
+                    });
+                    setStep("error");
+                    return;
+                }
+
+                // очистили URL
+                window.history.replaceState(null, "", window.location.pathname);
+                setStep("form");
+                return;
+            }
+
+            // --- fallback: hash flow
             const hp = readHash();
 
-            // Supabase прислал ошибку (например otp_expired)
             if (hp.error) {
                 const msg =
                     hp.error_code === "otp_expired"
@@ -76,7 +142,6 @@ export default function ResetPasswordPage() {
                 return;
             }
 
-            // Нету токенов
             if (!hp.access_token || !hp.refresh_token) {
                 if (!cancelled) {
                     setStatus({
@@ -88,7 +153,6 @@ export default function ResetPasswordPage() {
                 return;
             }
 
-            // Тип должен быть recovery
             if (hp.type && hp.type !== "recovery") {
                 if (!cancelled) {
                     setStatus({
@@ -119,9 +183,8 @@ export default function ResetPasswordPage() {
                 return;
             }
 
-            // Чистим URL от #access_token...
+            // очистили URL
             window.history.replaceState(null, "", window.location.pathname);
-
             setStep("form");
         })();
 
@@ -130,7 +193,7 @@ export default function ResetPasswordPage() {
         };
     }, [supabase]);
 
-    // 2) Если пользователь начал вводить после ошибок — чистим статус
+    // 2) если пользователь начал вводить — чистим статус
     const password = watch("password");
     const confirmPassword = watch("confirmPassword");
     useEffect(() => {
@@ -138,7 +201,7 @@ export default function ResetPasswordPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [password, confirmPassword]);
 
-    // 3) Сохраняем новый пароль + делаем автологаут ВЕЗДЕ
+    // 3) update password
     const onSubmit = async (values: ResetPasswordValues) => {
         setStatus(null);
 
@@ -151,23 +214,23 @@ export default function ResetPasswordPage() {
             return;
         }
 
-        // ✅ автологаут ВЕЗДЕ (а не только local)
+        // автологаут
         await supabase.auth.signOut();
 
-        setStatus({ type: "ok", msg: "Password updated. Please log in with your new password." });
+        setStatus({
+            type: "ok",
+            msg: "Password updated. Please log in with your new password.",
+        });
         setStep("success");
 
         router.replace("/login");
         router.refresh();
     };
 
-    // checking
     if (step === "checking") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-black">
-                    Preparing reset…
-                </h1>
+                <h1 className="text-2xl font-semibold tracking-tight text-black">Preparing reset…</h1>
                 <p className="mt-4 text-sm text-black/55">Please wait.</p>
 
                 <div className="mt-8 space-y-4 animate-pulse">
@@ -178,13 +241,10 @@ export default function ResetPasswordPage() {
         );
     }
 
-    // error
     if (step === "error") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-black">
-                    Reset failed
-                </h1>
+                <h1 className="text-2xl font-semibold tracking-tight text-black">Reset failed</h1>
                 <p className="mt-4 text-sm text-red-600">{status?.msg}</p>
 
                 <div className="mt-8 space-y-3">
@@ -206,26 +266,18 @@ export default function ResetPasswordPage() {
         );
     }
 
-    // success (быстро редиректим, но оставляем UI на случай медленного роутинга)
     if (step === "success") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-black">
-                    Password updated
-                </h1>
-                <p className="mt-4 text-sm text-black/55">
-                    {status?.msg ?? "Done."}
-                </p>
+                <h1 className="text-2xl font-semibold tracking-tight text-black">Password updated</h1>
+                <p className="mt-4 text-sm text-black/55">{status?.msg ?? "Done."}</p>
             </div>
         );
     }
 
-    // form
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">
-                Set new password
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Set new password</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
                 Choose a new password for your account.
             </p>
