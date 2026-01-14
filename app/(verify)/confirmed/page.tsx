@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -11,13 +12,10 @@ export default function ConfirmedPage() {
 
     useEffect(() => {
         let cancelled = false;
-
         (async () => {
             const { data } = await supabase.auth.getSession();
-            if (cancelled) return;
-            setHasSession(!!data.session);
+            if (!cancelled) setHasSession(!!data.session);
         })();
-
         return () => {
             cancelled = true;
         };
@@ -33,33 +31,34 @@ export default function ConfirmedPage() {
                 Thank you — your email has been confirmed successfully.
             </p>
 
-            {hasSession === true && (
-                <button
-                    type="button"
-                    onClick={() => {
-                        router.replace("/account");
-                        router.refresh();
-                    }}
-                    className="mt-10 inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90 transition"
-                >
-                    Continue
-                </button>
-            )}
-
-            {hasSession === false && (
-                <p className="mt-10 text-sm text-black/45">
-                    You can now safely close this tab or log in manually.
-                </p>
-            )}
+            <div className="mt-10">
+                {hasSession === true ? (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            router.replace("/account");
+                            router.refresh();
+                        }}
+                        className="inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90 transition"
+                    >
+                        Continue
+                    </button>
+                ) : (
+                    <Link
+                        href="/login"
+                        className="inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90 transition"
+                    >
+                        Continue to login
+                    </Link>
+                )}
+            </div>
 
             <p className="mt-10 text-sm text-black/40">
-                If you have any issue confirming your account, please contact{" "}
-                <a
-                    href="mailto:support@3s-clean.com"
-                    className="text-black hover:underline"
-                >
+                If you have any issues confirming your account, please contact{" "}
+                <a className="text-black hover:underline" href="mailto:support@3s-clean.com">
                     support@3s-clean.com
-                </a>.
+                </a>
+                .
             </p>
         </div>
     );
