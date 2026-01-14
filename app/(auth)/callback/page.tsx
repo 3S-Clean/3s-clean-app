@@ -24,13 +24,14 @@ export default function CallbackPage() {
         const hp = getHashParams();
 
         if (hp.error) {
-            setDesc(hp.error_description || "Email link is invalid or has expired.");
-            setState("failed");
+            queueMicrotask(() => {
+                setDesc(hp.error_description || "Email link is invalid or has expired.");
+                setState("failed");
+            });
             return;
         }
 
         router.replace("/confirmed");
-        router.refresh();
     }, [router]);
 
     if (state === "failed") {
