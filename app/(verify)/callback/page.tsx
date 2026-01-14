@@ -18,6 +18,12 @@ function getHashParams() {
     };
 }
 
+function clearPendingEmail() {
+    try {
+        localStorage.removeItem("pendingEmail");
+    } catch {}
+}
+
 export default function CallbackPage() {
     const router = useRouter();
     const [state, setState] = useState<State>("working");
@@ -50,6 +56,9 @@ export default function CallbackPage() {
                     return;
                 }
 
+                // ✅ успех: подтверждение прошло → чистим pendingEmail
+                clearPendingEmail();
+
                 router.replace("/confirmed");
                 router.refresh();
                 return;
@@ -68,6 +77,9 @@ export default function CallbackPage() {
                     setState("failed");
                     return;
                 }
+
+                // ✅ успех: сессия поставилась → чистим pendingEmail
+                clearPendingEmail();
 
                 router.replace("/confirmed");
                 router.refresh();
