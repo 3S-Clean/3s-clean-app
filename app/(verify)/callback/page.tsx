@@ -2,31 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client"; // ✅ Изменено
+import { createClient } from "@/lib/supabase/client";
 
-type State = "working" | "failed" | "missing";
+type State = "working" | "failed";
 
 function getHashParams() {
     const hash = window.location.hash || "";
     const params = new URLSearchParams(hash.replace(/^#/, ""));
     return {
-        access_token: params.get("access_token"),
-        refresh_token: params.get("refresh_token"),
         error: params.get("error"),
         error_description: params.get("error_description"),
     };
 }
 
-function clearPendingEmail() {
-    try {
-        localStorage.removeItem("pendingEmail");
-    } catch {}
-}
-
 export default function CallbackPage() {
-    const router = useRouter();
-    const supabase = createClient(); // ✅ Добавлено
+    const supabase = createClient();
     const [state, setState] = useState<State>("working");
     const [desc, setDesc] = useState("");
 
@@ -36,75 +26,42 @@ export default function CallbackPage() {
         (async () => {
             const hp = getHashParams();
 
-            // 1) Supabase прислал ошибку в hash
+            // 1) если Supabase вернул ошибку — показываем failed
             if (hp.error) {
                 if (cancelled) return;
-                setDesc(hp.error_description || "Email link is invalid or has expired.");
+
+                const msg = hp.error_description || "Email link is invalid or has expired.";
+                setDesc(msg);
                 setState("failed");
+
+                // уберём hash, чтобы не путал при рефреше
+                window.history.replaceState(null, "", window.location.pathname);
                 return;
             }
 
-            // 2) PKCE flow: code в query
-            const url = new URL(window.location.href);
-            const code = url.searchParams.get("code");
-            if (code) {
-                const { error } = await supabase.auth.exchangeCodeForSession(code);
-                if (cancelled) return;
+            // 2) успех: чистим pendingEmail и ВЫХОДИМ локально (на всякий случай, если сессия вдруг появилась)
+            try {
+                localStorage.removeItem("pendingEmail");
+            } catch {}
 
-                if (error) {
-                    setDesc(error.message || "Email link is invalid or has expired.");
-                    setState("failed");
-                    return;
-                }
+            await supabase.auth.signOut({ scope: "local" });
 
-                // ✅ успех: подтверждение прошло → чистим pendingEmail
-                clearPendingEmail();
+            // уберём hash (и возможные query) из URL
+            window.history.replaceState(null, "", window.location.pathname);
 
-                router.replace("/confirmed");
-                router.refresh();
-                return;
-            }
-
-            // 3) Implicit flow: access/refresh в hash
-            if (hp.access_token && hp.refresh_token) {
-                const { error } = await supabase.auth.setSession({
-                    access_token: hp.access_token,
-                    refresh_token: hp.refresh_token,
-                });
-                if (cancelled) return;
-
-                if (error) {
-                    setDesc(error.message || "Email link is invalid or has expired.");
-                    setState("failed");
-                    return;
-                }
-
-                // ✅ успех: сессия поставилась → чистим pendingEmail
-                clearPendingEmail();
-
-                router.replace("/confirmed");
-                router.refresh();
-                return;
-            }
-
-            // 4) Вообще ничего не пришло
-            if (cancelled) return;
-            setDesc("This link is missing data or has already been used.");
-            setState("missing");
+            // 3) отправляем на /confirmed (там кнопка “Continue”)
+            window.location.replace("/confirmed");
         })();
 
         return () => {
             cancelled = true;
         };
-    }, [router, supabase]); // ✅ Добавлено supabase в зависимости
+    }, [supabase]);
 
-    if (state === "failed" || state === "missing") {
+    if (state === "failed") {
         return (
             <div className="text-center">
-                <h1 className="text-2xl font-semibold text-black">
-                    {state === "failed" ? "Confirmation failed" : "Invalid link"}
-                </h1>
-
+                <h1 className="text-2xl font-semibold text-black">Confirmation failed</h1>
                 <p className="mt-4 text-sm text-black/55">{desc}</p>
 
                 <Link

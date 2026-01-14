@@ -1,43 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 
-export default function EmailConfirmPage() {
-    const [email] = useState<string | null>(() => {
-        try {
-            return localStorage.getItem("pendingEmail");
-        } catch {
-            return null;
-        }
-    });
-
+export default function ConfirmedPage() {
     return (
-        <>
-            <h1 className="text-2xl font-semibold tracking-tight text-black">
-                Check your email
+        <div className="text-center">
+            <h1 className="text-4xl font-semibold tracking-tight text-black">
+                Email confirmed
             </h1>
 
-            <p className="mt-4 text-sm leading-relaxed text-black/55">
-                We’ve sent a verification link to{" "}
-                <span className="text-black font-medium">
-          {email ?? "your email address"}
-        </span>
-                .
+            <p className="mt-6 text-base text-black/55">
+                Thank you — your email has been confirmed successfully.
             </p>
 
-            <p className="mt-8 text-sm text-black/45">
-                You can safely close this tab now.
-            </p>
+            <Link
+                href="/login"
+                className="mt-10 inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90 transition"
+            >
+                Continue to login
+            </Link>
 
-            <p className="mt-4 text-xs text-black/40">
+            <p className="mt-10 text-sm text-black/40">
                 If you have any issues confirming your account, please contact{" "}
-                <a
-                    href="mailto:support@3s-clean.com"
-                    className="underline hover:text-black"
-                >
+                <a href="mailto:support@3s-clean.com" className="text-black hover:underline">
                     support@3s-clean.com
                 </a>
+                .
             </p>
-        </>
+        </div>
     );
 }
