@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ConfirmedPage() {
     const router = useRouter();
-    const [ready, setReady] = useState(false);
+    const supabase = useMemo(() => createClient(), []);
+    const [hasSession, setHasSession] = useState<boolean | null>(null);
 
     useEffect(() => {
         let cancelled = false;
+
         (async () => {
             const { data } = await supabase.auth.getSession();
             if (cancelled) return;
-            setReady(!!data.session);
+            setHasSession(!!data.session);
         })();
+
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [supabase]);
 
     return (
-        <div>
+        <div className="text-center">
             <h1 className="text-4xl font-semibold tracking-tight text-black">
                 Email confirmed
             </h1>
@@ -30,7 +33,7 @@ export default function ConfirmedPage() {
                 Thank you — your email has been confirmed successfully.
             </p>
 
-            {ready && (
+            {hasSession === true && (
                 <button
                     type="button"
                     onClick={() => {
@@ -41,6 +44,12 @@ export default function ConfirmedPage() {
                 >
                     Continue
                 </button>
+            )}
+
+            {hasSession === false && (
+                <p className="mt-10 text-sm text-black/45">
+                    You can now safely close this tab or log in manually.
+                </p>
             )}
 
             <p className="mt-10 text-sm text-black/40">

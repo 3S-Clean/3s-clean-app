@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+
+type Status = null | { type: "ok" | "error"; msg: string };
 
 export default function ForgotPasswordPage() {
+    const supabase = useMemo(() => createClient(), []);
+
     const {
         register,
         handleSubmit,
@@ -19,7 +23,7 @@ export default function ForgotPasswordPage() {
         mode: "onChange",
     });
 
-    const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
+    const [status, setStatus] = useState<Status>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
     // UX: если пользователь меняет поле после ошибки — убираем сообщение
@@ -32,9 +36,11 @@ export default function ForgotPasswordPage() {
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
-        const origin =
+        const originRaw =
             process.env.NEXT_PUBLIC_SITE_URL ||
             (typeof window !== "undefined" ? window.location.origin : "");
+
+        const origin = originRaw.replace(/\/+$/, ""); // ✅ убираем хвостовые /
 
         const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
             redirectTo: `${origin}/reset-password`,
@@ -45,13 +51,19 @@ export default function ForgotPasswordPage() {
             return;
         }
 
-        // одинаковое сообщение — безопаснее (не палит, существует email или нет)
-        setStatus({ type: "ok", msg: "If this email exists, we’ll send you a reset link." });
+        // ✅ одинаковое сообщение — безопаснее (не палит, существует email или нет)
+        setStatus({
+            type: "ok",
+            msg: "If this email exists, we’ll send you a reset link.",
+        });
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">Reset password</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">
+                Reset password
+            </h1>
+
             <p className="mt-3 text-sm leading-relaxed text-black/55">
                 Enter your email and we’ll send you a reset link.
             </p>
@@ -70,7 +82,9 @@ export default function ForgotPasswordPage() {
                         ].join(" ")}
                         {...register("email")}
                     />
-                    {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+                    {errors.email && (
+                        <p className="text-sm text-red-600">{errors.email.message}</p>
+                    )}
                 </div>
 
                 <button

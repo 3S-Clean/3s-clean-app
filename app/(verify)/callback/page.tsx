@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client"; // ✅ Изменено
 
 type State = "working" | "failed" | "missing";
 
@@ -26,6 +26,7 @@ function clearPendingEmail() {
 
 export default function CallbackPage() {
     const router = useRouter();
+    const supabase = createClient(); // ✅ Добавлено
     const [state, setState] = useState<State>("working");
     const [desc, setDesc] = useState("");
 
@@ -95,7 +96,7 @@ export default function CallbackPage() {
         return () => {
             cancelled = true;
         };
-    }, [router]);
+    }, [router, supabase]); // ✅ Добавлено supabase в зависимости
 
     if (state === "failed" || state === "missing") {
         return (

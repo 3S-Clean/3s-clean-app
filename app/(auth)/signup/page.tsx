@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client"; // ✅ Изменено
 import { signupSchema, type SignupValues } from "@/lib/validators";
 
 export default function SignupClient() {
     const router = useRouter();
+    const supabase = createClient(); // ✅ Добавлено
 
     const {
         register,
@@ -42,11 +43,10 @@ export default function SignupClient() {
             (typeof window !== "undefined" ? window.location.origin : "");
         const origin = originRaw.replace(/\/+$/, "");
 
-        const {error} = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
             email: values.email,
             password: values.password,
             options: {
-                // 👇 ссылка из письма
                 emailRedirectTo: `${origin}/callback`,
             },
         });
@@ -61,16 +61,15 @@ export default function SignupClient() {
                     ? "This email is already registered. Try logging in."
                     : error.message;
 
-            setStatus({type: "error", msg});
+            setStatus({ type: "error", msg });
             return;
         }
 
-// ✅ ВОТ ЭТА СТРОКА НУЖНА
         localStorage.setItem("pendingEmail", values.email);
 
-// ✅ уводим на страницу "подтвердите email"
         router.replace("/email-confirmed");
-    }
+    };
+
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
             <h1 className="text-4xl font-semibold tracking-tight text-black">Create account</h1>

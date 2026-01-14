@@ -6,12 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
 import { loginSchema, type LoginValues } from "@/lib/validators";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client"; //
 
 type Status = null | { type: "ok" | "error"; msg: string };
 
 export default function LoginClient() {
     const router = useRouter();
+    const supabase = createClient(); // ✅ Добавлено
 
     const {
         register,
