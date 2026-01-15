@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -10,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 type Status = null | { type: "ok" | "error"; msg: string };
 
 export default function ForgotPasswordPage() {
+    const router = useRouter();
     const supabase = useMemo(() => createClient(), []);
 
     const {
@@ -26,7 +28,6 @@ export default function ForgotPasswordPage() {
     const [status, setStatus] = useState<Status>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
-    // UX: если пользователь меняет поле после ошибки — убираем сообщение
     const email = watch("email");
     useEffect(() => {
         if (status?.type === "error") setStatus(null);
@@ -36,9 +37,12 @@ export default function ForgotPasswordPage() {
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
-        const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-            // ✅ ЯВНО: чтобы не было preview/localhost/origin багов
-            redirectTo: "https://app.3s-clean.com/reset-password",
+        const cleanEmail = values.email.trim();
+
+        // ✅ Отправляем OTP-код (не ссылку)
+        const { error } = await supabase.auth.signInWithOtp({
+            email: cleanEmail,
+            options: { shouldCreateUser: false },
         });
 
         if (error) {
@@ -46,21 +50,20 @@ export default function ForgotPasswordPage() {
             return;
         }
 
-        // ✅ одинаковое сообщение — безопаснее (не палит, существует email или нет)
-        setStatus({
-            type: "ok",
-            msg: "If this email exists, we’ll send you a reset link.",
-        });
+        try {
+            localStorage.setItem("pendingEmail", cleanEmail);
+        } catch {}
+
+        // ✅ Переходим на ввод кода
+        router.replace("/verify-code?flow=recovery");
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">
-                Reset password
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Reset password</h1>
 
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-                Enter your email and we’ll send you a reset link.
+                Enter your email and we’ll send you a verification code.
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -85,7 +88,7 @@ export default function ForgotPasswordPage() {
                     disabled={!isValid || isSubmitting}
                     className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    {isSubmitting ? "Sending…" : "Send reset link"}
+                    {isSubmitting ? "Sending…" : "Send code"}
                 </button>
 
                 {status && (

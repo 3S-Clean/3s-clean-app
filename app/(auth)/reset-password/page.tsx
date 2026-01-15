@@ -12,40 +12,6 @@ import { resetPasswordSchema, type ResetPasswordValues } from "@/lib/validators"
 type Step = "checking" | "form" | "error" | "success";
 type Status = { type: "ok" | "error"; msg: string } | null;
 
-interface HashParams {
-    access_token: string | null;
-    refresh_token: string | null;
-    type: string | null;
-    error: string | null;
-    error_code: string | null;
-    error_description: string | null;
-}
-
-function readHash(): HashParams {
-    const hash = typeof window !== "undefined" ? window.location.hash || "" : "";
-    const params = new URLSearchParams(hash.replace(/^#/, ""));
-    return {
-        access_token: params.get("access_token"),
-        refresh_token: params.get("refresh_token"),
-        type: params.get("type"),
-        error: params.get("error"),
-        error_code: params.get("error_code"),
-        error_description: params.get("error_description"),
-    };
-}
-
-function readQuery() {
-    const qs = typeof window !== "undefined" ? window.location.search || "" : "";
-    const params = new URLSearchParams(qs.replace(/^\?/, ""));
-    return {
-        token_hash: params.get("token_hash"),
-        type: params.get("type"),
-        error: params.get("error"),
-        error_code: params.get("error_code"),
-        error_description: params.get("error_description"),
-    };
-}
-
 export default function ResetPasswordPage() {
     const router = useRouter();
     const supabase = useMemo(() => createClient(), []);
@@ -66,125 +32,23 @@ export default function ResetPasswordPage() {
 
     const shouldShake = submitCount > 0 && !isValid;
 
-    // 1) Init session:
-    // A) ?token_hash=... -> verifyOtp (лучшее, не сгорает от превью)
-    // B) #access_token... -> setSession (fallback)
+    // 1) Проверяем, что есть session (она появляется после verify-code)
     useEffect(() => {
         let cancelled = false;
 
         (async () => {
-            // --- token_hash flow (query)
-            const qp = readQuery();
-
-            if (qp.error) {
-                const msg =
-                    qp.error_code === "otp_expired"
-                        ? "This reset link has expired. Please request a new one."
-                        : qp.error_description || "Reset link is invalid.";
-
-                if (!cancelled) {
-                    setStatus({ type: "error", msg });
-                    setStep("error");
-                }
-                return;
-            }
-
-            if (qp.token_hash) {
-                if (qp.type && qp.type !== "recovery") {
-                    if (!cancelled) {
-                        setStatus({
-                            type: "error",
-                            msg: "Invalid reset link type. Please request a new password reset.",
-                        });
-                        setStep("error");
-                    }
-                    return;
-                }
-
-                const { error } = await supabase.auth.verifyOtp({
-                    type: "recovery",
-                    token_hash: qp.token_hash,
-                });
-
-                if (cancelled) return;
-
-                if (error) {
-                    const low = (error.message || "").toLowerCase();
-                    setStatus({
-                        type: "error",
-                        msg: low.includes("expired")
-                            ? "This reset link has expired. Please request a new one."
-                            : error.message || "Reset link is invalid.",
-                    });
-                    setStep("error");
-                    return;
-                }
-
-                // очистили URL
-                window.history.replaceState(null, "", window.location.pathname);
-                setStep("form");
-                return;
-            }
-
-            // --- fallback: hash flow
-            const hp = readHash();
-
-            if (hp.error) {
-                const msg =
-                    hp.error_code === "otp_expired"
-                        ? "This reset link has expired. Please request a new one."
-                        : hp.error_description || "Reset link is invalid.";
-
-                if (!cancelled) {
-                    setStatus({ type: "error", msg });
-                    setStep("error");
-                }
-                return;
-            }
-
-            if (!hp.access_token || !hp.refresh_token) {
-                if (!cancelled) {
-                    setStatus({
-                        type: "error",
-                        msg: "This reset link is missing data or has already been used. Please request a new one.",
-                    });
-                    setStep("error");
-                }
-                return;
-            }
-
-            if (hp.type && hp.type !== "recovery") {
-                if (!cancelled) {
-                    setStatus({
-                        type: "error",
-                        msg: "Invalid reset link type. Please request a new password reset.",
-                    });
-                    setStep("error");
-                }
-                return;
-            }
-
-            const { error } = await supabase.auth.setSession({
-                access_token: hp.access_token,
-                refresh_token: hp.refresh_token,
-            });
-
+            const { data } = await supabase.auth.getSession();
             if (cancelled) return;
 
-            if (error) {
-                const low = error.message.toLowerCase();
+            if (!data.session) {
                 setStatus({
                     type: "error",
-                    msg: low.includes("expired")
-                        ? "This reset link has expired. Please request a new one."
-                        : error.message,
+                    msg: "Your reset session is missing or expired. Please request a new reset code.",
                 });
                 setStep("error");
                 return;
             }
 
-            // очистили URL
-            window.history.replaceState(null, "", window.location.pathname);
             setStep("form");
         })();
 
@@ -214,7 +78,7 @@ export default function ResetPasswordPage() {
             return;
         }
 
-        // автологаут
+        // автологаут (как у тебя было)
         await supabase.auth.signOut();
 
         setStatus({
@@ -252,7 +116,7 @@ export default function ResetPasswordPage() {
                         href="/forgot-password"
                         className="inline-flex w-full items-center justify-center rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white hover:bg-black/90 transition"
                     >
-                        Request a new reset link
+                        Request a new reset code
                     </Link>
 
                     <Link
