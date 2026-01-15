@@ -14,6 +14,14 @@ export default function SetPasswordPage() {
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
 
+    // ✅ Валидация пароля: min 8, 1 заглавная, 1 цифра
+    const validatePassword = (value: string): string | null => {
+        if (value.length < 8) return "Minimum 8 characters";
+        if (!/[A-Z]/.test(value)) return "Must contain at least one uppercase letter";
+        if (!/[0-9]/.test(value)) return "Must contain at least one number";
+        return null;
+    };
+
     // 1) Защита: если сюда зашли без сессии — отправим на signup
     useEffect(() => {
         let cancelled = false;
@@ -39,10 +47,12 @@ export default function SetPasswordPage() {
     const submit = async () => {
         setStatus(null);
 
-        if (password.length < 8) {
-            setStatus({ type: "error", msg: "Password must be at least 8 characters." });
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setStatus({ type: "error", msg: passwordError });
             return;
         }
+
         if (password !== confirm) {
             setStatus({ type: "error", msg: "Passwords do not match." });
             return;
@@ -64,7 +74,6 @@ export default function SetPasswordPage() {
 
             setStatus({ type: "ok", msg: "Password set successfully." });
 
-            // чуть подождём один тик — и в аккаунт
             router.replace("/account");
             router.refresh();
         } finally {

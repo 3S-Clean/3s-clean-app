@@ -17,30 +17,31 @@ function VerifyCodeInner() {
 
     const supabase = useMemo(() => createClient(), []);
 
-    const [email, setEmail] = useState<string | null>(null); // null = loading
+    const [email, setEmail] = useState<string | null>(null);
     const [code, setCode] = useState("");
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
 
-    // 1) читаем email из localStorage
+    // Читаем email из localStorage (разные ключи для signup и recovery)
     useEffect(() => {
         const stored = (() => {
             try {
-                return localStorage.getItem("pendingEmail");
+                const key = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
+                return localStorage.getItem(key);
             } catch {
                 return null;
             }
         })();
 
         if (!stored) {
-            router.replace(flow === "signup" ? "/signup" : "/reset-password");
+            router.replace(flow === "signup" ? "/signup" : "/forgot-password");
             return;
         }
 
         setEmail(stored);
     }, [flow, router]);
 
-    // 2) verify OTP (универсально 6–8 цифр)
+    // Verify OTP (ТОЛЬКО 8 цифр)
     const verify = async () => {
         setStatus(null);
         setLoading(true);
@@ -51,18 +52,18 @@ function VerifyCodeInner() {
                 return;
             }
 
-            if (!/^\d{6,8}$/.test(code)) {
-                setStatus({ type: "error", msg: "Enter the verification code." });
+            if (!/^\d{8}$/.test(code)) {
+                setStatus({ type: "error", msg: "Enter the 8-digit verification code." });
                 return;
             }
 
             type VerifyOtpParams = Parameters<typeof supabase.auth.verifyOtp>[0];
 
-            // ВСЕГДА используем Email OTP
+            // Правильный type в зависимости от flow
             const payload = {
                 email,
                 token: code,
-                type: "signup",
+                type: flow === "recovery" ? "recovery" : "email",
             } satisfies VerifyOtpParams;
 
             const { error } = await supabase.auth.verifyOtp(payload);
@@ -72,18 +73,26 @@ function VerifyCodeInner() {
                 return;
             }
 
+            // Очищаем localStorage
             try {
-                localStorage.removeItem("pendingEmail");
+                const key = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
+                localStorage.removeItem(key);
             } catch {}
 
-            router.replace(flow === "signup" ? "/set-password" : "/reset-password/new");
+            // Редирект в зависимости от flow
+            if (flow === "signup") {
+                router.replace("/account");
+            } else {
+                router.replace("/reset-password");
+            }
+
             router.refresh();
         } finally {
             setLoading(false);
         }
     };
 
-    // 3) resend
+    // Resend code
     const resend = async () => {
         setStatus(null);
 
@@ -92,7 +101,6 @@ function VerifyCodeInner() {
             return;
         }
 
-        // signup → стандартный resend
         if (flow === "signup") {
             const { error } = await supabase.auth.resend({
                 type: "signup",
@@ -101,20 +109,16 @@ function VerifyCodeInner() {
 
             if (error) setStatus({ type: "error", msg: error.message });
             else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
-            return;
+        } else {
+            // Recovery resend - используем resetPasswordForEmail
+            const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+            if (error) setStatus({ type: "error", msg: error.message });
+            else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
         }
-
-        // recovery → повторно шлём Email OTP
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: { shouldCreateUser: false },
-        });
-
-        if (error) setStatus({ type: "error", msg: error.message });
-        else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
     };
 
-    // loader
+    // Loading state
     if (email === null) {
         return (
             <div className="text-center">
@@ -126,7 +130,7 @@ function VerifyCodeInner() {
     return (
         <div className="text-center">
             <h1 className="text-4xl font-semibold tracking-tight text-black">
-                Enter code
+                {flow === "signup" ? "Verify your email" : "Enter reset code"}
             </h1>
 
             <p className="mt-6 text-base text-black/55">
@@ -139,17 +143,15 @@ function VerifyCodeInner() {
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     value={code}
-                    onChange={(e) =>
-                        setCode(e.target.value.replace(/\D/g, "").slice(0, 8))
-                    }
-                    placeholder="••••••"
-                    className="w-full rounded-2xl border border-black/10 bg-white/70 px-4 py-3.5 text-center text-[18px] tracking-[0.35em] outline-none backdrop-blur transition focus:border-black/20 focus:ring-2 focus:ring-black/10"
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                    placeholder="••••••••"
+                    className="w-full rounded-2xl border border-black/10 bg-white/95 px-4 py-3.5 text-center text-[18px] text-black tracking-[0.35em] outline-none transition focus:border-black/20 focus:ring-2 focus:ring-black/10"
                 />
 
                 <button
                     type="button"
                     onClick={verify}
-                    disabled={loading || code.length < 6}
+                    disabled={loading || code.length !== 8}
                     className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                     {loading ? "Verifying…" : "Verify"}
@@ -158,7 +160,7 @@ function VerifyCodeInner() {
                 <button
                     type="button"
                     onClick={resend}
-                    className="w-full rounded-2xl border border-black/10 bg-white/70 py-3.5 text-[15px] font-medium text-black transition hover:bg-black/5"
+                    className="w-full rounded-2xl border border-black/10 bg-white/95 py-3.5 text-[15px] font-medium text-black transition hover:bg-black/5"
                 >
                     Resend code
                 </button>
