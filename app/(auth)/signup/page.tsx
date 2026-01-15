@@ -5,21 +5,21 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { createClient } from "@/lib/supabase/client"; // ✅ Изменено
-import { signupSchema, type SignupValues } from "@/lib/validators";
+import { createClient } from "@/lib/supabase/client";
+import { signupEmailSchema, type SignupEmailValues } from "@/lib/validators";
 
 export default function SignupClient() {
     const router = useRouter();
-    const supabase = createClient(); // ✅ Добавлено
+    const supabase = createClient();
 
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors, isSubmitting, isValid, submitCount },
-    } = useForm<SignupValues>({
-        resolver: zodResolver(signupSchema),
-        defaultValues: { email: "", password: "", confirmPassword: "" },
+    } = useForm<SignupEmailValues>({
+        resolver: zodResolver(signupEmailSchema),
+        defaultValues: { email: "" },
         mode: "onChange",
     });
 
@@ -27,32 +27,24 @@ export default function SignupClient() {
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
 
     const email = watch("email");
-    const password = watch("password");
-    const confirmPassword = watch("confirmPassword");
 
     useEffect(() => {
         if (status?.type === "error") setStatus(null);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [email, password, confirmPassword]);
+    }, [email]);
 
-    const onSubmit = async (values: SignupValues) => {
+    const onSubmit = async (values: SignupEmailValues) => {
         setStatus(null);
 
-        const originRaw =
-            process.env.NEXT_PUBLIC_SITE_URL ||
-            (typeof window !== "undefined" ? window.location.origin : "");
-        const origin = originRaw.replace(/\/+$/, "");
-
-        const { error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signInWithOtp({
             email: values.email,
-            password: values.password,
             options: {
-                emailRedirectTo: `${origin}/callback`,
+                shouldCreateUser: true,
             },
         });
 
         if (error) {
-            const low = error.message.toLowerCase();
+            const low = (error.message || "").toLowerCase();
             const msg =
                 low.includes("already registered") ||
                 low.includes("already exists") ||
@@ -65,16 +57,18 @@ export default function SignupClient() {
             return;
         }
 
-        localStorage.setItem("pendingEmail", values.email);
+        try {
+            localStorage.setItem("pendingEmail", values.email);
+        } catch {}
 
-        router.replace("/email-confirmed");
+        router.replace("/verify-code?flow=signup");
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
             <h1 className="text-4xl font-semibold tracking-tight text-black">Create account</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-                Sign up to manage bookings and access your cleaning records.
+                We’ll send a 6-digit code to confirm your email.
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -94,46 +88,12 @@ export default function SignupClient() {
                     {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-black/70">Password</label>
-                    <input
-                        type="password"
-                        placeholder="Minimum 8 characters"
-                        className={[
-                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
-                            "placeholder:text-black/35",
-                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
-                            errors.password ? "border-red-400/80" : "border-black/10",
-                        ].join(" ")}
-                        {...register("password")}
-                    />
-                    {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
-                </div>
-
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-black/70">Confirm password</label>
-                    <input
-                        type="password"
-                        placeholder="Repeat your password"
-                        className={[
-                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
-                            "placeholder:text-black/35",
-                            "focus:ring-2 focus:ring-black/10 focus:border-black/20",
-                            errors.confirmPassword ? "border-red-400/80" : "border-black/10",
-                        ].join(" ")}
-                        {...register("confirmPassword")}
-                    />
-                    {errors.confirmPassword && (
-                        <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
-                    )}
-                </div>
-
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    {isSubmitting ? "Creating…" : "Sign up"}
+                    {isSubmitting ? "Sending code…" : "Send code"}
                 </button>
 
                 {status && (

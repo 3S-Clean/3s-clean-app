@@ -74,7 +74,7 @@ export async function proxy(req: NextRequest) {
     return response;
 }
 
-// ✅ matcher НЕ должен включать /confirmed и /callback
+// ✅ matcher НЕ должен включать /confirmed и /verify-code
 // потому что эти страницы должны быть “нейтральными” и не ломать flow.
 export const config = {
     matcher: [
