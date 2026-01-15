@@ -59,7 +59,7 @@ function VerifyCodeInner() {
             const payload = {
                 email,
                 token: code,
-                type: flow === "signup" ? "signup" : "recovery",
+                type: "signup",
             } satisfies VerifyOtpParams;
 
             const { error } = await supabase.auth.verifyOtp(payload);
