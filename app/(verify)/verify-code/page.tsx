@@ -22,7 +22,7 @@ function VerifyCodeInner() {
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
 
-    // Читаем email из localStorage (разные ключи для signup и recovery)
+    // 1) Берём email из localStorage
     useEffect(() => {
         const stored = (() => {
             try {
@@ -41,7 +41,7 @@ function VerifyCodeInner() {
         setEmail(stored);
     }, [flow, router]);
 
-    // Verify OTP (ТОЛЬКО 8 цифр)
+    // 2) Проверка OTP (8 цифр)
     const verify = async () => {
         setStatus(null);
         setLoading(true);
@@ -57,33 +57,28 @@ function VerifyCodeInner() {
                 return;
             }
 
-            type VerifyOtpParams = Parameters<typeof supabase.auth.verifyOtp>[0];
-
-            // Правильный type в зависимости от flow
-            const payload = {
+            const { error } = await supabase.auth.verifyOtp({
                 email,
                 token: code,
                 type: flow === "recovery" ? "recovery" : "email",
-            } satisfies VerifyOtpParams;
-
-            const { error } = await supabase.auth.verifyOtp(payload);
+            });
 
             if (error) {
                 setStatus({ type: "error", msg: error.message });
                 return;
             }
 
-            // Очищаем localStorage
+            // чистим localStorage
             try {
                 const key = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
                 localStorage.removeItem(key);
             } catch {}
 
-            // Редирект в зависимости от flow
+            // ✅ ВАЖНО: правильный редирект
             if (flow === "signup") {
-                router.replace("/account");
+                router.replace("/set-password");      // регистрация → задать пароль
             } else {
-                router.replace("/reset-password");
+                router.replace("/reset-password");   // forgot password → новый пароль
             }
 
             router.refresh();
@@ -92,7 +87,7 @@ function VerifyCodeInner() {
         }
     };
 
-    // Resend code
+    // 3) Повторная отправка кода
     const resend = async () => {
         setStatus(null);
 
@@ -110,7 +105,6 @@ function VerifyCodeInner() {
             if (error) setStatus({ type: "error", msg: error.message });
             else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
         } else {
-            // Recovery resend - используем resetPasswordForEmail
             const { error } = await supabase.auth.resetPasswordForEmail(email);
 
             if (error) setStatus({ type: "error", msg: error.message });
@@ -118,7 +112,6 @@ function VerifyCodeInner() {
         }
     };
 
-    // Loading state
     if (email === null) {
         return (
             <div className="text-center">
@@ -145,14 +138,14 @@ function VerifyCodeInner() {
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
                     placeholder="••••••••"
-                    className="w-full rounded-2xl border border-black/10 bg-white/95 px-4 py-3.5 text-center text-[18px] text-black tracking-[0.35em] outline-none transition focus:border-black/20 focus:ring-2 focus:ring-black/10"
+                    className="w-full rounded-2xl border border-black/10 bg-white/95 px-4 py-3.5 text-center text-[18px] tracking-[0.35em] outline-none transition focus:border-black/20 focus:ring-2 focus:ring-black/10"
                 />
 
                 <button
                     type="button"
                     onClick={verify}
                     disabled={loading || code.length !== 8}
-                    className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40"
                 >
                     {loading ? "Verifying…" : "Verify"}
                 </button>
