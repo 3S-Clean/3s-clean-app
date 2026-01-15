@@ -68,7 +68,7 @@ export default function SignupClient() {
         <div className={shouldShake ? "gc-shake" : ""}>
             <h1 className="text-4xl font-semibold tracking-tight text-black">Sign Up</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-                We’ll send a 6-digit code to confirm your email.
+                We sent a verification code to <span>{email}</span>
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>

@@ -17,11 +17,12 @@ function VerifyCodeInner() {
 
     const supabase = useMemo(() => createClient(), []);
 
-    const [email, setEmail] = useState<string | null>(null); // null = ещё не проверяли
+    const [email, setEmail] = useState<string | null>(null); // null = loading
     const [code, setCode] = useState("");
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
 
+    // 1) читаем email из localStorage
     useEffect(() => {
         const stored = (() => {
             try {
@@ -39,6 +40,7 @@ function VerifyCodeInner() {
         setEmail(stored);
     }, [flow, router]);
 
+    // 2) verify OTP (универсально 6–8 цифр)
     const verify = async () => {
         setStatus(null);
         setLoading(true);
@@ -49,13 +51,14 @@ function VerifyCodeInner() {
                 return;
             }
 
-            if (!/^\d{6}$/.test(code)) {
-                setStatus({ type: "error", msg: "Enter the 6-digit code." });
+            if (!/^\d{6,8}$/.test(code)) {
+                setStatus({ type: "error", msg: "Enter the verification code." });
                 return;
             }
 
             type VerifyOtpParams = Parameters<typeof supabase.auth.verifyOtp>[0];
 
+            // ВСЕГДА используем Email OTP
             const payload = {
                 email,
                 token: code,
@@ -80,6 +83,7 @@ function VerifyCodeInner() {
         }
     };
 
+    // 3) resend
     const resend = async () => {
         setStatus(null);
 
@@ -88,6 +92,7 @@ function VerifyCodeInner() {
             return;
         }
 
+        // signup → стандартный resend
         if (flow === "signup") {
             const { error } = await supabase.auth.resend({
                 type: "signup",
@@ -99,7 +104,7 @@ function VerifyCodeInner() {
             return;
         }
 
-        // recovery: resend в твоей версии не принимает "recovery"
+        // recovery → повторно шлём Email OTP
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: { shouldCreateUser: false },
@@ -109,20 +114,24 @@ function VerifyCodeInner() {
         else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
     };
 
+    // loader
     if (email === null) {
         return (
             <div className="text-center">
-                <div className="animate-pulse text-black/40">Loading...</div>
+                <div className="animate-pulse text-black/40">Loading…</div>
             </div>
         );
     }
 
     return (
         <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-black">Enter code</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">
+                Enter code
+            </h1>
 
             <p className="mt-6 text-base text-black/55">
-                We sent a 6-digit code to <span className="font-medium text-black">{email}</span>.
+                We sent a verification code to{" "}
+                <span className="font-medium text-black">{email}</span>.
             </p>
 
             <div className="mt-10 space-y-4">
@@ -130,15 +139,17 @@ function VerifyCodeInner() {
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="123456"
+                    onChange={(e) =>
+                        setCode(e.target.value.replace(/\D/g, "").slice(0, 8))
+                    }
+                    placeholder="••••••"
                     className="w-full rounded-2xl border border-black/10 bg-white/70 px-4 py-3.5 text-center text-[18px] tracking-[0.35em] outline-none backdrop-blur transition focus:border-black/20 focus:ring-2 focus:ring-black/10"
                 />
 
                 <button
                     type="button"
                     onClick={verify}
-                    disabled={loading || code.length !== 6}
+                    disabled={loading || code.length < 6}
                     className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                     {loading ? "Verifying…" : "Verify"}
@@ -171,7 +182,7 @@ export default function VerifyCodePage() {
         <Suspense
             fallback={
                 <div className="text-center">
-                    <div className="animate-pulse text-black/40">Loading...</div>
+                    <div className="animate-pulse text-black/40">Loading…</div>
                 </div>
             }
         >
