@@ -1,28 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Flow = "signup" | "recovery";
 
-export default function VerifyCodePage() {
+function VerifyCodeInner() {
     const router = useRouter();
     const sp = useSearchParams();
 
     const rawFlow = sp.get("flow");
     const flow: Flow = rawFlow === "recovery" ? "recovery" : "signup";
 
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
     const [email, setEmail] = useState<string | null>(null); // null = ещё не проверяли
     const [code, setCode] = useState("");
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
 
-    // Получаем email из localStorage
     useEffect(() => {
-        const stored = localStorage.getItem("pendingEmail");
+        const stored = (() => {
+            try {
+                return localStorage.getItem("pendingEmail");
+            } catch {
+                return null;
+            }
+        })();
 
         if (!stored) {
             router.replace(flow === "signup" ? "/signup" : "/reset-password");
@@ -36,41 +43,41 @@ export default function VerifyCodePage() {
         setStatus(null);
         setLoading(true);
 
-        if (!email) {
-            setStatus({ type: "error", msg: "Missing email. Please start again." });
+        try {
+            if (!email) {
+                setStatus({ type: "error", msg: "Missing email. Please start again." });
+                return;
+            }
+
+            if (!/^\d{6}$/.test(code)) {
+                setStatus({ type: "error", msg: "Enter the 6-digit code." });
+                return;
+            }
+
+            type VerifyOtpParams = Parameters<typeof supabase.auth.verifyOtp>[0];
+
+            const payload = {
+                email,
+                token: code,
+                type: flow === "signup" ? "signup" : "recovery",
+            } satisfies VerifyOtpParams;
+
+            const { error } = await supabase.auth.verifyOtp(payload);
+
+            if (error) {
+                setStatus({ type: "error", msg: error.message });
+                return;
+            }
+
+            try {
+                localStorage.removeItem("pendingEmail");
+            } catch {}
+
+            router.replace(flow === "signup" ? "/set-password" : "/reset-password/new");
+            router.refresh();
+        } finally {
             setLoading(false);
-            return;
         }
-
-        if (!/^\d{6}$/.test(code)) {
-            setStatus({ type: "error", msg: "Enter the 6-digit code." });
-            setLoading(false);
-            return;
-        }
-
-        const otpType: "signup" | "recovery" = flow === "signup" ? "signup" : "recovery";
-
-        const { error } = await supabase.auth.verifyOtp({
-            email,
-            token: code,
-            type: otpType,
-        });
-
-        setLoading(false);
-
-        if (error) {
-            setStatus({ type: "error", msg: error.message });
-            return;
-        }
-
-        localStorage.removeItem("pendingEmail");
-
-        if (flow === "signup") {
-            router.replace("/set-password");
-        } else {
-            router.replace("/reset-password/new");
-        }
-        router.refresh();
     };
 
     const resend = async () => {
@@ -87,27 +94,21 @@ export default function VerifyCodePage() {
                 email,
             });
 
-            if (error) {
-                setStatus({ type: "error", msg: error.message });
-            } else {
-                setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
-            }
+            if (error) setStatus({ type: "error", msg: error.message });
+            else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
             return;
         }
 
+        // recovery: resend в твоей версии не принимает "recovery"
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: { shouldCreateUser: false },
         });
 
-        if (error) {
-            setStatus({ type: "error", msg: error.message });
-        } else {
-            setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
-        }
+        if (error) setStatus({ type: "error", msg: error.message });
+        else setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
     };
 
-    // email === null означает, что ещё идёт проверка localStorage
     if (email === null) {
         return (
             <div className="text-center">
@@ -121,8 +122,7 @@ export default function VerifyCodePage() {
             <h1 className="text-4xl font-semibold tracking-tight text-black">Enter code</h1>
 
             <p className="mt-6 text-base text-black/55">
-                We sent a 6-digit code to{" "}
-                <span className="font-medium text-black">{email}</span>.
+                We sent a 6-digit code to <span className="font-medium text-black">{email}</span>.
             </p>
 
             <div className="mt-10 space-y-4">
@@ -153,11 +153,7 @@ export default function VerifyCodePage() {
                 </button>
 
                 {status && (
-                    <p
-                        className={
-                            status.type === "ok" ? "text-sm text-black/60" : "text-sm text-red-600"
-                        }
-                    >
+                    <p className={status.type === "ok" ? "text-sm text-black/60" : "text-sm text-red-600"}>
                         {status.msg}
                     </p>
                 )}
@@ -167,5 +163,19 @@ export default function VerifyCodePage() {
                 If you entered the wrong email, go back and try again.
             </p>
         </div>
+    );
+}
+
+export default function VerifyCodePage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="text-center">
+                    <div className="animate-pulse text-black/40">Loading...</div>
+                </div>
+            }
+        >
+            <VerifyCodeInner />
+        </Suspense>
     );
 }
