@@ -31,19 +31,15 @@ export default function ForgotPasswordPage() {
     const email = watch("email");
     useEffect(() => {
         if (status?.type === "error") setStatus(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [email]);
+    }, [email, status?.type]);
 
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
         const cleanEmail = values.email.trim();
 
-        // ✅ Отправляем OTP-код (не ссылку)
-        const { error } = await supabase.auth.signInWithOtp({
-            email: cleanEmail,
-            options: { shouldCreateUser: false },
-        });
+        // ✅ ИСПРАВЛЕНО: используем resetPasswordForEmail вместо signInWithOtp
+        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
 
         if (error) {
             setStatus({ type: "error", msg: error.message });
@@ -51,11 +47,11 @@ export default function ForgotPasswordPage() {
         }
 
         try {
-            localStorage.setItem("pendingEmail", cleanEmail);
+            localStorage.setItem("pendingResetEmail", cleanEmail);
         } catch {}
 
-        // ✅ Переходим на ввод кода
-        router.replace("/verify-code?flow=recovery");
+        // ✅ Переходим на страницу ввода кода для сброса пароля
+        router.replace(`/forgot-password/verify-code?email=${encodeURIComponent(cleanEmail)}`);
     };
 
     return (
@@ -63,7 +59,7 @@ export default function ForgotPasswordPage() {
             <h1 className="text-4xl font-semibold tracking-tight text-black">Reset password</h1>
 
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-                Enter your email and we’ll send you a verification code.
+                Enter your email and we'll send you a verification code.
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -73,7 +69,7 @@ export default function ForgotPasswordPage() {
                         type="email"
                         placeholder="name@domain.com"
                         className={[
-                            "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+                            "w-full rounded-2xl border bg-white/95 px-4 py-3.5 text-[15px] text-black outline-none transition",
                             "placeholder:text-black/35",
                             "focus:ring-2 focus:ring-black/10 focus:border-black/20",
                             errors.email ? "border-red-400/80" : "border-black/10",
