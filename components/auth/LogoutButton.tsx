@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LogoutButton({
@@ -11,7 +10,6 @@ export default function LogoutButton({
     className?: string;
     label?: string;
 }) {
-    const router = useRouter();
     const supabase = createClient();
     const [loading, setLoading] = useState(false);
 
@@ -22,8 +20,12 @@ export default function LogoutButton({
         await supabase.auth.signOut({ scope: "global" });
 
         setLoading(false);
-        router.replace("/login");
-        router.refresh();
+
+        // ✅ редирект в Webflow + сброс UI-флага
+        const WEBFLOW =
+            process.env.NEXT_PUBLIC_WEBFLOW_URL || "https://s3-final.webflow.io";
+
+        window.location.href = `${WEBFLOW}/?loggedIn=0`;
     };
 
     return (
