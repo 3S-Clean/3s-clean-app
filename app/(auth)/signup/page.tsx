@@ -66,7 +66,7 @@ export default function SignupClient() {
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-black">Create account</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-black">Sign Up</h1>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
                 We’ll send a 6-digit code to confirm your email.
             </p>
