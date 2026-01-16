@@ -96,7 +96,7 @@ export default function Header() {
                 <div className="header-desktop">
                     <div className="header-left">
                         <Link
-                            href={webflowUrl("/faq")} target="_blank" rel="noreferrer"
+                            href="https://s3-final.webflow.io"
                             className="logo-link"
                             aria-label="Go to main website"
                         >
