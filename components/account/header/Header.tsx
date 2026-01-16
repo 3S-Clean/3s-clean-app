@@ -1,6 +1,7 @@
 "use client";
+
 import "@/components/account/header/header.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -11,15 +12,14 @@ import { UserCheckIcon } from "@/components/ui/icons/UserCheckIcon";
 import { MenuIcon } from "@/components/ui/icons/MenuIcon";
 import { WEBFLOW_BASE } from "@/lib/navigation/navigation";
 
-
 export default function Header() {
     const pathname = usePathname();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // ✅ вместо state — ref (убирает ESLint ругань)
     const savedScrollYRef = useRef(0);
+    const prevPathnameRef = useRef(pathname);
 
     // ✅ Auth state (Supabase)
     useEffect(() => {
@@ -36,13 +36,13 @@ export default function Header() {
         return () => sub.subscription.unsubscribe();
     }, []);
 
-    const toggleMenu = () => {
-        console.log("toggle", !isMenuOpen);
-        setIsMenuOpen((v) => !v);
-    };
-    const closeMenu = () => setIsMenuOpen(false);
+    const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
-    // ✅ scroll lock (без setState внутри эффекта)
+    const toggleMenu = useCallback(() => {
+        setIsMenuOpen((v) => !v);
+    }, []);
+
+    // ✅ scroll lock
     useEffect(() => {
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
@@ -67,22 +67,25 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
-    // ✅ close menu on route change (делаем async, чтобы ESLint не ругался)
+    // ✅ ИСПРАВЛЕНО: close menu on route change (без isMenuOpen в deps)
     useEffect(() => {
-        if (!isMenuOpen) return;
-        queueMicrotask(() => setIsMenuOpen(false));
-    }, [pathname, isMenuOpen]);
+        if (prevPathnameRef.current !== pathname) {
+            prevPathnameRef.current = pathname;
+            // Используем queueMicrotask чтобы не было синхронного setState
+            queueMicrotask(closeMenu);
+        }
+    }, [pathname, closeMenu]);
 
     // ✅ close menu on resize above breakpoint
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth > 568 && isMenuOpen) {
-                queueMicrotask(() => setIsMenuOpen(false));
+            if (window.innerWidth > 568) {
+                closeMenu();
             }
         };
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [isMenuOpen]);
+    }, [closeMenu]);
 
     const accountHref = isAuthenticated ? "/account" : "/signup";
 
@@ -158,7 +161,10 @@ export default function Header() {
             </header>
 
             {/* Mobile Menu Overlay */}
-            <div className={`mob-menu ${isMenuOpen ? "open" : ""}`} onClick={closeMenu}>
+            <div
+                className={`mob-menu ${isMenuOpen ? "open" : ""}`}
+                onClick={closeMenu}
+            >
                 <div className="mob-menu-panel" onClick={(e) => e.stopPropagation()}>
                     {mainNav.map((item) =>
                         item.external ? (
@@ -203,3 +209,4 @@ export default function Header() {
         </>
     );
 }
+
