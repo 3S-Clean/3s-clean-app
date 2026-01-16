@@ -182,7 +182,7 @@
 .mob-menu {
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: 999;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -293,11 +293,26 @@
     .header-mobile {
         position: relative;
         z-index: 10000;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        justify-content: space-between;
         width: 100%;
         padding: 12px 16px;
+    }
+
+    /* Бургер — слева */
+    .menu-toggle {
+        justify-self: start;
+    }
+
+    /* Логотип — по центру */
+    .logo-link-mobile {
+        justify-self: center;
+    }
+
+    /* Кнопка Book Now — справа */
+    .book-button-mobile {
+        justify-self: end;
     }
 
     .header-left,
