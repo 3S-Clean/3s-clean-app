@@ -39,15 +39,21 @@ export async function proxy(req: NextRequest) {
 
     const pathname = req.nextUrl.pathname;
 
-    // ✅ защищаем ТОЛЬКО account
     const isProtected = pathname.startsWith("/account");
 
-    // ✅ auth-страницы (где залогиненного логично уводить в account)
+    // ✅ reset-password разрешаем НЕ всегда:
+    // только если recovery flow (мы ставим это в URL из verify-code)
+    const isReset = pathname === "/reset-password";
+    const flow = req.nextUrl.searchParams.get("flow");
+    const recoveryFlag = req.nextUrl.searchParams.get("recovery");
+    const isRecoveryReset = isReset && (flow === "recovery" || recoveryFlag === "1");
+
+    // ✅ auth-страницы, с которых залогиненного уводим в /account
+    // ❗️reset-password сюда НЕ включаем (он обрабатывается отдельно)
     const isAuthPage =
         pathname === "/login" ||
         pathname === "/signup" ||
-        pathname === "/forgot-password" ||
-        pathname === "/reset-password";
+        pathname === "/forgot-password";
 
     let response = NextResponse.next();
 
@@ -59,10 +65,21 @@ export async function proxy(req: NextRequest) {
         response = NextResponse.redirect(url);
     }
 
-    // ✅ залогинен → нечего делать на login/signup
+    // ✅ залогинен → нечего делать на login/signup/forgot-password
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
         url.pathname = "/account";
+        response = NextResponse.redirect(url);
+    }
+
+    // ✅ reset-password:
+    // - если recovery flow → пропускаем (даже если user есть)
+    // - если НЕ recovery flow:
+    //    - user есть → /account
+    //    - user нет → /forgot-password
+    if (isReset && !isRecoveryReset) {
+        const url = req.nextUrl.clone();
+        url.pathname = user ? "/account" : "/forgot-password";
         response = NextResponse.redirect(url);
     }
 
@@ -74,14 +91,6 @@ export async function proxy(req: NextRequest) {
     return response;
 }
 
-// ✅ matcher НЕ должен включать /confirmed и /verify-code
-// потому что эти страницы должны быть “нейтральными” и не ломать flow.
 export const config = {
-    matcher: [
-        "/account/:path*",
-        "/login",
-        "/signup",
-        "/forgot-password",
-        "/reset-password",
-    ],
+    matcher: ["/account/:path*", "/login", "/signup", "/forgot-password", "/reset-password"],
 };

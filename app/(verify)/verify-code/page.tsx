@@ -74,7 +74,7 @@ function VerifyCodeInner() {
         return () => window.clearInterval(id);
     }, [cooldownLeft]);
 
-    async function waitForSession(maxAttempts = 5, delayMs = 200) {
+    async function waitForSession(maxAttempts = 7, delayMs = 250) {
         for (let i = 0; i < maxAttempts; i++) {
             const { data } = await supabase.auth.getSession();
             if (data.session) return data.session;
@@ -84,6 +84,9 @@ function VerifyCodeInner() {
     }
 
     const verify = async () => {
+        // защита от двойного клика/двойного сабмита
+        if (loading) return;
+
         setStatus(null);
         setLoading(true);
 
@@ -115,6 +118,7 @@ function VerifyCodeInner() {
                 return;
             }
 
+            // ✅ Recovery: дождаться сессии + поставить флаг (нужен твоему ResetPasswordPage)
             if (flow === "recovery") {
                 const session = await waitForSession();
                 if (!session) {
@@ -129,6 +133,7 @@ function VerifyCodeInner() {
                 } catch {}
             }
 
+            // clean localStorage only after everything is ok
             try {
                 localStorage.removeItem(storageKey);
             } catch {}
@@ -136,7 +141,8 @@ function VerifyCodeInner() {
             if (flow === "signup") {
                 router.replace("/set-password");
             } else {
-                router.replace("/reset-password?flow=recovery");
+                // ✅ делаем флоу явным в URL (полезно для middleware исключения)
+                router.replace("/reset-password?flow=recovery&recovery=1");
             }
         } finally {
             setLoading(false);
@@ -266,9 +272,8 @@ function VerifyCodeInner() {
                     <p
                         className={[
                             "text-sm",
-                            status.type === "ok"
-                                ? "text-[color:var(--status-ok)]"
-                                : "text-red-500/90",
+                            // ✅ ok: light black, dark white
+                            status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90",
                         ].join(" ")}
                     >
                         {status.msg}
