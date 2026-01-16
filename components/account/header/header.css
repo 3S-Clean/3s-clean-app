@@ -293,7 +293,7 @@
         pointer-events: auto;
         z-index: 10000;
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: 1fr auto 60px;
         align-items: center;
         width: 100%;
         padding: 12px 16px;
