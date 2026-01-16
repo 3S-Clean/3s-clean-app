@@ -95,13 +95,13 @@ export default function Header() {
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        <a
+                        <Link
                             href={WEBFLOW_BASE}
                             className="logo-link"
                             aria-label="Go to main website"
                         >
-                            <Logo className="logo" />
-                        </a>
+                            <Logo className="logo"  />
+                        </Link>
                         <nav className="nav-desktop" aria-label="Main navigation">
                             {mainNav.map((item) =>
                                 item.external ? (
