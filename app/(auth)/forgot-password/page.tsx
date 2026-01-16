@@ -39,7 +39,6 @@ export default function ForgotPasswordPage() {
 
         const cleanEmail = values.email.trim();
 
-        // ✅ Отправляем OTP-код (не ссылку)
         const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
 
         if (error) {
@@ -51,41 +50,47 @@ export default function ForgotPasswordPage() {
             localStorage.setItem("pendingResetEmail", cleanEmail);
         } catch {}
 
-        // ✅ Переходим на ввод кода
         router.replace("/verify-code?flow=recovery");
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-white">
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
                 Reset password
             </h1>
 
-            <p className="mt-3 text-sm leading-relaxed text-white/60">
+            <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Enter your email and we’ll send you a verification code.
             </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Email</label>
+                    <label className="text-sm font-medium text-[color:var(--muted)]">Email</label>
                     <input
                         type="email"
                         placeholder="name@domain.com"
                         className={[
-                            "w-full rounded-2xl border bg-white/5 backdrop-blur px-4 py-3.5 text-[15px] text-white outline-none transition",
-                            "placeholder:text-white/35",
-                            "focus:ring-2 focus:ring-white/10 focus:border-white/25",
-                            errors.email ? "border-red-400/70" : "border-white/10",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                            "placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                            errors.email ? "border-red-400/70" : "",
                         ].join(" ")}
                         {...register("email")}
                     />
-                    {errors.email && <p className="text-sm text-red-400">{errors.email.message}</p>}
+                    {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
 
+                {/* light чёрная, dark белая */}
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
-                    className="w-full rounded-2xl bg-[#11A97D] py-3.5 text-[15px] font-medium text-white transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={[
+                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
+                        "bg-black text-white",
+                        "dark:bg-white dark:text-black",
+                    ].join(" ")}
                 >
                     {isSubmitting ? "Sending…" : "Send code"}
                 </button>
@@ -94,16 +99,16 @@ export default function ForgotPasswordPage() {
                     <p
                         className={[
                             "text-sm text-center",
-                            status.type === "ok" ? "text-emerald-400" : "text-red-400",
+                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
                         ].join(" ")}
                     >
                         {status.msg}
                     </p>
                 )}
 
-                <p className="pt-2 text-center text-sm text-white/60">
+                <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Back to{" "}
-                    <a className="text-white hover:underline" href="/login">
+                    <a className="text-[color:var(--text)] hover:underline" href="/login">
                         Log in
                     </a>
                 </p>

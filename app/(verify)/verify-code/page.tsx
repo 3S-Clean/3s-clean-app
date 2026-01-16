@@ -138,7 +138,6 @@ function VerifyCodeInner() {
             } else {
                 router.replace("/reset-password?flow=recovery");
             }
-            return;
         } finally {
             setLoading(false);
         }
@@ -183,7 +182,7 @@ function VerifyCodeInner() {
     if (email === null) {
         return (
             <div className="text-center">
-                <div className="animate-pulse text-white/45">Loading…</div>
+                <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
             </div>
         );
     }
@@ -193,13 +192,13 @@ function VerifyCodeInner() {
 
     return (
         <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-white">
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
                 {flow === "signup" ? "Verify your email" : "Enter reset code"}
             </h1>
 
-            <p className="mt-6 text-base text-white/60">
+            <p className="mt-6 text-base text-[color:var(--muted)]">
                 We sent a verification code to{" "}
-                <span className="font-medium text-white/85">{email}</span>.
+                <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
             </p>
 
             <div className="mt-10 space-y-4">
@@ -210,21 +209,23 @@ function VerifyCodeInner() {
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
                     placeholder="••••••••"
                     className={[
-                        "w-full rounded-2xl border bg-white/5 backdrop-blur px-4 py-3.5 text-center",
-                        "text-[20px] font-mono tracking-[0.20em] text-white outline-none transition",
-                        "placeholder:text-white/30",
-                        "border-white/10 focus:border-white/25 focus:ring-2 focus:ring-white/10",
+                        "w-full rounded-2xl border px-4 py-3.5 text-center outline-none transition backdrop-blur",
+                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                        "text-[20px] font-mono tracking-[0.20em]",
+                        "placeholder:text-[color:var(--muted)]/60",
+                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
                     ].join(" ")}
                 />
 
-                <div className="flex items-center justify-between text-xs text-white/45">
+                <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
           <span>
-            Code expires in <span className="text-white/65">{fmt(expiresLeft)}</span>
+            Code expires in <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
           </span>
                     <span>
             {resendDisabled ? (
                 <>
-                    Resend available in <span className="text-white/65">{fmt(cooldownLeft)}</span>
+                    Resend available in{" "}
+                    <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
                 </>
             ) : (
                 "You can resend now"
@@ -232,32 +233,50 @@ function VerifyCodeInner() {
           </span>
                 </div>
 
+                {/* Verify: light чёрная, dark белая */}
                 <button
                     type="button"
                     onClick={verify}
                     disabled={verifyDisabled}
-                    className="w-full rounded-2xl bg-[#11A97D] py-3.5 text-[15px] font-medium text-white transition hover:opacity-90 disabled:opacity-40"
+                    className={[
+                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "disabled:opacity-40 hover:opacity-90",
+                        "bg-black text-white",
+                        "dark:bg-white dark:text-black",
+                    ].join(" ")}
                 >
                     {loading ? "Verifying…" : "Verify"}
                 </button>
 
+                {/* Resend: стекло */}
                 <button
                     type="button"
                     onClick={resend}
                     disabled={resendDisabled}
-                    className="w-full rounded-2xl border border-white/12 bg-white/5 backdrop-blur py-3.5 text-[15px] font-medium text-white/85 transition hover:bg-white/8 disabled:opacity-40"
+                    className={[
+                        "w-full rounded-2xl border py-3.5 text-[15px] font-medium transition disabled:opacity-40",
+                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                        "backdrop-blur hover:opacity-90",
+                    ].join(" ")}
                 >
                     {resendDisabled ? `Resend code (${fmt(cooldownLeft)})` : "Resend code"}
                 </button>
 
                 {status && (
-                    <p className={status.type === "ok" ? "text-sm text-emerald-400" : "text-sm text-red-400"}>
+                    <p
+                        className={[
+                            "text-sm",
+                            status.type === "ok"
+                                ? "text-[color:var(--status-ok)]"
+                                : "text-red-500/90",
+                        ].join(" ")}
+                    >
                         {status.msg}
                     </p>
                 )}
             </div>
 
-            <p className="mt-10 text-sm text-white/40">
+            <p className="mt-10 text-sm text-[color:var(--muted)]">
                 If you entered the wrong email, go back and try again.
             </p>
         </div>
@@ -269,7 +288,7 @@ export default function VerifyCodePage() {
         <Suspense
             fallback={
                 <div className="text-center">
-                    <div className="animate-pulse text-white/45">Loading…</div>
+                    <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
                 </div>
             }
         >

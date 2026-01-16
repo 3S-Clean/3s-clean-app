@@ -1,84 +1,135 @@
 @import "tailwindcss";
 
-:root {
-    --color-background: #F6F7F8;
+/* ===============================
+   TOKENS (LIGHT default)
+================================ */
+:root{
+    --background: #F6F7F8;
+    --foreground: rgba(0,0,0,.92);
+
     --card: rgba(255,255,255,.70);
     --border: rgba(0,0,0,.10);
     --shadow: 0 20px 60px rgba(0,0,0,.08);
+
     --text: rgba(0,0,0,.92);
     --muted: rgba(0,0,0,.55);
+
     --input-bg: rgba(255,255,255,.70);
     --input-border: rgba(0,0,0,.10);
     --ring: rgba(0,0,0,.10);
-    --primary: #111111; /* light primary */
+
+    --primary: #111111;     /* light primary */
     --primary-text: #ffffff;
+
+    /* Font fallback (и чтобы IDE не ругалась) */
+    --font-inter: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    /* Autofill paint */
+    --autofill-bg: rgba(255,255,255,.70);
+    --autofill-text: rgba(0,0,0,.92);
+    --status-ok: rgba(0,0,0,.92);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-    --font-sans: system-ui, -apple-system, sans-serif;
-    --font-mono: 'Courier New', monospace;
+@theme inline{
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-inter);
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
+/* ===============================
+   TOKENS (DARK via system)
+================================ */
+@media (prefers-color-scheme: dark){
     :root{
-        --bg: #070A0D;
+        --background: #070A0D;
+        --foreground: rgba(255,255,255,.92);
+
         --card: rgba(255,255,255,.05);
         --border: rgba(255,255,255,.10);
         --shadow: 0 20px 70px rgba(0,0,0,.55);
+
         --text: rgba(255,255,255,.92);
         --muted: rgba(255,255,255,.60);
+
         --input-bg: rgba(255,255,255,.05);
         --input-border: rgba(255,255,255,.12);
         --ring: rgba(255,255,255,.10);
-        --primary: #11A97D; /* dark primary teal */
+
+        --primary: #ffffff;  /* dark primary teal */
         --primary-text: #ffffff;
+
+        --autofill-bg: rgba(255,255,255,.06);
+        --autofill-text: rgba(255,255,255,.92);
+        --status-ok: rgba(255,255,255,.92);
     }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===============================
+   BASE
+================================ */
+body{
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes gc-shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+/* ===============================
+   SHAKE
+================================ */
+@keyframes gc-shake{
+    0%,100%{ transform: translateX(0); }
+    20%{ transform: translateX(-6px); }
+    40%{ transform: translateX(6px); }
+    60%{ transform: translateX(-4px); }
+    80%{ transform: translateX(4px); }
 }
+.gc-shake{ animation: gc-shake 300ms ease-in-out; }
 
-.gc-shake {
-    animation: gc-shake 300ms ease-in-out;
-}
-
-/* Android Chrome text fix */
+/* ===============================
+   INPUT SAFETY (не ломаем Tailwind)
+================================ */
 input[type="email"],
 input[type="password"],
-input[type="text"] {
-    -webkit-text-fill-color: #000000;
-    color: #000000 !important;
-    opacity: 0.7;
+input[type="text"],
+textarea{
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Autofill styles */
-input[type="email"]:-webkit-autofill,
-input[type="password"]:-webkit-autofill,
-input[type="text"]:-webkit-autofill {
-    -webkit-text-fill-color: #000000 !important;
-    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.9) inset !important;
-    transition: background-color 5000s ease-in-out 0s;
+/* ===============================
+   iOS/Safari/Chrome autofill (NO yellow)
+   Подгоняем под стекло через tokens
+================================ */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill{
+    -webkit-text-fill-color: var(--autofill-text) !important;
+    caret-color: var(--autofill-text) !important;
+
+    -webkit-box-shadow: 0 0 0 1000px var(--autofill-bg) inset !important;
+    box-shadow: 0 0 0 1000px var(--autofill-bg) inset !important;
+
+    transition: background-color 999999s ease-in-out 0s !important;
+    filter: none !important;
+    background-clip: padding-box !important;
 }
 
-/* Фикс для backdrop-blur на Android */
-@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)) {
+/* iOS иногда меняет размер/шрифт “первой строки” */
+input:-webkit-autofill::first-line{
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* ===============================
+   Backdrop blur Android fix
+================================ */
+@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)){
     input[type="email"],
     input[type="password"],
-    input[type="text"] {
-        transform: translateZ(0); /* force hardware acceleration */
-        -webkit-font-smoothing: antialiased;
+    input[type="text"],
+    textarea{
+        transform: translateZ(0);
     }
 }

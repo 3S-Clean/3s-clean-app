@@ -5,7 +5,10 @@ const WEBFLOW_URL = "https://s3-final.webflow.io/";
 
 export default function VerifyLayout({ children }: { children: ReactNode }) {
     return (
-        <main className="min-h-screen px-6 py-10 flex items-center justify-center bg-[var(--bg)]">
+        <main
+            className="min-h-screen px-6 py-10 flex items-center justify-center bg-[var(--background)]"
+            style={{ colorScheme: "light dark" }}
+        >
             <div className="w-full max-w-md text-center">
                 <div className="mb-10 flex items-center justify-center">
                     <a
@@ -18,8 +21,7 @@ export default function VerifyLayout({ children }: { children: ReactNode }) {
                     </a>
                 </div>
 
-                {/* без карточки */}
-                <div className="text-[color:var(--text)]">
+                <div className="text-[color:var(--text)] focus:outline-none">
                     {children}
                 </div>
             </div>

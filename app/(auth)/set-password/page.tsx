@@ -81,17 +81,19 @@ export default function SetPasswordPage() {
     if (hasSession === null) {
         return (
             <div className="text-center">
-                <h1 className="text-2xl font-semibold text-white">Loading…</h1>
-                <p className="mt-4 text-sm text-white/60">Please wait.</p>
+                <h1 className="text-2xl font-semibold text-[color:var(--text)]">Loading…</h1>
+                <p className="mt-4 text-sm text-[color:var(--muted)]">Please wait.</p>
             </div>
         );
     }
 
     return (
         <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-white">Set password</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
+                Set password
+            </h1>
 
-            <p className="mt-6 text-base text-white/60">
+            <p className="mt-6 text-base text-[color:var(--muted)]">
                 Create a password for future logins (email + password).
             </p>
 
@@ -101,7 +103,12 @@ export default function SetPasswordPage() {
                     placeholder="New password (min 8 chars)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-3.5 text-[15px] text-white outline-none transition placeholder:text-white/35 focus:ring-2 focus:ring-white/10 focus:border-white/25"
+                    className={[
+                        "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                        "placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                    ].join(" ")}
                 />
 
                 <input
@@ -109,28 +116,44 @@ export default function SetPasswordPage() {
                     placeholder="Repeat password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-3.5 text-[15px] text-white outline-none transition placeholder:text-white/35 focus:ring-2 focus:ring-white/10 focus:border-white/25"
+                    className={[
+                        "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                        "placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                    ].join(" ")}
                 />
 
+                {/* primary: light black / dark white */}
                 <button
                     type="button"
                     onClick={submit}
                     disabled={loading}
-                    className="w-full rounded-2xl bg-[#11A97D] py-3.5 text-[15px] font-medium text-white transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={[
+                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
+                        "bg-black text-white",
+                        "dark:bg-white dark:text-black",
+                    ].join(" ")}
                 >
                     {loading ? "Saving…" : "Save password"}
                 </button>
 
                 {status && (
-                    <p className={["text-sm", status.type === "ok" ? "text-emerald-400" : "text-red-400"].join(" ")}>
+                    <p
+                        className={[
+                            "text-sm",
+                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
+                        ].join(" ")}
+                    >
                         {status.msg}
                     </p>
                 )}
             </div>
 
-            <p className="mt-10 text-sm text-white/40">
+            <p className="mt-10 text-sm text-[color:var(--muted)]">
                 If you have any issues, contact{" "}
-                <a className="text-white hover:underline" href="mailto:support@3s-clean.com">
+                <a className="text-[color:var(--text)] hover:underline" href="mailto:support@3s-clean.com">
                     support@3s-clean.com
                 </a>
                 .

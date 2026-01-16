@@ -1,33 +1,29 @@
-import type { ReactNode } from "react";
-import { Logo } from "@/components/ui/Logo";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-const WEBFLOW_URL = "https://s3-final.webflow.io/";
+const inter = Inter({
+    subsets: ["latin"],
+    variable: "--font-inter",
+    display: "swap",
+});
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export const metadata: Metadata = {
+    title: "3S Clean",
+    description: "Premium cleaning service",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <main className="min-h-screen px-4 py-10 flex items-center justify-center bg-[var(--bg)]">
-            <div className="w-full max-w-md">
-                <div className="mb-10 flex items-center justify-center">
-                    <a
-                        href={WEBFLOW_URL}
-                        aria-label="Go to main website"
-                        className="inline-flex items-center justify-center transition duration-200 ease-out text-[color:var(--muted)] hover:opacity-70"
-                    >
-                        <Logo className="h-14 w-14" />
-                    </a>
-                </div>
-
-                <div
-                    className="rounded-[28px] border backdrop-blur-xl p-8 md:p-10"
-                    style={{
-                        background: "var(--card)",
-                        borderColor: "var(--border)",
-                        boxShadow: "var(--shadow)",
-                    }}
-                >
-                    {children}
-                </div>
-            </div>
-        </main>
+        <html lang="en">
+        <head>
+            <meta name="color-scheme" content="dark light" />
+        </head>
+        <body
+            className={`${inter.variable} antialiased`}
+        >
+        {children}
+        </body>
+        </html>
     );
 }

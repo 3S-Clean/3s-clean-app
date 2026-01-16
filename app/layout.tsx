@@ -19,14 +19,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className="dark">
+        <html lang="en">
         <head>
-            {/* iOS Safari/Chrome: пусть знают, что dark разрешён */}
-            <meta name="color-scheme" content="dark light" />
+            <meta name="color-scheme" content="light dark" />
         </head>
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0B0D10] text-white`}
-        >
+
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         </body>
         </html>

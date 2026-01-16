@@ -1,11 +1,13 @@
 "use client";
 
 export const dynamic = "force-dynamic";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+
 import { createClient } from "@/lib/supabase/client";
 import { resetPasswordSchema, type ResetPasswordValues } from "@/lib/validators";
 
@@ -32,7 +34,6 @@ export default function ResetPasswordPage() {
     const shouldShake = submitCount > 0 && !isValid;
 
     const resolvedRef = useRef(false);
-
     const [queryFlow, setQueryFlow] = useState<string | null>(null);
 
     useEffect(() => {
@@ -142,12 +143,14 @@ export default function ResetPasswordPage() {
     if (step === "checking") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-white">Preparing reset…</h1>
-                <p className="mt-4 text-sm text-white/60">Please wait.</p>
+                <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--text)]">
+                    Preparing reset…
+                </h1>
+                <p className="mt-4 text-sm text-[color:var(--muted)]">Please wait.</p>
 
                 <div className="mt-8 space-y-4 animate-pulse">
-                    <div className="h-4 w-3/4 rounded bg-white/10" />
-                    <div className="h-10 w-full rounded-2xl bg-white/10" />
+                    <div className="h-4 w-3/4 rounded bg-[color:var(--border)]" />
+                    <div className="h-10 w-full rounded-2xl bg-[color:var(--border)]" />
                 </div>
             </div>
         );
@@ -156,20 +159,31 @@ export default function ResetPasswordPage() {
     if (step === "error") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-white">Reset failed</h1>
-                <p className="mt-4 text-sm text-red-400">{status?.msg}</p>
+                <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--text)]">
+                    Reset failed
+                </h1>
+                <p className="mt-4 text-sm text-red-500/90">{status?.msg}</p>
 
                 <div className="mt-8 space-y-3">
+                    {/* primary: light black / dark white */}
                     <Link
                         href="/forgot-password"
-                        className="inline-flex w-full items-center justify-center rounded-2xl bg-[#11A97D] py-3.5 text-[15px] font-medium text-white transition hover:opacity-90"
+                        className={[
+                            "inline-flex w-full items-center justify-center rounded-2xl py-3.5 text-[15px] font-medium transition hover:opacity-90",
+                            "bg-black text-white",
+                            "dark:bg-white dark:text-black",
+                        ].join(" ")}
                     >
                         Request a new reset code
                     </Link>
 
+                    {/* secondary glass */}
                     <Link
                         href="/login"
-                        className="inline-flex w-full items-center justify-center rounded-2xl border border-white/12 bg-white/5 backdrop-blur py-3.5 text-[15px] font-medium text-white/85 transition hover:bg-white/8"
+                        className={[
+                            "inline-flex w-full items-center justify-center rounded-2xl border py-3.5 text-[15px] font-medium transition hover:opacity-90",
+                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)] backdrop-blur",
+                        ].join(" ")}
                     >
                         Back to login
                     </Link>
@@ -181,20 +195,26 @@ export default function ResetPasswordPage() {
     if (step === "success") {
         return (
             <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-white">Password updated</h1>
-                <p className="mt-4 text-sm text-white/60">{status?.msg ?? "Done."}</p>
+                <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--text)]">
+                    Password updated
+                </h1>
+                <p className="mt-4 text-sm text-[color:var(--muted)]">{status?.msg ?? "Done."}</p>
             </div>
         );
     }
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-white">Set new password</h1>
-            <p className="mt-3 text-sm leading-relaxed text-white/60">Choose a new password for your account.</p>
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
+                Set new password
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
+                Choose a new password for your account.
+            </p>
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
-                    <label htmlFor="password" className="text-sm font-medium text-white/70">
+                    <label htmlFor="password" className="text-sm font-medium text-[color:var(--muted)]">
                         New password
                     </label>
 
@@ -204,23 +224,24 @@ export default function ResetPasswordPage() {
                         autoComplete="new-password"
                         placeholder="Minimum 8 characters"
                         className={[
-                            "w-full rounded-2xl border bg-white/5 backdrop-blur px-4 py-3.5 text-[15px] text-white outline-none transition",
-                            "placeholder:text-white/35",
-                            "focus:ring-2 focus:ring-white/10 focus:border-white/25",
-                            errors.password ? "border-red-400/70" : "border-white/10",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                            "placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                            errors.password ? "border-red-400/70" : "",
                         ].join(" ")}
                         {...register("password")}
                     />
 
                     {errors.password && (
-                        <p className="text-sm text-red-400" role="alert">
+                        <p className="text-sm text-red-500/90" role="alert">
                             {errors.password.message}
                         </p>
                     )}
                 </div>
 
                 <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium text-white/70">
+                    <label htmlFor="confirmPassword" className="text-sm font-medium text-[color:var(--muted)]">
                         Confirm new password
                     </label>
 
@@ -230,25 +251,32 @@ export default function ResetPasswordPage() {
                         autoComplete="new-password"
                         placeholder="Repeat your password"
                         className={[
-                            "w-full rounded-2xl border bg-white/5 backdrop-blur px-4 py-3.5 text-[15px] text-white outline-none transition",
-                            "placeholder:text-white/35",
-                            "focus:ring-2 focus:ring-white/10 focus:border-white/25",
-                            errors.confirmPassword ? "border-red-400/70" : "border-white/10",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                            "placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                            errors.confirmPassword ? "border-red-400/70" : "",
                         ].join(" ")}
                         {...register("confirmPassword")}
                     />
 
                     {errors.confirmPassword && (
-                        <p className="text-sm text-red-400" role="alert">
+                        <p className="text-sm text-red-500/90" role="alert">
                             {errors.confirmPassword.message}
                         </p>
                     )}
                 </div>
 
+                {/* primary: light black / dark white */}
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
-                    className="w-full rounded-2xl bg-[#11A97D] py-3.5 text-[15px] font-medium text-white transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={[
+                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
+                        "bg-black text-white",
+                        "dark:bg-white dark:text-black",
+                    ].join(" ")}
                 >
                     {isSubmitting ? "Saving…" : "Update password"}
                 </button>
@@ -258,16 +286,16 @@ export default function ResetPasswordPage() {
                         role="status"
                         className={[
                             "text-sm text-center",
-                            status.type === "ok" ? "text-emerald-400" : "text-red-400",
+                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
                         ].join(" ")}
                     >
                         {status.msg}
                     </p>
                 )}
 
-                <p className="pt-2 text-center text-sm text-white/60">
+                <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Back to{" "}
-                    <Link className="text-white hover:underline" href="/login">
+                    <Link className="text-[color:var(--text)] hover:underline" href="/login">
                         Log in
                     </Link>
                 </p>
