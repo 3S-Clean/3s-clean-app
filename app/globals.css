@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --color-background: #F6F7F8;
+    --card: rgba(255,255,255,.70);
+    --border: rgba(0,0,0,.10);
+    --shadow: 0 20px 60px rgba(0,0,0,.08);
+    --text: rgba(0,0,0,.92);
+    --muted: rgba(0,0,0,.55);
+    --input-bg: rgba(255,255,255,.70);
+    --input-border: rgba(0,0,0,.10);
+    --ring: rgba(0,0,0,.10);
+    --primary: #111111; /* light primary */
+    --primary-text: #ffffff;
 }
 
 @theme inline {
@@ -13,10 +22,19 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root{
+        --bg: #070A0D;
+        --card: rgba(255,255,255,.05);
+        --border: rgba(255,255,255,.10);
+        --shadow: 0 20px 70px rgba(0,0,0,.55);
+        --text: rgba(255,255,255,.92);
+        --muted: rgba(255,255,255,.60);
+        --input-bg: rgba(255,255,255,.05);
+        --input-border: rgba(255,255,255,.12);
+        --ring: rgba(255,255,255,.10);
+        --primary: #11A97D; /* dark primary teal */
+        --primary-text: #ffffff;
+    }
 }
 
 body {
