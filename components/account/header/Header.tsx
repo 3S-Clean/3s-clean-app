@@ -9,6 +9,8 @@ import { mainNav } from "@/lib/navigation/navigation";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
 import { UserCheckIcon } from "@/components/ui/icons/UserCheckIcon";
 import { MenuIcon } from "@/components/ui/icons/MenuIcon";
+import { WEBFLOW_BASE } from "@/lib/navigation/navigation";
+
 
 export default function Header() {
     const pathname = usePathname();
@@ -34,7 +36,10 @@ export default function Header() {
         return () => sub.subscription.unsubscribe();
     }, []);
 
-    const toggleMenu = () => setIsMenuOpen((v) => !v);
+    const toggleMenu = () => {
+        console.log("toggle", !isMenuOpen);
+        setIsMenuOpen((v) => !v);
+    };
     const closeMenu = () => setIsMenuOpen(false);
 
     // ✅ scroll lock (без setState внутри эффекта)
@@ -87,10 +92,13 @@ export default function Header() {
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        <Link href="/" className="logo-link" aria-label="Go to home">
+                        <a
+                            href={WEBFLOW_BASE}
+                            className="logo-link"
+                            aria-label="Go to main website"
+                        >
                             <Logo className="logo" />
-                        </Link>
-
+                        </a>
                         <nav className="nav-desktop" aria-label="Main navigation">
                             {mainNav.map((item) =>
                                 item.external ? (
