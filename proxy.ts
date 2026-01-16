@@ -3,11 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
 
-type CookieToSet = {
-    name: string;
-    value: string;
-    options?: CookieOptions;
-};
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 export async function proxy(req: NextRequest) {
     const cookiesToSet: CookieToSet[] = [];
@@ -22,11 +18,7 @@ export async function proxy(req: NextRequest) {
                 },
                 setAll(newCookies) {
                     cookiesToSet.push(
-                        ...newCookies.map((c) => ({
-                            name: c.name,
-                            value: c.value,
-                            options: c.options,
-                        }))
+                        ...newCookies.map((c) => ({ name: c.name, value: c.value, options: c.options }))
                     );
                 },
             },
@@ -41,23 +33,16 @@ export async function proxy(req: NextRequest) {
 
     const isProtected = pathname.startsWith("/account");
 
-    // ✅ reset-password разрешаем НЕ всегда:
-    // только если recovery flow (мы ставим это в URL из verify-code)
     const isReset = pathname === "/reset-password";
     const flow = req.nextUrl.searchParams.get("flow");
-    const recoveryFlag = req.nextUrl.searchParams.get("recovery");
-    const isRecoveryReset = isReset && (flow === "recovery" || recoveryFlag === "1");
+    const isRecoveryReset = isReset && flow === "recovery";
 
-    // ✅ auth-страницы, с которых залогиненного уводим в /account
-    // ❗️reset-password сюда НЕ включаем (он обрабатывается отдельно)
     const isAuthPage =
-        pathname === "/login" ||
-        pathname === "/signup" ||
-        pathname === "/forgot-password";
+        pathname === "/login" || pathname === "/signup" || pathname === "/forgot-password";
 
     let response = NextResponse.next();
 
-    // ✅ не залогинен → нельзя на account
+    // 1) Не залогинен → нельзя на account
     if (!user && isProtected) {
         const url = req.nextUrl.clone();
         url.pathname = "/login";
@@ -65,25 +50,23 @@ export async function proxy(req: NextRequest) {
         response = NextResponse.redirect(url);
     }
 
-    // ✅ залогинен → нечего делать на login/signup/forgot-password
+    // 2) Залогинен → нечего делать на login/signup/forgot-password
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
         url.pathname = "/account";
         response = NextResponse.redirect(url);
     }
 
-    // ✅ reset-password:
-    // - если recovery flow → пропускаем (даже если user есть)
-    // - если НЕ recovery flow:
-    //    - user есть → /account
-    //    - user нет → /forgot-password
+    // 3) reset-password:
+    // - только /reset-password?flow=recovery разрешаем
+    // - иначе всегда уводим на /forgot-password (не важно, есть user или нет)
     if (isReset && !isRecoveryReset) {
         const url = req.nextUrl.clone();
-        url.pathname = user ? "/account" : "/forgot-password";
+        url.pathname = "/forgot-password";
         response = NextResponse.redirect(url);
     }
 
-    // ✅ применяем куки, которые Supabase попросил установить
+    // apply cookies
     cookiesToSet.forEach(({ name, value, options }) => {
         response.cookies.set(name, value, options);
     });

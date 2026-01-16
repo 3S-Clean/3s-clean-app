@@ -1,5 +1,15 @@
 export const WEBFLOW_BASE = "https://s3-final.webflow.io";
 
+export function webflowUrl(path = "/") {
+    const url = new URL(path, WEBFLOW_BASE);
+
+    // флаг, по которому Webflow прячет Sign Up / Log In и показывает Account
+    url.searchParams.set("auth", "1");
+
+    return url.toString();
+}
+
+
 export type NavItem = {
     label: string;
     href: string;
@@ -7,10 +17,10 @@ export type NavItem = {
 };
 
 export const mainNav: NavItem[] = [
-    { label: "Experience", href: `${WEBFLOW_BASE}/experience`, external: true },
-    { label: "Definition", href: `${WEBFLOW_BASE}/definition`, external: true },
-    { label: "Inside 3S", href: `${WEBFLOW_BASE}/inside-3s`, external: true },
-    { label: "FAQ", href: `${WEBFLOW_BASE}/faq`, external: true },
+    { label: "Experience", href: webflowUrl("/experience"), external: true },
+    { label: "Definition", href: webflowUrl("/definition"), external: true },
+    { label: "Inside 3S", href: webflowUrl("/inside-3s"), external: true },
+    { label: "FAQ", href: webflowUrl("/faq"), external: true },
 ];
 
 // --- Footer

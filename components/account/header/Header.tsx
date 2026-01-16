@@ -10,7 +10,7 @@ import { mainNav } from "@/lib/navigation/navigation";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
 import { UserCheckIcon } from "@/components/ui/icons/UserCheckIcon";
 import { MenuIcon } from "@/components/ui/icons/MenuIcon";
-import { WEBFLOW_BASE } from "@/lib/navigation/navigation";
+import { webflowUrl } from "@/lib/navigation/navigation";
 
 export default function Header() {
     const pathname = usePathname();
@@ -96,7 +96,7 @@ export default function Header() {
                 <div className="header-desktop">
                     <div className="header-left">
                         <Link
-                            href={WEBFLOW_BASE}
+                            href={webflowUrl("/faq")} target="_blank" rel="noreferrer"
                             className="logo-link"
                             aria-label="Go to main website"
                         >
