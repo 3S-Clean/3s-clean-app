@@ -1,127 +1,109 @@
 "use client";
 
-import { useBookingStore } from "@/lib/booking/store";
 import { EXTRAS } from "@/lib/booking/config";
+import { useBookingStore } from "@/lib/booking/store";
+import {
+    Minus,
+    Plus,
+    Bed,
+    Flame,
+    Snowflake,
+    AppWindow,
+    Trees,
+    Droplets,
+    Archive,
+    Shirt,
+    Armchair,
+    Package,
+} from "lucide-react";
+
+function ExtraIcon({ id }: { id: string }) {
+    // безопасная мапа, без риска "иконки нет в lucide"
+    const map: Record<string, any> = {
+        "linen-single": Bed,
+        "linen-double": Bed,
+        oven: Flame,
+        fridge: Package,
+        freezer: Snowflake,
+        "windows-inside": AppWindow,
+        "windows-outside": AppWindow,
+        balcony: Trees,
+        limescale: Droplets,
+        cupboards: Archive,
+        wardrobe: Shirt,
+        sofa: Armchair,
+    };
+
+    const Icon = map[id] ?? Package;
+    return <Icon className="h-5 w-5 text-black/70" />;
+}
 
 export default function ExtraServices() {
-    const { extras, updateExtra } = useBookingStore();
-
-    // Calculate totals for selected extras
-    const selectedExtras = Object.entries(extras).filter(([, qty]) => qty > 0);
-
-    const totalExtrasPrice = selectedExtras.reduce((sum, [id, qty]) => {
-        const extra = EXTRAS.find((e) => e.id === id);
-        return sum + (extra ? extra.price * qty : 0);
-    }, 0);
+    const { extras, updateExtra, nextStep, prevStep } = useBookingStore();
 
     return (
-        <div className="animate-fadeIn">
-            {/* Header */}
-            <div className="mb-10">
-                <h1 className="text-3xl font-semibold mb-3">Extra Services</h1>
-                <p className="text-gray-500">
-                    Add optional services to customize your cleaning experience
-                </p>
-            </div>
+        <section className="w-full">
+            <h2 className="text-2xl font-semibold tracking-tight text-black">Extras</h2>
+            <p className="mt-2 text-sm text-black/55">Optional add-ons.</p>
 
-            {/* Extra Services List */}
-            <div className="flex flex-col gap-3">
-                {EXTRAS.map((extra) => {
-                    const quantity = extras[extra.id] || 0;
-                    const isSelected = quantity > 0;
-
-                    return (
-                        <div
-                            key={extra.id}
-                            className={`
-                p-5 rounded-2xl bg-white flex items-center justify-between transition-all
-                ${isSelected ? "ring-2 ring-gray-900" : "border border-gray-200"}
-              `}
-                        >
-                            {/* Info */}
-                            <div className="flex items-center gap-4 flex-1">
-                                <span className="text-3xl">{extra.icon}</span>
-                                <div className="flex-1">
-                                    <div className="font-semibold mb-1">{extra.name}</div>
-                                    <div className="flex gap-3 text-sm">
-                    <span className="text-green-600 font-semibold">
-                      €{extra.price.toFixed(2)}
-                    </span>
-                                        <span className="text-gray-400">
-                      ~
-                                            {extra.hours >= 1
-                                                ? `${extra.hours}h`
-                                                : `${Math.round(extra.hours * 60)}min`}
-                    </span>
-                                        <span className="text-gray-400">/ {extra.unit}</span>
+            <div className="mt-6 rounded-[24px] border border-black/10 bg-white/60 backdrop-blur-xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+                <div className="grid gap-3">
+                    {EXTRAS.map((x) => {
+                        const qty = extras?.[x.id] ?? 0;
+                        return (
+                            <div
+                                key={x.id}
+                                className="flex items-center justify-between rounded-[18px] border border-black/10 bg-white/70 p-4"
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-[14px] border border-black/10 bg-white">
+                                        <ExtraIcon id={x.id} />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-semibold text-black">{x.name}</div>
+                                        <div className="mt-1 text-xs text-black/55">
+                                            € {x.price.toFixed(2)} • {x.unit}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Counter */}
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => updateExtra(extra.id, -1)}
-                                    disabled={quantity === 0}
-                                    className={`
-                    w-9 h-9 rounded-full border flex items-center justify-center text-lg transition-all
-                    ${
-                                        quantity === 0
-                                            ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                                            : "border-gray-300 text-gray-600 hover:border-gray-900 hover:bg-gray-50"
-                                    }
-                  `}
-                                >
-                                    −
-                                </button>
-
-                                <span className="w-8 text-center text-lg font-semibold">
-                  {quantity}
-                </span>
-
-                                <button
-                                    onClick={() => updateExtra(extra.id, 1)}
-                                    className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center text-lg text-gray-600 hover:border-gray-900 hover:bg-gray-50 transition-all"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Selected Extras Summary */}
-            {selectedExtras.length > 0 && (
-                <div className="mt-6 p-5 bg-gray-100 rounded-2xl">
-                    <div className="text-sm font-semibold text-gray-500 mb-3">
-                        SELECTED EXTRAS:
-                    </div>
-
-                    {selectedExtras.map(([id, qty]) => {
-                        const extra = EXTRAS.find((e) => e.id === id);
-                        if (!extra) return null;
-
-                        return (
-                            <div key={id} className="flex justify-between text-sm mb-2">
-                <span>
-                  {extra.name} × {qty}
-                </span>
-                                <span className="text-green-600 font-semibold">
-                  +€{(extra.price * qty).toFixed(2)}
-                </span>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => updateExtra(x.id, -1)}
+                                        className="h-9 w-9 rounded-full border border-black/15 bg-white hover:bg-black/5"
+                                        aria-label="Decrease"
+                                    >
+                                        <Minus className="mx-auto h-4 w-4 text-black/70" />
+                                    </button>
+                                    <div className="w-7 text-center text-sm font-semibold text-black">{qty}</div>
+                                    <button
+                                        onClick={() => updateExtra(x.id, +1)}
+                                        className="h-9 w-9 rounded-full border border-black/15 bg-white hover:bg-black/5"
+                                        aria-label="Increase"
+                                    >
+                                        <Plus className="mx-auto h-4 w-4 text-black/70" />
+                                    </button>
+                                </div>
                             </div>
                         );
                     })}
-
-                    <div className="border-t border-gray-300 mt-3 pt-3 flex justify-between font-semibold">
-                        <span>Extras Total</span>
-                        <span className="text-green-600">
-              +€{totalExtrasPrice.toFixed(2)}
-            </span>
-                    </div>
                 </div>
-            )}
-        </div>
+
+                <div className="mt-6 flex gap-3">
+                    <button
+                        onClick={prevStep}
+                        className="w-full rounded-full border border-black/15 bg-white px-4 py-3 text-sm font-medium text-black hover:bg-black/5"
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={nextStep}
+                        className="w-full rounded-full border border-black/15 bg-black px-4 py-3 text-sm font-medium text-white hover:bg-black/90"
+                    >
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </section>
     );
 }

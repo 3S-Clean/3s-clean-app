@@ -3,6 +3,7 @@
 // 3S Clean Booking Configuration (FINAL)
 // - Matches Supabase Schema (pending_token UUID, service_areas.postal_code, notify_requests.postal_code)
 // - 15-min TIME_SLOTS (08:00–17:45)
+// - Includes calculatePrice/calculateHours + isTimeSlotAllowed (for calendar restriction until 18:00)
 // =============================================
 
 export type ServiceId = "regular" | "initial" | "complete" | "handover";
@@ -215,7 +216,7 @@ export const EXTRAS: Extra[] = [
     { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, icon: "sofa", unit: "seat" },
 ];
 
-// ✅ 15-minute slots, 8:00 - 17:45
+// ✅ 15-minute slots, 08:00 - 17:45
 export type TimeSlotId = string;
 
 export interface TimeSlot {
@@ -246,14 +247,52 @@ export const HOLIDAYS: string[] = [
 
 export const isHoliday = (dateStr: string) => HOLIDAYS.includes(dateStr);
 
-export const getBasePrice = (service: string, size: string, people: string, hasPets: boolean) => {
-    const p = (FINAL_PRICES as any)[size]?.[service]?.[people];
-    return p ? (hasPets ? p.pet : p.noPet) : 0;
-};
+export function round2(n: number): number {
+    return Math.round(n * 100) / 100;
+}
 
-export const getEstimatedHours = (service: string, size: string) => (HOURS_MATRIX as any)[service]?.[size] || 0;
+// "HH:mm" + hours -> "HH:mm"
+export function addHoursToTime(time: string, hours: number): string {
+    const [hStr, mStr = "0"] = (time ?? "").split(":");
+    const h = Number(hStr);
+    const m = Number(mStr);
+    if (Number.isNaN(h) || Number.isNaN(m)) return time;
 
-// ✅ Эти 2 экспорта нужны actions.ts (и убирают твою ошибку TS2305)
+    const totalMin = h * 60 + m + Math.round(hours * 60);
+    const endH = Math.floor((totalMin / 60) % 24);
+    const endM = totalMin % 60;
+
+    return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+}
+
+// ✅ strict getters (no any)
+const SERVICE_IDS: readonly ServiceId[] = ["regular", "initial", "complete", "handover"];
+const SIZE_IDS: readonly ApartmentSizeId[] = ["up-to-60", "60-80", "80-110", "over-110"];
+const PEOPLE_IDS: readonly PeopleCountId[] = ["1-2", "3-4", "5+"];
+
+function isServiceId(v: string): v is ServiceId {
+    return (SERVICE_IDS as readonly string[]).includes(v);
+}
+function isApartmentSizeId(v: string): v is ApartmentSizeId {
+    return (SIZE_IDS as readonly string[]).includes(v);
+}
+function isPeopleCountId(v: string): v is PeopleCountId {
+    return (PEOPLE_IDS as readonly string[]).includes(v);
+}
+
+export function getBasePrice(service: string, size: string, people: string, hasPets: boolean): number {
+    if (!isServiceId(service) || !isApartmentSizeId(size) || !isPeopleCountId(people)) return 0;
+    const row = FINAL_PRICES[size]?.[service]?.[people];
+    if (!row) return 0;
+    return hasPets ? row.pet : row.noPet;
+}
+
+export function getEstimatedHours(service: string, size: string): number {
+    if (!isServiceId(service) || !isApartmentSizeId(size)) return 0;
+    return HOURS_MATRIX[service]?.[size] ?? 0;
+}
+
+// ✅ actions.ts uses these:
 export function calculatePrice(
     serviceId: ServiceId,
     sizeId: ApartmentSizeId,
@@ -261,7 +300,8 @@ export function calculatePrice(
     hasPets: boolean,
     extras: ExtrasMap
 ) {
-    const basePrice = FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[hasPets ? "pet" : "noPet"] ?? 0;
+    const basePrice =
+        FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[hasPets ? "pet" : "noPet"] ?? 0;
 
     let extrasPrice = 0;
     for (const [extraId, quantity] of Object.entries(extras ?? {})) {
@@ -291,20 +331,13 @@ export function calculateHours(serviceId: ServiceId, sizeId: ApartmentSizeId, ex
     return round2(hours);
 }
 
-// "HH:mm" + hours -> "HH:mm"
-export function addHoursToTime(time: string, hours: number): string {
-    const [hStr, mStr = "0"] = (time ?? "").split(":");
-    const h = Number(hStr);
-    const m = Number(mStr);
-    if (Number.isNaN(h) || Number.isNaN(m)) return time;
+// ✅ Calendar restriction: job must END by 18:00
+// startTime = "HH:mm", estimatedHours = number
+export function isTimeSlotAllowed(startTime: string, estimatedHours: number): boolean {
+    const [hh, mm] = (startTime ?? "").split(":").map((v) => Number(v));
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return false;
 
-    const totalMin = h * 60 + m + Math.round(hours * 60);
-    const endH = Math.floor((totalMin / 60) % 24);
-    const endM = totalMin % 60;
-
-    return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
-}
-
-export function round2(n: number): number {
-    return Math.round(n * 100) / 100;
+    const startMin = hh * 60 + mm;
+    const endMin = startMin + Math.round((estimatedHours ?? 0) * 60);
+    return endMin <= WORKING_HOURS_END * 60; // <= 18:00
 }

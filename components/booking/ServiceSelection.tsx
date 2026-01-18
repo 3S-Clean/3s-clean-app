@@ -1,85 +1,108 @@
 "use client";
 
+import { useMemo } from "react";
 import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, type Service } from "@/lib/booking/config";
+import { SERVICES, type ServiceId, calculateHours } from "@/lib/booking/config";
+import { Check } from "lucide-react";
 
 export default function ServiceSelection() {
-    const { selectedService, setSelectedService } = useBookingStore();
+    const {
+        selectedService,
+        setSelectedService,
+        apartmentSize,
+        extras,
+        nextStep,
+    } = useBookingStore();
 
-    const handleSelect = (serviceId: Service["id"]) => {
-        setSelectedService(selectedService === serviceId ? null : serviceId);
-    };
+    const previewHours = useMemo(() => {
+        if (!selectedService || !apartmentSize) return null;
+        return calculateHours(selectedService, apartmentSize, extras);
+    }, [selectedService, apartmentSize, extras]);
+
+    function pick(id: ServiceId) {
+        setSelectedService(id);
+        nextStep();
+    }
 
     return (
-        <div className="animate-fadeIn">
-            {/* Header */}
-            <div className="mb-10">
-                <h1 className="text-3xl font-semibold mb-3">Choose Your Experience</h1>
-                <p className="text-gray-500">Select the cleaning service that best fits your needs</p>
-            </div>
+        <section className="w-full">
+            <h2 className="text-2xl font-semibold tracking-tight text-black">Choose service</h2>
+            <p className="mt-2 text-sm text-black/55">Pick the cleaning package.</p>
 
-            {/* Service Cards */}
-            <div className="flex flex-col gap-5">
-                {SERVICES.map((service: Service) => {
-                    const isSelected = selectedService === service.id;
+            <div className="mt-6 grid gap-4">
+                {SERVICES.map((s) => {
+                    const isSelected = selectedService === s.id;
+
+                    // светлая карточка / тёмная карточка
+                    const baseCard = s.isDark
+                        ? "bg-black text-white border-white/12"
+                        : "bg-white/70 text-black border-black/10";
+
+                    // выделение по твоим правилам:
+                    // светлая — тёмный бордер + тёмная галочка
+                    // тёмная — белый бордер + белая галочка
+                    const selectedBorder = s.isDark ? "border-white" : "border-[#1A1A1A]";
+                    const checkWrap = s.isDark
+                        ? "border-white text-white"
+                        : "border-[#1A1A1A] text-[#1A1A1A]";
 
                     return (
                         <button
-                            key={service.id}
-                            type="button"
-                            onClick={() => handleSelect(service.id)}
-                            className={`
-                relative p-7 rounded-3xl text-left transition-all duration-300
-                ${service.isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}
-                ${isSelected ? "ring-4 ring-green-500" : "hover:shadow-xl hover:-translate-y-1"}
-              `}
+                            key={s.id}
+                            onClick={() => pick(s.id)}
+                            className={[
+                                "relative w-full text-left rounded-[26px] border p-5 transition",
+                                "shadow-[0_16px_50px_rgba(0,0,0,0.06)]",
+                                baseCard,
+                                isSelected ? selectedBorder : "",
+                                s.isDark ? "hover:bg-black/90" : "hover:bg-white",
+                            ].join(" ")}
                         >
-                            {/* Selected Checkmark */}
-                            {isSelected && (
-                                <div className="absolute top-5 right-5 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
-                                    ✓
-                                </div>
-                            )}
-
-                            {/* Service Name */}
-                            <h3 className="text-2xl font-semibold mb-3">{service.name}</h3>
-
-                            {/* Description */}
-                            <p className={`text-sm mb-5 leading-relaxed ${service.isDark ? "opacity-75" : "opacity-70"}`}>
-                                {service.description}
-                            </p>
-
-                            {/* Price */}
-                            <div
-                                className={`
-                  text-lg font-semibold pb-5 mb-5 border-b
-                  ${service.isDark ? "border-white/20" : "border-black/10"}
-                `}
+                            {/* галочка */}
+                            <span
+                                className={[
+                                    "absolute right-4 top-4 h-8 w-8 rounded-full border flex items-center justify-center",
+                                    isSelected ? checkWrap : s.isDark ? "border-white/18 text-white/40" : "border-black/12 text-black/30",
+                                ].join(" ")}
                             >
-                                From € {service.startingPrice}{" "}
-                                <span className={`text-sm font-normal ${service.isDark ? "opacity-70" : "opacity-60"}`}>
-                  inc.VAT
-                </span>
+                <Check className="h-4 w-4" />
+              </span>
+
+                            <div className="pr-12">
+                                <div className="text-base font-semibold">{s.name}</div>
+                                <div className={s.isDark ? "mt-1 text-sm text-white/60" : "mt-1 text-sm text-black/55"}>
+                                    {s.description}
+                                </div>
+
+                                <div className={s.isDark ? "mt-4 text-xs text-white/60" : "mt-4 text-xs text-black/55"}>
+                                    Includes:
+                                </div>
+                                <ul className={s.isDark ? "mt-2 text-xs text-white/70 space-y-1" : "mt-2 text-xs text-black/60 space-y-1"}>
+                                    {s.includes.slice(0, 7).map((it) => (
+                                        <li key={it} className="flex gap-2">
+                                            <span className={s.isDark ? "text-white/40" : "text-black/35"}>•</span>
+                                            <span>{it}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
-                            {/* Includes */}
-                            <div>
-                                <p className="text-sm font-semibold mb-3">Includes:</p>
-                                <div className="flex flex-col gap-2">
-                                    {service.includes.map((item: string, i: number) => (
-                                        <div key={`${service.id}-${i}`} className="flex items-center gap-3 text-sm opacity-85">
-                      <span
-                          className={`w-1.5 h-1.5 rounded-full ${service.isDark ? "bg-white/60" : "bg-gray-900/60"}`}
-                      />
-                                            {item}
-                                        </div>
-                                    ))}
+                            {/* Цена/время снизу — как ты просил */}
+                            <div className={s.isDark ? "mt-5 rounded-[18px] border border-white/10 bg-white/5 p-4" : "mt-5 rounded-[18px] border border-black/10 bg-white/60 p-4"}>
+                                <div className={s.isDark ? "text-xl font-semibold tracking-tight text-white" : "text-xl font-semibold tracking-tight text-black"}>
+                                    € {s.startingPrice.toFixed(2)}
+                                </div>
+                                <div className={s.isDark ? "mt-1 text-sm text-white/60" : "mt-1 text-sm text-black/55"}>
+                                    inc. VAT{" "}
+                                    {previewHours != null ? (
+                                        <span className={s.isDark ? "text-white/50" : "text-black/45"}>• ~{previewHours}h</span>
+                                    ) : null}
                                 </div>
                             </div>
                         </button>
                     );
                 })}
             </div>
-        </div>
+        </section>
     );
 }

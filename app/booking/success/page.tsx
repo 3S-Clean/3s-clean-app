@@ -1,170 +1,58 @@
-"use client";
+import { getOrderSuccess } from "@/lib/booking/actions";
 
-export const dynamic = "force-dynamic";
-
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-
-import { createClient } from "@/lib/supabase/client";
-import { SERVICES, addHoursToTime } from "@/lib/booking/config";
-
-type Order = {
-    id: string;
-    service_type: string;
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // HH:mm
-    estimated_hours: number;
-    customer_address: string;
-    customer_postal_code: string;
-    total_price: number;
-    status: string;
-};
-
-function SuccessInner() {
-    const searchParams = useSearchParams();
-
-    // поддержим оба варианта, чтобы не ломать:
-    // ?token=... или ?pendingToken=... или ?pendingOrder=...
-    const token = useMemo(() => {
-        return (
-            (searchParams.get("token") ||
-                searchParams.get("pendingToken") ||
-                searchParams.get("pendingOrder") ||
-                "")
-                .trim() || null
-        );
-    }, [searchParams]);
-
-    const [order, setOrder] = useState<Order | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        let cancelled = false;
-
-        async function loadOrder() {
-            try {
-                if (!token) return;
-
-                const supabase = createClient();
-
-                const { data, error } = await supabase.rpc("get_order_success", {
-                    p_token: token,
-                });
-
-                if (cancelled) return;
-
-                if (!error && data) {
-                    const row = Array.isArray(data) ? data[0] : data;
-                    if (row) setOrder(row as Order);
-                }
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        }
-
-        // если токена нет — тоже снимаем лоадер
-        if (!token) {
-            setLoading(false);
-            return;
-        }
-
-        loadOrder();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [token]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center text-gray-500">
-                Loading…
-            </div>
-        );
-    }
-
-    const serviceName = order
-        ? SERVICES.find((s) => s.id === order.service_type)?.name ?? ""
-        : "";
-
-    const endTime = order
-        ? addHoursToTime(order.scheduled_time, Number(order.estimated_hours))
-        : "";
+export default async function BookingSuccessPage({
+                                                     searchParams,
+                                                 }: {
+    searchParams: { token?: string };
+}) {
+    const token = (searchParams?.token ?? "").trim();
+    const order = token ? await getOrderSuccess(token) : null;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-            <div className="max-w-md w-full text-center">
-                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="text-4xl text-white">✓</span>
-                </div>
-
-                <h1 className="text-3xl font-semibold mb-3">Booking created successfully</h1>
-
-                {!token && (
-                    <p className="text-sm text-gray-500 mb-8">
-                        Missing token. Please open this page from the confirmation link.
+        <main className="min-h-screen px-4 py-12 bg-[#f6f5f2]">
+            <div className="mx-auto w-full max-w-2xl">
+                <div className="rounded-[28px] border border-black/10 bg-white/60 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+                    <h1 className="text-2xl font-semibold tracking-tight text-black">Booking confirmed</h1>
+                    <p className="mt-2 text-sm text-black/55">
+                        Thank you. Here are your details:
                     </p>
-                )}
 
-                {order && (
-                    <div className="bg-white rounded-2xl p-6 text-left mb-8 shadow-sm">
-                        <div className="space-y-3 text-sm">
-                            <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Service</span>
-                                <span className="font-medium text-right">{serviceName}</span>
+                    {!order ? (
+                        <p className="mt-6 text-sm text-black/60">
+                            We can’t load booking details right now.
+                        </p>
+                    ) : (
+                        <div className="mt-6 grid gap-3 text-sm text-black/70">
+                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
+                                <div className="text-xs text-black/50">Service</div>
+                                <div className="mt-1 font-medium text-black/75">{order.service_type}</div>
                             </div>
 
-                            <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Date</span>
-                                <span className="font-medium text-right">
-                  {new Date(order.scheduled_date + "T00:00:00").toLocaleDateString()}
-                </span>
+                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
+                                <div className="text-xs text-black/50">Date & time</div>
+                                <div className="mt-1 font-medium text-black/75">
+                                    {String(order.scheduled_date)} • {String(order.scheduled_time)} • ~{Number(order.estimated_hours)}h
+                                </div>
                             </div>
 
-                            <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Time</span>
-                                <span className="font-medium text-right">
-                  {order.scheduled_time} – {endTime}
-                </span>
+                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
+                                <div className="text-xs text-black/50">Address</div>
+                                <div className="mt-1 font-medium text-black/75">
+                                    {String(order.customer_address)} • {String(order.customer_postal_code)}
+                                </div>
                             </div>
 
-                            <div className="border-t pt-3 mt-3 flex justify-between gap-4">
-                                <span className="text-gray-500">Total</span>
-                                <span className="font-bold text-right">€ {Number(order.total_price).toFixed(2)}</span>
+                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
+                                <div className="text-xs text-black/50">Total</div>
+                                <div className="mt-1 text-xl font-semibold tracking-tight text-black">
+                                    € {Number(order.total_price).toFixed(2)}
+                                </div>
+                                <div className="mt-1 text-sm text-black/55">inc. VAT</div>
                             </div>
                         </div>
-                    </div>
-                )}
-
-                {/* если токен есть — ведём на register с pendingOrder */}
-                <Link
-                    href={`/auth/register${token ? `?pendingOrder=${encodeURIComponent(token)}` : ""}`}
-                    className={`block w-full py-4 rounded-full ${
-                        token ? "bg-gray-900 text-white hover:bg-gray-800" : "bg-gray-300 text-white pointer-events-none"
-                    }`}
-                >
-                    Create account via code
-                </Link>
-
-                <Link href="/booking" className="block mt-4 text-sm text-gray-500 hover:text-gray-700">
-                    ← Back to booking
-                </Link>
-            </div>
-        </div>
-    );
-}
-
-export default function BookingSuccessPage() {
-    return (
-        <Suspense
-            fallback={
-                <div className="min-h-screen flex items-center justify-center text-gray-500">
-                    Loading…
+                    )}
                 </div>
-            }
-        >
-            <SuccessInner />
-        </Suspense>
+            </div>
+        </main>
     );
 }

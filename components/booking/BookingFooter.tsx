@@ -1,96 +1,57 @@
 "use client";
 
-import {
-    SERVICES,
-    APARTMENT_SIZES,
-    PEOPLE_OPTIONS,
-    formatHours,
-    type ServiceId,
-    type ApartmentSizeId,
-    type PeopleCountId,
-} from "@/lib/booking/config";
-
-interface BookingFooterProps {
-    selectedService: ServiceId | null;
-    apartmentSize: ApartmentSizeId | null;
-    peopleCount: PeopleCountId | null;
-    hasPets: boolean;
-    totalPrice: number;
-    estimatedHours: number;
-    canProceed: boolean;
-    isLastStep: boolean;
-    onBack: () => void;
-    onContinue: () => void;
-}
+import { useMemo } from "react";
+import { useBookingStore } from "@/lib/booking/store";
+import { calculateHours, calculatePrice } from "@/lib/booking/config";
 
 export default function BookingFooter({
-                                          selectedService,
-                                          apartmentSize,
-                                          peopleCount,
-                                          hasPets,
-                                          totalPrice,
-                                          estimatedHours,
-                                          canProceed,
-                                          isLastStep,
                                           onBack,
-                                          onContinue,
-                                      }: BookingFooterProps) {
-    const serviceName = SERVICES.find((s) => s.id === selectedService)?.name;
-    const sizeName = APARTMENT_SIZES.find((s) => s.id === apartmentSize)?.label;
-    const peopleName = PEOPLE_OPTIONS.find((p) => p.id === peopleCount)?.name;
+                                          onNext,
+                                          nextDisabled,
+                                          nextLabel = "Continue",
+                                          backLabel = "Back",
+                                      }: {
+    onBack?: () => void;
+    onNext?: () => void;
+    nextDisabled?: boolean;
+    nextLabel?: string;
+    backLabel?: string;
+}) {
+    const { selectedService, apartmentSize, peopleCount, hasPets, extras } = useBookingStore();
+
+    const { totalPrice, hours } = useMemo(() => {
+        if (!selectedService || !apartmentSize || !peopleCount) return { totalPrice: 0, hours: 0 };
+        const p = calculatePrice(selectedService, apartmentSize, peopleCount, hasPets, extras);
+        const h = calculateHours(selectedService, apartmentSize, extras);
+        return { totalPrice: p.totalPrice, hours: h };
+    }, [selectedService, apartmentSize, peopleCount, hasPets, extras]);
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
-            <div className="max-w-3xl mx-auto flex justify-between items-center">
-                {/* Price Info */}
-                <div>
-                    {selectedService && apartmentSize && peopleCount ? (
-                        <>
-                            <div className="text-sm text-gray-500 mb-1">
-                                {serviceName} • {sizeName}
-                                {peopleCount !== "1-2" && ` • ${peopleName}`}
-                                {hasPets && " • 🐾"}
-                            </div>
-                            <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">
-                  € {totalPrice.toFixed(2)}
-                </span>
-                                <span className="text-sm text-gray-500">
-                  inc. VAT • ~{formatHours(estimatedHours)}
-                </span>
-                            </div>
-                        </>
-                    ) : selectedService ? (
-                        <div>
-              <span className="text-lg font-semibold">
-                From €{" "}
-                  {SERVICES.find((s) => s.id === selectedService)?.startingPrice}
-              </span>
-                            <span className="text-sm text-gray-500 ml-2">
-                Select apartment size
-              </span>
-                        </div>
-                    ) : (
-                        <div className="text-gray-400">
-                            Select a service to see pricing
-                        </div>
-                    )}
+        <div className="sticky bottom-0 left-0 right-0 z-20 border-t border-black/10 bg-white/70 backdrop-blur-xl">
+            <div className="mx-auto w-full max-w-2xl px-4 py-4">
+                {/* Цена блоком как в твоём примере */}
+                <div className="rounded-[20px] border border-black/10 bg-white/60 px-4 py-3">
+                    <div className="text-xl font-semibold tracking-tight text-black">
+                        € {totalPrice.toFixed(2)}
+                    </div>
+                    <div className="text-sm text-black/55">
+                        inc. VAT <span className="text-black/45">• ~{hours}h</span>
+                    </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="flex gap-3">
+                <div className="mt-3 flex gap-3">
                     <button
                         onClick={onBack}
-                        className="px-8 py-4 border border-gray-300 text-gray-900 font-medium rounded-full hover:border-gray-900 transition-all"
+                        className="w-full rounded-full border border-black/15 bg-white px-4 py-3 text-sm font-medium text-black hover:bg-black/5"
                     >
-                        Back
+                        {backLabel}
                     </button>
                     <button
-                        onClick={onContinue}
-                        disabled={!canProceed}
-                        className="px-8 py-4 bg-gray-900 text-white font-medium rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                        onClick={onNext}
+                        disabled={nextDisabled}
+                        className="w-full rounded-full border border-black/15 bg-black px-4 py-3 text-sm font-medium text-white hover:bg-black/90 disabled:opacity-40"
                     >
-                        {isLastStep ? "Confirm Booking" : "Continue"}
+                        {nextLabel}
                     </button>
                 </div>
             </div>

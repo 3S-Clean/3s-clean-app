@@ -36,8 +36,8 @@ export interface BookingState {
     extras: BookingExtras;
 
     formData: BookingFormData;
-    selectedDate: string | null; // YYYY-MM-DD
-    selectedTime: TimeSlotId | null; // "HH:mm"
+    selectedDate: string | null;
+    selectedTime: TimeSlotId | null;
 
     pendingToken: string | null;
 
@@ -145,9 +145,11 @@ export const useBookingStore = create<BookingState>()(
 
             clearExtras: () => set({ extras: {} }),
 
-            setFormData: (data) => set((state) => ({ formData: { ...state.formData, ...data } })),
+            setFormData: (data) =>
+                set((state) => ({
+                    formData: { ...state.formData, ...data },
+                })),
 
-            // при смене даты — сбрасываем время
             setSelectedDate: (selectedDate) => set({ selectedDate, selectedTime: null }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
 
@@ -164,7 +166,6 @@ export const useBookingStore = create<BookingState>()(
             version: 1,
             partialize: (state) => ({
                 step: state.step,
-
                 postcode: state.postcode,
                 postcodeVerified: state.postcodeVerified,
 

@@ -1,356 +1,171 @@
+// components/booking/ContactSchedule.tsx
 "use client";
 
-import { useEffect, useMemo, useState, type ReactElement } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { useBookingStore } from "@/lib/booking/store";
-import { getExistingBookings } from "@/lib/booking/actions";
-import {
-    TIME_SLOTS,
-    formatDateKey,
-    isHoliday,
-    addHoursToTime,
-    type TimeSlotId,
-} from "@/lib/booking/config";
+import { TIME_SLOTS, isTimeSlotAllowed, calculateHours, type TimeSlotId } from "@/lib/booking/config";
+import { createOrder, getExistingBookings } from "@/lib/booking/actions";
 
-interface ContactScheduleProps {
-    estimatedHours: number;
+type Existing = { scheduled_date: string; scheduled_time: string; estimated_hours: number };
+
+function overlaps(aStart: string, aHours: number, bStart: string, bHours: number): boolean {
+    const toMin = (t: string) => {
+        const [h, m] = t.split(":").map(Number);
+        return h * 60 + m;
+    };
+    const a0 = toMin(aStart);
+    const a1 = a0 + Math.round(aHours * 60);
+    const b0 = toMin(bStart);
+    const b1 = b0 + Math.round(bHours * 60);
+    return a0 < b1 && b0 < a1;
 }
 
-interface Booking {
-    scheduled_date: string;
-    scheduled_time: string; // "HH:mm"
-    estimated_hours: number;
-}
+export default function ContactSchedule() {
+    const router = useRouter();
 
-export default function ContactSchedule({ estimatedHours }: ContactScheduleProps) {
     const {
+        selectedService,
+        apartmentSize,
+        peopleCount,
+        hasPets,
+        extras,
         formData,
-        setFormData,
         selectedDate,
-        setSelectedDate,
         selectedTime,
+        setSelectedDate,
         setSelectedTime,
-        postcode,
+        setPendingToken,
     } = useBookingStore();
 
-    const [currentMonth, setCurrentMonth] = useState(() => new Date());
-    const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
+    const estimatedHours = useMemo(() => {
+        if (!selectedService || !apartmentSize) return 0;
+        return calculateHours(selectedService, apartmentSize, extras);
+    }, [selectedService, apartmentSize, extras]);
 
-    // если в форме postalCode пустой — подставляем проверенный postcode из шага 0
-    const effectivePostalCode = useMemo(() => {
-        const v = (formData.postalCode ?? "").trim();
-        return v.length ? v : (postcode ?? "").trim();
-    }, [formData.postalCode, postcode]);
+    const [busy, setBusy] = useState<Existing[]>([]);
+    const [loading, setLoading] = useState(false);
 
+    // пример: грузим брони на неделю вокруг выбранной даты (можешь сделать как у тебя)
     useEffect(() => {
-        const fetchBookings = async () => {
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
+        if (!selectedDate) return;
 
-            const startDate = formatDateKey(year, month, 1);
-            const endDate = formatDateKey(year, month + 1, 0);
+        const start = selectedDate; // упрощённо
+        const end = selectedDate;   // на один день
 
-            try {
-                const bookings = await getExistingBookings(startDate, endDate);
-                setExistingBookings(bookings);
-            } catch (e) {
-                console.error("Error fetching bookings:", e);
-                setExistingBookings([]);
-            }
+        const run = async () => {
+            const data = await getExistingBookings(start, end);
+            setBusy(data);
         };
 
-        void fetchBookings();
-    }, [currentMonth]);
+        void run();
+    }, [selectedDate]);
 
-    function getDaysInMonth(date: Date) {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        return { daysInMonth: lastDay.getDate(), startingDay: firstDay.getDay() };
-    }
+    const availableSlots = useMemo(() => {
+        if (!selectedDate) return TIME_SLOTS;
 
-    function isDateInPast(year: number, month: number, day: number) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return new Date(year, month, day) < today;
-    }
+        return TIME_SLOTS.filter((slot) => {
+            // 1) hard end by 18:00
+            if (!isTimeSlotAllowed(slot.id, estimatedHours)) return false;
 
-    function isTimeSlotAvailable(dateKey: string, slotHour: number) {
-        const duration = Math.ceil(estimatedHours);
-        const endHour = slotHour + duration;
+            // 2) no overlaps with busy bookings (pending/confirmed)
+            for (const b of busy) {
+                if (b.scheduled_date !== selectedDate) continue;
+                if (overlaps(slot.id, estimatedHours, b.scheduled_time, b.estimated_hours)) return false;
+            }
+            return true;
+        });
+    }, [selectedDate, busy, estimatedHours]);
 
-        if (endHour > 20) return false;
+    async function onSubmit() {
+        if (!selectedService || !apartmentSize || !peopleCount) return;
+        if (!selectedDate || !selectedTime) return;
 
-        for (const booking of existingBookings) {
-            if (booking.scheduled_date !== dateKey) continue;
+        setLoading(true);
+        try {
+            const res = await createOrder({
+                serviceType: selectedService,
+                apartmentSize,
+                peopleCount,
+                hasPets,
+                hasKids: false,
+                hasAllergies: false,
+                allergyNotes: "",
+                extras,
+                scheduledDate: selectedDate,
+                scheduledTime: selectedTime,
+                customerFirstName: formData.firstName,
+                customerLastName: formData.lastName,
+                customerEmail: formData.email,
+                customerPhone: formData.phone,
+                customerAddress: formData.address,
+                customerCity: formData.city,
+                customerPostalCode: formData.postalCode,
+                customerNotes: formData.notes,
+            });
 
-            const bookingStart = parseInt(booking.scheduled_time.split(":")[0] ?? "0", 10);
-            const bookingEnd = bookingStart + Math.ceil(booking.estimated_hours);
-
-            if (slotHour < bookingEnd && endHour > bookingStart) return false;
+            setPendingToken(res.pendingToken);
+            router.push(`/booking/success?token=${encodeURIComponent(res.pendingToken)}`);
+        } finally {
+            setLoading(false);
         }
-
-        return true;
     }
-
-    function hasAvailableSlots(dateKey: string) {
-        return TIME_SLOTS.some((slot) => isTimeSlotAvailable(dateKey, slot.hour));
-    }
-
-    const prevMonth = () =>
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-    const nextMonth = () =>
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
-
-    const renderCalendar = () => {
-        const { daysInMonth, startingDay } = getDaysInMonth(currentMonth);
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-
-        const cells: ReactElement[] = [];
-
-        for (let i = 0; i < startingDay; i++) {
-            cells.push(<div key={`empty-${i}`} />);
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateKey = formatDateKey(year, month, day);
-            const isPast = isDateInPast(year, month, day);
-            const isSun = new Date(year, month, day).getDay() === 0;
-            const isHol = isHoliday(dateKey);
-
-            const hasSlots = hasAvailableSlots(dateKey);
-            const isSelected = selectedDate === dateKey;
-
-            const isDisabled = isPast || isSun || isHol;
-            const isFullyBooked = !isDisabled && !hasSlots;
-
-            const hasBookings = existingBookings.some((b) => b.scheduled_date === dateKey);
-
-            cells.push(
-                <button
-                    key={dateKey}
-                    type="button"
-                    onClick={() => {
-                        if (isDisabled || isFullyBooked) return;
-                        setSelectedDate(isSelected ? null : dateKey);
-                    }}
-                    disabled={isDisabled || isFullyBooked}
-                    className={`
-            aspect-square rounded-xl text-base font-medium transition-all relative flex flex-col items-center justify-center
-            ${
-                        isSelected
-                            ? "bg-gray-900 text-white"
-                            : isFullyBooked
-                                ? "bg-slate-600 text-white cursor-not-allowed"
-                                : isDisabled
-                                    ? "text-gray-300 cursor-default"
-                                    : "bg-gray-200 text-gray-900 hover:bg-gray-300 cursor-pointer"
-                    }
-          `}
-                >
-                    {day}
-                    {hasBookings && !isFullyBooked && !isDisabled && (
-                        <span
-                            className={`absolute bottom-1.5 w-1.5 h-1.5 rounded-full ${
-                                isSelected ? "bg-white" : "bg-gray-900"
-                            }`}
-                        />
-                    )}
-                </button>
-            );
-        }
-
-        return cells;
-    };
 
     return (
-        <div className="animate-fadeIn">
-            {/* Header */}
-            <div className="mb-10">
-                <h1 className="text-3xl font-semibold mb-3">Your Details</h1>
-                <p className="text-gray-500">Tell us where and when to bring the sparkle</p>
-            </div>
-
-            {/* Contact form */}
-            <div className="grid gap-5 mb-10">
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">First Name *</label>
-                        <input
-                            type="text"
-                            value={formData.firstName}
-                            onChange={(e) => setFormData({ firstName: e.target.value })}
-                            placeholder="John"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Last Name</label>
-                        <input
-                            type="text"
-                            value={formData.lastName}
-                            onChange={(e) => setFormData({ lastName: e.target.value })}
-                            placeholder="Doe"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Email *</label>
-                        <input
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ email: e.target.value })}
-                            placeholder="john@example.com"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Phone *</label>
-                        <input
-                            type="tel"
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ phone: e.target.value })}
-                            placeholder="+49 123 456 7890"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">Address *</label>
-                    <input
-                        type="text"
-                        value={formData.address}
-                        onChange={(e) => setFormData({ address: e.target.value })}
-                        placeholder="Street name and number"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="col-span-2">
-                        <label className="block text-sm font-medium mb-2">City</label>
-                        <input
-                            type="text"
-                            value={formData.city}
-                            onChange={(e) => setFormData({ city: e.target.value })}
-                            placeholder="Stuttgart"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Postal Code</label>
-                        <input
-                            type="text"
-                            value={effectivePostalCode}
-                            onChange={(e) => setFormData({ postalCode: e.target.value })}
-                            placeholder="70173"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Calendar */}
-            <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Select Date & Time *</h3>
-                <p className="text-sm text-gray-500 mb-5">
-                    Your cleaning will take approximately <strong>{Math.ceil(estimatedHours)} hours</strong>. Unavailable slots are blocked.
-                </p>
-
-                <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <button type="button" onClick={prevMonth} className="p-2 text-xl text-gray-500 hover:text-gray-900">
-                            ‹
-                        </button>
-
-                        <div className="text-lg">
-                            <span className="font-bold">{currentMonth.toLocaleString("en", { month: "long" })}</span>{" "}
-                            <span className="text-gray-400">{currentMonth.getFullYear()}</span>
-                        </div>
-
-                        <button type="button" onClick={nextMonth} className="p-2 text-xl text-gray-500 hover:text-gray-900">
-                            ›
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
-                            <div
-                                key={d}
-                                className={`text-center text-xs font-semibold py-2 ${d === "SUN" ? "text-gray-300" : "text-gray-500"}`}
-                            >
-                                {d}
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
-                </div>
-            </div>
-
-            {/* Time slots */}
-            {selectedDate && (
-                <div className="mb-8 animate-fadeIn">
-                    <h3 className="text-base font-semibold mb-4">
-                        Available times for{" "}
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                        })}
-                    </h3>
-
-                    <div className="grid grid-cols-4 gap-2">
-                        {TIME_SLOTS.map((slot) => {
-                            const isAvailable = isTimeSlotAvailable(selectedDate, slot.hour);
-                            const isSelected = selectedTime === slot.id;
-
-                            return (
-                                <button
-                                    key={slot.id}
-                                    type="button"
-                                    onClick={() => isAvailable && setSelectedTime(isSelected ? null : (slot.id as TimeSlotId))}
-                                    disabled={!isAvailable}
-                                    className={`py-3 rounded-xl text-sm font-medium transition-all ${
-                                        isSelected
-                                            ? "bg-gray-900 text-white"
-                                            : isAvailable
-                                                ? "bg-gray-200 text-gray-900 hover:bg-gray-300"
-                                                : "bg-gray-100 text-gray-300 cursor-not-allowed"
-                                    }`}
-                                >
-                                    {slot.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {selectedTime && (
-                        <p className="mt-4 text-sm text-green-600 font-medium">
-                            ✓ Cleaning scheduled: {selectedTime} – {addHoursToTime(selectedTime, estimatedHours)}
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* Notes */}
-            <div>
-                <label className="block text-sm font-medium mb-2">Additional Notes</label>
-                <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ notes: e.target.value })}
-                    placeholder="Access instructions, parking info, or any special requests..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 resize-y min-h-[100px]"
+        <div className="w-full">
+            {/* Date picker у тебя уже есть — главное: при смене даты сбрасывать время */}
+            <div className="mt-6">
+                <label className="text-sm font-medium text-black">Date</label>
+                <input
+                    type="date"
+                    value={selectedDate ?? ""}
+                    onChange={(e) => setSelectedDate(e.target.value || null)}
+                    className="mt-2 w-full h-12 rounded-2xl border border-black/10 bg-white/60 px-4 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-black/10"
                 />
             </div>
+
+            <div className="mt-6">
+                <label className="text-sm font-medium text-black">Time</label>
+
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                    {availableSlots.map((slot) => {
+                        const active = selectedTime === slot.id;
+                        return (
+                            <button
+                                key={slot.id}
+                                type="button"
+                                onClick={() => setSelectedTime(slot.id as TimeSlotId)}
+                                className={[
+                                    "h-10 rounded-xl text-sm font-medium border transition",
+                                    active ? "bg-black text-white border-black" : "bg-white/60 text-black border-black/10 hover:border-black/30",
+                                ].join(" ")}
+                            >
+                                {slot.label}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* подсказка почему слотов нет */}
+                {selectedDate && availableSlots.length === 0 && (
+                    <p className="mt-3 text-xs text-black/50">
+                        No available time slots. The cleaning must finish by 18:00 and avoid overlaps.
+                    </p>
+                )}
+            </div>
+
+            <button
+                onClick={onSubmit}
+                disabled={loading || !selectedDate || !selectedTime}
+                className={[
+                    "mt-8 w-full h-14 rounded-full font-medium transition",
+                    loading || !selectedDate || !selectedTime ? "bg-black/15 text-white/70" : "bg-black text-white",
+                ].join(" ")}
+            >
+                {loading ? "Creating..." : "Continue"}
+            </button>
         </div>
     );
 }

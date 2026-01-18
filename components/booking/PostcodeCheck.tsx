@@ -1,188 +1,169 @@
+// components/booking/PostcodeCheck.tsx
 "use client";
 
-import { useState } from "react";
-import { useBookingStore } from "@/lib/booking/store";
+import { useMemo, useState } from "react";
+import { MapPin, X } from "lucide-react";
 import { checkPostalCode, createNotifyRequest } from "@/lib/booking/actions";
-import { ALLOWED_POSTAL_CODES } from "@/lib/booking/config";
+import { useBookingStore } from "@/lib/booking/store";
+
+function ProgressDots({ step }: { step: number }) {
+    const total = 5;
+    return (
+        <div className="flex items-center justify-center gap-2">
+            {Array.from({ length: total }, (_, i) => {
+                const isDone = i < step;
+                const isNow = i === step;
+                return (
+                    <span
+                        key={i}
+                        className={[
+                            "h-2.5 w-2.5 rounded-full transition",
+                            isDone ? "bg-black" : isNow ? "bg-white border border-black" : "bg-black/20",
+                            isNow ? "scale-110" : "",
+                        ].join(" ")}
+                    />
+                );
+            })}
+        </div>
+    );
+}
 
 export default function PostcodeCheck() {
-    const { postcode, setPostcode, setPostcodeVerified, nextStep, setFormData } = useBookingStore();
+    const { setStep, setPostcode, setPostcodeVerified } = useBookingStore();
 
-    const [status, setStatus] = useState<"idle" | "available" | "unavailable">("idle");
-    const [showNotifyForm, setShowNotifyForm] = useState(false);
-    const [notifyEmail, setNotifyEmail] = useState("");
-    const [notifySubmitted, setNotifySubmitted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [plz, setPlz] = useState("");
+    const [status, setStatus] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const normalizePostcode = (value: string) => value.replace(/\D/g, "").slice(0, 5);
+    const normalized = useMemo(() => plz.replace(/\D/g, "").slice(0, 5), [plz]);
+    const canSubmit = normalized.length === 5 && !loading;
 
-    const handlePostcodeInput = (value: string) => {
-        const normalized = normalizePostcode(value);
-        setPostcode(normalized);
-        setStatus("idle");
-        setShowNotifyForm(false);
-    };
-
-    const handleCheck = async () => {
-        if (postcode.length < 5) return;
-
-        setIsLoading(true);
-
-        // быстрый локальный чек (твой Set)
-        if (ALLOWED_POSTAL_CODES.has(postcode)) {
-            setStatus("available");
-            setIsLoading(false);
-            return;
-        }
-
+    async function onCheck() {
+        if (!canSubmit) return;
+        setLoading(true);
+        setStatus(null);
         try {
-            const result = await checkPostalCode(postcode);
-            setStatus(result.available ? "available" : "unavailable");
-        } catch {
-            setStatus("unavailable");
+            const res = await checkPostalCode(normalized);
+            if (res.available) {
+                setPostcode(normalized);
+                setPostcodeVerified(true);
+                setStep(1);
+            } else {
+                setPostcodeVerified(false);
+                setStatus("We don’t serve this area yet. Leave your email and we’ll notify you.");
+            }
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
-    };
+    }
 
-    const handleContinue = () => {
-        setPostcodeVerified(true);
-        setFormData({ postalCode: postcode });
-        nextStep();
-    };
-
-    const handleNotifySubmit = async () => {
-        if (!notifyEmail || !notifyEmail.includes("@")) return;
-
-        try {
-            await createNotifyRequest(notifyEmail, postcode);
-            setNotifySubmitted(true);
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
-
-    const handleReset = () => {
-        setStatus("idle");
-        setShowNotifyForm(false);
-        setNotifySubmitted(false);
-        setPostcode("");
-        setNotifyEmail("");
-    };
+    async function onNotify(email: string) {
+        if (!email) return;
+        await createNotifyRequest(email, normalized);
+        setStatus("Thanks! We’ll email you when your area is available.");
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fadeIn">
-            <div className="w-20 h-20 rounded-full bg-gray-900 flex items-center justify-center mb-8">
-                <span className="text-4xl">📍</span>
+        <div className="w-full max-w-md mx-auto px-4">
+            <div className="pt-6">
+                <ProgressDots step={0} />
             </div>
 
-            <h1 className="text-3xl font-semibold mb-4">Check Availability</h1>
-            <p className="text-gray-500 text-lg mb-10 max-w-md">
-                Enter your postal code to see if we serve your area
-            </p>
-
-            <div className="flex flex-col gap-3 w-full max-w-md mb-6">
-                <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="Enter PLZ (e.g., 70173)"
-                    value={postcode}
-                    onChange={(e) => handlePostcodeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleCheck()}
-                    className="w-full px-5 py-4 text-lg text-center tracking-widest font-semibold border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-                />
-                <button
-                    onClick={handleCheck}
-                    disabled={postcode.length < 5 || isLoading}
-                    className="w-full py-4 bg-gray-900 text-white font-medium rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                >
-                    {isLoading ? "Checking..." : "Check"}
-                </button>
-            </div>
-
-            {status === "available" && (
-                <div className="w-full max-w-md p-6 bg-green-50 border border-green-400 rounded-2xl animate-fadeIn">
-                    <div className="text-3xl mb-3">✅</div>
-                    <div className="text-lg font-semibold text-green-700 mb-2">Great news!</div>
-                    <div className="text-green-600 mb-5">
-                        We serve PLZ {postcode}. Let&apos;s book your cleaning!
-                    </div>
-                    <button
-                        onClick={handleContinue}
-                        className="w-full py-4 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-800 transition-all"
-                    >
-                        Continue to Booking →
-                    </button>
+            <div className="mt-8 flex flex-col items-center text-center">
+                <div className="h-20 w-20 rounded-full bg-[#0B1220] flex items-center justify-center">
+                    <MapPin className="h-8 w-8 text-white" />
                 </div>
-            )}
 
-            {status === "unavailable" && !showNotifyForm && !notifySubmitted && (
-                <div className="w-full max-w-md p-6 bg-orange-50 border border-orange-400 rounded-2xl animate-fadeIn">
-                    <div className="text-3xl mb-3">😔</div>
-                    <div className="text-lg font-semibold text-orange-700 mb-2">Not available yet</div>
-                    <div className="text-orange-600 mb-5">
-                        We don&apos;t serve PLZ {postcode} yet, but we&apos;re expanding!
-                    </div>
-                    <button
-                        onClick={() => setShowNotifyForm(true)}
-                        className="w-full py-4 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-all"
-                    >
-                        Notify me when available
-                    </button>
-                </div>
-            )}
+                <h1 className="mt-6 text-4xl font-semibold tracking-tight text-black">Check Availability</h1>
+                <p className="mt-3 text-base text-black/55">
+                    Enter your postal code to see if we serve your area
+                </p>
 
-            {showNotifyForm && !notifySubmitted && (
-                <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-2xl animate-fadeIn">
-                    <div className="text-3xl mb-3">📬</div>
-                    <div className="text-lg font-semibold mb-2">Get notified</div>
-                    <div className="text-gray-500 mb-5 text-sm">
-                        We&apos;ll email you as soon as we start serving PLZ {postcode}
-                    </div>
+                <div className="mt-8 w-full relative">
                     <input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={notifyEmail}
-                        onChange={(e) => setNotifyEmail(e.target.value)}
-                        className="w-full px-4 py-3 mb-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 transition-all"
+                        value={normalized}
+                        onChange={(e) => setPlz(e.target.value)}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete="postal-code"
+                        placeholder="Enter PLZ (e.g., 70173)"
+                        className="w-full h-14 rounded-2xl border border-black/10 bg-white/60 px-4 text-center text-xl font-semibold tracking-wide
+                       placeholder:text-sm placeholder:font-medium placeholder:tracking-normal placeholder:text-black/35
+                       focus:outline-none focus:ring-2 focus:ring-black/10"
                     />
-                    <button
-                        onClick={handleNotifySubmit}
-                        disabled={!notifyEmail || !notifyEmail.includes("@")}
-                        className="w-full py-4 bg-gray-900 text-white font-medium rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                    >
-                        Notify Me
-                    </button>
-                    <button onClick={handleReset} className="mt-3 text-gray-500 text-sm hover:text-gray-700">
-                        ← Try another postcode
-                    </button>
-                </div>
-            )}
 
-            {notifySubmitted && (
-                <div className="w-full max-w-md p-6 bg-blue-50 border border-blue-400 rounded-2xl animate-fadeIn">
-                    <div className="text-3xl mb-3">🎉</div>
-                    <div className="text-lg font-semibold text-blue-700 mb-2">You&apos;re on the list!</div>
-                    <div className="text-blue-600 mb-5">
-                        We&apos;ll notify {notifyEmail} when we expand to PLZ {postcode}
+                    {normalized.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setPlz("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center"
+                            aria-label="Clear"
+                        >
+                            <X className="h-4 w-4 text-black/70" />
+                        </button>
+                    )}
+                </div>
+
+                <button
+                    onClick={onCheck}
+                    disabled={!canSubmit}
+                    className={[
+                        "mt-4 w-full h-14 rounded-full font-medium transition",
+                        canSubmit ? "bg-[#0B1220] text-white" : "bg-black/15 text-white/70",
+                    ].join(" ")}
+                >
+                    {loading ? "Checking..." : "Check"}
+                </button>
+
+                {status && (
+                    <div className="mt-8 w-full text-sm text-black/55">
+                        <p>{status}</p>
+
+                        {!loading && normalized.length === 5 && status.includes("Leave your email") && (
+                            <NotifyInline onSubmit={onNotify} />
+                        )}
                     </div>
-                    <button
-                        onClick={handleReset}
-                        className="px-6 py-3 border border-blue-400 text-blue-600 font-medium rounded-full hover:bg-blue-100 transition-all"
-                    >
-                        Check another postcode
-                    </button>
-                </div>
-            )}
+                )}
 
-            <div className="mt-12 p-5 bg-gray-100 rounded-xl max-w-md w-full">
-                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                    Currently serving
+                <div className="mt-16 text-xs text-black/35 tracking-widest font-semibold">
+                    CURRENTLY SERVING
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="mt-2 text-sm text-black/55">
                     Stuttgart City Center (70173-70199), Vaihingen, Möhringen, Degerloch, Feuerbach, Weilimdorf
                 </div>
             </div>
+        </div>
+    );
+}
+
+function NotifyInline({ onSubmit }: { onSubmit: (email: string) => Promise<void> }) {
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    return (
+        <div className="mt-4 w-full">
+            <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                inputMode="email"
+                placeholder="Email"
+                className="w-full h-12 rounded-2xl border border-black/10 bg-white/60 px-4 text-sm
+                   placeholder:text-black/35 focus:outline-none focus:ring-2 focus:ring-black/10"
+            />
+            <button
+                className="mt-3 w-full h-12 rounded-full bg-black text-white font-medium disabled:bg-black/20"
+                disabled={!email.includes("@") || loading}
+                onClick={async () => {
+                    setLoading(true);
+                    try {
+                        await onSubmit(email);
+                    } finally {
+                        setLoading(false);
+                    }
+                }}
+            >
+                {loading ? "Submitting..." : "Notify me"}
+            </button>
         </div>
     );
 }
