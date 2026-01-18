@@ -71,7 +71,7 @@ function normalizeEmail(value: string) {
 }
 
 /**
- * POSTCODE CHECK (DB-driven, совместимо с твоей service_areas policy)
+ * POSTCODE CHECK (DB-driven)
  */
 export async function checkPostalCode(
     postalCodeRaw: string
@@ -107,7 +107,7 @@ export async function checkPostalCode(
 }
 
 /**
- * NOTIFY REQUEST (совместимо с notify_requests insert policy)
+ * NOTIFY REQUEST
  */
 export async function createNotifyRequest(
     emailRaw: string,
@@ -129,9 +129,7 @@ export async function createNotifyRequest(
 }
 
 /**
- * EXISTING BOOKINGS (для календаря)
- * ВАЖНО: при текущем RLS на orders SELECT будет работать только для владельца.
- * Если хочешь публичный календарь — нужен SECURITY DEFINER RPC.
+ * EXISTING BOOKINGS (calendar)
  */
 export async function getExistingBookings(
     startDate: string,
@@ -160,7 +158,7 @@ export async function getExistingBookings(
 }
 
 /**
- * CREATE ORDER (совместимо с твоей orders insert policy)
+ * CREATE ORDER
  */
 export async function createOrder(input: CreateOrderInput): Promise<{
     orderId: string;
@@ -173,7 +171,6 @@ export async function createOrder(input: CreateOrderInput): Promise<{
         data: { user },
     } = await supabase.auth.getUser();
 
-    // ✅ TS fixed: типы input.* уже ServiceId/ApartmentSizeId/PeopleCountId
     const { basePrice, extrasPrice, totalPrice } = calculatePrice(
         input.serviceType,
         input.apartmentSize,
@@ -182,13 +179,8 @@ export async function createOrder(input: CreateOrderInput): Promise<{
         input.extras
     );
 
-    const estimatedHours = calculateHours(
-        input.serviceType,
-        input.apartmentSize,
-        input.extras
-    );
+    const estimatedHours = calculateHours(input.serviceType, input.apartmentSize, input.extras);
 
-    // extras quantities
     const extrasQuantities: Record<string, number> = {};
     for (const [id, qty] of Object.entries(input.extras ?? {})) {
         const n = Number(qty);
@@ -260,9 +252,10 @@ export async function createOrder(input: CreateOrderInput): Promise<{
 }
 
 /**
- * LINK ORDER TO USER (RPC из твоего FINAL SQL: link_order_to_user(p_token uuid))
+ * LINK ORDER TO USER (RPC: link_order_to_user(p_token uuid))
+ * ✅ Возвращаем string, чтобы фронт не ломался на encodeURIComponent.
  */
-export async function linkOrderToUser(pendingToken: string): Promise<{ orderId: string }> {
+export async function linkOrderToUser(pendingToken: string): Promise<string> {
     const token = (pendingToken ?? "").trim();
     const supabase = await createSupabaseServerClient();
 
@@ -271,11 +264,11 @@ export async function linkOrderToUser(pendingToken: string): Promise<{ orderId: 
     });
 
     if (error || !data) throw new Error("Failed to link order to user");
-    return { orderId: String(data) };
+    return String(data);
 }
 
 /**
- * SUCCESS FETCH (RPC из FINAL SQL: get_order_success(p_token uuid))
+ * SUCCESS FETCH (RPC: get_order_success(p_token uuid))
  */
 export async function getOrderSuccess(pendingToken: string) {
     const token = (pendingToken ?? "").trim();
@@ -290,7 +283,7 @@ export async function getOrderSuccess(pendingToken: string) {
 }
 
 /**
- * USER ORDERS (owner-only via RLS)
+ * USER ORDERS
  */
 export async function getUserOrders() {
     const supabase = await createSupabaseServerClient();
@@ -312,7 +305,7 @@ export async function getUserOrders() {
 }
 
 /**
- * USER PROFILE (owner-only via RLS)
+ * USER PROFILE
  */
 export async function getUserProfile() {
     const supabase = await createSupabaseServerClient();
@@ -323,11 +316,7 @@ export async function getUserProfile() {
 
     if (!user) return null;
 
-    const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
     if (error) return null;
     return data;
@@ -349,9 +338,7 @@ export async function updateUserProfile(profileData: {
 
     if (!user) throw new Error("User not authenticated");
 
-    const postal = profileData.postalCode
-        ? normalizePostcode(profileData.postalCode)
-        : undefined;
+    const postal = profileData.postalCode ? normalizePostcode(profileData.postalCode) : undefined;
 
     const { error } = await supabase
         .from("profiles")

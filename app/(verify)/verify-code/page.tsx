@@ -1,365 +1,357 @@
-"use client";
+"use server";
 
-export const dynamic = "force-dynamic";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+    calculateHours,
+    calculatePrice,
+    EXTRAS,
+    type ServiceId,
+    type ApartmentSizeId,
+    type PeopleCountId,
+} from "@/lib/booking/config";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+export type BookingStatus =
+    | "pending"
+    | "confirmed"
+    | "in_progress"
+    | "completed"
+    | "cancelled";
 
-import { linkOrderToUser } from "@/lib/booking/actions";
-import { useBookingStore } from "@/lib/booking/store";
+export type ExistingBooking = {
+    scheduled_date: string; // YYYY-MM-DD
+    scheduled_time: string; // HH:mm
+    estimated_hours: number;
+};
 
-type Flow = "signup" | "recovery";
+type ServiceAreaRow = {
+    postal_code: string | null;
+    city: string | null;
+    district: string | null;
+    is_active: boolean | null;
+};
 
-const OTP_TTL_SEC = 600; // 10 minutes
-const RESEND_COOLDOWN_SEC = 120; // 2 minutes
+type OrderRow = {
+    scheduled_date: string | null;
+    scheduled_time: string | null;
+    estimated_hours: number | null;
+    status: BookingStatus | null;
+};
 
-function fmt(sec: number) {
-    const s = Math.max(0, Math.floor(sec));
-    const mm = String(Math.floor(s / 60)).padStart(2, "0");
-    const ss = String(s % 60).padStart(2, "0");
-    return `${mm}:${ss}`;
+export type CreateOrderInput = {
+    serviceType: ServiceId;
+    apartmentSize: ApartmentSizeId;
+    peopleCount: PeopleCountId;
+
+    hasPets: boolean;
+    hasKids: boolean;
+    hasAllergies: boolean;
+    allergyNotes?: string;
+
+    extras: Record<string, number>;
+
+    scheduledDate: string; // YYYY-MM-DD
+    scheduledTime: string; // HH:mm
+
+    customerFirstName: string;
+    customerLastName?: string;
+    customerEmail: string;
+    customerPhone: string;
+    customerAddress: string;
+    customerCity?: string;
+    customerPostalCode: string;
+    customerNotes?: string;
+};
+
+function normalizePostcode(value: string) {
+    return (value ?? "").replace(/\D/g, "").slice(0, 5);
 }
 
-function VerifyCodeInner() {
-    const router = useRouter();
-    const sp = useSearchParams();
-
-    const rawFlow = sp.get("flow");
-    const flow: Flow = rawFlow === "recovery" ? "recovery" : "signup";
-
-    const supabase = useMemo(() => createClient(), []);
-    const { reset: resetBooking } = useBookingStore();
-
-    // ✅ NEW: pending order token (query -> fallback localStorage)
-    const pendingOrderFromQuery = sp.get("pendingOrder") || "";
-    const [pendingOrderToken, setPendingOrderToken] = useState<string>(pendingOrderFromQuery);
-
-    const [email, setEmail] = useState<string | null>(null);
-    const [code, setCode] = useState("");
-    const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
-    const [loading, setLoading] = useState(false);
-
-    const [expiresLeft, setExpiresLeft] = useState<number>(OTP_TTL_SEC);
-    const [cooldownLeft, setCooldownLeft] = useState<number>(0);
-
-    const restartOtpTimer = () => setExpiresLeft(OTP_TTL_SEC);
-    const startCooldown = () => setCooldownLeft(RESEND_COOLDOWN_SEC);
-
-    const storageKey = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
-
-    useEffect(() => {
-        const storedEmail = (() => {
-            try {
-                return localStorage.getItem(storageKey);
-            } catch {
-                return null;
-            }
-        })();
-
-        if (!storedEmail) {
-            router.replace(flow === "signup" ? "/signup" : "/forgot-password");
-            return;
-        }
-
-        setEmail(storedEmail);
-        restartOtpTimer();
-
-        // ✅ NEW: if signup and pendingOrder not in query -> try localStorage
-        if (flow === "signup" && !pendingOrderFromQuery) {
-            const storedToken = (() => {
-                try {
-                    return localStorage.getItem("pendingOrderToken");
-                } catch {
-                    return null;
-                }
-            })();
-            if (storedToken) setPendingOrderToken(storedToken);
-        } else {
-            // if query has it — persist it (so refresh won't lose it)
-            if (flow === "signup" && pendingOrderFromQuery) {
-                try {
-                    localStorage.setItem("pendingOrderToken", pendingOrderFromQuery);
-                } catch {}
-            }
-        }
-    }, [flow, router, storageKey, pendingOrderFromQuery]);
-
-    useEffect(() => {
-        if (!email) return;
-        const id = window.setInterval(() => {
-            setExpiresLeft((s) => (s > 0 ? s - 1 : 0));
-        }, 1000);
-        return () => window.clearInterval(id);
-    }, [email]);
-
-    useEffect(() => {
-        if (cooldownLeft <= 0) return;
-        const id = window.setInterval(() => {
-            setCooldownLeft((s) => (s > 0 ? s - 1 : 0));
-        }, 1000);
-        return () => window.clearInterval(id);
-    }, [cooldownLeft]);
-
-    async function waitForSession(maxAttempts = 7, delayMs = 250) {
-        for (let i = 0; i < maxAttempts; i++) {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) return data.session;
-            await new Promise((r) => setTimeout(r, delayMs));
-        }
-        return null;
-    }
-
-    const verify = async () => {
-        if (loading) return;
-
-        setStatus(null);
-        setLoading(true);
-
-        try {
-            if (!email) {
-                setStatus({ type: "error", msg: "Missing email. Please start again." });
-                return;
-            }
-
-            const token = code.replace(/\D/g, "").slice(0, 8);
-            if (!/^\d{8}$/.test(token)) {
-                setStatus({ type: "error", msg: "Enter the 8-digit verification code." });
-                return;
-            }
-
-            if (expiresLeft <= 0) {
-                setStatus({ type: "error", msg: "This code has expired. Please request a new one." });
-                return;
-            }
-
-            const { error } = await supabase.auth.verifyOtp({
-                email,
-                token,
-                type: flow === "recovery" ? "recovery" : "signup",
-            });
-
-            if (error) {
-                setStatus({ type: "error", msg: error.message });
-                return;
-            }
-
-            // ✅ Recovery: дождаться сессии + поставить флаг (нужен твоему ResetPasswordPage)
-            if (flow === "recovery") {
-                const session = await waitForSession();
-                if (!session) {
-                    setStatus({
-                        type: "error",
-                        msg: "Recovery session not found yet. Please try again or request a new code.",
-                    });
-                    return;
-                }
-                try {
-                    sessionStorage.setItem("recoveryFlow", "1");
-                } catch {}
-            }
-
-            // ✅ NEW: signup + pendingOrder => link order and redirect to success
-            if (flow === "signup" && pendingOrderToken) {
-                try {
-                    const orderId = await linkOrderToUser(pendingOrderToken);
-                    resetBooking();
-
-                    // clean storage
-                    try {
-                        localStorage.removeItem("pendingOrderToken");
-                    } catch {}
-
-                    try {
-                        localStorage.removeItem(storageKey);
-                    } catch {}
-
-                    router.replace(`/booking/success?orderId=${encodeURIComponent(orderId)}`);
-                    return;
-                } catch {
-                    // fallback
-                    try {
-                        localStorage.removeItem("pendingOrderToken");
-                    } catch {}
-                    try {
-                        localStorage.removeItem(storageKey);
-                    } catch {}
-                    router.replace("/account/orders");
-                    return;
-                }
-            }
-
-            // clean localStorage only after everything is ok
-            try {
-                localStorage.removeItem(storageKey);
-            } catch {}
-
-            if (flow === "signup") {
-                router.replace("/set-password");
-            } else {
-                router.replace("/reset-password?flow=recovery&recovery=1");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const resend = async () => {
-        setStatus(null);
-
-        if (!email) {
-            setStatus({ type: "error", msg: "Missing email. Please start again." });
-            return;
-        }
-
-        if (cooldownLeft > 0) {
-            setStatus({ type: "error", msg: `Please wait ${fmt(cooldownLeft)} before resending.` });
-            return;
-        }
-
-        setCode("");
-        restartOtpTimer();
-        startCooldown();
-
-        if (flow === "signup") {
-            const { error } = await supabase.auth.resend({ type: "signup", email });
-            if (error) {
-                setStatus({ type: "error", msg: error.message });
-                setCooldownLeft(0);
-            } else {
-                setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
-            }
-        } else {
-            const { error } = await supabase.auth.resetPasswordForEmail(email);
-            if (error) {
-                setStatus({ type: "error", msg: error.message });
-                setCooldownLeft(0);
-            } else {
-                setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
-            }
-        }
-    };
-
-    if (email === null) {
-        return (
-            <div className="text-center">
-                <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
-            </div>
-        );
-    }
-
-    const resendDisabled = cooldownLeft > 0;
-    const verifyDisabled = loading || code.replace(/\D/g, "").length !== 8;
-
-    return (
-        <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
-                {flow === "signup" ? "Verify your email" : "Enter reset code"}
-            </h1>
-
-            <p className="mt-6 text-base text-[color:var(--muted)]">
-                We sent a verification code to{" "}
-                <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
-            </p>
-
-            {/* ✅ NEW: tiny info block (same style language) */}
-            {flow === "signup" && pendingOrderToken ? (
-                <div className="mt-6 rounded-2xl border bg-[var(--input-bg)] border-[var(--input-border)] px-4 py-3 backdrop-blur">
-                    <p className="text-sm text-[color:var(--muted)]">
-                        ✓ Booking detected — after verification it will be linked to your account.
-                    </p>
-                </div>
-            ) : null}
-
-            <div className="mt-10 space-y-4">
-                <input
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
-                    placeholder="••••••••"
-                    className={[
-                        "w-full rounded-2xl border px-4 py-3.5 text-center outline-none transition backdrop-blur",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "text-[20px] font-mono tracking-[0.20em]",
-                        "placeholder:text-[color:var(--muted)]/60",
-                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                    ].join(" ")}
-                />
-
-                <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
-          <span>
-            Code expires in{" "}
-              <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
-          </span>
-                    <span>
-            {resendDisabled ? (
-                <>
-                    Resend available in{" "}
-                    <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
-                </>
-            ) : (
-                "You can resend now"
-            )}
-          </span>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={verify}
-                    disabled={verifyDisabled}
-                    className={[
-                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                        "disabled:opacity-40 hover:opacity-90",
-                        "bg-black text-white",
-                        "dark:bg-white dark:text-black",
-                    ].join(" ")}
-                >
-                    {loading ? "Verifying…" : "Verify"}
-                </button>
-
-                <button
-                    type="button"
-                    onClick={resend}
-                    disabled={resendDisabled}
-                    className={[
-                        "w-full rounded-2xl border py-3.5 text-[15px] font-medium transition disabled:opacity-40",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "backdrop-blur hover:opacity-90",
-                    ].join(" ")}
-                >
-                    {resendDisabled ? `Resend code (${fmt(cooldownLeft)})` : "Resend code"}
-                </button>
-
-                {status && (
-                    <p
-                        className={[
-                            "text-sm",
-                            status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90",
-                        ].join(" ")}
-                    >
-                        {status.msg}
-                    </p>
-                )}
-            </div>
-
-            <p className="mt-10 text-sm text-[color:var(--muted)]">
-                If you entered the wrong email, go back and try again.
-            </p>
-        </div>
-    );
+function normalizeEmail(value: string) {
+    return (value ?? "").trim().toLowerCase();
 }
 
-export default function VerifyCodePage() {
-    return (
-        <Suspense
-            fallback={
-                <div className="text-center">
-                    <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
-                </div>
-            }
-        >
-            <VerifyCodeInner />
-        </Suspense>
+/**
+ * POSTCODE CHECK (DB-driven)
+ */
+export async function checkPostalCode(
+    postalCodeRaw: string
+): Promise<{
+    available: boolean;
+    area?: { postal_code: string; city: string; district: string | null };
+}> {
+    const postalCode = normalizePostcode(postalCodeRaw);
+    if (postalCode.length !== 5) return { available: false };
+
+    const supabase = await createSupabaseServerClient();
+
+    const { data, error } = await supabase
+        .from("service_areas")
+        .select("postal_code, city, district, is_active")
+        .eq("postal_code", postalCode)
+        .eq("is_active", true)
+        .maybeSingle()
+        .returns<ServiceAreaRow>();
+
+    if (error || !data) return { available: false };
+
+    const pc = data.postal_code ?? postalCode;
+    const city = data.city ?? "";
+    const district = data.district ?? null;
+
+    if (!city) return { available: false };
+
+    return {
+        available: true,
+        area: { postal_code: pc, city, district },
+    };
+}
+
+/**
+ * NOTIFY REQUEST
+ */
+export async function createNotifyRequest(
+    emailRaw: string,
+    postalCodeRaw: string
+): Promise<{ ok: boolean }> {
+    const email = normalizeEmail(emailRaw);
+    const postalCode = normalizePostcode(postalCodeRaw);
+
+    if (!email.includes("@") || postalCode.length !== 5) return { ok: false };
+
+    const supabase = await createSupabaseServerClient();
+
+    const { error } = await supabase.from("notify_requests").insert({
+        email,
+        postal_code: postalCode,
+    });
+
+    return { ok: !error };
+}
+
+/**
+ * EXISTING BOOKINGS (calendar)
+ */
+export async function getExistingBookings(
+    startDate: string,
+    endDate: string
+): Promise<ExistingBooking[]> {
+    const supabase = await createSupabaseServerClient();
+
+    const { data, error } = await supabase
+        .from("orders")
+        .select("scheduled_date, scheduled_time, estimated_hours, status")
+        .gte("scheduled_date", startDate)
+        .lte("scheduled_date", endDate)
+        .neq("status", "cancelled")
+        .order("scheduled_date", { ascending: true })
+        .returns<OrderRow[]>();
+
+    if (error || !data) return [];
+
+    return data
+        .filter((r) => r.scheduled_date && r.scheduled_time && r.estimated_hours != null)
+        .map((r) => ({
+            scheduled_date: String(r.scheduled_date),
+            scheduled_time: String(r.scheduled_time),
+            estimated_hours: Number(r.estimated_hours),
+        }));
+}
+
+/**
+ * CREATE ORDER
+ */
+export async function createOrder(input: CreateOrderInput): Promise<{
+    orderId: string;
+    pendingToken: string;
+    isLoggedIn: boolean;
+}> {
+    const supabase = await createSupabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    const { basePrice, extrasPrice, totalPrice } = calculatePrice(
+        input.serviceType,
+        input.apartmentSize,
+        input.peopleCount,
+        input.hasPets,
+        input.extras
     );
+
+    const estimatedHours = calculateHours(input.serviceType, input.apartmentSize, input.extras);
+
+    const extrasQuantities: Record<string, number> = {};
+    for (const [id, qty] of Object.entries(input.extras ?? {})) {
+        const n = Number(qty);
+        if (Number.isFinite(n) && n > 0) extrasQuantities[id] = n;
+    }
+
+    const priceBreakdown = Object.entries(extrasQuantities).map(([id, quantity]) => {
+        const extra = EXTRAS.find((e) => e.id === id);
+        const unitPrice = extra ? Number(extra.price) : 0;
+        return {
+            id,
+            name: extra?.name ?? id,
+            quantity,
+            unitPrice,
+            lineTotal: Math.round(unitPrice * quantity * 100) / 100,
+        };
+    });
+
+    const customerPostalCode = normalizePostcode(input.customerPostalCode);
+
+    const { data: order, error } = await supabase
+        .from("orders")
+        .insert({
+            user_id: user?.id ?? null,
+
+            service_type: input.serviceType,
+            apartment_size: input.apartmentSize,
+            people_count: input.peopleCount,
+
+            has_pets: input.hasPets,
+            has_kids: input.hasKids,
+            has_allergies: input.hasAllergies,
+            allergy_notes: input.allergyNotes ?? null,
+
+            extras: extrasQuantities,
+            price_breakdown: priceBreakdown,
+
+            scheduled_date: input.scheduledDate,
+            scheduled_time: input.scheduledTime,
+            estimated_hours: estimatedHours,
+
+            customer_first_name: input.customerFirstName,
+            customer_last_name: input.customerLastName ?? null,
+            customer_email: input.customerEmail,
+            customer_phone: input.customerPhone,
+            customer_address: input.customerAddress,
+            customer_city: input.customerCity ?? null,
+            customer_postal_code: customerPostalCode,
+            customer_notes: input.customerNotes ?? null,
+
+            base_price: basePrice,
+            extras_price: extrasPrice,
+            total_price: totalPrice,
+
+            status: "pending" satisfies BookingStatus,
+        })
+        .select("id, pending_token")
+        .single();
+
+    if (error || !order) {
+        throw new Error("Failed to create order");
+    }
+
+    return {
+        orderId: String(order.id),
+        pendingToken: String(order.pending_token),
+        isLoggedIn: !!user,
+    };
+}
+
+/**
+ * LINK ORDER TO USER (RPC: link_order_to_user(p_token uuid))
+ * ✅ Возвращаем string, чтобы фронт не ломался на encodeURIComponent.
+ */
+export async function linkOrderToUser(pendingToken: string): Promise<string> {
+    const token = (pendingToken ?? "").trim();
+    const supabase = await createSupabaseServerClient();
+
+    const { data, error } = await supabase.rpc("link_order_to_user", {
+        p_token: token,
+    });
+
+    if (error || !data) throw new Error("Failed to link order to user");
+    return String(data);
+}
+
+/**
+ * SUCCESS FETCH (RPC: get_order_success(p_token uuid))
+ */
+export async function getOrderSuccess(pendingToken: string) {
+    const token = (pendingToken ?? "").trim();
+    const supabase = await createSupabaseServerClient();
+
+    const { data, error } = await supabase.rpc("get_order_success", {
+        p_token: token,
+    });
+
+    if (error || !data || !Array.isArray(data) || data.length === 0) return null;
+    return data[0];
+}
+
+/**
+ * USER ORDERS
+ */
+export async function getUserOrders() {
+    const supabase = await createSupabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
+    const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+    if (error || !data) return [];
+    return data;
+}
+
+/**
+ * USER PROFILE
+ */
+export async function getUserProfile() {
+    const supabase = await createSupabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+
+    if (error) return null;
+    return data;
+}
+
+export async function updateUserProfile(profileData: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    postalCode?: string;
+}) {
+    const supabase = await createSupabaseServerClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("User not authenticated");
+
+    const postal = profileData.postalCode ? normalizePostcode(profileData.postalCode) : undefined;
+
+    const { error } = await supabase
+        .from("profiles")
+        .update({
+            first_name: profileData.firstName,
+            last_name: profileData.lastName,
+            phone: profileData.phone,
+            address: profileData.address,
+            city: profileData.city,
+            postal_code: postal,
+        })
+        .eq("id", user.id);
+
+    if (error) throw new Error("Failed to update profile");
+    return { ok: true };
 }
