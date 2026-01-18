@@ -1,7 +1,7 @@
 // lib/booking/config.ts
 
 // =============================================
-// 3S Clean Booking Configuration
+// 3S Clean Booking Configuration (FINAL)
 // =============================================
 
 // ---- Types (строгие id, чтобы TS помогал) ----
@@ -112,7 +112,8 @@ export const HOURS_MATRIX: Record<ServiceId, Record<ApartmentSizeId, number>> = 
     initial: { "up-to-60": 3.5, "60-80": 4, "80-110": 5, "over-110": 6 },
     regular: { "up-to-60": 2.5, "60-80": 3, "80-110": 4, "over-110": 5 },
     complete: { "up-to-60": 4, "60-80": 5, "80-110": 6, "over-110": 7 },
-    handover: { "up-to-60": 4.5, "60-80": 5.5, "80-110": 6.5, "over-110": 8 },
+    // ✅ как в старом варианте: 80-110 = 7
+    handover: { "up-to-60": 4.5, "60-80": 5.5, "80-110": 7, "over-110": 8 },
 };
 
 // Service types
@@ -212,70 +213,58 @@ export interface Extra {
     name: string;
     price: number;
     hours: number;
-    icon: string;
+    icon: string; // ✅ ключ, не эмодзи
     unit: string;
 }
 
 export const EXTRAS: Extra[] = [
-    { id: "linen-single", name: "Linen change - single bed", price: 7.5, hours: 0.13, icon: "🛏️", unit: "bed" },
-    { id: "linen-double", name: "Linen change - double bed", price: 14.0, hours: 0.25, icon: "🛏️", unit: "bed" },
-    { id: "oven", name: "Oven deep clean (inside)", price: 100.0, hours: 2.0, icon: "🔥", unit: "unit" },
-    { id: "fridge", name: "Fridge deep clean (inside)", price: 50.0, hours: 1.0, icon: "❄️", unit: "unit" },
-    { id: "freezer", name: "Freezer deep clean", price: 50.0, hours: 1.0, icon: "🧊", unit: "unit" },
-    { id: "windows-inside", name: "Window cleaning - inside", price: 4.25, hours: 0.08, icon: "🪟", unit: "m² glass" },
-    { id: "windows-outside", name: "Window cleaning - outside", price: 4.5, hours: 0.08, icon: "🪟", unit: "m² glass" },
-    { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1.0, icon: "🌿", unit: "10 m²" },
-    { id: "limescale", name: "Limescale removal - intensive", price: 27.0, hours: 0.5, icon: "🚿", unit: "30-min block" },
-    { id: "cupboards", name: "Cupboards / cabinets - deep clean", price: 50.0, hours: 1.0, icon: "🗄️", unit: "hour" },
-    { id: "wardrobe", name: "Wardrobe arranging / folding", price: 50.0, hours: 1.0, icon: "👔", unit: "hour" },
-    { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, icon: "🛋️", unit: "seat" },
+    { id: "linen-single", name: "Linen change - single bed", price: 7.5, hours: 0.13, icon: "bed-single", unit: "bed" },
+    { id: "linen-double", name: "Linen change - double bed", price: 14.0, hours: 0.25, icon: "bed-double", unit: "bed" },
+    { id: "oven", name: "Oven deep clean (inside)", price: 100.0, hours: 2.0, icon: "flame", unit: "unit" },
+    { id: "fridge", name: "Fridge deep clean (inside)", price: 50.0, hours: 1.0, icon: "refrigerator", unit: "unit" },
+    { id: "freezer", name: "Freezer deep clean", price: 50.0, hours: 1.0, icon: "snowflake", unit: "unit" },
+    { id: "windows-inside", name: "Window cleaning - inside", price: 4.25, hours: 0.08, icon: "app-window", unit: "m² glass" },
+    { id: "windows-outside", name: "Window cleaning - outside", price: 4.5, hours: 0.08, icon: "app-window", unit: "m² glass" },
+    { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1.0, icon: "trees", unit: "10 m²" },
+    { id: "limescale", name: "Limescale removal - intensive", price: 27.0, hours: 0.5, icon: "droplets", unit: "30-min block" },
+    { id: "cupboards", name: "Cupboards / cabinets - deep clean", price: 50.0, hours: 1.0, icon: "archive", unit: "hour" },
+    { id: "wardrobe", name: "Wardrobe arranging / folding", price: 50.0, hours: 1.0, icon: "shirt", unit: "hour" },
+    { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, icon: "sofa", unit: "seat" },
 ];
 
-// Time slots
+// Time slots (✅ 15-minute intervals, 8:00 - 17:45)
+export type TimeSlotId = string;
+
 export interface TimeSlot {
     id: TimeSlotId;
     label: string;
     hour: number;
+    minutes: number;
 }
 
-export type TimeSlotId =
-    | "08:00"
-    | "09:00"
-    | "10:00"
-    | "11:00"
-    | "12:00"
-    | "13:00"
-    | "14:00"
-    | "15:00"
-    | "16:00"
-    | "17:00"
-    | "18:00";
+export const TIME_SLOTS: TimeSlot[] = Array.from({ length: 40 }, (_, i) => {
+    const totalMinutes = 8 * 60 + i * 15;
+    const hour = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const id = `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    return { id, label: `${hour}:${String(minutes).padStart(2, "0")}`, hour, minutes };
+});
 
-export const TIME_SLOTS: TimeSlot[] = [
-    { id: "08:00", label: "8:00", hour: 8 },
-    { id: "09:00", label: "9:00", hour: 9 },
-    { id: "10:00", label: "10:00", hour: 10 },
-    { id: "11:00", label: "11:00", hour: 11 },
-    { id: "12:00", label: "12:00", hour: 12 },
-    { id: "13:00", label: "13:00", hour: 13 },
-    { id: "14:00", label: "14:00", hour: 14 },
-    { id: "15:00", label: "15:00", hour: 15 },
-    { id: "16:00", label: "16:00", hour: 16 },
-    { id: "17:00", label: "17:00", hour: 17 },
-    { id: "18:00", label: "18:00", hour: 18 },
-];
+export const WORKING_HOURS_END = 18;
 
-// Allowed postal codes (Stuttgart area)
+// Allowed postal codes (Stuttgart area) — ⚠️ если ты теперь проверяешь через DB service_areas, можно это не использовать
 export const ALLOWED_POSTAL_CODES = new Set<string>([
     "70173", "70174", "70176", "70178", "70180", "70182", "70184", "70186", "70188",
     "70190", "70191", "70192", "70193", "70195", "70197", "70199",
+    "70327", "70329", "70372", "70374", "70376", "70378",
+    "70435", "70437", "70439",
+    "70469", "70499",
     "70563", "70565", "70567", "70569",
     "70597", "70599",
-    "70469", "70499",
 ]);
 
 export function isAllowedPostalCode(code: string): boolean {
-    const cleaned = code.trim();
+    const cleaned = (code ?? "").trim();
     return ALLOWED_POSTAL_CODES.has(cleaned);
 }
 
@@ -303,9 +292,12 @@ export function calculatePrice(
     const basePrice = FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[petKey] ?? 0;
 
     let extrasPrice = 0;
-    for (const [extraId, quantity] of Object.entries(extras)) {
+    for (const [extraId, quantity] of Object.entries(extras ?? {})) {
+        const q = Number(quantity);
+        if (!Number.isFinite(q) || q <= 0) continue;
+
         const extra = EXTRAS.find((e) => e.id === extraId);
-        if (extra && quantity > 0) extrasPrice += extra.price * quantity;
+        if (extra) extrasPrice += extra.price * q;
     }
 
     const total = basePrice + extrasPrice;
@@ -320,9 +312,12 @@ export function calculatePrice(
 export function calculateHours(serviceId: ServiceId, sizeId: ApartmentSizeId, extras: ExtrasMap): number {
     let hours = HOURS_MATRIX[serviceId]?.[sizeId] ?? 0;
 
-    for (const [extraId, quantity] of Object.entries(extras)) {
+    for (const [extraId, quantity] of Object.entries(extras ?? {})) {
+        const q = Number(quantity);
+        if (!Number.isFinite(q) || q <= 0) continue;
+
         const extra = EXTRAS.find((e) => e.id === extraId);
-        if (extra && quantity > 0) hours += extra.hours * quantity;
+        if (extra) hours += extra.hours * q;
     }
 
     return round2(hours);
@@ -351,8 +346,8 @@ export function formatDateKey(year: number, month: number, day: number): string 
 }
 
 // "HH:mm" + hours => "HH:mm"
-export function addHoursToTime(time: TimeSlotId | string, hours: number): string {
-    const [hStr, mStr = "0"] = time.split(":");
+export function addHoursToTime(time: string, hours: number): string {
+    const [hStr, mStr = "0"] = (time ?? "").split(":");
     const h = Number(hStr);
     const m = Number(mStr);
     if (Number.isNaN(h) || Number.isNaN(m)) return time;
