@@ -6,6 +6,9 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+import { linkOrderToUser } from "@/lib/booking/actions";
+import { useBookingStore } from "@/lib/booking/store";
+
 type Flow = "signup" | "recovery";
 
 const OTP_TTL_SEC = 600; // 10 minutes
@@ -26,6 +29,11 @@ function VerifyCodeInner() {
     const flow: Flow = rawFlow === "recovery" ? "recovery" : "signup";
 
     const supabase = useMemo(() => createClient(), []);
+    const { reset: resetBooking } = useBookingStore();
+
+    // ✅ NEW: pending order token (query -> fallback localStorage)
+    const pendingOrderFromQuery = sp.get("pendingOrder") || "";
+    const [pendingOrderToken, setPendingOrderToken] = useState<string>(pendingOrderFromQuery);
 
     const [email, setEmail] = useState<string | null>(null);
     const [code, setCode] = useState("");
@@ -41,7 +49,7 @@ function VerifyCodeInner() {
     const storageKey = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
 
     useEffect(() => {
-        const stored = (() => {
+        const storedEmail = (() => {
             try {
                 return localStorage.getItem(storageKey);
             } catch {
@@ -49,14 +57,33 @@ function VerifyCodeInner() {
             }
         })();
 
-        if (!stored) {
+        if (!storedEmail) {
             router.replace(flow === "signup" ? "/signup" : "/forgot-password");
             return;
         }
 
-        setEmail(stored);
+        setEmail(storedEmail);
         restartOtpTimer();
-    }, [flow, router, storageKey]);
+
+        // ✅ NEW: if signup and pendingOrder not in query -> try localStorage
+        if (flow === "signup" && !pendingOrderFromQuery) {
+            const storedToken = (() => {
+                try {
+                    return localStorage.getItem("pendingOrderToken");
+                } catch {
+                    return null;
+                }
+            })();
+            if (storedToken) setPendingOrderToken(storedToken);
+        } else {
+            // if query has it — persist it (so refresh won't lose it)
+            if (flow === "signup" && pendingOrderFromQuery) {
+                try {
+                    localStorage.setItem("pendingOrderToken", pendingOrderFromQuery);
+                } catch {}
+            }
+        }
+    }, [flow, router, storageKey, pendingOrderFromQuery]);
 
     useEffect(() => {
         if (!email) return;
@@ -84,7 +111,6 @@ function VerifyCodeInner() {
     }
 
     const verify = async () => {
-        // защита от двойного клика/двойного сабмита
         if (loading) return;
 
         setStatus(null);
@@ -133,6 +159,36 @@ function VerifyCodeInner() {
                 } catch {}
             }
 
+            // ✅ NEW: signup + pendingOrder => link order and redirect to success
+            if (flow === "signup" && pendingOrderToken) {
+                try {
+                    const orderId = await linkOrderToUser(pendingOrderToken);
+                    resetBooking();
+
+                    // clean storage
+                    try {
+                        localStorage.removeItem("pendingOrderToken");
+                    } catch {}
+
+                    try {
+                        localStorage.removeItem(storageKey);
+                    } catch {}
+
+                    router.replace(`/booking/success?orderId=${encodeURIComponent(orderId)}`);
+                    return;
+                } catch {
+                    // fallback
+                    try {
+                        localStorage.removeItem("pendingOrderToken");
+                    } catch {}
+                    try {
+                        localStorage.removeItem(storageKey);
+                    } catch {}
+                    router.replace("/account/orders");
+                    return;
+                }
+            }
+
             // clean localStorage only after everything is ok
             try {
                 localStorage.removeItem(storageKey);
@@ -141,7 +197,6 @@ function VerifyCodeInner() {
             if (flow === "signup") {
                 router.replace("/set-password");
             } else {
-                // ✅ делаем флоу явным в URL (полезно для middleware исключения)
                 router.replace("/reset-password?flow=recovery&recovery=1");
             }
         } finally {
@@ -207,6 +262,15 @@ function VerifyCodeInner() {
                 <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
             </p>
 
+            {/* ✅ NEW: tiny info block (same style language) */}
+            {flow === "signup" && pendingOrderToken ? (
+                <div className="mt-6 rounded-2xl border bg-[var(--input-bg)] border-[var(--input-border)] px-4 py-3 backdrop-blur">
+                    <p className="text-sm text-[color:var(--muted)]">
+                        ✓ Booking detected — after verification it will be linked to your account.
+                    </p>
+                </div>
+            ) : null}
+
             <div className="mt-10 space-y-4">
                 <input
                     inputMode="numeric"
@@ -225,7 +289,8 @@ function VerifyCodeInner() {
 
                 <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
           <span>
-            Code expires in <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
+            Code expires in{" "}
+              <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
           </span>
                     <span>
             {resendDisabled ? (
@@ -239,7 +304,6 @@ function VerifyCodeInner() {
           </span>
                 </div>
 
-                {/* Verify: light чёрная, dark белая */}
                 <button
                     type="button"
                     onClick={verify}
@@ -254,7 +318,6 @@ function VerifyCodeInner() {
                     {loading ? "Verifying…" : "Verify"}
                 </button>
 
-                {/* Resend: стекло */}
                 <button
                     type="button"
                     onClick={resend}
@@ -272,7 +335,6 @@ function VerifyCodeInner() {
                     <p
                         className={[
                             "text-sm",
-                            // ✅ ok: light black, dark white
                             status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90",
                         ].join(" ")}
                     >

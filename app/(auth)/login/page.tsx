@@ -111,8 +111,8 @@ export default function LoginClient() {
                     disabled={!isValid || isSubmitting}
                     className="
     w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-    bg-white text-black
-    dark:bg-black dark:text-white
+    bg-black text-white
+    dark:bg-white dark:text-black
     hover:opacity-90
     disabled:opacity-40 disabled:cursor-not-allowed
   "

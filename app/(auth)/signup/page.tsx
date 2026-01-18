@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createClient } from "@/lib/supabase/client";
 import { signupEmailSchema, type SignupEmailValues } from "@/lib/validators";
+import { useBookingStore } from "@/lib/booking/store";
 
 export default function SignupClient() {
     const router = useRouter();
-    const supabase = createClient();
+    const sp = useSearchParams();
+
+    const supabase = useMemo(() => createClient(), []);
+    const { reset: resetBooking } = useBookingStore();
+
+    const prefillEmail = sp.get("email") || "";
+    const pendingOrderToken = sp.get("pendingOrder") || "";
 
     const {
         register,
@@ -19,7 +26,7 @@ export default function SignupClient() {
         formState: { errors, isSubmitting, isValid, submitCount },
     } = useForm<SignupEmailValues>({
         resolver: zodResolver(signupEmailSchema),
-        defaultValues: { email: "" },
+        defaultValues: { email: prefillEmail },
         mode: "onChange",
     });
 
@@ -38,7 +45,9 @@ export default function SignupClient() {
 
         const { error } = await supabase.auth.signInWithOtp({
             email: values.email,
-            options: { shouldCreateUser: true },
+            options: {
+                shouldCreateUser: true,
+            },
         });
 
         if (error) {
@@ -57,9 +66,20 @@ export default function SignupClient() {
 
         try {
             localStorage.setItem("pendingEmail", values.email);
+            if (pendingOrderToken) localStorage.setItem("pendingOrderToken", pendingOrderToken);
         } catch {}
 
-        router.replace("/verify-code?flow=signup");
+        // если есть pendingOrder — мы считаем букинг “сохранённым” и можем очистить локальный store
+        if (pendingOrderToken) {
+            resetBooking();
+        }
+
+        const qs = new URLSearchParams();
+        qs.set("flow", "signup");
+        if (pendingOrderToken) qs.set("pendingOrder", pendingOrderToken);
+        qs.set("email", values.email);
+
+        router.replace(`/verify-code?${qs.toString()}`);
     };
 
     return (
@@ -69,9 +89,24 @@ export default function SignupClient() {
             </h1>
 
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
-                We sent a verification code to{" "}
-                <span className="text-[color:var(--text)]/90">{email}</span>
+                Enter your email — we’ll send you a verification code.
+                {pendingOrderToken ? (
+                    <>
+                        {" "}
+                        <span className="text-[color:var(--text)]/90">
+              Your booking will be saved to your account.
+            </span>
+                    </>
+                ) : null}
             </p>
+
+            {pendingOrderToken ? (
+                <div className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
+                    <p className="text-sm text-[color:var(--muted)]">
+                        ✓ Booking detected — after verification it will appear in your order history.
+                    </p>
+                </div>
+            ) : null}
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
@@ -91,7 +126,6 @@ export default function SignupClient() {
                     {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
 
-                {/* кнопка: light чёрная, dark белая */}
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
@@ -109,9 +143,7 @@ export default function SignupClient() {
                     <p
                         className={[
                             "text-sm",
-                            status.type === "ok"
-                                ? "text-[color:var(--status-ok)]"
-                                : "text-red-500/90",
+                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
                         ].join(" ")}
                     >
                         {status.msg}
@@ -120,7 +152,10 @@ export default function SignupClient() {
 
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Already have an account?{" "}
-                    <a className="text-[color:var(--text)] hover:underline" href="/login">
+                    <a
+                        className="text-[color:var(--text)] hover:underline"
+                        href={pendingOrderToken ? `/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : "/login"}
+                    >
                         Log in
                     </a>
                 </p>
