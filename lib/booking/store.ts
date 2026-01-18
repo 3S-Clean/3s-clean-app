@@ -1,76 +1,77 @@
 // lib/booking/store.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ApartmentSizeId, PeopleCountId, ServiceId, TimeSlotId } from "@/lib/booking/config";
 
-export interface BookingExtras {
-    [key: string]: number;
-}
-
-export interface BookingFormData {
+export interface FormData {
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
     address: string;
+
     city: string;
     postalCode: string;
+
     notes: string;
 }
 
-export interface BookingState {
+interface BookingState {
     step: number;
-
-    postcode: string;
-    postcodeVerified: boolean;
-
-    selectedService: ServiceId | null;
-
-    apartmentSize: ApartmentSizeId | null;
-    peopleCount: PeopleCountId | null;
-    hasPets: boolean;
-    hasKids: boolean;
-    hasAllergies: boolean;
-    allergyNote: string;
-
-    extras: BookingExtras;
-
-    formData: BookingFormData;
-    selectedDate: string | null;
-    selectedTime: TimeSlotId | null;
-
-    pendingToken: string | null;
-
     setStep: (step: number) => void;
+
     nextStep: () => void;
     prevStep: () => void;
 
+    postcode: string;
     setPostcode: (postcode: string) => void;
+
+    // ✅ удобный синк, чтобы не забывать прокидывать postalCode в formData
+    setPostcodeAndForm: (postcode: string) => void;
+
+    postcodeVerified: boolean;
     setPostcodeVerified: (verified: boolean) => void;
 
-    setSelectedService: (service: ServiceId | null) => void;
+    selectedService: string | null;
+    setSelectedService: (service: string | null) => void;
 
-    setApartmentSize: (size: ApartmentSizeId | null) => void;
-    setPeopleCount: (count: PeopleCountId | null) => void;
+    apartmentSize: string | null;
+    setApartmentSize: (size: string | null) => void;
+
+    peopleCount: string | null;
+    setPeopleCount: (count: string | null) => void;
+
+    hasPets: boolean;
     setHasPets: (hasPets: boolean) => void;
+
+    hasKids: boolean;
     setHasKids: (hasKids: boolean) => void;
+
+    hasAllergies: boolean;
     setHasAllergies: (hasAllergies: boolean) => void;
+
+    allergyNote: string;
     setAllergyNote: (note: string) => void;
 
+    extras: Record<string, number>;
+    setExtras: (extras: Record<string, number>) => void;
     updateExtra: (extraId: string, delta: number) => void;
-    setExtra: (extraId: string, qty: number) => void;
-    clearExtras: () => void;
 
-    setFormData: (data: Partial<BookingFormData>) => void;
+    formData: FormData;
+    setFormData: (data: Partial<FormData>) => void;
+
+    selectedDate: string | null;
     setSelectedDate: (date: string | null) => void;
-    setSelectedTime: (time: TimeSlotId | null) => void;
 
+    selectedTime: string | null;
+    setSelectedTime: (time: string | null) => void;
+
+    pendingToken: string | null;
     setPendingToken: (token: string | null) => void;
 
-    reset: () => void;
+    resetBooking: () => void;
 }
 
-const makeInitialFormData = (): BookingFormData => ({
+const initialFormData: FormData = {
     firstName: "",
     lastName: "",
     email: "",
@@ -79,113 +80,94 @@ const makeInitialFormData = (): BookingFormData => ({
     city: "",
     postalCode: "",
     notes: "",
-});
-
-const initialState = {
-    step: 0,
-    postcode: "",
-    postcodeVerified: false,
-
-    selectedService: null as ServiceId | null,
-
-    apartmentSize: null as ApartmentSizeId | null,
-    peopleCount: null as PeopleCountId | null,
-    hasPets: false,
-    hasKids: false,
-    hasAllergies: false,
-    allergyNote: "",
-
-    extras: {} as BookingExtras,
-
-    formData: makeInitialFormData(),
-    selectedDate: null as string | null,
-    selectedTime: null as TimeSlotId | null,
-
-    pendingToken: null as string | null,
 };
 
 export const useBookingStore = create<BookingState>()(
     persist(
-        (set) => ({
-            ...initialState,
-
+        (set, get) => ({
+            step: 0,
             setStep: (step) => set({ step }),
-            nextStep: () => set((state) => ({ step: state.step + 1 })),
-            prevStep: () => set((state) => ({ step: Math.max(0, state.step - 1) })),
 
+            nextStep: () => set({ step: get().step + 1 }),
+            prevStep: () => set({ step: Math.max(0, get().step - 1) }),
+
+            postcode: "",
             setPostcode: (postcode) => set({ postcode }),
+
+            setPostcodeAndForm: (postcode) =>
+                set((state) => ({
+                    postcode,
+                    formData: { ...state.formData, postalCode: postcode },
+                })),
+
+            postcodeVerified: false,
             setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
 
+            selectedService: null,
             setSelectedService: (selectedService) => set({ selectedService }),
 
+            apartmentSize: null,
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
+
+            peopleCount: null,
             setPeopleCount: (peopleCount) => set({ peopleCount }),
+
+            hasPets: false,
             setHasPets: (hasPets) => set({ hasPets }),
+
+            hasKids: false,
             setHasKids: (hasKids) => set({ hasKids }),
+
+            hasAllergies: false,
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
+
+            allergyNote: "",
             setAllergyNote: (allergyNote) => set({ allergyNote }),
 
+            extras: {},
+            setExtras: (extras) => set({ extras }),
             updateExtra: (extraId, delta) =>
-                set((state) => {
-                    const next = Math.max(0, (state.extras[extraId] || 0) + delta);
-                    const extras = { ...state.extras };
-                    if (next === 0) delete extras[extraId];
-                    else extras[extraId] = next;
-                    return { extras };
-                }),
+                set((state) => ({
+                    extras: {
+                        ...state.extras,
+                        [extraId]: Math.max(0, (state.extras[extraId] || 0) + delta),
+                    },
+                })),
 
-            setExtra: (extraId, qty) =>
-                set((state) => {
-                    const q = Math.max(0, Number(qty) || 0);
-                    const extras = { ...state.extras };
-                    if (q === 0) delete extras[extraId];
-                    else extras[extraId] = q;
-                    return { extras };
-                }),
-
-            clearExtras: () => set({ extras: {} }),
-
+            formData: initialFormData,
             setFormData: (data) =>
                 set((state) => ({
                     formData: { ...state.formData, ...data },
                 })),
 
-            setSelectedDate: (selectedDate) => set({ selectedDate, selectedTime: null }),
+            selectedDate: null,
+            setSelectedDate: (selectedDate) => set({ selectedDate }),
+
+            selectedTime: null,
             setSelectedTime: (selectedTime) => set({ selectedTime }),
 
+            pendingToken: null,
             setPendingToken: (pendingToken) => set({ pendingToken }),
 
-            reset: () =>
+            resetBooking: () =>
                 set({
-                    ...initialState,
-                    formData: makeInitialFormData(),
+                    step: 0,
+                    postcode: "",
+                    postcodeVerified: false,
+                    selectedService: null,
+                    apartmentSize: null,
+                    peopleCount: null,
+                    hasPets: false,
+                    hasKids: false,
+                    hasAllergies: false,
+                    allergyNote: "",
+                    extras: {},
+                    formData: initialFormData,
+                    selectedDate: null,
+                    selectedTime: null,
+                    pendingToken: null,
                 }),
         }),
-        {
-            name: "3s-booking-storage",
-            version: 1,
-            partialize: (state) => ({
-                step: state.step,
-                postcode: state.postcode,
-                postcodeVerified: state.postcodeVerified,
-
-                selectedService: state.selectedService,
-                apartmentSize: state.apartmentSize,
-                peopleCount: state.peopleCount,
-
-                hasPets: state.hasPets,
-                hasKids: state.hasKids,
-                hasAllergies: state.hasAllergies,
-                allergyNote: state.allergyNote,
-
-                extras: state.extras,
-
-                formData: state.formData,
-                selectedDate: state.selectedDate,
-                selectedTime: state.selectedTime,
-
-                pendingToken: state.pendingToken,
-            }),
-        }
+        { name: "3s-booking-storage" }
     )
 );
