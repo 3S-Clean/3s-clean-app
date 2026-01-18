@@ -1,3 +1,4 @@
+// lib/booking/store.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ApartmentSizeId, PeopleCountId, ServiceId, TimeSlotId } from "@/lib/booking/config";
@@ -18,17 +19,13 @@ export interface BookingFormData {
 }
 
 export interface BookingState {
-    // Step tracking
     step: number;
 
-    // Step 0: Postcode
     postcode: string;
     postcodeVerified: boolean;
 
-    // Step 1: Service
     selectedService: ServiceId | null;
 
-    // Step 2: Apartment details
     apartmentSize: ApartmentSizeId | null;
     peopleCount: PeopleCountId | null;
     hasPets: boolean;
@@ -36,19 +33,14 @@ export interface BookingState {
     hasAllergies: boolean;
     allergyNote: string;
 
-    // Step 3: Extras
     extras: BookingExtras;
 
-    // Step 4: Contact & Schedule
     formData: BookingFormData;
     selectedDate: string | null; // YYYY-MM-DD
-    selectedTime: TimeSlotId | null;
+    selectedTime: TimeSlotId | null; // "HH:mm"
 
-    // Persisted across signup -> verify -> set-password
-    // This must survive page reload.
     pendingToken: string | null;
 
-    // Actions
     setStep: (step: number) => void;
     nextStep: () => void;
     prevStep: () => void;
@@ -78,7 +70,7 @@ export interface BookingState {
     reset: () => void;
 }
 
-const initialFormData: BookingFormData = {
+const makeInitialFormData = (): BookingFormData => ({
     firstName: "",
     lastName: "",
     email: "",
@@ -87,51 +79,29 @@ const initialFormData: BookingFormData = {
     city: "",
     postalCode: "",
     notes: "",
-};
+});
 
-const initialState: Omit<
-    BookingState,
-    | "setStep"
-    | "nextStep"
-    | "prevStep"
-    | "setPostcode"
-    | "setPostcodeVerified"
-    | "setSelectedService"
-    | "setApartmentSize"
-    | "setPeopleCount"
-    | "setHasPets"
-    | "setHasKids"
-    | "setHasAllergies"
-    | "setAllergyNote"
-    | "updateExtra"
-    | "setExtra"
-    | "clearExtras"
-    | "setFormData"
-    | "setSelectedDate"
-    | "setSelectedTime"
-    | "setPendingToken"
-    | "reset"
-> = {
+const initialState = {
     step: 0,
     postcode: "",
     postcodeVerified: false,
 
-    selectedService: null,
+    selectedService: null as ServiceId | null,
 
-    apartmentSize: null,
-    peopleCount: null,
+    apartmentSize: null as ApartmentSizeId | null,
+    peopleCount: null as PeopleCountId | null,
     hasPets: false,
     hasKids: false,
     hasAllergies: false,
     allergyNote: "",
 
-    extras: {},
+    extras: {} as BookingExtras,
 
-    formData: initialFormData,
-    selectedDate: null,
-    selectedTime: null,
+    formData: makeInitialFormData(),
+    selectedDate: null as string | null,
+    selectedTime: null as TimeSlotId | null,
 
-    pendingToken: null,
+    pendingToken: null as string | null,
 };
 
 export const useBookingStore = create<BookingState>()(
@@ -175,11 +145,9 @@ export const useBookingStore = create<BookingState>()(
 
             clearExtras: () => set({ extras: {} }),
 
-            setFormData: (data) =>
-                set((state) => ({
-                    formData: { ...state.formData, ...data },
-                })),
+            setFormData: (data) => set((state) => ({ formData: { ...state.formData, ...data } })),
 
+            // при смене даты — сбрасываем время
             setSelectedDate: (selectedDate) => set({ selectedDate, selectedTime: null }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
 
@@ -188,13 +156,15 @@ export const useBookingStore = create<BookingState>()(
             reset: () =>
                 set({
                     ...initialState,
-                    formData: initialFormData,
+                    formData: makeInitialFormData(),
                 }),
         }),
         {
             name: "3s-booking-storage",
             version: 1,
             partialize: (state) => ({
+                step: state.step,
+
                 postcode: state.postcode,
                 postcodeVerified: state.postcodeVerified,
 

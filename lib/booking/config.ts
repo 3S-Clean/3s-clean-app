@@ -1,18 +1,18 @@
 // lib/booking/config.ts
-
 // =============================================
 // 3S Clean Booking Configuration (FINAL)
+// - Matches Supabase Schema (pending_token UUID, service_areas.postal_code, notify_requests.postal_code)
+// - 15-min TIME_SLOTS (08:00–17:45)
 // =============================================
 
-// ---- Types (строгие id, чтобы TS помогал) ----
 export type ServiceId = "regular" | "initial" | "complete" | "handover";
 export type ApartmentSizeId = "up-to-60" | "60-80" | "80-110" | "over-110";
 export type PeopleCountId = "1-2" | "3-4" | "5+";
 
 export type ExtrasMap = Record<string, number>;
 
-// Final prices from spreadsheet (Euro incl. VAT)
-// Structure: [size][service][people][pet: true/false]
+// Final prices (EUR, VAT incl.)
+// Structure: [size][service][people] -> { noPet, pet }
 export const FINAL_PRICES: Record<
     ApartmentSizeId,
     Record<ServiceId, Record<PeopleCountId, { noPet: number; pet: number }>>
@@ -107,16 +107,14 @@ export const FINAL_PRICES: Record<
     },
 };
 
-// Hours per service and apartment size
+// Hours per service & size
 export const HOURS_MATRIX: Record<ServiceId, Record<ApartmentSizeId, number>> = {
     initial: { "up-to-60": 3.5, "60-80": 4, "80-110": 5, "over-110": 6 },
     regular: { "up-to-60": 2.5, "60-80": 3, "80-110": 4, "over-110": 5 },
     complete: { "up-to-60": 4, "60-80": 5, "80-110": 6, "over-110": 7 },
-    // ✅ как в старом варианте: 80-110 = 7
     handover: { "up-to-60": 4.5, "60-80": 5.5, "80-110": 7, "over-110": 8 },
 };
 
-// Service types
 export interface Service {
     id: ServiceId;
     name: string;
@@ -180,40 +178,25 @@ export const SERVICES: Service[] = [
     },
 ];
 
-// Apartment sizes
-export interface ApartmentSize {
-    id: ApartmentSizeId;
-    name: string;
-    label: string;
-}
+export const APARTMENT_SIZES = [
+    { id: "up-to-60", label: "< 60 m²" },
+    { id: "60-80", label: "60-80 m²" },
+    { id: "80-110", label: "80-110 m²" },
+    { id: "over-110", label: "> 110 m²" },
+] as const;
 
-export const APARTMENT_SIZES: ApartmentSize[] = [
-    { id: "up-to-60", name: "Up to 60 m²", label: "< 60 m²" },
-    { id: "60-80", name: "60-80 m²", label: "60-80 m²" },
-    { id: "80-110", name: "80-110 m²", label: "80-110 m²" },
-    { id: "over-110", name: "Over 110 m²", label: "> 110 m²" },
-];
+export const PEOPLE_OPTIONS = [
+    { id: "1-2", label: "1-2" },
+    { id: "3-4", label: "3-4" },
+    { id: "5+", label: "5+" },
+] as const;
 
-// People options
-export interface PeopleOption {
-    id: PeopleCountId;
-    name: string;
-    label: string;
-}
-
-export const PEOPLE_OPTIONS: PeopleOption[] = [
-    { id: "1-2", name: "1-2 people", label: "1-2" },
-    { id: "3-4", name: "3-4 people", label: "3-4" },
-    { id: "5+", name: "5+ people", label: "5+" },
-];
-
-// Extra services
 export interface Extra {
     id: string;
     name: string;
     price: number;
     hours: number;
-    icon: string; // ✅ ключ, не эмодзи
+    icon: string;
     unit: string;
 }
 
@@ -232,7 +215,7 @@ export const EXTRAS: Extra[] = [
     { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, icon: "sofa", unit: "seat" },
 ];
 
-// Time slots (✅ 15-minute intervals, 8:00 - 17:45)
+// ✅ 15-minute slots, 8:00 - 17:45
 export type TimeSlotId = string;
 
 export interface TimeSlot {
@@ -252,70 +235,55 @@ export const TIME_SLOTS: TimeSlot[] = Array.from({ length: 40 }, (_, i) => {
 
 export const WORKING_HOURS_END = 18;
 
-// Allowed postal codes (Stuttgart area) — ⚠️ если ты теперь проверяешь через DB service_areas, можно это не использовать
-export const ALLOWED_POSTAL_CODES = new Set<string>([
-    "70173", "70174", "70176", "70178", "70180", "70182", "70184", "70186", "70188",
-    "70190", "70191", "70192", "70193", "70195", "70197", "70199",
-    "70327", "70329", "70372", "70374", "70376", "70378",
-    "70435", "70437", "70439",
-    "70469", "70499",
-    "70563", "70565", "70567", "70569",
-    "70597", "70599",
-]);
-
-export function isAllowedPostalCode(code: string): boolean {
-    const cleaned = (code ?? "").trim();
-    return ALLOWED_POSTAL_CODES.has(cleaned);
-}
-
-// Baden-Württemberg holidays
 export const HOLIDAYS: string[] = [
-    // 2025
     "2025-01-01", "2025-01-06", "2025-04-18", "2025-04-21", "2025-05-01",
     "2025-05-29", "2025-06-09", "2025-06-19", "2025-10-03", "2025-11-01",
     "2025-12-25", "2025-12-26",
-    // 2026
     "2026-01-01", "2026-01-06", "2026-04-03", "2026-04-06", "2026-05-01",
     "2026-05-14", "2026-05-25", "2026-06-04", "2026-10-03", "2026-11-01",
     "2026-12-25", "2026-12-26",
 ];
 
-// Helper functions
+export const isHoliday = (dateStr: string) => HOLIDAYS.includes(dateStr);
+
+export const getBasePrice = (service: string, size: string, people: string, hasPets: boolean) => {
+    const p = (FINAL_PRICES as any)[size]?.[service]?.[people];
+    return p ? (hasPets ? p.pet : p.noPet) : 0;
+};
+
+export const getEstimatedHours = (service: string, size: string) => (HOURS_MATRIX as any)[service]?.[size] || 0;
+
+// ✅ Эти 2 экспорта нужны actions.ts (и убирают твою ошибку TS2305)
 export function calculatePrice(
     serviceId: ServiceId,
     sizeId: ApartmentSizeId,
     peopleId: PeopleCountId,
     hasPets: boolean,
     extras: ExtrasMap
-): { basePrice: number; extrasPrice: number; totalPrice: number } {
-    const petKey = hasPets ? "pet" : "noPet";
-    const basePrice = FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[petKey] ?? 0;
+) {
+    const basePrice = FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[hasPets ? "pet" : "noPet"] ?? 0;
 
     let extrasPrice = 0;
     for (const [extraId, quantity] of Object.entries(extras ?? {})) {
         const q = Number(quantity);
         if (!Number.isFinite(q) || q <= 0) continue;
-
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (extra) extrasPrice += extra.price * q;
     }
 
-    const total = basePrice + extrasPrice;
-
     return {
         basePrice: round2(basePrice),
         extrasPrice: round2(extrasPrice),
-        totalPrice: round2(total),
+        totalPrice: round2(basePrice + extrasPrice),
     };
 }
 
-export function calculateHours(serviceId: ServiceId, sizeId: ApartmentSizeId, extras: ExtrasMap): number {
+export function calculateHours(serviceId: ServiceId, sizeId: ApartmentSizeId, extras: ExtrasMap) {
     let hours = HOURS_MATRIX[serviceId]?.[sizeId] ?? 0;
 
     for (const [extraId, quantity] of Object.entries(extras ?? {})) {
         const q = Number(quantity);
         if (!Number.isFinite(q) || q <= 0) continue;
-
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (extra) hours += extra.hours * q;
     }
@@ -323,29 +291,7 @@ export function calculateHours(serviceId: ServiceId, sizeId: ApartmentSizeId, ex
     return round2(hours);
 }
 
-export function formatHours(hours: number): string {
-    const wholeHours = Math.floor(hours);
-    const minutes = Math.round((hours - wholeHours) * 60);
-
-    if (minutes === 0) return `${wholeHours}h`;
-    if (wholeHours === 0) return `${minutes}min`;
-    return `${wholeHours}h ${minutes}min`;
-}
-
-export function isHoliday(dateKey: string): boolean {
-    return HOLIDAYS.includes(dateKey);
-}
-
-export function isSunday(date: Date): boolean {
-    return date.getDay() === 0;
-}
-
-// YYYY-MM-DD
-export function formatDateKey(year: number, month: number, day: number): string {
-    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
-// "HH:mm" + hours => "HH:mm"
+// "HH:mm" + hours -> "HH:mm"
 export function addHoursToTime(time: string, hours: number): string {
     const [hStr, mStr = "0"] = (time ?? "").split(":");
     const h = Number(hStr);
@@ -359,6 +305,6 @@ export function addHoursToTime(time: string, hours: number): string {
     return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
 }
 
-function round2(n: number): number {
+export function round2(n: number): number {
     return Math.round(n * 100) / 100;
 }

@@ -1,3 +1,4 @@
+// lib/booking/actions.ts
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -8,14 +9,10 @@ import {
     type ServiceId,
     type ApartmentSizeId,
     type PeopleCountId,
+    type ExtrasMap,
 } from "@/lib/booking/config";
 
-export type BookingStatus =
-    | "pending"
-    | "confirmed"
-    | "in_progress"
-    | "completed"
-    | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "in_progress" | "completed" | "cancelled";
 
 export type ExistingBooking = {
     scheduled_date: string; // YYYY-MM-DD
@@ -47,7 +44,7 @@ export type CreateOrderInput = {
     hasAllergies: boolean;
     allergyNotes?: string;
 
-    extras: Record<string, number>;
+    extras: ExtrasMap;
 
     scheduledDate: string; // YYYY-MM-DD
     scheduledTime: string; // HH:mm
@@ -73,10 +70,7 @@ function normalizeEmail(value: string) {
 /** POSTCODE CHECK */
 export async function checkPostalCode(
     postalCodeRaw: string
-): Promise<{
-    available: boolean;
-    area?: { postal_code: string; city: string; district: string | null };
-}> {
+): Promise<{ available: boolean; area?: { postal_code: string; city: string; district: string | null } }> {
     const postalCode = normalizePostcode(postalCodeRaw);
     if (postalCode.length !== 5) return { available: false };
 
@@ -102,10 +96,7 @@ export async function checkPostalCode(
 }
 
 /** NOTIFY REQUEST */
-export async function createNotifyRequest(
-    emailRaw: string,
-    postalCodeRaw: string
-): Promise<{ ok: boolean }> {
+export async function createNotifyRequest(emailRaw: string, postalCodeRaw: string): Promise<{ ok: boolean }> {
     const email = normalizeEmail(emailRaw);
     const postalCode = normalizePostcode(postalCodeRaw);
 
@@ -121,10 +112,7 @@ export async function createNotifyRequest(
 }
 
 /** EXISTING BOOKINGS */
-export async function getExistingBookings(
-    startDate: string,
-    endDate: string
-): Promise<ExistingBooking[]> {
+export async function getExistingBookings(startDate: string, endDate: string): Promise<ExistingBooking[]> {
     const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase
@@ -167,12 +155,14 @@ export async function createOrder(
 
     const estimatedHours = calculateHours(input.serviceType, input.apartmentSize, input.extras);
 
+    // extras -> только валидные qty
     const extrasQuantities: Record<string, number> = {};
     for (const [id, qty] of Object.entries(input.extras ?? {})) {
         const n = Number(qty);
         if (Number.isFinite(n) && n > 0) extrasQuantities[id] = n;
     }
 
+    // breakdown (для записи в jsonb)
     const priceBreakdown = Object.entries(extrasQuantities).map(([id, quantity]) => {
         const extra = EXTRAS.find((e) => e.id === id);
         const unitPrice = extra ? Number(extra.price) : 0;
@@ -186,12 +176,14 @@ export async function createOrder(
     });
 
     const customerPostalCode = normalizePostcode(input.customerPostalCode);
+    const customerEmail = normalizeEmail(input.customerEmail);
 
     const { data: order, error } = await supabase
         .from("orders")
         .insert({
             user_id: user?.id ?? null,
 
+            // pending_token НЕ задаём — его сгенерит БД (uuid default gen_random_uuid())
             service_type: input.serviceType,
             apartment_size: input.apartmentSize,
             people_count: input.peopleCount,
@@ -210,7 +202,7 @@ export async function createOrder(
 
             customer_first_name: input.customerFirstName,
             customer_last_name: input.customerLastName ?? null,
-            customer_email: input.customerEmail,
+            customer_email: customerEmail,
             customer_phone: input.customerPhone,
             customer_address: input.customerAddress,
             customer_city: input.customerCity ?? null,
@@ -237,7 +229,7 @@ export async function createOrder(
 
 /**
  * LINK ORDER TO USER
- * ✅ ВАЖНО: возвращаем СТРОКУ orderId
+ * RPC по твоему SQL: public.link_order_to_user(p_token uuid) returns uuid
  */
 export async function linkOrderToUser(pendingToken: string): Promise<string> {
     const token = (pendingToken ?? "").trim();
@@ -247,19 +239,21 @@ export async function linkOrderToUser(pendingToken: string): Promise<string> {
 
     if (error || !data) throw new Error("Failed to link order to user");
 
-    // data может быть uuid/string — приводим к string
     return String(data);
 }
 
-/** SUCCESS FETCH */
+/** SUCCESS FETCH (public-safe by token) */
 export async function getOrderSuccess(pendingToken: string) {
     const token = (pendingToken ?? "").trim();
     const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase.rpc("get_order_success", { p_token: token });
 
-    if (error || !data || !Array.isArray(data) || data.length === 0) return null;
-    return data[0];
+    if (error || !data) return null;
+
+    // supabase иногда вернёт object, иногда array — поддержим оба
+    const row = Array.isArray(data) ? data[0] : data;
+    return row ?? null;
 }
 
 /** USER ORDERS */
