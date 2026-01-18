@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import AccountClient from "@/components/account/AccountClient";
 
 export default async function AccountPage() {
-    const supabase = await createSupabaseServerClient(); // ✅ теперь await
+    const supabase = await createSupabaseServerClient();
 
     const {
         data: { user },
