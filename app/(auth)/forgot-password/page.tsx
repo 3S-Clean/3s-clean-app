@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -37,7 +39,7 @@ export default function ForgotPasswordPage() {
     const onSubmit = async (values: ForgotPasswordValues) => {
         setStatus(null);
 
-        const cleanEmail = values.email.trim();
+        const cleanEmail = values.email.trim().toLowerCase();
 
         const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
 
@@ -81,7 +83,6 @@ export default function ForgotPasswordPage() {
                     {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
 
-                {/* light чёрная, dark белая */}
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { linkOrderToUser } from "@/lib/booking/actions";
@@ -14,9 +14,7 @@ export default function RegisterPage() {
     const { reset: resetBooking } = useBookingStore();
 
     // поддерживаем оба варианта параметра, чтобы ничего не ломать
-    const pendingOrderToken =
-        (sp.get("pendingOrder") ?? sp.get("token") ?? "").trim();
-
+    const pendingOrderToken = (sp.get("pendingOrder") ?? sp.get("token") ?? "").trim();
     const prefillEmail = (sp.get("email") ?? "").trim();
 
     const supabase = useMemo(() => createClient(), []);
@@ -29,21 +27,20 @@ export default function RegisterPage() {
     const [error, setError] = useState("");
     const [step, setStep] = useState<Step>("register");
 
-    async function doLinkAndRedirect() {
+    const doLinkAndRedirect = useCallback(async () => {
         if (!pendingOrderToken) {
             router.push("/account");
             return;
         }
 
         try {
-            await linkOrderToUser(pendingOrderToken);
+            const orderId = await linkOrderToUser(pendingOrderToken); // ✅ string orderId
             resetBooking();
-            router.replace(`/booking/success?token=${encodeURIComponent(pendingOrderToken)}`);
+            router.replace(`/booking/success?orderId=${encodeURIComponent(orderId)}`); // ✅ orderId
         } catch {
-            // если заказ уже привязан / токен не найден — просто кидаем в кабинет
             router.replace("/account/orders");
         }
-    }
+    }, [pendingOrderToken, router, resetBooking]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -118,10 +115,8 @@ export default function RegisterPage() {
         return () => {
             data.subscription.unsubscribe();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pendingOrderToken]);
+    }, [supabase, doLinkAndRedirect]);
 
-    // ✅ ВАЖНО: layout уже рисует card/центрирование. Здесь — только контент карточки.
     if (step === "verify") {
         return (
             <div>
@@ -135,7 +130,10 @@ export default function RegisterPage() {
 
                 <div
                     className="rounded-xl p-4 mb-6"
-                    style={{ background: "color-mix(in oklab, var(--primary) 10%, transparent)", border: "1px solid var(--border)" }}
+                    style={{
+                        background: "color-mix(in oklab, var(--primary) 10%, transparent)",
+                        border: "1px solid var(--border)",
+                    }}
                 >
                     <p className="text-sm">
                         Click the link in your email to verify your account. Your booking will be automatically saved to your account.
@@ -145,7 +143,10 @@ export default function RegisterPage() {
                 {pendingOrderToken && (
                     <div
                         className="rounded-xl p-4 mb-6"
-                        style={{ background: "color-mix(in oklab, #22c55e 12%, transparent)", border: "1px solid var(--border)" }}
+                        style={{
+                            background: "color-mix(in oklab, #22c55e 12%, transparent)",
+                            border: "1px solid var(--border)",
+                        }}
                     >
                         <p className="text-sm">
                             ✓ Your booking is saved! It will appear in your order history after verification.
@@ -183,20 +184,19 @@ export default function RegisterPage() {
             <div className="text-center mb-8">
                 <h1 className="text-2xl font-semibold mb-2">Create your account</h1>
                 <p className="text-[color:var(--muted)]">
-                    {pendingOrderToken
-                        ? "Complete registration to save your booking"
-                        : "Join 3S Clean to manage your bookings"}
+                    {pendingOrderToken ? "Complete registration to save your booking" : "Join 3S Clean to manage your bookings"}
                 </p>
             </div>
 
             {pendingOrderToken && (
                 <div
                     className="rounded-xl p-4 mb-6"
-                    style={{ background: "color-mix(in oklab, #22c55e 12%, transparent)", border: "1px solid var(--border)" }}
+                    style={{
+                        background: "color-mix(in oklab, #22c55e 12%, transparent)",
+                        border: "1px solid var(--border)",
+                    }}
                 >
-                    <p className="text-sm">
-                        ✓ Your booking is ready! Create an account to save it to your order history.
-                    </p>
+                    <p className="text-sm">✓ Your booking is ready! Create an account to save it to your order history.</p>
                 </div>
             )}
 
@@ -256,9 +256,7 @@ export default function RegisterPage() {
             <p className="mt-6 text-center text-sm text-[color:var(--muted)]">
                 Already have an account?{" "}
                 <a
-                    href={`/auth/login${
-                        pendingOrderToken ? `?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : ""
-                    }`}
+                    href={`/auth/login${pendingOrderToken ? `?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : ""}`}
                     className="font-medium hover:underline"
                     style={{ color: "var(--foreground)" }}
                 >
