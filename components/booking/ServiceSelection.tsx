@@ -6,18 +6,7 @@ import { SERVICES, type ServiceId, calculateHours } from "@/lib/booking/config";
 import { Check } from "lucide-react";
 
 export default function ServiceSelection() {
-    const {
-        selectedService,
-        setSelectedService,
-        apartmentSize,
-        extras,
-        nextStep,
-    } = useBookingStore();
-
-    const previewHours = useMemo(() => {
-        if (!selectedService || !apartmentSize) return null;
-        return calculateHours(selectedService, apartmentSize, extras);
-    }, [selectedService, apartmentSize, extras]);
+    const { selectedService, setSelectedService, apartmentSize, extras, nextStep } = useBookingStore();
 
     function pick(id: ServiceId) {
         setSelectedService(id);
@@ -33,18 +22,23 @@ export default function ServiceSelection() {
                 {SERVICES.map((s) => {
                     const isSelected = selectedService === s.id;
 
-                    // светлая карточка / тёмная карточка
-                    const baseCard = s.isDark
-                        ? "bg-black text-white border-white/12"
-                        : "bg-white/70 text-black border-black/10";
+                    // ✅ hours считаем для КАЖДОЙ карточки (а не через selectedService)
+                    const hoursForCard = apartmentSize ? calculateHours(s.id, apartmentSize, extras) : null;
+
+                    // базовая тема карточки
+                    const baseCard = s.isDark ? "bg-black text-white border-white/12" : "bg-white/70 text-black border-black/10";
 
                     // выделение по твоим правилам:
                     // светлая — тёмный бордер + тёмная галочка
                     // тёмная — белый бордер + белая галочка
                     const selectedBorder = s.isDark ? "border-white" : "border-[#1A1A1A]";
-                    const checkWrap = s.isDark
+                    const checkWrapSelected = s.isDark
                         ? "border-white text-white"
                         : "border-[#1A1A1A] text-[#1A1A1A]";
+
+                    const checkWrapUnselected = s.isDark
+                        ? "border-white/18 text-white/40"
+                        : "border-black/12 text-black/30";
 
                     return (
                         <button
@@ -62,7 +56,7 @@ export default function ServiceSelection() {
                             <span
                                 className={[
                                     "absolute right-4 top-4 h-8 w-8 rounded-full border flex items-center justify-center",
-                                    isSelected ? checkWrap : s.isDark ? "border-white/18 text-white/40" : "border-black/12 text-black/30",
+                                    isSelected ? checkWrapSelected : checkWrapUnselected,
                                 ].join(" ")}
                             >
                 <Check className="h-4 w-4" />
@@ -88,14 +82,20 @@ export default function ServiceSelection() {
                             </div>
 
                             {/* Цена/время снизу — как ты просил */}
-                            <div className={s.isDark ? "mt-5 rounded-[18px] border border-white/10 bg-white/5 p-4" : "mt-5 rounded-[18px] border border-black/10 bg-white/60 p-4"}>
+                            <div
+                                className={
+                                    s.isDark
+                                        ? "mt-5 rounded-[18px] border border-white/10 bg-white/5 p-4"
+                                        : "mt-5 rounded-[18px] border border-black/10 bg-white/60 p-4"
+                                }
+                            >
                                 <div className={s.isDark ? "text-xl font-semibold tracking-tight text-white" : "text-xl font-semibold tracking-tight text-black"}>
                                     € {s.startingPrice.toFixed(2)}
                                 </div>
                                 <div className={s.isDark ? "mt-1 text-sm text-white/60" : "mt-1 text-sm text-black/55"}>
                                     inc. VAT{" "}
-                                    {previewHours != null ? (
-                                        <span className={s.isDark ? "text-white/50" : "text-black/45"}>• ~{previewHours}h</span>
+                                    {hoursForCard != null ? (
+                                        <span className={s.isDark ? "text-white/50" : "text-black/45"}>• ~{hoursForCard}h</span>
                                     ) : null}
                                 </div>
                             </div>

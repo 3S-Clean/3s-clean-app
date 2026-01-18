@@ -31,9 +31,7 @@ export default function BookingFooter({
             <div className="mx-auto w-full max-w-2xl px-4 py-4">
                 {/* Цена блоком как в твоём примере */}
                 <div className="rounded-[20px] border border-black/10 bg-white/60 px-4 py-3">
-                    <div className="text-xl font-semibold tracking-tight text-black">
-                        € {totalPrice.toFixed(2)}
-                    </div>
+                    <div className="text-xl font-semibold tracking-tight text-black">€ {totalPrice.toFixed(2)}</div>
                     <div className="text-sm text-black/55">
                         inc. VAT <span className="text-black/45">• ~{hours}h</span>
                     </div>

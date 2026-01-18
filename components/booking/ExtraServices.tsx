@@ -15,26 +15,26 @@ import {
     Shirt,
     Armchair,
     Package,
+    type LucideIcon,
 } from "lucide-react";
 
-function ExtraIcon({ id }: { id: string }) {
-    // безопасная мапа, без риска "иконки нет в lucide"
-    const map: Record<string, any> = {
-        "linen-single": Bed,
-        "linen-double": Bed,
-        oven: Flame,
-        fridge: Package,
-        freezer: Snowflake,
-        "windows-inside": AppWindow,
-        "windows-outside": AppWindow,
-        balcony: Trees,
-        limescale: Droplets,
-        cupboards: Archive,
-        wardrobe: Shirt,
-        sofa: Armchair,
-    };
+const EXTRA_ICON_MAP: Record<string, LucideIcon> = {
+    "linen-single": Bed,
+    "linen-double": Bed,
+    oven: Flame,
+    fridge: Package,
+    freezer: Snowflake,
+    "windows-inside": AppWindow,
+    "windows-outside": AppWindow,
+    balcony: Trees,
+    limescale: Droplets,
+    cupboards: Archive,
+    wardrobe: Shirt,
+    sofa: Armchair,
+};
 
-    const Icon = map[id] ?? Package;
+function ExtraIcon({ id }: { id: string }) {
+    const Icon = EXTRA_ICON_MAP[id] ?? Package;
     return <Icon className="h-5 w-5 text-black/70" />;
 }
 
@@ -50,6 +50,7 @@ export default function ExtraServices() {
                 <div className="grid gap-3">
                     {EXTRAS.map((x) => {
                         const qty = extras?.[x.id] ?? 0;
+
                         return (
                             <div
                                 key={x.id}
@@ -75,7 +76,9 @@ export default function ExtraServices() {
                                     >
                                         <Minus className="mx-auto h-4 w-4 text-black/70" />
                                     </button>
+
                                     <div className="w-7 text-center text-sm font-semibold text-black">{qty}</div>
+
                                     <button
                                         onClick={() => updateExtra(x.id, +1)}
                                         className="h-9 w-9 rounded-full border border-black/15 bg-white hover:bg-black/5"
