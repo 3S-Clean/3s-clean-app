@@ -70,9 +70,7 @@ function normalizeEmail(value: string) {
     return (value ?? "").trim().toLowerCase();
 }
 
-/**
- * POSTCODE CHECK (DB-driven)
- */
+/** POSTCODE CHECK */
 export async function checkPostalCode(
     postalCodeRaw: string
 ): Promise<{
@@ -100,15 +98,10 @@ export async function checkPostalCode(
 
     if (!city) return { available: false };
 
-    return {
-        available: true,
-        area: { postal_code: pc, city, district },
-    };
+    return { available: true, area: { postal_code: pc, city, district } };
 }
 
-/**
- * NOTIFY REQUEST
- */
+/** NOTIFY REQUEST */
 export async function createNotifyRequest(
     emailRaw: string,
     postalCodeRaw: string
@@ -119,7 +112,6 @@ export async function createNotifyRequest(
     if (!email.includes("@") || postalCode.length !== 5) return { ok: false };
 
     const supabase = await createSupabaseServerClient();
-
     const { error } = await supabase.from("notify_requests").insert({
         email,
         postal_code: postalCode,
@@ -128,9 +120,7 @@ export async function createNotifyRequest(
     return { ok: !error };
 }
 
-/**
- * EXISTING BOOKINGS (calendar)
- */
+/** EXISTING BOOKINGS */
 export async function getExistingBookings(
     startDate: string,
     endDate: string
@@ -157,14 +147,10 @@ export async function getExistingBookings(
         }));
 }
 
-/**
- * CREATE ORDER
- */
-export async function createOrder(input: CreateOrderInput): Promise<{
-    orderId: string;
-    pendingToken: string;
-    isLoggedIn: boolean;
-}> {
+/** CREATE ORDER */
+export async function createOrder(
+    input: CreateOrderInput
+): Promise<{ orderId: string; pendingToken: string; isLoggedIn: boolean }> {
     const supabase = await createSupabaseServerClient();
 
     const {
@@ -240,9 +226,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{
         .select("id, pending_token")
         .single();
 
-    if (error || !order) {
-        throw new Error("Failed to create order");
-    }
+    if (error || !order) throw new Error("Failed to create order");
 
     return {
         orderId: String(order.id),
@@ -252,39 +236,33 @@ export async function createOrder(input: CreateOrderInput): Promise<{
 }
 
 /**
- * LINK ORDER TO USER (RPC: link_order_to_user(p_token uuid))
- * ✅ Возвращаем string, чтобы фронт не ломался на encodeURIComponent.
+ * LINK ORDER TO USER
+ * ✅ ВАЖНО: возвращаем СТРОКУ orderId
  */
 export async function linkOrderToUser(pendingToken: string): Promise<string> {
     const token = (pendingToken ?? "").trim();
     const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase.rpc("link_order_to_user", {
-        p_token: token,
-    });
+    const { data, error } = await supabase.rpc("link_order_to_user", { p_token: token });
 
     if (error || !data) throw new Error("Failed to link order to user");
+
+    // data может быть uuid/string — приводим к string
     return String(data);
 }
 
-/**
- * SUCCESS FETCH (RPC: get_order_success(p_token uuid))
- */
+/** SUCCESS FETCH */
 export async function getOrderSuccess(pendingToken: string) {
     const token = (pendingToken ?? "").trim();
     const supabase = await createSupabaseServerClient();
 
-    const { data, error } = await supabase.rpc("get_order_success", {
-        p_token: token,
-    });
+    const { data, error } = await supabase.rpc("get_order_success", { p_token: token });
 
     if (error || !data || !Array.isArray(data) || data.length === 0) return null;
     return data[0];
 }
 
-/**
- * USER ORDERS
- */
+/** USER ORDERS */
 export async function getUserOrders() {
     const supabase = await createSupabaseServerClient();
 
@@ -304,9 +282,7 @@ export async function getUserOrders() {
     return data;
 }
 
-/**
- * USER PROFILE
- */
+/** USER PROFILE */
 export async function getUserProfile() {
     const supabase = await createSupabaseServerClient();
 
@@ -317,8 +293,8 @@ export async function getUserProfile() {
     if (!user) return null;
 
     const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-
     if (error) return null;
+
     return data;
 }
 
