@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
     calculateHours,
     calculatePrice,
@@ -82,7 +82,7 @@ export async function checkPostalCode(
     const postalCode = normalizePostcode(postalCodeRaw);
     if (postalCode.length !== 5) return { available: false };
 
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase
         .from("service_areas")
@@ -118,7 +118,7 @@ export async function createNotifyRequest(
 
     if (!email.includes("@") || postalCode.length !== 5) return { ok: false };
 
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const { error } = await supabase.from("notify_requests").insert({
         email,
@@ -137,7 +137,7 @@ export async function getExistingBookings(
     startDate: string,
     endDate: string
 ): Promise<ExistingBooking[]> {
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase
         .from("orders")
@@ -167,7 +167,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{
     pendingToken: string;
     isLoggedIn: boolean;
 }> {
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const {
         data: { user },
@@ -264,7 +264,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{
  */
 export async function linkOrderToUser(pendingToken: string): Promise<{ orderId: string }> {
     const token = (pendingToken ?? "").trim();
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase.rpc("link_order_to_user", {
         p_token: token,
@@ -279,7 +279,7 @@ export async function linkOrderToUser(pendingToken: string): Promise<{ orderId: 
  */
 export async function getOrderSuccess(pendingToken: string) {
     const token = (pendingToken ?? "").trim();
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const { data, error } = await supabase.rpc("get_order_success", {
         p_token: token,
@@ -293,7 +293,7 @@ export async function getOrderSuccess(pendingToken: string) {
  * USER ORDERS (owner-only via RLS)
  */
 export async function getUserOrders() {
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const {
         data: { user },
@@ -315,7 +315,7 @@ export async function getUserOrders() {
  * USER PROFILE (owner-only via RLS)
  */
 export async function getUserProfile() {
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const {
         data: { user },
@@ -341,7 +341,7 @@ export async function updateUserProfile(profileData: {
     city?: string;
     postalCode?: string;
 }) {
-    const supabase = await createClient();
+    const supabase = await createSupabaseServerClient();
 
     const {
         data: { user },
