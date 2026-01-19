@@ -96,7 +96,7 @@ export default function Header() {
                 <div className="header-desktop">
                     <div className="header-left">
                         <Link
-                            href={webflowUrl("/")}
+                            href={webflowUrl()}
                             aria-label="Go to main website"
                             className="logo-link"
                         >

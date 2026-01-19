@@ -24,7 +24,6 @@ export default function AccountClient({ email }: { email: string }) {
         <>
             {/* FIXED HEADER */}
             <Header />
-
             {/* PAGE */}
             <div className="min-h-screen bg-[#f8f8f8] pt-[92px]">
                 {/* CONTENT */}
