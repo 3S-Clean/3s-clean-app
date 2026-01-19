@@ -13,7 +13,6 @@ import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/account/header/Header";
-import Footer from "@/components/account/footer/Footer";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 
@@ -240,7 +239,7 @@ export default function BookingPage() {
                     isSubmitting={isSubmitting}
                 />
             </div>
-            <Footer />
+
         </>
     );
 }
