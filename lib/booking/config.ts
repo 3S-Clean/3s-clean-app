@@ -163,7 +163,7 @@ export const EXTRAS = [
 
     { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1, icon: "trees", unit: "10 m²" },
 
-    { id: "limescale", name: "Limescale removal - intensive", price: 27, hours: 0.5, icon: "droplets", unit: "30-min block" },
+    { id: "limescale", name: "Limescale removal - intensive", price: 27, hours: 0.5, icon: "droplets", unit: "30-min" },
 
     { id: "cupboards", name: "Cupboards / cabinets - deep clean & organization", price: 50, hours: 1, icon: "archive", unit: "hour" },
     { id: "wardrobe", name: "Wardrobe arranging / folding / organization", price: 50, hours: 1, icon: "shirt", unit: "hour" },
