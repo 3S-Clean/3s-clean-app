@@ -126,7 +126,7 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                             disabled={!canContinue() || isSubmitting}
                             className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
                         >
-                            {isSubmitting ? "Booking..." : "Confirm Booking"}
+                            {isSubmitting ? "Booking..." : "Continue"}
                         </button>
                     ) : (
                         <button
