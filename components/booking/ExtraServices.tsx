@@ -1,37 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useBookingStore } from "@/lib/booking/store"; // <-- если стор у тебя так называется
+import { useBookingStore } from "@/lib/booking/store";
 import { EXTRAS } from "@/lib/booking/config";
-
-import type { LucideIcon } from "lucide-react";
-import {
-    Bed,
-    BedDouble,
-    Flame,
-    Refrigerator,
-    Snowflake,
-    AppWindow,
-    Trees,
-    Droplets,
-    Archive,
-    Shirt,
-    Sofa,
-} from "lucide-react";
-
-const iconMap: Record<string, LucideIcon> = {
-    "bed-single": Bed,
-    "bed-double": BedDouble,
-    flame: Flame,
-    refrigerator: Refrigerator,
-    snowflake: Snowflake,
-    "app-window": AppWindow,
-    trees: Trees,
-    droplets: Droplets,
-    archive: Archive,
-    shirt: Shirt,
-    sofa: Sofa,
-};
 
 export default function ExtraServices() {
     const { extras, updateExtra } = useBookingStore();
@@ -54,7 +25,6 @@ export default function ExtraServices() {
                 {EXTRAS.map((extra) => {
                     const qty = extras[extra.id] || 0;
                     const isSelected = qty > 0;
-                    const Icon = iconMap[extra.icon] ?? Bed;
 
                     return (
                         <div
@@ -64,38 +34,33 @@ export default function ExtraServices() {
                             }`}
                         >
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div className="w-10 h-10 flex items-center justify-center text-gray-500">
-                                        <Icon size={28} />
-                                    </div>
+                                {/* LEFT */}
+                                <div className="flex-1">
+                                    <div className="font-semibold text-sm">{extra.name}</div>
 
-                                    <div className="flex-1">
-                                        <div className="font-semibold text-sm">{extra.name}</div>
+                                    <div className="flex gap-3 text-sm mt-1">
+                    <span className="text-gray-900 font-semibold">
+                      €{extra.price.toFixed(2)}
+                    </span>
 
-                                        <div className="flex gap-3 text-sm mt-1">
-                      <span className="text-gray-900 font-semibold">
-                        €{extra.price.toFixed(2)}
-                      </span>
+                                        <span className="text-gray-400">
+                      ~
+                                            {extra.hours >= 1
+                                                ? `${extra.hours}h`
+                                                : `${Math.round(extra.hours * 60)}min`}
+                    </span>
 
-                                            <span className="text-gray-400">
-                        ~
-                                                {extra.hours >= 1
-                                                    ? `${extra.hours}h`
-                                                    : `${Math.round(extra.hours * 60)}min`}
-                      </span>
-
-                                            <span className="text-gray-300">/ {extra.unit}</span>
-                                        </div>
+                                        <span className="text-gray-300">/ {extra.unit}</span>
                                     </div>
                                 </div>
 
+                                {/* COUNTER */}
                                 <div className="flex items-center gap-3">
                                     <button
                                         type="button"
                                         onClick={() => updateExtra(extra.id, -1)}
                                         disabled={qty === 0}
-                                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-xl transition-all
-                      ${
+                                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-xl transition-all ${
                                             qty === 0
                                                 ? "border-gray-200 text-gray-300 cursor-not-allowed"
                                                 : "border-gray-300 text-gray-600 hover:border-gray-900 hover:text-gray-900"
@@ -104,7 +69,9 @@ export default function ExtraServices() {
                                         −
                                     </button>
 
-                                    <span className="w-8 text-center font-semibold text-lg">{qty}</span>
+                                    <span className="w-8 text-center font-semibold text-lg">
+                    {qty}
+                  </span>
 
                                     <button
                                         type="button"
@@ -122,7 +89,9 @@ export default function ExtraServices() {
 
             {extrasTotal > 0 && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-2xl animate-fadeIn">
-                    <div className="text-sm font-semibold text-gray-400 mb-3">SELECTED EXTRAS:</div>
+                    <div className="text-sm font-semibold text-gray-400 mb-3">
+                        SELECTED EXTRAS:
+                    </div>
 
                     {Object.entries(extras)
                         .filter(([_, q]) => q > 0)
@@ -144,7 +113,9 @@ export default function ExtraServices() {
 
                     <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between font-semibold">
                         <span>Extras Total</span>
-                        <span className="text-gray-900">+€{extrasTotal.toFixed(2)}</span>
+                        <span className="text-gray-900">
+              +€{extrasTotal.toFixed(2)}
+            </span>
                     </div>
                 </div>
             )}
