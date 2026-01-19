@@ -208,17 +208,17 @@ export default function BookingPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-white">
+            <div className="min-h-screen bg-white mt-[90px]">
                 {/* progress dots */}
-                <header className="sticky top-[90px] z-40 bg-white/80 backdrop-blur border-b border-gray-100 py-5">
+                <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
                                 key={s}
                                 className={`w-3 h-3 rounded-full transition-all
-            ${s < step ? "bg-gray-900" : ""}
-            ${s === step ? "bg-gray-900 scale-125" : ""}
-            ${s > step ? "bg-gray-200" : ""}`}
+              ${s < step ? "bg-gray-900" : ""}
+              ${s === step ? "bg-gray-900 scale-125" : ""}
+              ${s > step ? "bg-gray-200" : ""}`}
                             />
                         ))}
                     </div>
@@ -232,13 +232,14 @@ export default function BookingPage() {
                     {step === 4 && <ContactSchedule />}
                 </main>
 
-                {/* ✅ footer всегда */}
-                <BookingFooter
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    onSubmit={handleSubmit}
-                    isSubmitting={isSubmitting}
-                />
+                {step > 0 && (
+                    <BookingFooter
+                        onBack={handleBack}
+                        onNext={handleNext}
+                        onSubmit={handleSubmit}
+                        isSubmitting={isSubmitting}
+                    />
+                )}
             </div>
         </>
     );
