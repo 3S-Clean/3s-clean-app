@@ -12,6 +12,8 @@ import ApartmentDetails from "@/components/booking/ApartmentDetails";
 import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
+import Header from "@/components/account/header/Header";
+import Footer from "@/components/account/footer/Footer";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 
@@ -204,37 +206,41 @@ export default function BookingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* progress dots */}
-            <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
-                <div className="flex justify-center gap-2">
-                    {[0, 1, 2, 3, 4].map((s) => (
-                        <div
-                            key={s}
-                            className={`w-3 h-3 rounded-full transition-all
+        <>
+            <Header/>
+            <div className="min-h-screen bg-white">
+                {/* progress dots */}
+                <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
+                    <div className="flex justify-center gap-2">
+                        {[0, 1, 2, 3, 4].map((s) => (
+                            <div
+                                key={s}
+                                className={`w-3 h-3 rounded-full transition-all
                 ${s < step ? "bg-gray-900" : ""}
                 ${s === step ? "bg-gray-900 scale-125" : ""}
                 ${s > step ? "bg-gray-200" : ""}`}
-                        />
-                    ))}
-                </div>
-            </header>
+                            />
+                        ))}
+                    </div>
+                </header>
 
-            <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
-                {step === 0 && <PostcodeCheck />}
-                {step === 1 && <ServiceSelection />}
-                {step === 2 && <ApartmentDetails />}
-                {step === 3 && <ExtraServices />}
-                {step === 4 && <ContactSchedule />}
-            </main>
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
+                    {step === 0 && <PostcodeCheck />}
+                    {step === 1 && <ServiceSelection />}
+                    {step === 2 && <ApartmentDetails />}
+                    {step === 3 && <ExtraServices />}
+                    {step === 4 && <ContactSchedule />}
+                </main>
 
-            {/* ✅ footer нужен на всех шагах, иначе на step=0 нет “Continue” */}
-            <BookingFooter
-                onBack={handleBack}
-                onNext={handleNext}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-            />
-        </div>
+                {/* ✅ footer нужен на всех шагах, иначе на step=0 нет “Continue” */}
+                <BookingFooter
+                    onBack={handleBack}
+                    onNext={handleNext}
+                    onSubmit={handleSubmit}
+                    isSubmitting={isSubmitting}
+                />
+            </div>
+            <Footer />
+        </>
     );
 }
