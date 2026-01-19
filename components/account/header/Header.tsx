@@ -95,13 +95,14 @@ export default function Header() {
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        <Link
-                            href={webflowUrl()}
+                        <a
+                            href={webflowUrl("/")}
                             aria-label="Go to main website"
                             className="logo-link"
+                            rel="noopener noreferrer"
                         >
                             <Logo className="logo"  />
-                        </Link>
+                        </a>
                         <nav className="nav-desktop" aria-label="Main navigation">
                             {mainNav.map((item) =>
                                 item.external ? (
