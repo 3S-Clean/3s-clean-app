@@ -56,8 +56,8 @@
         --input-border: rgba(255,255,255,.12);
         --ring: rgba(255,255,255,.10);
 
-        --primary: #ffffff;  /* dark primary teal */
-        --primary-text: #ffffff;
+        --primary: #ffffff;
+        --primary-text: #111111;
 
         --autofill-bg: rgba(255,255,255,.06);
         --autofill-text: rgba(255,255,255,.92);
