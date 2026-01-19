@@ -1,4 +1,4 @@
-// lib/booking-store.ts
+// lib/booking/store.ts
 "use client";
 
 import { create } from "zustand";
@@ -13,7 +13,7 @@ export interface FormData {
     notes: string;
 }
 
-interface BookingState {
+export interface BookingState {
     step: number;
     setStep: (step: number) => void;
 
@@ -99,6 +99,16 @@ const initialState = {
     pendingToken: null as string | null,
 };
 
+// ✅ Persist only final entered data on step=4 + TTL 30 minutes
+type PersistSlice = {
+    formData: BookingState["formData"];
+    selectedDate: string | null;
+    selectedTime: string | null;
+    _savedAt: number;
+};
+
+const DATA_TTL_MS = 30 * 60 * 1000; // 30 minutes
+
 export const useBookingStore = create<BookingState>()(
     persist(
         (set, get) => ({
@@ -127,7 +137,6 @@ export const useBookingStore = create<BookingState>()(
                     const current = state.extras[extraId] || 0;
                     const next = Math.max(0, current + delta);
 
-                    // ✅ если стало 0 — удаляем ключ (чище JSON)
                     const extras = { ...state.extras };
                     if (next === 0) delete extras[extraId];
                     else extras[extraId] = next;
@@ -146,6 +155,37 @@ export const useBookingStore = create<BookingState>()(
 
             resetBooking: () => set({ ...initialState, formData: initialFormData }),
         }),
-        { name: "3s-booking-storage" }
+        {
+            name: "3s-booking-storage",
+
+            // ✅ Save ONLY when on final step (step === 4)
+            partialize: (state: BookingState): Partial<PersistSlice> => {
+                if (state.step !== 4) return {};
+                return {
+                    formData: state.formData,
+                    selectedDate: state.selectedDate,
+                    selectedTime: state.selectedTime,
+                    _savedAt: Date.now(),
+                };
+            },
+
+            // ✅ If saved data older than 30 minutes — ignore
+            merge: (persisted, current) => {
+                const p = persisted as Partial<PersistSlice> | undefined;
+
+                if (!p?._savedAt) return current;
+
+                if (Date.now() - p._savedAt > DATA_TTL_MS) {
+                    return current;
+                }
+
+                return {
+                    ...current,
+                    formData: p.formData ?? current.formData,
+                    selectedDate: p.selectedDate ?? current.selectedDate,
+                    selectedTime: p.selectedTime ?? current.selectedTime,
+                };
+            },
+        }
     )
 );
