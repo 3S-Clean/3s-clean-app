@@ -55,7 +55,7 @@ export const footerColumns: FooterColumn[] = [
         links: [
             // берём из mainNav (Inside 3S)
             { label: "Inside 3S", href: mainNav[2].href, external: true },
-            { label: "Careers", href: `${WEBFLOW_BASE}/careers`, external: true },
+            { label: "Careers", href: `${WEBFLOW_BASE}/career`, external: true },
         ],
     },
     {

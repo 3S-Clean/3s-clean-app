@@ -151,9 +151,9 @@ export default function Header() {
                         <MenuIcon className="menu-icon" />
                     </button>
 
-                    <Link href="/" className="logo-link-mobile" aria-label="Go to home">
+                    <a href={webflowUrl("/")} className="logo-link-mobile" aria-label="Go to main website" rel="noopener noreferrer">
                         <Logo className="logo-mobile" />
-                    </Link>
+                    </a>
 
                     <Link href="/booking" className="book-button-mobile">
                         Book Now
