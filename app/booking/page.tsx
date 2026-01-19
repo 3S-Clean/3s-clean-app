@@ -207,7 +207,7 @@ export default function BookingPage() {
     return (
         <>
             <Header/>
-            <div className="min-h-screen bg-white">
+            <div className="min-h-screen bg-white mt-[90px]">
                 {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">
@@ -222,7 +222,6 @@ export default function BookingPage() {
                         ))}
                     </div>
                 </header>
-
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
                     {step === 0 && <PostcodeCheck />}
                     {step === 1 && <ServiceSelection />}
@@ -231,13 +230,14 @@ export default function BookingPage() {
                     {step === 4 && <ContactSchedule />}
                 </main>
 
-                {/* ✅ footer нужен на всех шагах, иначе на step=0 нет “Continue” */}
-                <BookingFooter
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    onSubmit={handleSubmit}
-                    isSubmitting={isSubmitting}
-                />
+                {step > 0 && (
+                    <BookingFooter
+                        onBack={handleBack}
+                        onNext={handleNext}
+                        onSubmit={handleSubmit}
+                        isSubmitting={isSubmitting}
+                    />
+                )}
             </div>
 
         </>
