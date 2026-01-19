@@ -104,7 +104,7 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                 </div>
 
                 <div className="flex gap-3">
-                    {step > 1 && (
+                    {step > 0 && (
                         <button
                             onClick={onBack}
                             className="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
@@ -112,7 +112,6 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                             Back
                         </button>
                     )}
-
                     {step === 4 ? (
                         <button
                             onClick={onSubmit}
