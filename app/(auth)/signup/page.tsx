@@ -14,7 +14,7 @@ export default function SignupClient() {
     const sp = useSearchParams();
 
     const supabase = useMemo(() => createClient(), []);
-    const { reset: resetBooking } = useBookingStore();
+    const { resetBooking } = useBookingStore();
 
     const prefillEmail = sp.get("email") || "";
     const pendingOrderToken = sp.get("pendingOrder") || "";
@@ -23,12 +23,18 @@ export default function SignupClient() {
         register,
         handleSubmit,
         watch,
+        setValue,
         formState: { errors, isSubmitting, isValid, submitCount },
     } = useForm<SignupEmailValues>({
         resolver: zodResolver(signupEmailSchema),
         defaultValues: { email: prefillEmail },
         mode: "onChange",
     });
+
+    // если query email меняется — обновим поле
+    useEffect(() => {
+        if (prefillEmail) setValue("email", prefillEmail, { shouldValidate: true });
+    }, [prefillEmail, setValue]);
 
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
@@ -45,9 +51,7 @@ export default function SignupClient() {
 
         const { error } = await supabase.auth.signInWithOtp({
             email: values.email,
-            options: {
-                shouldCreateUser: true,
-            },
+            options: { shouldCreateUser: true },
         });
 
         if (error) {
@@ -69,33 +73,27 @@ export default function SignupClient() {
             if (pendingOrderToken) localStorage.setItem("pendingOrderToken", pendingOrderToken);
         } catch {}
 
-        // если есть pendingOrder — мы считаем букинг “сохранённым” и можем очистить локальный store
-        if (pendingOrderToken) {
-            resetBooking();
-        }
+        // если есть pendingOrder — букинг “сохранён” в orders, store можно чистить
+        if (pendingOrderToken) resetBooking();
 
         const qs = new URLSearchParams();
         qs.set("flow", "signup");
-        if (pendingOrderToken) qs.set("pendingOrder", pendingOrderToken);
         qs.set("email", values.email);
+        if (pendingOrderToken) qs.set("pendingOrder", pendingOrderToken);
 
         router.replace(`/verify-code?${qs.toString()}`);
     };
 
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
-                Sign Up
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">Sign Up</h1>
 
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Enter your email — we’ll send you a verification code.
                 {pendingOrderToken ? (
                     <>
                         {" "}
-                        <span className="text-[color:var(--text)]/90">
-              Your booking will be saved to your account.
-            </span>
+                        <span className="text-[color:var(--text)]/90">Your booking will be saved to your account.</span>
                     </>
                 ) : null}
             </p>
@@ -140,12 +138,7 @@ export default function SignupClient() {
                 </button>
 
                 {status && (
-                    <p
-                        className={[
-                            "text-sm",
-                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
-                        ].join(" ")}
-                    >
+                    <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
                 )}

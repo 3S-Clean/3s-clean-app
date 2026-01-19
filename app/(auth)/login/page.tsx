@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { createClient } from "@/lib/supabase/client";
+import { useBookingStore } from "@/lib/booking/store";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 
 export default function LoginClient() {
     const router = useRouter();
-    const supabase = createClient();
+    const sp = useSearchParams();
+
+    const supabase = useMemo(() => createClient(), []);
+    const { resetBooking } = useBookingStore();
+
+    const pendingOrderToken = sp.get("pendingOrder") || "";
 
     const {
         register,
@@ -36,7 +42,7 @@ export default function LoginClient() {
         });
 
         if (error) {
-            const msgLower = error.message.toLowerCase();
+            const msgLower = (error.message || "").toLowerCase();
             const msg =
                 msgLower.includes("email not confirmed") || msgLower.includes("not confirmed")
                     ? "Please confirm your email first. Check your inbox."
@@ -46,6 +52,46 @@ export default function LoginClient() {
 
             setStatus({ type: "error", msg });
             return;
+        }
+
+        // ✅ если юзер пришёл из booking с pendingOrder — линкуем и кидаем на success
+        if (pendingOrderToken) {
+            try {
+                // на всякий сохраним, если страница перезагрузится
+                localStorage.setItem("pendingOrderToken", pendingOrderToken);
+            } catch {}
+
+            try {
+                const res = await fetch("/api/booking/link-order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pendingToken: pendingOrderToken }),
+                });
+
+                const json: { success?: boolean; orderId?: string; error?: string } = await res.json();
+
+                // очистим локальное состояние букинга (заказ уже в БД)
+                resetBooking();
+
+                try {
+                    localStorage.removeItem("pendingOrderToken");
+                } catch {}
+
+                if (res.ok && json?.success && json?.orderId) {
+                    router.replace(`/booking/success?orderId=${encodeURIComponent(String(json.orderId))}`);
+                    router.refresh();
+                    return;
+                }
+
+                // если линковка не удалась — пользователь всё равно залогинен
+                router.replace("/account/orders");
+                router.refresh();
+                return;
+            } catch {
+                router.replace("/account/orders");
+                router.refresh();
+                return;
+            }
         }
 
         router.replace("/account");
@@ -61,6 +107,14 @@ export default function LoginClient() {
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Log in to manage bookings and access your cleaning records.
             </p>
+
+            {pendingOrderToken ? (
+                <div className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
+                    <p className="text-sm text-[color:var(--muted)]">
+                        ✓ Booking detected — after login it will be linked to your account.
+                    </p>
+                </div>
+            ) : null}
 
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
@@ -98,10 +152,7 @@ export default function LoginClient() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <a
-                        href="/forgot-password"
-                        className="text-sm text-[color:var(--muted)] hover:opacity-80 transition"
-                    >
+                    <a href="/forgot-password" className="text-sm text-[color:var(--muted)] hover:opacity-80 transition">
                         Forgot password?
                     </a>
                 </div>
@@ -110,32 +161,28 @@ export default function LoginClient() {
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className="
-    w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-    bg-black text-white
-    dark:bg-white dark:text-black
-    hover:opacity-90
-    disabled:opacity-40 disabled:cursor-not-allowed
-  "
+            w-full rounded-2xl py-3.5 text-[15px] font-medium transition
+            bg-black text-white
+            dark:bg-white dark:text-black
+            hover:opacity-90
+            disabled:opacity-40 disabled:cursor-not-allowed
+          "
                 >
                     {isSubmitting ? "Logging in…" : "Log in"}
                 </button>
 
                 {status && (
-                    <p
-                        className={[
-                            "text-sm",
-                            status.type === "ok"
-                                ? "text-[color:var(--status-ok)]"
-                                : "text-red-500/90",
-                        ].join(" ")}
-                    >
+                    <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
 
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Don&apos;t have an account?{" "}
-                    <a className="text-[color:var(--text)] hover:underline" href="/signup">
+                    <a
+                        className="text-[color:var(--text)] hover:underline"
+                        href={pendingOrderToken ? `/signup?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : "/signup"}
+                    >
                         Sign up
                     </a>
                 </p>

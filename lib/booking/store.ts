@@ -1,4 +1,6 @@
-// lib/booking/store.ts
+// lib/booking-store.ts
+"use client";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -8,10 +10,6 @@ export interface FormData {
     email: string;
     phone: string;
     address: string;
-
-    city: string;
-    postalCode: string;
-
     notes: string;
 }
 
@@ -24,9 +22,6 @@ interface BookingState {
 
     postcode: string;
     setPostcode: (postcode: string) => void;
-
-    // ✅ удобный синк, чтобы не забывать прокидывать postalCode в formData
-    setPostcodeAndForm: (postcode: string) => void;
 
     postcodeVerified: boolean;
     setPostcodeVerified: (verified: boolean) => void;
@@ -77,96 +72,79 @@ const initialFormData: FormData = {
     email: "",
     phone: "",
     address: "",
-    city: "",
-    postalCode: "",
     notes: "",
+};
+
+const initialState = {
+    step: 0,
+    postcode: "",
+    postcodeVerified: false,
+
+    selectedService: null as string | null,
+    apartmentSize: null as string | null,
+    peopleCount: null as string | null,
+
+    hasPets: false,
+    hasKids: false,
+    hasAllergies: false,
+    allergyNote: "",
+
+    extras: {} as Record<string, number>,
+
+    formData: initialFormData,
+
+    selectedDate: null as string | null,
+    selectedTime: null as string | null,
+
+    pendingToken: null as string | null,
 };
 
 export const useBookingStore = create<BookingState>()(
     persist(
         (set, get) => ({
-            step: 0,
-            setStep: (step) => set({ step }),
+            ...initialState,
 
+            setStep: (step) => set({ step }),
             nextStep: () => set({ step: get().step + 1 }),
             prevStep: () => set({ step: Math.max(0, get().step - 1) }),
 
-            postcode: "",
             setPostcode: (postcode) => set({ postcode }),
-
-            setPostcodeAndForm: (postcode) =>
-                set((state) => ({
-                    postcode,
-                    formData: { ...state.formData, postalCode: postcode },
-                })),
-
-            postcodeVerified: false,
             setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
 
-            selectedService: null,
             setSelectedService: (selectedService) => set({ selectedService }),
-
-            apartmentSize: null,
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
-
-            peopleCount: null,
             setPeopleCount: (peopleCount) => set({ peopleCount }),
 
-            hasPets: false,
             setHasPets: (hasPets) => set({ hasPets }),
-
-            hasKids: false,
             setHasKids: (hasKids) => set({ hasKids }),
-
-            hasAllergies: false,
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
-
-            allergyNote: "",
             setAllergyNote: (allergyNote) => set({ allergyNote }),
 
-            extras: {},
             setExtras: (extras) => set({ extras }),
+
             updateExtra: (extraId, delta) =>
-                set((state) => ({
-                    extras: {
-                        ...state.extras,
-                        [extraId]: Math.max(0, (state.extras[extraId] || 0) + delta),
-                    },
-                })),
+                set((state) => {
+                    const current = state.extras[extraId] || 0;
+                    const next = Math.max(0, current + delta);
+
+                    // ✅ если стало 0 — удаляем ключ (чище JSON)
+                    const extras = { ...state.extras };
+                    if (next === 0) delete extras[extraId];
+                    else extras[extraId] = next;
+
+                    return { extras };
+                }),
 
             formData: initialFormData,
             setFormData: (data) =>
-                set((state) => ({
-                    formData: { ...state.formData, ...data },
-                })),
+                set((state) => ({ formData: { ...state.formData, ...data } })),
 
-            selectedDate: null,
             setSelectedDate: (selectedDate) => set({ selectedDate }),
-
-            selectedTime: null,
             setSelectedTime: (selectedTime) => set({ selectedTime }),
 
-            pendingToken: null,
             setPendingToken: (pendingToken) => set({ pendingToken }),
 
-            resetBooking: () =>
-                set({
-                    step: 0,
-                    postcode: "",
-                    postcodeVerified: false,
-                    selectedService: null,
-                    apartmentSize: null,
-                    peopleCount: null,
-                    hasPets: false,
-                    hasKids: false,
-                    hasAllergies: false,
-                    allergyNote: "",
-                    extras: {},
-                    formData: initialFormData,
-                    selectedDate: null,
-                    selectedTime: null,
-                    pendingToken: null,
-                }),
+            resetBooking: () => set({ ...initialState, formData: initialFormData }),
         }),
         { name: "3s-booking-storage" }
     )

@@ -2,46 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
-import {
-    TIME_SLOTS,
-    HOLIDAYS,
-    calculateHours,
-    EXTRAS,
-    WORKING_HOURS_END,
-    type ServiceId,
-    type ApartmentSizeId,
-} from "@/lib/booking/config";
-import { getExistingBookings } from "@/lib/booking/actions";
+import { TIME_SLOTS, HOLIDAYS, getEstimatedHours, EXTRAS, WORKING_HOURS_END } from "@/lib/booking/config";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-type BookingRow = {
+type ExistingBookingRow = {
     scheduled_date: string; // YYYY-MM-DD
     scheduled_time: string; // "HH:mm"
-    estimated_hours: number; // number
+    estimated_hours: number;
 };
-
-function toISODate(d: Date) {
-    return d.toISOString().split("T")[0];
-}
-
-function toMinutesFromHHMM(t: string) {
-    const [hStr, mStr = "0"] = (t || "00:00").split(":");
-    const h = Number(hStr);
-    const m = Number(mStr);
-    return (Number.isFinite(h) ? h : 0) * 60 + (Number.isFinite(m) ? m : 0);
-}
-
-// округление в 15 минут (чтобы UI совпадал с слотами)
-function roundTo15Min(minutes: number) {
-    return Math.ceil(minutes / 15) * 15;
-}
-
-function formatDurationFromMinutes(totalMinutes: number) {
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    if (m === 0) return `${h}h`;
-    if (h === 0) return `${m}min`;
-    return `${h}h ${String(m).padStart(2, "0")}min`;
-}
 
 export default function ContactSchedule() {
     const {
@@ -56,113 +24,88 @@ export default function ContactSchedule() {
         setSelectedTime,
     } = useBookingStore();
 
-    const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [existingBookings, setExistingBookings] = useState<BookingRow[]>([]);
+    const [currentMonth, setCurrentMonth] = useState(() => new Date());
+    const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
-    // ✅ base hours: только матрица, без extras
-    const baseHours = useMemo(() => {
-        if (!selectedService || !apartmentSize) return 0;
-        return calculateHours(selectedService as ServiceId, apartmentSize as ApartmentSizeId, {});
-    }, [selectedService, apartmentSize]);
-
-    // ✅ extras hours: сумма по EXTRAS
-    const extrasHours = useMemo(() => {
-        return Object.entries(extras || {}).reduce((sum, [id, qty]) => {
-            const q = Number(qty) || 0;
-            if (q <= 0) return sum;
+    // ---------- hours -> minutes (точно) ----------
+    const estimatedMinutes = useMemo(() => {
+        const baseHours = getEstimatedHours(selectedService || "", apartmentSize || "");
+        const extrasHours = Object.entries(extras).reduce((sum, [id, qty]) => {
             const e = EXTRAS.find((x) => x.id === id);
-            return sum + (e ? e.hours * q : 0);
+            return sum + (e ? e.hours * qty : 0);
         }, 0);
-    }, [extras]);
 
-    const estimatedHours = baseHours + extrasHours;
+        // округляем до минут, чтобы финиш был корректный
+        return Math.max(0, Math.round((baseHours + extrasHours) * 60));
+    }, [selectedService, apartmentSize, extras]);
 
-    // ✅ duration in minutes (округляем до 15 минут — и для UI, и для расчёта)
-    const durationMin = useMemo(() => roundTo15Min(Math.round(estimatedHours * 60)), [estimatedHours]);
-    const durationLabel = useMemo(() => formatDurationFromMinutes(durationMin), [durationMin]);
-
+    // ---------- fetch existing bookings via API ----------
     useEffect(() => {
-        const fetchBookings = async () => {
-            const start = toISODate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1));
-            const end = toISODate(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0));
-            const rows = await getExistingBookings(start, end);
-            setExistingBookings(Array.isArray(rows) ? (rows as BookingRow[]) : []);
+        const controller = new AbortController();
+
+        const run = async () => {
+            const y = currentMonth.getFullYear();
+            const m = currentMonth.getMonth();
+
+            const start = new Date(y, m, 1).toISOString().split("T")[0];
+            const end = new Date(y, m + 1, 0).toISOString().split("T")[0];
+
+            try {
+                const res = await fetch("/api/booking/existing-bookings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ startDate: start, endDate: end }),
+                    signal: controller.signal,
+                });
+
+                const json = (await res.json()) as ExistingBookingRow[];
+                setExistingBookings(Array.isArray(json) ? json : []);
+            } catch {
+                // если отмена / ошибка — просто пусто
+                setExistingBookings([]);
+            }
         };
 
-        void fetchBookings();
+        run();
+        return () => controller.abort();
     }, [currentMonth]);
 
+    // ---------- slot availability (в минутах, финиш <= 18:00) ----------
     const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
         const startMin = hour * 60 + minutes;
-        const endMin = startMin + durationMin;
+        const endMin = startMin + estimatedMinutes;
 
+        // must finish by 18:00 (WORKING_HOURS_END = 18)
         if (endMin > WORKING_HOURS_END * 60) return false;
 
         for (const b of existingBookings) {
             if (b.scheduled_date !== dateKey) continue;
 
-            const bStartMin = toMinutesFromHHMM(b.scheduled_time);
-            const bDurMin = roundTo15Min(Math.round((Number(b.estimated_hours) || 0) * 60));
-            const bEndMin = bStartMin + bDurMin;
+            const [bh, bm] = b.scheduled_time.split(":").map(Number);
+            const bStartMin = (bh || 0) * 60 + (bm || 0);
+            const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
 
+            // overlap check
             if (startMin < bEndMin && endMin > bStartMin) return false;
         }
 
         return true;
     };
 
-    const hasSlots = (dateKey: string) =>
-        TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
+    const hasSlots = (dateKey: string) => TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
 
-    const renderCalendar = () => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const days: React.ReactNode[] = [];
-
-        for (let i = 0; i < firstDay; i++) days.push(<div key={`e${i}`} />);
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const date = new Date(year, month, day);
-            const isPast = date < today;
-            const isSunday = date.getDay() === 0;
-            const isHoliday = HOLIDAYS.includes(dateKey);
-            const available = hasSlots(dateKey);
-            const isSelected = selectedDate === dateKey;
-            const disabled = isPast || isSunday || isHoliday || !available;
-
-            days.push(
-                <button
-                    key={day}
-                    disabled={disabled}
-                    onClick={() => {
-                        setSelectedDate(dateKey);
-                        setSelectedTime(null);
-                    }}
-                    className={`aspect-square rounded-xl text-sm font-medium transition-all
-            ${isSelected ? "bg-gray-900 text-white" : ""}
-            ${disabled && !isSelected ? "text-gray-300 cursor-not-allowed" : ""}
-            ${!disabled && !isSelected ? "hover:bg-gray-100 text-gray-700" : ""}`}
-                >
-                    {day}
-                </button>
-            );
-        }
-
-        return days;
-    };
+    // ---------- calendar calc ----------
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const getEndTime = () => {
         if (!selectedTime) return "";
         const slot = TIME_SLOTS.find((s) => s.id === selectedTime);
         if (!slot) return "";
 
-        const endMin = slot.hour * 60 + slot.minutes + durationMin;
+        const endMin = slot.hour * 60 + slot.minutes + estimatedMinutes;
         const endH = Math.floor(endMin / 60);
         const endM = endMin % 60;
 
@@ -233,38 +176,75 @@ export default function ContactSchedule() {
             <div className="mb-8">
                 <h3 className="text-lg font-semibold mb-2">Select Date & Time *</h3>
                 <p className="text-sm text-gray-500 mb-5">
-                    ~{durationLabel} cleaning. Must finish by 18:00.
+                    ~{Math.max(1, Math.ceil(estimatedMinutes / 60))}h cleaning. Must finish by 18:00.
                 </p>
 
                 <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-6">
-                        <button
-                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-                            className="p-2 text-xl text-gray-500 hover:text-gray-900"
-                        >
-                            ‹
+                        <button onClick={() => setCurrentMonth(new Date(year, month - 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+                            <ChevronLeft className="w-5 h-5 text-gray-500" />
                         </button>
+
                         <div className="text-lg">
                             <span className="font-bold">{currentMonth.toLocaleString("en", { month: "long" })}</span>{" "}
-                            <span className="text-gray-400">{currentMonth.getFullYear()}</span>
+                            <span className="text-gray-400">{year}</span>
                         </div>
-                        <button
-                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-                            className="p-2 text-xl text-gray-500 hover:text-gray-900"
-                        >
-                            ›
+
+                        <button onClick={() => setCurrentMonth(new Date(year, month + 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+                            <ChevronRight className="w-5 h-5 text-gray-500" />
                         </button>
                     </div>
 
                     <div className="grid grid-cols-7 gap-1 mb-2">
                         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
-                            <div key={d} className={`text-center text-xs font-semibold py-2 ${d === "SUN" ? "text-gray-300" : "text-gray-500"}`}>
+                            <div
+                                key={d}
+                                className={`text-center text-xs font-semibold py-2 ${d === "SUN" ? "text-gray-300" : "text-gray-500"}`}
+                            >
                                 {d}
                             </div>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
+                    <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: firstDay }).map((_, i) => (
+                            <div key={`e${i}`} />
+                        ))}
+
+                        {Array.from({ length: daysInMonth }).map((_, i) => {
+                            const day = i + 1;
+                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                            const date = new Date(year, month, day);
+
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            const isPast = date < today;
+                            const isSunday = date.getDay() === 0;
+                            const isHoliday = HOLIDAYS.includes(dateKey);
+                            const available = hasSlots(dateKey);
+                            const isSelected = selectedDate === dateKey;
+
+                            const disabled = isPast || isSunday || isHoliday || !available;
+
+                            return (
+                                <button
+                                    key={day}
+                                    disabled={disabled}
+                                    onClick={() => {
+                                        setSelectedDate(dateKey);
+                                        setSelectedTime(null);
+                                    }}
+                                    className={`aspect-square rounded-xl text-sm font-medium transition-all
+                    ${isSelected ? "bg-gray-900 text-white" : ""}
+                    ${disabled && !isSelected ? "text-gray-300 cursor-not-allowed" : ""}
+                    ${!disabled && !isSelected ? "hover:bg-gray-100 text-gray-700" : ""}`}
+                                >
+                                    {day}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
@@ -273,11 +253,7 @@ export default function ContactSchedule() {
                 <div className="mb-8 animate-fadeIn">
                     <h3 className="text-base font-semibold mb-2">
                         Available times for{" "}
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                        })}
+                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", { weekday: "long", month: "long", day: "numeric" })}
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">Cleaning must finish by 18:00</p>
 

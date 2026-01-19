@@ -1,206 +1,178 @@
-// app/booking/success/page.tsx
 "use client";
 
-import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-
-import { getOrderSuccess } from "@/lib/booking/actions";
+import Link from "next/link";
 import { useBookingStore } from "@/lib/booking/store";
+import { SERVICES } from "@/lib/booking/config";
+import { Check } from "lucide-react";
 
-type SuccessRow = {
-    service_type?: string;
-    scheduled_date?: string;
-    scheduled_time?: string;
-    estimated_hours?: number | string;
-    customer_address?: string;
-    customer_postal_code?: string;
-    total_price?: number | string;
+type Order = {
+    id: string;
+    service_type: string;
+    scheduled_date: string; // YYYY-MM-DD
+    scheduled_time: string; // HH:mm
+    estimated_hours: number;
+    total_price: number | string;
+    status: string;
 };
 
-type SuccessResponse =
-    | { data: SuccessRow | null }
-    | { error: string; data: null };
-
-// ✅ безопасные type-guards без "as { error: ... }" на res
-function isRecord(v: unknown): v is Record<string, unknown> {
-    return typeof v === "object" && v !== null;
-}
-
-function isSuccessResponse(v: unknown): v is SuccessResponse {
-    if (!isRecord(v)) return false;
-
-    // error-case
-    if ("error" in v) {
-        return typeof v.error === "string" && "data" in v;
-    }
-
-    // ok-case
-    if ("data" in v) {
-        return v.data === null || isRecord(v.data);
-    }
-
-    return false;
-}
-
-function SuccessInner() {
+function Content() {
     const sp = useSearchParams();
-    const token = useMemo(() => (sp.get("token") ?? "").trim(), [sp]);
+
+    const orderId = sp.get("orderId") || "";
+    const pendingToken = sp.get("pendingToken") || "";
+
+    // ✅ приоритет: orderId > pendingToken
+    const query = useMemo(() => {
+        if (orderId) return { orderId };
+        if (pendingToken) return { pendingToken };
+        return null;
+    }, [orderId, pendingToken]);
+
+    const [order, setOrder] = useState<Order | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const { resetBooking } = useBookingStore();
 
-    const [loading, setLoading] = useState(true);
-    const [order, setOrder] = useState<SuccessRow | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
     useEffect(() => {
         resetBooking();
+    }, [resetBooking]);
 
-        let cancelled = false;
-
-        async function run() {
-            try {
-                setLoading(true);
-                setError(null);
-
-                if (!token) {
-                    if (!cancelled) setOrder(null);
-                    return;
-                }
-
-                const raw: unknown = await getOrderSuccess(token);
-                if (cancelled) return;
-
-                // ✅ нормализуем ответ в 2 формы: {data} или {error,data:null}
-                const res: SuccessResponse = isSuccessResponse(raw) ? raw : { data: null };
-
-                if ("error" in res) {
-                    setError(res.error);
-                    setOrder(null);
-                    return;
-                }
-
-                setOrder(res.data ?? null);
-            } catch (e: unknown) {
-                if (!cancelled) {
-                    const msg = e instanceof Error ? e.message : "Failed to load booking details.";
-                    setError(msg);
-                    setOrder(null);
-                }
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
+    useEffect(() => {
+        if (!query) {
+            setError("Missing booking reference (orderId or pendingToken).");
+            setOrder(null);
+            return;
         }
 
-        void run();
+        const controller = new AbortController();
 
-        return () => {
-            cancelled = true;
+        const run = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const res = await fetch("/api/booking/get-order-public", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(query),
+                    signal: controller.signal,
+                });
+
+                const json: { order?: Order; error?: string } = await res.json();
+
+                if (!res.ok) {
+                    setError(json?.error || "Failed to load booking.");
+                    setOrder(null);
+                    return;
+                }
+
+                setOrder(json?.order ?? null);
+                if (!json?.order) setError("Booking not found.");
+            } catch (e: unknown) {
+                if (e instanceof DOMException && e.name === "AbortError") return;
+                setError(e instanceof Error ? e.message : "Failed to load booking.");
+                setOrder(null);
+            } finally {
+                setLoading(false);
+            }
         };
-    }, [token, resetBooking]);
 
-    const total = useMemo(() => {
-        const n = Number(order?.total_price);
-        return Number.isFinite(n) ? n : null;
-    }, [order]);
+        void run();
+        return () => controller.abort();
+    }, [query]);
 
-    const hours = useMemo(() => {
-        const n = Number(order?.estimated_hours);
-        return Number.isFinite(n) ? n : null;
-    }, [order]);
+    const service = order ? SERVICES.find((s) => s.id === order.service_type) : null;
+
+    const formatDate = (d: string) =>
+        new Date(d).toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
 
     return (
-        <main className="min-h-screen px-4 py-12 bg-[#f6f5f2]">
-            <div className="mx-auto w-full max-w-2xl">
-                <div className="rounded-[28px] border border-black/10 bg-white/60 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
-                    <div className="flex items-center justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl font-semibold tracking-tight text-black">Booking confirmed</h1>
-                            <p className="mt-2 text-sm text-black/55">Thank you. Here are your details:</p>
-                        </div>
-                        <div className="h-12 w-12 rounded-full border border-black/10 bg-white/70 flex items-center justify-center">
-                            <span className="text-lg">✓</span>
+        <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
+            <div className="max-w-md w-full text-center">
+                <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <Check className="w-10 h-10 text-white" />
+                </div>
+
+                <h1 className="text-3xl font-semibold mb-4">Booking Confirmed!</h1>
+                <p className="text-gray-500 mb-8">Thank you! We&apos;ve sent a confirmation email.</p>
+
+                {loading && (
+                    <div className="bg-gray-50 rounded-2xl p-4 mb-8 text-sm text-gray-700">
+                        Loading booking details…
+                    </div>
+                )}
+
+                {error && !loading && (
+                    <div className="bg-gray-50 rounded-2xl p-4 mb-8 text-sm text-gray-700">
+                        {error}
+                    </div>
+                )}
+
+                {order && !loading && (
+                    <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left">
+                        <h3 className="font-semibold mb-4">Booking Details</h3>
+
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Service</span>
+                                <span className="font-medium">{service?.name ?? order.service_type}</span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Date</span>
+                                <span className="font-medium">{formatDate(order.scheduled_date)}</span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Time</span>
+                                <span className="font-medium">{order.scheduled_time}</span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Duration</span>
+                                <span className="font-medium">~{order.estimated_hours}h</span>
+                            </div>
+
+                            <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between">
+                                <span className="font-semibold">Total</span>
+                                <span className="font-bold text-lg">€ {Number(order.total_price).toFixed(2)}</span>
+                            </div>
                         </div>
                     </div>
+                )}
 
-                    {loading ? (
-                        <div className="mt-6 text-sm text-black/60">Loading...</div>
-                    ) : !token ? (
-                        <div className="mt-6 text-sm text-black/60">Missing token. Please open the success link again.</div>
-                    ) : error ? (
-                        <div className="mt-6 text-sm text-black/60">
-                            We can&apos;t load booking details right now.
-                            <div className="mt-2 text-xs text-black/45">{error}</div>
-                        </div>
-                    ) : !order ? (
-                        <div className="mt-6 text-sm text-black/60">We can&apos;t load booking details right now.</div>
-                    ) : (
-                        <div className="mt-6 grid gap-3 text-sm text-black/70">
-                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
-                                <div className="text-xs text-black/50">Service</div>
-                                <div className="mt-1 font-medium text-black/75">{order.service_type ?? "—"}</div>
-                            </div>
+                <div className="space-y-3">
+                    <Link
+                        href="/"
+                        className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
+                    >
+                        Back to Home
+                    </Link>
 
-                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
-                                <div className="text-xs text-black/50">Date &amp; time</div>
-                                <div className="mt-1 font-medium text-black/75">
-                                    {String(order.scheduled_date ?? "—")} • {String(order.scheduled_time ?? "—")}
-                                    {hours != null ? <span className="text-black/55"> • ~{hours}h</span> : null}
-                                </div>
-                            </div>
-
-                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
-                                <div className="text-xs text-black/50">Address</div>
-                                <div className="mt-1 font-medium text-black/75">
-                                    {String(order.customer_address ?? "—")} • {String(order.customer_postal_code ?? "—")}
-                                </div>
-                            </div>
-
-                            <div className="rounded-[18px] border border-black/10 bg-white/70 p-4">
-                                <div className="text-xs text-black/50">Total</div>
-                                <div className="mt-1 text-xl font-semibold tracking-tight text-black">
-                                    € {total != null ? total.toFixed(2) : "—"}
-                                </div>
-                                <div className="mt-1 text-sm text-black/55">inc. VAT</div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="mt-8 grid gap-3">
-                        <Link
-                            href="/"
-                            className="w-full rounded-full border border-black/15 bg-black px-4 py-3 text-sm font-medium text-white text-center hover:bg-black/90"
-                        >
-                            Back to Home
-                        </Link>
-
-                        <Link
-                            href="/booking"
-                            className="w-full rounded-full border border-black/15 bg-white px-4 py-3 text-sm font-medium text-black text-center hover:bg-black/5"
-                        >
-                            Book another cleaning
-                        </Link>
-                    </div>
+                    <Link
+                        href="/booking"
+                        className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                    >
+                        Book Another
+                    </Link>
                 </div>
             </div>
-        </main>
+        </div>
     );
 }
 
-export default function BookingSuccessPage() {
+export default function SuccessPage() {
     return (
-        <Suspense
-            fallback={
-                <main className="min-h-screen px-4 py-12 bg-[#f6f5f2]">
-                    <div className="mx-auto w-full max-w-2xl">
-                        <div className="rounded-[28px] border border-black/10 bg-white/60 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
-                            <div className="text-sm text-black/60">Loading...</div>
-                        </div>
-                    </div>
-                </main>
-            }
-        >
-            <SuccessInner />
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <Content />
         </Suspense>
     );
 }

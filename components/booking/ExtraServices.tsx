@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
+import { useBookingStore } from "@/lib/booking/store"; // <-- если стор у тебя так называется
 import { EXTRAS } from "@/lib/booking/config";
-import { useBookingStore } from "@/lib/booking/store";
+
+import type { LucideIcon } from "lucide-react";
 import {
-    Minus,
-    Plus,
     Bed,
     BedDouble,
     Flame,
@@ -17,11 +17,9 @@ import {
     Archive,
     Shirt,
     Sofa,
-    Package,
-    type LucideIcon,
 } from "lucide-react";
 
-const ICON_MAP: Record<string, LucideIcon> = {
+const iconMap: Record<string, LucideIcon> = {
     "bed-single": Bed,
     "bed-double": BedDouble,
     flame: Flame,
@@ -35,133 +33,121 @@ const ICON_MAP: Record<string, LucideIcon> = {
     sofa: Sofa,
 };
 
-function ExtraIcon({ iconKey }: { iconKey: string }) {
-    const Icon = ICON_MAP[iconKey] ?? Package;
-    return <Icon className="h-5 w-5 text-black/70" />;
-}
-
 export default function ExtraServices() {
-    const { extras, updateExtra, nextStep, prevStep } = useBookingStore();
+    const { extras, updateExtra } = useBookingStore();
 
     const extrasTotal = useMemo(() => {
-        return Object.entries(extras || {}).reduce((sum, [id, qtyRaw]) => {
-            const qty = Number(qtyRaw) || 0;
-            if (qty <= 0) return sum;
+        return Object.entries(extras).reduce((sum, [id, qty]) => {
             const e = EXTRAS.find((x) => x.id === id);
             return sum + (e ? e.price * qty : 0);
         }, 0);
     }, [extras]);
 
-    const selectedLines = useMemo(() => {
-        return Object.entries(extras || {})
-            .map(([id, qtyRaw]) => {
-                const qty = Number(qtyRaw) || 0;
-                if (qty <= 0) return null;
-                const e = EXTRAS.find((x) => x.id === id);
-                if (!e) return null;
-                return { id, name: e.name, qty, line: e.price * qty };
-            })
-            .filter(Boolean) as Array<{ id: string; name: string; qty: number; line: number }>;
-    }, [extras]);
-
     return (
-        <section className="w-full">
-            <h2 className="text-2xl font-semibold tracking-tight text-black">Extras</h2>
-            <p className="mt-2 text-sm text-black/55">Optional add-ons.</p>
+        <div className="animate-fadeIn">
+            <div className="mb-10">
+                <h1 className="text-3xl font-semibold mb-3">Extra Services</h1>
+                <p className="text-gray-500">Add optional services to your cleaning</p>
+            </div>
 
-            <div className="mt-6 rounded-[24px] border border-black/10 bg-white/60 backdrop-blur-xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
-                <div className="grid gap-3">
-                    {EXTRAS.map((x) => {
-                        const qty = Number(extras?.[x.id]) || 0;
+            <div className="flex flex-col gap-3">
+                {EXTRAS.map((extra) => {
+                    const qty = extras[extra.id] || 0;
+                    const isSelected = qty > 0;
+                    const Icon = iconMap[extra.icon] ?? Bed;
 
-                        return (
-                            <div
-                                key={x.id}
-                                className="flex items-center justify-between rounded-[18px] border border-black/10 bg-white/70 p-4"
-                            >
-                                <div className="flex items-start gap-3">
-                                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-[14px] border border-black/10 bg-white">
-                                        <ExtraIcon iconKey={x.icon} />
+                    return (
+                        <div
+                            key={extra.id}
+                            className={`p-4 rounded-2xl border-2 transition-all ${
+                                isSelected ? "border-gray-900" : "border-gray-200"
+                            }`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4 flex-1">
+                                    <div className="w-10 h-10 flex items-center justify-center text-gray-500">
+                                        <Icon size={28} />
                                     </div>
 
-                                    <div>
-                                        <div className="text-sm font-semibold text-black">{x.name}</div>
-                                        <div className="mt-1 text-xs text-black/55">
-                                            € {x.price.toFixed(2)} <span className="text-black/40">•</span> {x.unit}
-                                            <span className="text-black/40"> • </span>
-                                            ~{x.hours >= 1 ? `${x.hours}h` : `${Math.round(x.hours * 60)}min`}
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-sm">{extra.name}</div>
+
+                                        <div className="flex gap-3 text-sm mt-1">
+                      <span className="text-gray-900 font-semibold">
+                        €{extra.price.toFixed(2)}
+                      </span>
+
+                                            <span className="text-gray-400">
+                        ~
+                                                {extra.hours >= 1
+                                                    ? `${extra.hours}h`
+                                                    : `${Math.round(extra.hours * 60)}min`}
+                      </span>
+
+                                            <span className="text-gray-300">/ {extra.unit}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     <button
-                                        onClick={() => updateExtra(x.id, -1)}
+                                        type="button"
+                                        onClick={() => updateExtra(extra.id, -1)}
                                         disabled={qty === 0}
-                                        className={[
-                                            "h-9 w-9 rounded-full border bg-white transition",
+                                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-xl transition-all
+                      ${
                                             qty === 0
-                                                ? "border-black/10 text-black/25 cursor-not-allowed"
-                                                : "border-black/15 hover:bg-black/5",
-                                        ].join(" ")}
-                                        aria-label="Decrease"
+                                                ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                                                : "border-gray-300 text-gray-600 hover:border-gray-900 hover:text-gray-900"
+                                        }`}
                                     >
-                                        <Minus className="mx-auto h-4 w-4" />
+                                        −
                                     </button>
 
-                                    <div className="w-7 text-center text-sm font-semibold text-black">{qty}</div>
+                                    <span className="w-8 text-center font-semibold text-lg">{qty}</span>
 
                                     <button
-                                        onClick={() => updateExtra(x.id, +1)}
-                                        className="h-9 w-9 rounded-full border border-black/15 bg-white hover:bg-black/5 transition"
-                                        aria-label="Increase"
+                                        type="button"
+                                        onClick={() => updateExtra(extra.id, 1)}
+                                        className="w-10 h-10 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center text-xl hover:border-gray-900 hover:text-gray-900 transition-all"
                                     >
-                                        <Plus className="mx-auto h-4 w-4 text-black/70" />
+                                        +
                                     </button>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-
-                {/* ✅ Summary (как у тебя было раньше) */}
-                {extrasTotal > 0 && (
-                    <div className="mt-6 rounded-[18px] border border-black/10 bg-white/70 p-4">
-                        <div className="text-xs font-semibold tracking-wide text-black/45">SELECTED EXTRAS</div>
-
-                        <div className="mt-3 grid gap-2">
-                            {selectedLines.map((l) => (
-                                <div key={l.id} className="flex items-center justify-between text-sm">
-                  <span className="text-black/70">
-                    {l.name} × {l.qty}
-                  </span>
-                                    <span className="font-semibold text-black">+ € {l.line.toFixed(2)}</span>
-                                </div>
-                            ))}
                         </div>
-
-                        <div className="mt-4 flex items-center justify-between border-t border-black/10 pt-3">
-                            <span className="text-sm font-semibold text-black">Extras Total</span>
-                            <span className="text-sm font-semibold text-black">+ € {extrasTotal.toFixed(2)}</span>
-                        </div>
-                    </div>
-                )}
-
-                <div className="mt-6 flex gap-3">
-                    <button
-                        onClick={prevStep}
-                        className="w-full rounded-full border border-black/15 bg-white px-4 py-3 text-sm font-medium text-black hover:bg-black/5"
-                    >
-                        Back
-                    </button>
-                    <button
-                        onClick={nextStep}
-                        className="w-full rounded-full border border-black/15 bg-black px-4 py-3 text-sm font-medium text-white hover:bg-black/90"
-                    >
-                        Continue
-                    </button>
-                </div>
+                    );
+                })}
             </div>
-        </section>
+
+            {extrasTotal > 0 && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-2xl animate-fadeIn">
+                    <div className="text-sm font-semibold text-gray-400 mb-3">SELECTED EXTRAS:</div>
+
+                    {Object.entries(extras)
+                        .filter(([_, q]) => q > 0)
+                        .map(([id, q]) => {
+                            const e = EXTRAS.find((x) => x.id === id);
+                            if (!e) return null;
+
+                            return (
+                                <div key={id} className="flex justify-between text-sm mb-2">
+                  <span>
+                    {e.name} × {q}
+                  </span>
+                                    <span className="text-gray-900 font-semibold">
+                    +€{(e.price * q).toFixed(2)}
+                  </span>
+                                </div>
+                            );
+                        })}
+
+                    <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between font-semibold">
+                        <span>Extras Total</span>
+                        <span className="text-gray-900">+€{extrasTotal.toFixed(2)}</span>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

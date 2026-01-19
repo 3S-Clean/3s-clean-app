@@ -5,8 +5,6 @@ export const dynamic = "force-dynamic";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
-import { linkOrderToUser } from "@/lib/booking/actions";
 import { useBookingStore } from "@/lib/booking/store";
 
 type Flow = "signup" | "recovery";
@@ -25,13 +23,12 @@ function VerifyCodeInner() {
     const router = useRouter();
     const sp = useSearchParams();
 
-    const rawFlow = sp.get("flow");
-    const flow: Flow = rawFlow === "recovery" ? "recovery" : "signup";
+    const flow: Flow = sp.get("flow") === "recovery" ? "recovery" : "signup";
+    const pendingOrderFromQuery = useMemo(() => sp.get("pendingOrder") || "", [sp]);
 
     const supabase = useMemo(() => createClient(), []);
-    const { reset: resetBooking } = useBookingStore();
+    const { resetBooking } = useBookingStore();
 
-    const pendingOrderFromQuery = sp.get("pendingOrder") || "";
     const [pendingOrderToken, setPendingOrderToken] = useState<string>(pendingOrderFromQuery);
 
     const [email, setEmail] = useState<string | null>(null);
@@ -64,38 +61,35 @@ function VerifyCodeInner() {
         setEmail(storedEmail);
         restartOtpTimer();
 
-        // signup: token from query or fallback localStorage
-        if (flow === "signup" && !pendingOrderFromQuery) {
-            const storedToken = (() => {
-                try {
-                    return localStorage.getItem("pendingOrderToken");
-                } catch {
-                    return null;
-                }
-            })();
-            if (storedToken) setPendingOrderToken(storedToken);
-        } else {
-            if (flow === "signup" && pendingOrderFromQuery) {
+        // signup: pendingOrder token (query or localStorage)
+        if (flow === "signup") {
+            if (pendingOrderFromQuery) {
+                setPendingOrderToken(pendingOrderFromQuery);
                 try {
                     localStorage.setItem("pendingOrderToken", pendingOrderFromQuery);
                 } catch {}
+            } else {
+                const storedToken = (() => {
+                    try {
+                        return localStorage.getItem("pendingOrderToken");
+                    } catch {
+                        return null;
+                    }
+                })();
+                if (storedToken) setPendingOrderToken(storedToken);
             }
         }
     }, [flow, router, storageKey, pendingOrderFromQuery]);
 
     useEffect(() => {
         if (!email) return;
-        const id = window.setInterval(() => {
-            setExpiresLeft((s) => (s > 0 ? s - 1 : 0));
-        }, 1000);
+        const id = window.setInterval(() => setExpiresLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
         return () => window.clearInterval(id);
     }, [email]);
 
     useEffect(() => {
         if (cooldownLeft <= 0) return;
-        const id = window.setInterval(() => {
-            setCooldownLeft((s) => (s > 0 ? s - 1 : 0));
-        }, 1000);
+        const id = window.setInterval(() => setCooldownLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
         return () => window.clearInterval(id);
     }, [cooldownLeft]);
 
@@ -142,6 +136,7 @@ function VerifyCodeInner() {
                 return;
             }
 
+            // recovery: ensure session exists before redirect to reset-password
             if (flow === "recovery") {
                 const session = await waitForSession();
                 if (!session) {
@@ -156,10 +151,30 @@ function VerifyCodeInner() {
                 } catch {}
             }
 
-            // ✅ signup + pendingOrder => link + redirect to success
-            if (flow === "signup" && pendingOrderToken) {
-                try {
-                    const orderId = await linkOrderToUser(pendingOrderToken); // ✅ string
+            // ✅ signup + pendingOrder => link via API and redirect to booking success
+            if (flow === "signup") {
+                const tokenToLink = (pendingOrderToken || "").trim();
+
+                if (tokenToLink) {
+                    const res = await fetch("/api/booking/link-order", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ pendingToken: tokenToLink }),
+                    });
+
+                    const json = await res.json();
+
+                    // ❗ link-order returns { orderId }
+                    if (!res.ok || !json?.orderId) {
+                        try {
+                            localStorage.removeItem("pendingOrderToken");
+                        } catch {}
+                        try {
+                            localStorage.removeItem(storageKey);
+                        } catch {}
+                        router.replace("/account/orders");
+                        return;
+                    }
 
                     resetBooking();
 
@@ -170,17 +185,7 @@ function VerifyCodeInner() {
                         localStorage.removeItem(storageKey);
                     } catch {}
 
-                    router.replace(`/booking/success?orderId=${encodeURIComponent(orderId)}`);
-                    return;
-                } catch {
-                    try {
-                        localStorage.removeItem("pendingOrderToken");
-                    } catch {}
-                    try {
-                        localStorage.removeItem(storageKey);
-                    } catch {}
-
-                    router.replace("/account/orders");
+                    router.replace(`/booking/success?orderId=${encodeURIComponent(String(json.orderId))}`);
                     return;
                 }
             }
@@ -189,11 +194,8 @@ function VerifyCodeInner() {
                 localStorage.removeItem(storageKey);
             } catch {}
 
-            if (flow === "signup") {
-                router.replace("/set-password");
-            } else {
-                router.replace("/reset-password?flow=recovery&recovery=1");
-            }
+            if (flow === "signup") router.replace("/set-password");
+            else router.replace("/reset-password?flow=recovery&recovery=1");
         } finally {
             setLoading(false);
         }
@@ -253,15 +255,12 @@ function VerifyCodeInner() {
             </h1>
 
             <p className="mt-6 text-base text-[color:var(--muted)]">
-                We sent a verification code to{" "}
-                <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
+                We sent a verification code to <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
             </p>
 
             {flow === "signup" && pendingOrderToken ? (
                 <div className="mt-6 rounded-2xl border bg-[var(--input-bg)] border-[var(--input-border)] px-4 py-3 backdrop-blur">
-                    <p className="text-sm text-[color:var(--muted)]">
-                        ✓ Booking detected — after verification it will be linked to your account.
-                    </p>
+                    <p className="text-sm text-[color:var(--muted)]">✓ Booking detected — after verification it will be linked to your account.</p>
                 </div>
             ) : null}
 
@@ -283,14 +282,12 @@ function VerifyCodeInner() {
 
                 <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
           <span>
-            Code expires in{" "}
-              <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
+            Code expires in <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
           </span>
                     <span>
             {resendDisabled ? (
                 <>
-                    Resend available in{" "}
-                    <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
+                    Resend available in <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
                 </>
             ) : (
                 "You can resend now"
@@ -326,20 +323,13 @@ function VerifyCodeInner() {
                 </button>
 
                 {status && (
-                    <p
-                        className={[
-                            "text-sm",
-                            status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90",
-                        ].join(" ")}
-                    >
+                    <p className={["text-sm", status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
             </div>
 
-            <p className="mt-10 text-sm text-[color:var(--muted)]">
-                If you entered the wrong email, go back and try again.
-            </p>
+            <p className="mt-10 text-sm text-[color:var(--muted)]">If you entered the wrong email, go back and try again.</p>
         </div>
     );
 }

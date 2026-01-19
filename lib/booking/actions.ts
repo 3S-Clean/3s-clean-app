@@ -1,28 +1,10 @@
 // lib/booking/actions.ts
-import "server-only";
+"use client";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import {
-    EXTRAS,
-    getBasePrice,
-    getEstimatedHours,
-    type ExtrasMap,
-    type ServiceId,
-    type ApartmentSizeId,
-    type PeopleCountId,
-} from "@/lib/booking/config";
-
-/**
- * ✅ ВАЖНО (как в твоей схеме):
- * - public.service_areas: postal_code (НЕ postcode)
- * - public.notify_requests: postal_code (НЕ postcode)
- * - public.orders: pending_token uuid
- * - RPC: public.link_order_to_user(p_token uuid)
- * - RPC: public.get_order_success(p_token uuid)
- */
+import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 
 /* ===========================
-   Pure totals calc (SYNC)
+   Types
    =========================== */
 
 export type OrderExtraLine = {
@@ -40,12 +22,73 @@ export type OrderTotals = {
     extras: OrderExtraLine[];
 };
 
+export type ExistingBookingRow = {
+    scheduled_date: string; // YYYY-MM-DD
+    scheduled_time: string; // HH:mm
+    estimated_hours: number;
+};
+
+export type CreateOrderPayload = {
+    service_type: string;
+    apartment_size: string;
+    people_count: string;
+
+    has_pets: boolean;
+    has_kids: boolean;
+    has_allergies: boolean;
+    allergy_note: string | null;
+
+    extras: OrderExtraLine[];
+    base_price: number;
+    extras_price: number;
+    total_price: number;
+    estimated_hours: number;
+
+    customer_first_name: string;
+    customer_last_name: string | null;
+    customer_email: string;
+    customer_phone: string;
+    customer_address: string;
+    customer_postal_code: string;
+    customer_notes: string | null;
+
+    scheduled_date: string; // YYYY-MM-DD
+    scheduled_time: string; // HH:mm
+};
+
+export type CreateOrderResponse =
+    | { orderId: string; pendingToken: string }
+    | { error: string };
+
+export type LinkOrderResponse =
+    | { success: true; orderId: string }
+    | { success: false; error?: string };
+
+export type GetOrderPublicResponse =
+    | {
+    order: {
+        id: string;
+        service_type: string;
+        scheduled_date: string;
+        scheduled_time: string;
+        estimated_hours: number;
+        total_price: number;
+        status: string;
+        created_at: string;
+    };
+}
+    | { error: string };
+
+/* ===========================
+   Pure calc (no API)
+   =========================== */
+
 export function calculateOrderTotals(
-    service: ServiceId,
-    size: ApartmentSizeId,
-    people: PeopleCountId,
+    service: string,
+    size: string,
+    people: string,
     hasPets: boolean,
-    extras: ExtrasMap
+    extras: Record<string, number>
 ): OrderTotals {
     const basePrice = getBasePrice(service, size, people, hasPets);
 
@@ -54,7 +97,7 @@ export function calculateOrderTotals(
 
     const extrasArray: OrderExtraLine[] = [];
 
-    for (const [extraId, qtyRaw] of Object.entries(extras ?? {})) {
+    for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
         const qty = Number(qtyRaw) || 0;
         if (qty <= 0) continue;
 
@@ -75,187 +118,84 @@ export function calculateOrderTotals(
 
     const estimatedHours = getEstimatedHours(service, size) + extrasHours;
 
+    const r2 = (n: number) => Math.round(n * 100) / 100;
+
     return {
-        basePrice: Math.round(basePrice * 100) / 100,
-        extrasPrice: Math.round(extrasPrice * 100) / 100,
-        totalPrice: Math.round((basePrice + extrasPrice) * 100) / 100,
-        estimatedHours: Math.round(estimatedHours * 100) / 100,
+        basePrice: r2(basePrice),
+        extrasPrice: r2(extrasPrice),
+        totalPrice: r2(basePrice + extrasPrice),
+        estimatedHours: r2(estimatedHours),
         extras: extrasArray,
     };
 }
 
 /* ===========================
-   Server actions (ASYNC)
+   Client -> API (fetch)
    =========================== */
 
-export type AvailabilityResult = { available: boolean };
-
-export async function checkPostalCode(postalCode: string): Promise<AvailabilityResult> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const { data, error } = await supabase
-        .from("service_areas")
-        .select("postal_code")
-        .eq("postal_code", postalCode)
-        .eq("is_active", true)
-        .maybeSingle();
-
-    if (error) return { available: false };
-    return { available: !!data };
-}
-
-// alias compatibility
-export const checkPostcode = checkPostalCode;
-
-export type NotifyResult = { success: boolean; error?: string };
-
-export async function createNotifyRequest(email: string, postalCode: string): Promise<NotifyResult> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const { error } = await supabase.from("notify_requests").insert({
-        email,
-        postal_code: postalCode,
+async function postJSON<TReq extends Record<string, unknown>, TRes>(
+    url: string,
+    body: TReq
+): Promise<TRes> {
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
     });
 
-    return { success: !error, ...(error ? { error: error.message } : {}) };
+    const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+
+    if (!res.ok) {
+        const msg =
+            typeof json.error === "string" ? json.error : `Request failed: ${res.status}`;
+        throw new Error(msg);
+    }
+
+    return json as unknown as TRes;
 }
 
-// alias compatibility
-export const submitNotifyRequest = createNotifyRequest;
-
-export type ExistingBookingRow = {
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // "HH:mm"
-    estimated_hours: number;
-    status: string;
-};
-
-export async function getExistingBookings(
-    startDate: string,
-    endDate: string
-): Promise<ExistingBookingRow[]> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const { data, error } = await supabase
-        .from("orders")
-        .select("scheduled_date, scheduled_time, estimated_hours, status")
-        .gte("scheduled_date", startDate)
-        .lte("scheduled_date", endDate)
-        .in("status", ["pending", "confirmed"]);
-
-    if (error) return [];
-    return (data ?? []) as ExistingBookingRow[];
+export function checkPostcode(postcode: string) {
+    return postJSON<{ postcode: string }, { available: boolean }>(
+        "/api/booking/check-postcode",
+        { postcode }
+    );
 }
 
-export type CreateOrderInput = {
-    service_type: ServiceId;
-    apartment_size: ApartmentSizeId;
-    people_count: PeopleCountId;
-
-    has_pets: boolean;
-    has_kids: boolean;
-    has_allergies: boolean;
-    allergy_note?: string | null;
-
-    extras: OrderExtraLine[];
-    base_price: number;
-    extras_price: number;
-    total_price: number;
-    estimated_hours: number;
-
-    customer_first_name: string;
-    customer_last_name?: string | null;
-    customer_email: string;
-    customer_phone: string;
-
-    customer_address: string;
-    customer_city?: string | null;
-    customer_postal_code: string;
-
-    customer_notes?: string | null;
-
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // "HH:mm"
-};
-
-export type CreateOrderResult =
-    | { error: string }
-    | { orderId: string; pendingToken: string };
-
-export async function createOrder(orderData: CreateOrderInput): Promise<CreateOrderResult> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    const pendingToken = crypto.randomUUID();
-
-    const payload = {
-        ...orderData,
-        user_id: user?.id ?? null,
-        pending_token: pendingToken,
-        status: "pending" as const,
-    };
-
-    const { data, error } = await supabase
-        .from("orders")
-        .insert(payload)
-        .select("id, pending_token")
-        .single();
-
-    if (error) return { error: error.message };
-
-    return { orderId: String(data.id), pendingToken: String(data.pending_token) };
+export function submitNotifyRequest(email: string, postcode: string) {
+    return postJSON<{ email: string; postcode: string }, { success: boolean }>(
+        "/api/notify",
+        { email, postcode }
+    );
 }
 
-export type LinkOrderResult = { success: boolean; orderId?: string | null; error?: string };
-
-export async function linkOrderToUser(pendingToken: string): Promise<LinkOrderResult> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const { data, error } = await supabase.rpc("link_order_to_user", {
-        p_token: pendingToken,
-    });
-
-    if (error) return { success: false, error: error.message, orderId: null };
-    return { success: true, orderId: data ? String(data) : null };
+export function createOrder(orderData: CreateOrderPayload) {
+    return postJSON<{ orderData: CreateOrderPayload }, CreateOrderResponse>(
+        "/api/booking/create-order",
+        { orderData }
+    );
 }
 
-export type OrderSuccessRow = {
-    service_type: string;
-    scheduled_date: string;
-    scheduled_time: string;
-    estimated_hours: number;
-    customer_address: string;
-    customer_postal_code: string;
-    total_price: number;
-};
-
-export async function getOrderSuccess(pendingToken: string): Promise<OrderSuccessRow | null> {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-
-    const { data, error } = await supabase.rpc("get_order_success", {
-        p_token: pendingToken,
-    });
-
-    if (error) return null;
-
-    const row = Array.isArray(data) ? data[0] : data;
-    return (row ?? null) as OrderSuccessRow | null;
+export function linkOrderToUser(pendingToken: string) {
+    return postJSON<{ pendingToken: string }, LinkOrderResponse>(
+        "/api/booking/link-order",
+        { pendingToken }
+    );
 }
 
-export async function getOrder(orderId: string) {
-    "use server";
-    const supabase = await createSupabaseServerClient();
+export function getExistingBookings(startDate: string, endDate: string) {
+    return postJSON<{ startDate: string; endDate: string }, ExistingBookingRow[]>(
+        "/api/booking/existing-bookings",
+        { startDate, endDate }
+    );
+}
 
-    const { data, error } = await supabase.from("orders").select("*").eq("id", orderId).single();
-    if (error) return null;
-    return data;
+export function getOrder(orderId: string) {
+    return postJSON<{ orderId: string }, unknown>("/api/booking/get-order", { orderId });
+}
+
+export function getOrderPublic(orderId?: string, pendingToken?: string) {
+    return postJSON<
+        { orderId?: string; pendingToken?: string },
+        GetOrderPublicResponse
+    >("/api/booking/get-order-public", { orderId, pendingToken });
 }

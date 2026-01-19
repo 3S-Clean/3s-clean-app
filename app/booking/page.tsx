@@ -1,8 +1,10 @@
-// app/booking/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+
+import { useBookingStore } from "@/lib/booking/store";
+import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
 import ServiceSelection from "@/components/booking/ServiceSelection";
@@ -11,59 +13,57 @@ import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
 
-import { useBookingStore } from "@/lib/booking/store";
-import { createOrder, calculateOrderTotals } from "@/lib/booking/actions";
+type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 
-import {
-    SERVICES,
-    APARTMENT_SIZES,
-    PEOPLE_OPTIONS,
-    type ServiceId,
-    type ApartmentSizeId,
-    type PeopleCountId,
-    type ExtrasMap,
-} from "@/lib/booking/config";
+type CreateOrderResponse =
+    | { orderId: string; pendingToken: string }
+    | { error: string };
 
-function ProgressDots({ step, total }: { step: number; total: number }) {
-    return (
-        <div className="flex items-center justify-center gap-2">
-            {Array.from({ length: total }).map((_, i) => {
-                const isPast = i < step;
-                const isCurrent = i === step;
+const r2 = (n: number) => Math.round(n * 100) / 100;
 
-                const cls = isPast
-                    ? "bg-black"
-                    : isCurrent
-                        ? "bg-white border border-black"
-                        : "bg-black/20";
+function calculateTotals(
+    service: string,
+    size: string,
+    people: string,
+    hasPets: boolean,
+    extras: Record<string, number>
+) {
+    const basePrice = getBasePrice(service, size, people, hasPets);
 
-                const size = isCurrent ? "h-3.5 w-3.5" : "h-3 w-3";
+    let extrasPrice = 0;
+    let extrasHours = 0;
 
-                return <span key={i} className={`${size} rounded-full ${cls}`} />;
-            })}
-        </div>
-    );
+    const extrasArray: OrderExtraLine[] = [];
+
+    for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
+        const qty = Number(qtyRaw) || 0;
+        if (qty <= 0) continue;
+
+        const extra = EXTRAS.find((e) => e.id === extraId);
+        if (!extra) continue;
+
+        const linePrice = extra.price * qty;
+        extrasPrice += linePrice;
+        extrasHours += extra.hours * qty;
+
+        extrasArray.push({
+            id: extraId,
+            quantity: qty,
+            price: r2(linePrice),
+            name: extra.name,
+        });
+    }
+
+    const estimatedHours = getEstimatedHours(service, size) + extrasHours;
+
+    return {
+        basePrice: r2(basePrice),
+        extrasPrice: r2(extrasPrice),
+        totalPrice: r2(basePrice + extrasPrice),
+        estimatedHours: r2(estimatedHours),
+        extras: extrasArray,
+    };
 }
-
-/** ---- type guards (чтобы не менять store.ts) ---- */
-const SERVICE_IDS = new Set(SERVICES.map((s) => s.id));
-const SIZE_IDS = new Set(APARTMENT_SIZES.map((s) => s.id));
-const PEOPLE_IDS = new Set(PEOPLE_OPTIONS.map((p) => p.id));
-
-function isServiceId(v: unknown): v is ServiceId {
-    return typeof v === "string" && SERVICE_IDS.has(v as ServiceId);
-}
-function isApartmentSizeId(v: unknown): v is ApartmentSizeId {
-    return typeof v === "string" && SIZE_IDS.has(v as ApartmentSizeId);
-}
-function isPeopleCountId(v: unknown): v is PeopleCountId {
-    return typeof v === "string" && PEOPLE_IDS.has(v as PeopleCountId);
-}
-
-type CreateOrderResult =
-    | { error: string }
-    | { pendingToken: string }
-    | { orderId: string };
 
 export default function BookingPage() {
     const router = useRouter();
@@ -71,20 +71,21 @@ export default function BookingPage() {
 
     const {
         step,
-        nextStep,
-        prevStep,
+        setStep,
 
         postcode,
+        postcodeVerified,
 
         selectedService,
         apartmentSize,
         peopleCount,
+
         hasPets,
         hasKids,
         hasAllergies,
         allergyNote,
-        extras,
 
+        extras,
         formData,
         selectedDate,
         selectedTime,
@@ -92,66 +93,72 @@ export default function BookingPage() {
         setPendingToken,
     } = useBookingStore();
 
-    const canContinue = (): boolean => {
-        if (step === 0) return true; // PostcodeCheck сам решает
-        if (step === 1) return isServiceId(selectedService);
-        if (step === 2) return isApartmentSizeId(apartmentSize) && isPeopleCountId(peopleCount);
-        if (step === 3) return true;
-        if (step === 4) {
-            return !!(
-                formData.firstName &&
-                formData.email &&
-                formData.phone &&
-                formData.address &&
-                selectedDate &&
-                selectedTime
-            );
+    const canContinue = useMemo(() => {
+        switch (step) {
+            case 0:
+                return !!postcodeVerified;
+            case 1:
+                return !!selectedService;
+            case 2:
+                return !!apartmentSize && !!peopleCount;
+            case 3:
+                return true;
+            case 4:
+                return !!(
+                    formData.firstName &&
+                    formData.email &&
+                    formData.phone &&
+                    formData.address &&
+                    selectedDate &&
+                    selectedTime
+                );
+            default:
+                return false;
         }
-        return false;
-    };
+    }, [
+        step,
+        postcodeVerified,
+        selectedService,
+        apartmentSize,
+        peopleCount,
+        formData.firstName,
+        formData.email,
+        formData.phone,
+        formData.address,
+        selectedDate,
+        selectedTime,
+    ]);
 
-    const handleNext = async () => {
-        // шаг 4 = submit
-        if (step === 4) {
-            await handleSubmit();
-            return;
-        }
-
-        nextStep();
-        if (typeof window !== "undefined") window.scrollTo(0, 0);
+    const handleNext = () => {
+        if (!canContinue) return;
+        setStep(Math.min(4, step + 1));
+        window.scrollTo(0, 0);
     };
 
     const handleBack = () => {
-        prevStep();
-        if (typeof window !== "undefined") window.scrollTo(0, 0);
+        setStep(Math.max(0, step - 1));
+        window.scrollTo(0, 0);
     };
 
     const handleSubmit = async () => {
-        // Жёстко валидируем типы (иначе TS ругается и логика может упасть)
-        if (!isServiceId(selectedService)) return;
-        if (!isApartmentSizeId(apartmentSize)) return;
-        if (!isPeopleCountId(peopleCount)) return;
-        if (!selectedDate || !selectedTime) return;
+        if (isSubmitting) return;
+
+        if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
         setIsSubmitting(true);
 
         try {
-            const totals = calculateOrderTotals(
-                selectedService,
-                apartmentSize,
-                peopleCount,
-                hasPets,
-                (extras ?? {}) as ExtrasMap
-            );
+            const totals = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
 
-            const result = (await createOrder({
+            const orderData = {
                 service_type: selectedService,
                 apartment_size: apartmentSize,
                 people_count: peopleCount,
+
                 has_pets: hasPets,
                 has_kids: hasKids,
                 has_allergies: hasAllergies,
-                allergy_note: hasAllergies ? allergyNote : undefined,
+                allergy_note: hasAllergies ? allergyNote : null,
 
                 extras: totals.extras,
                 base_price: totals.basePrice,
@@ -160,33 +167,35 @@ export default function BookingPage() {
                 estimated_hours: totals.estimatedHours,
 
                 customer_first_name: formData.firstName,
-                customer_last_name: formData.lastName || undefined,
+                customer_last_name: formData.lastName || null,
                 customer_email: formData.email,
                 customer_phone: formData.phone,
                 customer_address: formData.address,
                 customer_postal_code: postcode,
+                customer_notes: formData.notes || null,
 
-                customer_notes: formData.notes || undefined,
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
-            })) as CreateOrderResult;
+            };
 
-            if ("error" in result) {
-                alert(`Error: ${result.error}`);
+            const res = await fetch("/api/booking/create-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderData }),
+            });
+
+            const json = (await res.json()) as CreateOrderResponse;
+
+            if (!res.ok || "error" in json) {
+                alert("Error: " + ("error" in json ? json.error : "Failed to create order."));
                 return;
             }
 
-            if ("pendingToken" in result) {
-                setPendingToken(result.pendingToken);
-                // ✅ под твой success page: searchParams.token
-                router.push(`/booking/success?token=${encodeURIComponent(result.pendingToken)}`);
-                return;
-            }
+            // ✅ всегда есть pendingToken
+            setPendingToken(json.pendingToken);
 
-            if ("orderId" in result) {
-                // fallback, если вдруг вернулся только orderId
-                router.push(`/booking/success?orderId=${encodeURIComponent(result.orderId)}`);
-            }
+            // ✅ success для гостя (по pendingToken)
+            router.push(`/booking/success?pendingToken=${encodeURIComponent(json.pendingToken)}`);
         } catch {
             alert("Something went wrong.");
         } finally {
@@ -194,18 +203,24 @@ export default function BookingPage() {
         }
     };
 
-    const nextLabel = step === 4 ? (isSubmitting ? "Booking..." : "Confirm booking") : "Continue";
-    const nextDisabled = !canContinue() || (step === 4 && isSubmitting);
-
     return (
-        <div className="min-h-screen bg-[#f6f5f2]">
-            <header className="sticky top-0 z-50 border-b border-black/10 bg-[#f6f5f2]/80 backdrop-blur-xl">
-                <div className="mx-auto w-full max-w-2xl px-4 py-5">
-                    <ProgressDots step={step} total={5} />
+        <div className="min-h-screen bg-white">
+            {/* progress dots */}
+            <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
+                <div className="flex justify-center gap-2">
+                    {[0, 1, 2, 3, 4].map((s) => (
+                        <div
+                            key={s}
+                            className={`w-3 h-3 rounded-full transition-all
+                ${s < step ? "bg-gray-900" : ""}
+                ${s === step ? "bg-gray-900 scale-125" : ""}
+                ${s > step ? "bg-gray-200" : ""}`}
+                        />
+                    ))}
                 </div>
             </header>
 
-            <main className="mx-auto w-full max-w-2xl px-4 py-10 pb-32">
+            <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
                 {step === 0 && <PostcodeCheck />}
                 {step === 1 && <ServiceSelection />}
                 {step === 2 && <ApartmentDetails />}
@@ -213,15 +228,13 @@ export default function BookingPage() {
                 {step === 4 && <ContactSchedule />}
             </main>
 
-            {step > 0 && (
-                <BookingFooter
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    nextDisabled={nextDisabled}
-                    nextLabel={nextLabel}
-                    backLabel="Back"
-                />
-            )}
+            {/* ✅ footer нужен на всех шагах, иначе на step=0 нет “Continue” */}
+            <BookingFooter
+                onBack={handleBack}
+                onNext={handleNext}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+            />
         </div>
     );
 }
