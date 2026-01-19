@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useBookingStore } from "@/lib/booking/store";
+import { useBookingStore } from "@/lib/booking/store"; // <-- если стор у тебя так называется
 import { EXTRAS } from "@/lib/booking/config";
 
 export default function ExtraServices() {
@@ -34,7 +34,6 @@ export default function ExtraServices() {
                             }`}
                         >
                             <div className="flex items-center justify-between">
-                                {/* LEFT */}
                                 <div className="flex-1">
                                     <div className="font-semibold text-sm">{extra.name}</div>
 
@@ -54,13 +53,13 @@ export default function ExtraServices() {
                                     </div>
                                 </div>
 
-                                {/* COUNTER */}
                                 <div className="flex items-center gap-3">
                                     <button
                                         type="button"
                                         onClick={() => updateExtra(extra.id, -1)}
                                         disabled={qty === 0}
-                                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-xl transition-all ${
+                                        className={`w-10 h-10 rounded-full border flex items-center justify-center text-xl transition-all
+                      ${
                                             qty === 0
                                                 ? "border-gray-200 text-gray-300 cursor-not-allowed"
                                                 : "border-gray-300 text-gray-600 hover:border-gray-900 hover:text-gray-900"
@@ -69,9 +68,7 @@ export default function ExtraServices() {
                                         −
                                     </button>
 
-                                    <span className="w-8 text-center font-semibold text-lg">
-                    {qty}
-                  </span>
+                                    <span className="w-8 text-center font-semibold text-lg">{qty}</span>
 
                                     <button
                                         type="button"
@@ -113,9 +110,7 @@ export default function ExtraServices() {
 
                     <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between font-semibold">
                         <span>Extras Total</span>
-                        <span className="text-gray-900">
-              +€{extrasTotal.toFixed(2)}
-            </span>
+                        <span className="text-gray-900">+€{extrasTotal.toFixed(2)}</span>
                     </div>
                 </div>
             )}

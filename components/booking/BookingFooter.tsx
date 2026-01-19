@@ -86,16 +86,23 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
-            <div className="max-w-4xl mx-auto flex items-center justify-between">
-                <div>
+            <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                <div className="min-w-0">
                     {serviceId && sizeId && peopleId ? (
                         <div>
-                            <div className="text-2xl font-bold">€ {total.toFixed(2)}</div>
-                            <div className="text-sm text-gray-500">inc.VAT • ~{time}</div>
+                            {/* ✅ FIX: € не переносится отдельной строкой */}
+                            <div className="text-2xl font-bold whitespace-nowrap">
+                                €&nbsp;{total.toFixed(2)}
+                            </div>
+                            <div className="text-sm text-gray-500 whitespace-nowrap">
+                                inc.VAT • ~{time}
+                            </div>
                         </div>
                     ) : selectedService && !apartmentSize ? (
                         <div>
-                            <div className="text-xl font-semibold">From € {service?.startingPrice}</div>
+                            <div className="text-xl font-semibold whitespace-nowrap">
+                                From €&nbsp;{service?.startingPrice}
+                            </div>
                             <div className="text-sm text-gray-500">Select apartment size</div>
                         </div>
                     ) : (
@@ -103,7 +110,7 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                     )}
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 shrink-0">
                     {step > 0 && (
                         <button
                             onClick={onBack}
@@ -112,6 +119,7 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                             Back
                         </button>
                     )}
+
                     {step === 4 ? (
                         <button
                             onClick={onSubmit}

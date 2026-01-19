@@ -131,7 +131,7 @@ export default function ContactSchedule() {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-2">Last Name</label>
+                    <label className="block text-sm font-medium mb-2">Last Name *</label>
                     <input
                         type="text"
                         value={formData.lastName}
