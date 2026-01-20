@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const { data: order, error: findErr } = await admin
         .from("orders")
         .select(
-            "id, user_id, customer_first_name, customer_last_name, customer_phone, customer_address, customer_postal_code"
+            "id, user_id, customer_first_name, customer_last_name, customer_phone, customer_email, customer_address, customer_postal_code"
         )
         .eq("pending_token", pendingToken)
         .maybeSingle();
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     try {
         const { data: profile, error: pErr } = await admin
             .from("profiles")
-            .select("id, first_name, last_name, phone, address, postal_code")
+            .select("id, first_name, last_name, phone, email, address, postal_code")
             .eq("id", user.id)
             .maybeSingle();
 
@@ -84,6 +84,9 @@ export async function POST(req: Request) {
 
             if (!isFilled(profile?.phone) && isFilled(order.customer_phone))
                 patch.phone = String(order.customer_phone).trim();
+
+            if (!isFilled(profile?.email) && isFilled(order.customer_email))
+                patch.email = String(order.customer_email).trim();
 
             if (!isFilled(profile?.address) && isFilled(order.customer_address))
                 patch.address = String(order.customer_address).trim();

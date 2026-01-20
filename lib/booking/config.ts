@@ -151,24 +151,18 @@ export const HOURS_MATRIX: HoursMatrix = {
 ========================= */
 
 export const EXTRAS = [
-    { id: "linen-single", name: "Linen change - single bed", price: 7.5, hours: 0.13, icon: "bed-single", unit: "bed" },
-    { id: "linen-double", name: "Linen change - double bed", price: 14, hours: 0.25, icon: "bed-double", unit: "bed" },
-
-    { id: "oven", name: "Oven deep clean (inside)", price: 100, hours: 2, icon: "flame", unit: "unit" },
-    { id: "fridge", name: "Fridge deep clean (inside)", price: 50, hours: 1, icon: "refrigerator", unit: "unit" },
-    { id: "freezer", name: "Freezer deep clean", price: 50, hours: 1, icon: "snowflake", unit: "unit" },
-
-    { id: "windows-inside", name: "Window cleaning - inside", price: 4.25, hours: 0.08, icon: "app-window", unit: "m² glass" },
-    { id: "windows-outside", name: "Window cleaning - outside", price: 4.5, hours: 0.08, icon: "app-window", unit: "m² glass" },
-
-    { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1, icon: "trees", unit: "10 m²" },
-
-    { id: "limescale", name: "Limescale removal - intensive", price: 27, hours: 0.5, icon: "droplets", unit: "30-min" },
-
-    { id: "cupboards", name: "Cupboards / cabinets - deep clean & organization", price: 50, hours: 1, icon: "archive", unit: "hour" },
-    { id: "wardrobe", name: "Wardrobe arranging / folding / organization", price: 50, hours: 1, icon: "shirt", unit: "hour" },
-
-    { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, icon: "sofa", unit: "seat" },
+    { id: "linen-single", name: "Linen change - single bed", price: 7.5, hours: 0.13, unit: "bed" },
+    { id: "linen-double", name: "Linen change - double bed", price: 14, hours: 0.25, unit: "bed" },
+    { id: "oven", name: "Oven deep clean (inside)", price: 100, hours: 2, unit: "unit" },
+    { id: "fridge", name: "Fridge deep clean (inside)", price: 50, hours: 1, unit: "unit" },
+    { id: "freezer", name: "Freezer deep clean", price: 50, hours: 1, unit: "unit" },
+    { id: "windows-inside", name: "Window cleaning - inside", price: 4.25, hours: 0.08, unit: "m² glass" },
+    { id: "windows-outside", name: "Window cleaning - outside", price: 4.5, hours: 0.08, unit: "m² glass" },
+    { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1, unit: "10 m²" },
+    { id: "limescale", name: "Limescale removal - intensive", price: 27, hours: 0.5, unit: "30-min" },
+    { id: "cupboards", name: "Cupboards / cabinets - deep clean & organization", price: 50, hours: 1, unit: "hour" },
+    { id: "wardrobe", name: "Wardrobe arranging / folding / organization", price: 50, hours: 1, unit: "hour" },
+    { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, unit: "seat" },
 ];
 
 /* =========================

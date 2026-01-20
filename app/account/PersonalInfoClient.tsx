@@ -26,12 +26,10 @@ function getErrorMessage(e: unknown): string {
 
 export default function PersonalInfoClient({ email }: { email: string }) {
     const supabase = useMemo(() => createClient(), []);
-
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [editing, setEditing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const [profile, setProfile] = useState<Profile | null>(null);
 
     const [form, setForm] = useState({

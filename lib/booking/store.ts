@@ -9,12 +9,10 @@ export interface FormData {
     lastName: string;
     email: string;
     phone: string;
-
     address: string;
     postalCode: string;
     city: string;
     country: string;
-
     notes: string;
 }
 
@@ -93,23 +91,17 @@ const initialState = {
     step: 0,
     postcode: "",
     postcodeVerified: false,
-
     selectedService: null as string | null,
     apartmentSize: null as string | null,
     peopleCount: null as string | null,
-
     hasPets: false,
     hasKids: false,
     hasAllergies: false,
     allergyNote: "",
-
     extras: {} as Record<string, number>,
-
     formData: initialFormData,
-
     selectedDate: null as string | null,
     selectedTime: null as string | null,
-
     pendingToken: null as string | null,
 };
 
@@ -150,14 +142,11 @@ export const useBookingStore = create<BookingState>()(
             setSelectedService: (selectedService) => set({ selectedService }),
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
             setPeopleCount: (peopleCount) => set({ peopleCount }),
-
             setHasPets: (hasPets) => set({ hasPets }),
             setHasKids: (hasKids) => set({ hasKids }),
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
             setAllergyNote: (allergyNote) => set({ allergyNote }),
-
             setExtras: (extras) => set({ extras }),
-
             updateExtra: (extraId, delta) =>
                 set((state) => {
                     const current = state.extras[extraId] || 0;
@@ -173,12 +162,9 @@ export const useBookingStore = create<BookingState>()(
             formData: initialFormData,
             setFormData: (data) =>
                 set((state) => ({ formData: { ...state.formData, ...data } })),
-
             setSelectedDate: (selectedDate) => set({ selectedDate }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
-
             setPendingToken: (pendingToken) => set({ pendingToken }),
-
             resetBooking: () => set({ ...initialState, formData: initialFormData }),
         }),
         {

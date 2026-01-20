@@ -1,109 +1,109 @@
 // lib/booking/useBookingNavigation.ts
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 
-export type BookingStep = 0 | 1 | 2 | 3 | 4;
-const MIN_STEP: BookingStep = 0;
-const MAX_STEP: BookingStep = 4;
+const MIN_STEP = 0;
+const MAX_STEP = 4;
 
-function clampStep(n: number): BookingStep {
-    const x = Math.max(MIN_STEP, Math.min(MAX_STEP, n));
-    return x as BookingStep;
+function clampStep(n: number) {
+    return Math.max(MIN_STEP, Math.min(MAX_STEP, n));
 }
 
 export function useBookingNavigation() {
-    const {
-        step,
-        setStep,
+    const step = useBookingStore((s) => s.step);
+    const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
+    const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
+    const setStep = useBookingStore((s) => s.setStep);
+    const selectedService = useBookingStore((s) => s.selectedService);
+    const apartmentSize = useBookingStore((s) => s.apartmentSize);
+    const peopleCount = useBookingStore((s) => s.peopleCount);
+    const formData = useBookingStore((s) => s.formData);
+    const selectedDate = useBookingStore((s) => s.selectedDate);
+    const selectedTime = useBookingStore((s) => s.selectedTime);
 
-        postcodeVerified,
-        setPostcodeVerified,
-
-        selectedService,
-        apartmentSize,
-        peopleCount,
-
-        formData,
-        selectedDate,
-        selectedTime,
-    } = useBookingStore();
-
+    // ✅ единственная логика допуска перехода
     const canContinue = useMemo(() => {
-        if (step === 0) return !!postcodeVerified;
-
-        if (step === 1) return !!selectedService;
-
-        if (step === 2) return !!apartmentSize && !!peopleCount;
-
-        if (step === 3) return true;
-
-        if (step === 4) {
-            return Boolean(
-                formData.firstName?.trim() &&
-                formData.lastName?.trim() &&
-                formData.email?.trim() &&
-                formData.phone?.trim() &&
-                formData.address?.trim() &&
-                formData.postalCode?.trim() &&
-                formData.city?.trim() &&
-                formData.country?.trim() &&
-                selectedDate &&
-                selectedTime
-            );
+        switch (step) {
+            case 0:
+                return !!postcodeVerified;
+            case 1:
+                return !!selectedService;
+            case 2:
+                return !!apartmentSize && !!peopleCount;
+            case 3:
+                return true;
+            case 4:
+                return !!(
+                    formData.firstName?.trim() &&
+                    formData.lastName?.trim() &&
+                    formData.email?.trim() &&
+                    formData.phone?.trim() &&
+                    formData.address?.trim() &&
+                    formData.postalCode?.trim() &&
+                    formData.city?.trim() &&
+                    formData.country?.trim() &&
+                    selectedDate &&
+                    selectedTime
+                );
+            default:
+                return false;
         }
-
-        return false;
     }, [
         step,
         postcodeVerified,
         selectedService,
         apartmentSize,
         peopleCount,
-        formData,
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.phone,
+        formData.address,
+        formData.postalCode,
+        formData.city,
+        formData.country,
         selectedDate,
         selectedTime,
     ]);
 
-    const goto = (target: number) => {
-        const next = clampStep(target);
+    const goTo = useCallback(
+        (targetStep: number) => {
+            const t = clampStep(targetStep);
 
-        // 🔒 guard: нельзя перепрыгнуть вперёд, если нет условий
-        if (next > step && !canContinue) return;
+            // 🔒 guard: нельзя прыгнуть вперёд, если текущий step не валиден
+            if (t > step && !canContinue) return;
 
-        // 🔒 guard: шаги выше 0 требуют verified
-        if (next > 0 && !postcodeVerified) return;
+            setStep(t);
+            if (typeof window !== "undefined") window.scrollTo(0, 0);
+        },
+        [step, canContinue, setStep]
+    );
 
-        setStep(next);
-    };
-
-    const next = () => {
+    const next = useCallback(() => {
         if (!canContinue) return;
-        goto(step + 1);
-    };
+        goTo(step + 1);
+    }, [canContinue, goTo, step]);
 
-    const back = () => {
-        // ⬅️ ВАЖНО: step=1 -> вернуться на PLZ (step 0) и сбросить verified
-        if (step === 1) {
+    const back = useCallback(() => {
+        const prev = clampStep(step - 1);
+
+        // ✅ Ключевой фикс: когда возвращаемся на PLZ (1 -> 0),
+        // обязаны сбросить verified, иначе тебя тут же снова перекинет вперед.
+        if (step === 1 && prev === 0) {
             setPostcodeVerified(false);
-            setStep(0);
-            return;
         }
-        goto(step - 1);
-    };
 
-    const resetToStart = () => {
-        setPostcodeVerified(false);
-        setStep(0);
-    };
+        setStep(prev);
+        if (typeof window !== "undefined") window.scrollTo(0, 0);
+    }, [step, setStep, setPostcodeVerified]);
 
     return {
         step,
         canContinue,
         next,
         back,
-        goto,
-        resetToStart,
+        goTo,
     };
 }

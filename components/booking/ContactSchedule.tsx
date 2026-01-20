@@ -15,6 +15,7 @@ type ExistingBookingRow = {
 type ProfileRow = {
     first_name: string | null;
     last_name: string | null;
+    email: string | null;
     phone: string | null;
     address: string | null;
     postal_code: string | null;
@@ -48,23 +49,21 @@ export default function ContactSchedule() {
                 const { data: u } = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
-
                 const { data, error } = await supabase
                     .from("profiles")
-                    .select("first_name,last_name,phone,address,postal_code,city,country")
+                    .select("first_name,last_name,phone,email,address,postal_code,city,country")
                     .eq("id", user.id)
                     .maybeSingle();
 
                 if (cancelled || error || !data) return;
 
                 const p = data as ProfileRow;
-
                 const current = useBookingStore.getState().formData;
                 const patch: Partial<typeof current> = {};
-
                 if (!current.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
                 if (!current.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
                 if (!current.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
+                if (!current.email?.trim() && p.email?.trim()) patch.email = p.email.trim();
                 if (!current.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
                 if (!current.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
                 if (!current.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
@@ -98,7 +97,6 @@ export default function ContactSchedule() {
         const run = async () => {
             const y = currentMonth.getFullYear();
             const m = currentMonth.getMonth();
-
             const start = new Date(y, m, 1).toISOString().split("T")[0];
             const end = new Date(y, m + 1, 0).toISOString().split("T")[0];
 
@@ -148,7 +146,6 @@ export default function ContactSchedule() {
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
     const getEndTime = () => {
         if (!selectedTime) return "";
         const slot = TIME_SLOTS.find((s) => s.id === selectedTime);

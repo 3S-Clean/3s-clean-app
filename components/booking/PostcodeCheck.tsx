@@ -25,7 +25,6 @@ function isValidEmail(v: string) {
 
 export default function PostcodeCheck() {
     const { postcode, setPostcode, setPostcodeVerified, setStep } = useBookingStore();
-
     const [status, setStatus] = useState<Status>("idle");
 
     // notify UI

@@ -32,7 +32,6 @@ export type CreateOrderPayload = {
     service_type: string;
     apartment_size: string;
     people_count: string;
-
     has_pets: boolean;
     has_kids: boolean;
     has_allergies: boolean;
@@ -43,7 +42,6 @@ export type CreateOrderPayload = {
     extras_price: number;
     total_price: number;
     estimated_hours: number;
-
     customer_first_name: string;
     customer_last_name: string | null;
     customer_email: string;
@@ -51,7 +49,6 @@ export type CreateOrderPayload = {
     customer_address: string;
     customer_postal_code: string;
     customer_notes: string | null;
-
     scheduled_date: string; // YYYY-MM-DD
     scheduled_time: string; // HH:mm
 };
