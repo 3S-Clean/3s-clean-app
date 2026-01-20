@@ -1,15 +1,12 @@
 "use client";
 
 export const dynamic = "force-dynamic";
-
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
 import { z } from "zod";
-
 type Flow = "signup" | "recovery";
-
 const OTP_TTL_SEC = 600; // 10 minutes
 const RESEND_COOLDOWN_SEC = 120; // 2 minutes
 
