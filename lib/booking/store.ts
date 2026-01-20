@@ -78,12 +78,10 @@ const initialFormData: FormData = {
     lastName: "",
     email: "",
     phone: "",
-
     address: "",
     postalCode: "",
     city: "",
     country: "Germany",
-
     notes: "",
 };
 

@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES } from "@/lib/booking/config";
 import { Check } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Order = {
     id: string;
@@ -15,10 +16,24 @@ type Order = {
     estimated_hours: number;
     total_price: number | string;
     status: string;
+
+    // optional (если вернёшь их из API)
+    customer_first_name?: string | null;
+    customer_last_name?: string | null;
+    customer_email?: string | null;
+    customer_phone?: string | null;
+    customer_address?: string | null;
+    customer_postal_code?: string | null;
+    customer_city?: string | null;
+    customer_country?: string | null;
+    customer_notes?: string | null;
 };
 
 function Content() {
     const sp = useSearchParams();
+    const router = useRouter();
+
+    const supabase = useMemo(() => createClient(), []);
 
     const orderId = sp.get("orderId") || "";
     const pendingToken = sp.get("pendingToken") || "";
@@ -34,11 +49,24 @@ function Content() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+
     const { resetBooking } = useBookingStore();
 
     useEffect(() => {
         resetBooking();
     }, [resetBooking]);
+
+    // ✅ check auth
+    useEffect(() => {
+        let cancelled = false;
+        supabase.auth.getUser().then(({ data }) => {
+            if (!cancelled) setIsAuthed(!!data.user);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [supabase]);
 
     useEffect(() => {
         if (!query) {
@@ -61,7 +89,7 @@ function Content() {
                     signal: controller.signal,
                 });
 
-                const json: { order?: Order; error?: string } = await res.json();
+                const json = (await res.json().catch(() => null)) as null | { order?: Order; error?: string };
 
                 if (!res.ok) {
                     setError(json?.error || "Failed to load booking.");
@@ -73,7 +101,7 @@ function Content() {
                 if (!json?.order) setError("Booking not found.");
             } catch (e: unknown) {
                 if (e instanceof DOMException && e.name === "AbortError") return;
-                setError(e instanceof Error ? e.message : "Failed to load booking.");
+                setError("Failed to load booking.");
                 setOrder(null);
             } finally {
                 setLoading(false);
@@ -94,6 +122,8 @@ function Content() {
             year: "numeric",
         });
 
+    const showSignupToPay = isAuthed === false && !!pendingToken;
+
     return (
         <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
             <div className="max-w-md w-full text-center">
@@ -111,9 +141,7 @@ function Content() {
                 )}
 
                 {error && !loading && (
-                    <div className="bg-gray-50 rounded-2xl p-4 mb-8 text-sm text-gray-700">
-                        {error}
-                    </div>
+                    <div className="bg-gray-50 rounded-2xl p-4 mb-8 text-sm text-gray-700">{error}</div>
                 )}
 
                 {order && !loading && (
@@ -150,19 +178,43 @@ function Content() {
                 )}
 
                 <div className="space-y-3">
-                    <Link
-                        href="/"
-                        className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
-                    >
-                        Back to Home
-                    </Link>
+                    {/* ✅ if NOT authed => route to signup (so you can link order and pay) */}
+                    {showSignupToPay ? (
+                        <button
+                            type="button"
+                            onClick={() => router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)}
+                            className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
+                        >
+                            Create account to pay
+                        </button>
+                    ) : (
+                        <>
+                            <Link
+                                href="/"
+                                className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
+                            >
+                                Back to Home
+                            </Link>
 
-                    <Link
-                        href="/booking"
-                        className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
-                    >
-                        Book Another
-                    </Link>
+                            {/* ✅ logged-in user: pay now (temporary to orders until Stripe) */}
+                            {isAuthed ? (
+                                <button
+                                    type="button"
+                                    onClick={() => router.push("/account/orders")}
+                                    className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                >
+                                    Pay now
+                                </button>
+                            ) : (
+                                <Link
+                                    href="/booking"
+                                    className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                >
+                                    Book Another
+                                </Link>
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
         </div>

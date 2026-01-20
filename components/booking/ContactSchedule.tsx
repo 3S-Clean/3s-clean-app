@@ -44,40 +44,59 @@ export default function ContactSchedule() {
         const supabase = createClient();
         let cancelled = false;
 
-        (async () => {
+        const run = async () => {
             try {
                 const { data: u } = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
+
                 const { data, error } = await supabase
                     .from("profiles")
-                    .select("first_name,last_name,phone,email,address,postal_code,city,country")
+                    .select("first_name,last_name,phone,address,postal_code,city,country,email")
                     .eq("id", user.id)
                     .maybeSingle();
 
                 if (cancelled || error || !data) return;
 
                 const p = data as ProfileRow;
-                const current = useBookingStore.getState().formData;
-                const patch: Partial<typeof current> = {};
-                if (!current.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
-                if (!current.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
-                if (!current.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
-                if (!current.email?.trim() && p.email?.trim()) patch.email = p.email.trim();
-                if (!current.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
-                if (!current.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
-                if (!current.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
-                if (!current.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
-                if (Object.keys(patch).length > 0) setFormData(patch);
+                const patch: Partial<typeof formData> = {};
+
+                // ✅ email: prefer formData, else profile.email, else auth.user.email
+                if (!formData.email?.trim()) {
+                    const em = (p.email || user.email || "").trim();
+                    if (em) patch.email = em;
+                }
+
+                if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
+                if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
+                if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
+                if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
+                if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
+                if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
+                if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
+
+                if (Object.keys(patch).length) setFormData(patch);
             } catch {
                 // тихо
             }
-        })();
+        };
 
+        run();
         return () => {
             cancelled = true;
         };
-    }, [setFormData]);
+        // ✅ важное: зависимости — только используемые поля
+    }, [
+        setFormData,
+        formData.email,
+        formData.firstName,
+        formData.lastName,
+        formData.phone,
+        formData.address,
+        formData.postalCode,
+        formData.city,
+        formData.country,
+    ]);
 
     // ---------- hours -> minutes (точно) ----------
     const estimatedMinutes = useMemo(() => {
@@ -304,16 +323,13 @@ export default function ContactSchedule() {
                             const day = i + 1;
                             const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                             const date = new Date(year, month, day);
-
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
-
                             const isPast = date < today;
                             const isSunday = date.getDay() === 0;
                             const isHoliday = HOLIDAYS.includes(dateKey);
                             const available = hasSlots(dateKey);
                             const isSelected = selectedDate === dateKey;
-
                             const disabled = isPast || isSunday || isHoliday || !available;
 
                             return (

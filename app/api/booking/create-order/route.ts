@@ -3,14 +3,18 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type CreateOrderBody = {
-    // поддержим оба формата:
-    // 1) { orderData: {...} }
-    // 2) {...} (плоский payload)
     orderData?: unknown;
     [k: string]: unknown;
 };
 
 type OrderPayload = Record<string, unknown>;
+
+function s(v: unknown) {
+    return String(v ?? "").trim();
+}
+function isFilled(v: unknown) {
+    return typeof v === "string" ? v.trim().length > 0 : s(v).length > 0;
+}
 
 export async function POST(req: Request) {
     let body: CreateOrderBody = {};
@@ -63,7 +67,15 @@ export async function POST(req: Request) {
     const admin = createSupabaseAdminClient();
 
     // защита от подмены важных полей
-    const { user_id: _ignoreUserId, pending_token: _ignorePending, status: _ignoreStatus, ...safe } = orderData;
+    const {
+        user_id: _ignoreUserId,
+        pending_token: _ignorePending,
+        status: _ignoreStatus,
+        id: _ignoreId,
+        created_at: _ignoreCreatedAt,
+        updated_at: _ignoreUpdatedAt,
+        ...safe
+    } = orderData;
 
     const payload = {
         ...safe,
@@ -79,6 +91,49 @@ export async function POST(req: Request) {
         .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // ✅ NEW: если user залогинен — подливаем данные в profile (только если пусто)
+    if (user?.id) {
+        try {
+            const { data: profile } = await admin
+                .from("profiles")
+                .select("id, first_name, last_name, phone, email, address, postal_code, city, country")
+                .eq("id", user.id)
+                .maybeSingle();
+
+            const patch: Record<string, string> = {};
+
+            const cf = s(orderData.customer_first_name);
+            const cl = s(orderData.customer_last_name);
+            const ce = s(orderData.customer_email);
+            const cp = s(orderData.customer_phone);
+            const ca = s(orderData.customer_address);
+            const cpc = s(orderData.customer_postal_code);
+
+            // если ты добавишь эти колонки в orders + будешь отправлять из формы:
+            const ccity = s(orderData.customer_city);
+            const ccountry = s(orderData.customer_country);
+
+            if (!isFilled(profile?.first_name) && cf) patch.first_name = cf;
+            if (!isFilled(profile?.last_name) && cl) patch.last_name = cl;
+
+            if (!isFilled(profile?.phone) && cp) patch.phone = cp;
+            if (!isFilled(profile?.email) && ce) patch.email = ce;
+
+            if (!isFilled(profile?.address) && ca) patch.address = ca;
+            if (!isFilled(profile?.postal_code) && cpc) patch.postal_code = cpc;
+
+            if (!isFilled(profile?.city) && ccity) patch.city = ccity;
+            if (!isFilled(profile?.country) && ccountry) patch.country = ccountry;
+
+            if (Object.keys(patch).length > 0) {
+                await admin.from("profiles").upsert({ id: user.id, ...patch }, { onConflict: "id" });
+            }
+        } catch (e) {
+            // не ломаем заказ из-за профиля
+            console.error("profile autofill failed", e);
+        }
+    }
 
     return NextResponse.json(
         {

@@ -108,28 +108,24 @@ export default function BookingPage() {
                 service_type: selectedService,
                 apartment_size: apartmentSize,
                 people_count: peopleCount,
-
                 has_pets: hasPets,
                 has_kids: hasKids,
                 has_allergies: hasAllergies,
                 allergy_note: hasAllergies ? allergyNote : null,
-
                 extras: totals.extras,
                 base_price: totals.basePrice,
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
-
                 customer_first_name: formData.firstName.trim(),
                 customer_last_name: formData.lastName?.trim() || null,
                 customer_email: formData.email.trim(),
                 customer_phone: formData.phone.trim(),
                 customer_address: formData.address.trim(),
-
-                // ✅ важно: берём из formData, а не из postcode (чтобы не было рассинхрона)
                 customer_postal_code: formData.postalCode.trim(),
+                customer_city: formData.city.trim(),
+                customer_country: formData.country.trim(),
                 customer_notes: formData.notes?.trim() || null,
-
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };
@@ -164,7 +160,7 @@ export default function BookingPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-white pt-[80px]">
+            <div className="min-h-screen bg-white mt-[80px]">
                 {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">
