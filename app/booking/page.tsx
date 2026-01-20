@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { useBookingStore } from "@/lib/booking/store";
 import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
-
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
 import ServiceSelection from "@/components/booking/ServiceSelection";
 import ApartmentDetails from "@/components/booking/ApartmentDetails";
@@ -16,9 +14,15 @@ import Header from "@/components/account/header/Header";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 
-type CreateOrderResponse =
-    | { orderId: string; pendingToken: string }
-    | { error: string };
+type CreateOrderOk = { orderId: string; pendingToken: string };
+type CreateOrderErr = { error: string };
+type CreateOrderResponse = CreateOrderOk | CreateOrderErr;
+
+function isCreateOrderOk(v: unknown): v is CreateOrderOk {
+    if (!v || typeof v !== "object") return false;
+    const o = v as Record<string, unknown>;
+    return typeof o.orderId === "string" && typeof o.pendingToken === "string";
+}
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -72,10 +76,6 @@ export default function BookingPage() {
 
     const {
         step,
-        setStep,
-
-        postcode,
-        postcodeVerified,
 
         selectedService,
         apartmentSize,
@@ -94,58 +94,7 @@ export default function BookingPage() {
         setPendingToken,
     } = useBookingStore();
 
-    const canContinue = useMemo(() => {
-        switch (step) {
-            case 0:
-                return !!postcodeVerified;
-            case 1:
-                return !!selectedService;
-            case 2:
-                return !!apartmentSize && !!peopleCount;
-            case 3:
-                return true;
-            case 4:
-                return !!(
-                    formData.firstName &&
-                    formData.lastName &&
-                    formData.email &&
-                    formData.phone &&
-                    formData.address &&
-                    formData.postalCode &&
-                    formData.city &&
-                    formData.country &&
-                    selectedDate &&
-                    selectedTime
-                );
-            default:
-                return false;
-        }
-    }, [
-        step,
-        postcodeVerified,
-        selectedService,
-        apartmentSize,
-        peopleCount,
-        formData.firstName,
-        formData.email,
-        formData.phone,
-        formData.address,
-        selectedDate,
-        selectedTime,
-    ]);
-
-    const handleNext = () => {
-        if (!canContinue) return;
-        setStep(Math.min(4, step + 1));
-        window.scrollTo(0, 0);
-    };
-
-    const handleBack = () => {
-        setStep(Math.max(0, step - 1));
-        window.scrollTo(0, 0);
-    };
-
-    const handleSubmit = async () => {
+    const submitBooking = async () => {
         if (isSubmitting) return;
 
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
@@ -159,22 +108,28 @@ export default function BookingPage() {
                 service_type: selectedService,
                 apartment_size: apartmentSize,
                 people_count: peopleCount,
+
                 has_pets: hasPets,
                 has_kids: hasKids,
                 has_allergies: hasAllergies,
                 allergy_note: hasAllergies ? allergyNote : null,
+
                 extras: totals.extras,
                 base_price: totals.basePrice,
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
-                customer_first_name: formData.firstName,
-                customer_last_name: formData.lastName || null,
-                customer_email: formData.email,
-                customer_phone: formData.phone,
-                customer_address: formData.address,
-                customer_postal_code: postcode,
-                customer_notes: formData.notes || null,
+
+                customer_first_name: formData.firstName.trim(),
+                customer_last_name: formData.lastName?.trim() || null,
+                customer_email: formData.email.trim(),
+                customer_phone: formData.phone.trim(),
+                customer_address: formData.address.trim(),
+
+                // ✅ важно: берём из formData, а не из postcode (чтобы не было рассинхрона)
+                customer_postal_code: formData.postalCode.trim(),
+                customer_notes: formData.notes?.trim() || null,
+
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };
@@ -185,19 +140,20 @@ export default function BookingPage() {
                 body: JSON.stringify({ orderData }),
             });
 
-            const json = (await res.json()) as CreateOrderResponse;
+            const jsonUnknown = await res.json().catch(() => null);
 
-            if (!res.ok || "error" in json) {
-                alert("Error: " + ("error" in json ? json.error : "Failed to create order."));
+            if (!res.ok || !isCreateOrderOk(jsonUnknown)) {
+                console.error("create-order failed:", { status: res.status, jsonUnknown });
+                alert("We couldn’t create the booking. Please try again.");
                 return;
             }
 
             // ✅ всегда есть pendingToken
-            setPendingToken(json.pendingToken);
+            setPendingToken(jsonUnknown.pendingToken);
 
-            // ✅ success для гостя (по pendingToken)
-            router.push(`/booking/success?pendingToken=${encodeURIComponent(json.pendingToken)}`);
-        } catch {
+            router.push(`/booking/success?pendingToken=${encodeURIComponent(jsonUnknown.pendingToken)}`);
+        } catch (e) {
+            console.error(e);
             alert("Something went wrong.");
         } finally {
             setIsSubmitting(false);
@@ -216,9 +172,9 @@ export default function BookingPage() {
                             <div
                                 key={s}
                                 className={`w-3 h-3 rounded-full transition-all
-              ${s < step ? "bg-gray-900" : ""}
-              ${s === step ? "bg-gray-900 scale-125" : ""}
-              ${s > step ? "bg-gray-200" : ""}`}
+                  ${s < step ? "bg-gray-900" : ""}
+                  ${s === step ? "bg-gray-900 scale-125" : ""}
+                  ${s > step ? "bg-gray-200" : ""}`}
                             />
                         ))}
                     </div>
@@ -233,12 +189,7 @@ export default function BookingPage() {
                 </main>
 
                 {step > 0 && (
-                    <BookingFooter
-                        onBack={handleBack}
-                        onNext={handleNext}
-                        onSubmit={handleSubmit}
-                        isSubmitting={isSubmitting}
-                    />
+                    <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />
                 )}
             </div>
         </>

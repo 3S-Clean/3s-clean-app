@@ -1,42 +1,32 @@
+// app/api/booking/notify/route.ts
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-type Body = { email?: unknown; postalсode?: unknown };
-
-function isEmail(v: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-}
+const NotifySchema = z.object({
+    email: z.string().email(),
+    postcode: z.string().length(5),
+});
 
 export async function POST(req: Request) {
-    let body: Body = {};
-    try {
-        body = (await req.json()) as Body;
-    } catch {
-        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    const parsed = NotifySchema.safeParse(await req.json().catch(() => null));
+
+    if (!parsed.success) {
+        return NextResponse.json({ success: false }, { status: 400 });
     }
 
-    const email = String(body.email ?? "").trim();
-    const postalCode = String(body.postalсode ?? "").trim();
-
-    if (!isEmail(email)) {
-        return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-    }
-    if (!/^\d{5}$/.test(postalCode)) {
-        return NextResponse.json({ error: "Invalid postal code" }, { status: 400 });
-    }
+    const { email, postcode } = parsed.data;
 
     const admin = createSupabaseAdminClient();
 
-    const { error } = await admin.from("notify_requests").insert({
-        email,
-        postal_code: postalCode,
-    });
+    const { error } = await admin
+        .from("notify_requests")
+        .insert({ email, postal_code: postcode });
 
     if (error) {
-        // не палим пользователю детали
-        console.error("notify insert error:", error);
-        return NextResponse.json({ error: "Failed to save request" }, { status: 500 });
+        console.error("notify insert error", error);
+        return NextResponse.json({ success: false }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
 }

@@ -9,19 +9,18 @@ export interface FormData {
     lastName: string;
     email: string;
     phone: string;
+
     address: string;
     postalCode: string;
     city: string;
     country: string;
+
     notes: string;
 }
 
 export interface BookingState {
     step: number;
     setStep: (step: number) => void;
-
-    nextStep: () => void;
-    prevStep: () => void;
 
     postcode: string;
     setPostcode: (postcode: string) => void;
@@ -69,15 +68,24 @@ export interface BookingState {
     resetBooking: () => void;
 }
 
+const MIN_STEP = 0;
+const MAX_STEP = 4;
+
+function clampStep(n: number) {
+    return Math.max(MIN_STEP, Math.min(MAX_STEP, n));
+}
+
 const initialFormData: FormData = {
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
+
     address: "",
     postalCode: "",
     city: "",
-    country: "",
+    country: "Germany",
+
     notes: "",
 };
 
@@ -105,7 +113,7 @@ const initialState = {
     pendingToken: null as string | null,
 };
 
-// ✅ Persist only final entered data on step=4 + TTL 30 minutes
+// Persist slice
 type PersistSlice = {
     formData: BookingState["formData"];
     selectedDate: string | null;
@@ -113,19 +121,31 @@ type PersistSlice = {
     _savedAt: number;
 };
 
-const DATA_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const DATA_TTL_MS = 30 * 60 * 1000;
 
 export const useBookingStore = create<BookingState>()(
     persist(
         (set, get) => ({
             ...initialState,
 
-            setStep: (step) => set({ step }),
-            nextStep: () => set({ step: get().step + 1 }),
-            prevStep: () => set({ step: Math.max(0, get().step - 1) }),
+            setStep: (step) =>
+                set((state) => {
+                    const next = clampStep(step);
+
+                    // 🔒 guard: шаги > 0 только если verified
+                    if (next > 0 && !state.postcodeVerified) return state;
+
+                    return { step: next };
+                }),
 
             setPostcode: (postcode) => set({ postcode }),
-            setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
+
+            setPostcodeVerified: (postcodeVerified) =>
+                set((state) => {
+                    // если снимаем verified — возвращаем на step 0
+                    if (!postcodeVerified) return { postcodeVerified: false, step: 0 };
+                    return { postcodeVerified: true };
+                }),
 
             setSelectedService: (selectedService) => set({ selectedService }),
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
@@ -164,8 +184,7 @@ export const useBookingStore = create<BookingState>()(
         {
             name: "3s-booking-storage",
 
-            // ✅ Save ONLY when on final step (step === 4)
-            partialize: (state: BookingState): Partial<PersistSlice> => {
+            partialize: (state): Partial<PersistSlice> => {
                 if (state.step !== 4) return {};
                 return {
                     formData: state.formData,
@@ -175,15 +194,10 @@ export const useBookingStore = create<BookingState>()(
                 };
             },
 
-            // ✅ If saved data older than 30 minutes — ignore
             merge: (persisted, current) => {
                 const p = persisted as Partial<PersistSlice> | undefined;
-
                 if (!p?._savedAt) return current;
-
-                if (Date.now() - p._savedAt > DATA_TTL_MS) {
-                    return current;
-                }
+                if (Date.now() - p._savedAt > DATA_TTL_MS) return current;
 
                 return {
                     ...current,
