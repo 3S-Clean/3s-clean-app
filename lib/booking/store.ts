@@ -10,6 +10,9 @@ export interface FormData {
     email: string;
     phone: string;
     address: string;
+    postalCode: string;
+    city: string;
+    country: string;
     notes: string;
 }
 
@@ -72,6 +75,9 @@ const initialFormData: FormData = {
     email: "",
     phone: "",
     address: "",
+    postalCode: "",
+    city: "",
+    country: "",
     notes: "",
 };
 

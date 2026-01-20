@@ -6,6 +6,10 @@ type LinkOrderBody = {
     pendingToken?: unknown;
 };
 
+function isFilled(v: unknown) {
+    return typeof v === "string" && v.trim().length > 0;
+}
+
 export async function POST(req: Request) {
     let body: LinkOrderBody = {};
     try {
@@ -19,7 +23,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Missing pendingToken" }, { status: 400 });
     }
 
-    // кто залогинен
     const supabase = await createSupabaseServerClient();
     const {
         data: { user },
@@ -30,25 +33,26 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // admin (обходит RLS) — чтобы можно было привязать гостевой заказ
     const admin = createSupabaseAdminClient();
 
-    // 1) находим заказ по pending_token
+    // 1) find order by pending_token (grab customer fields too)
     const { data: order, error: findErr } = await admin
         .from("orders")
-        .select("id, user_id")
+        .select(
+            "id, user_id, customer_first_name, customer_last_name, customer_phone, customer_address, customer_postal_code"
+        )
         .eq("pending_token", pendingToken)
         .maybeSingle();
 
     if (findErr) return NextResponse.json({ error: findErr.message }, { status: 500 });
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
-    // если уже привязан — просто вернём orderId (идемпотентно)
+    // already linked to another user
     if (order.user_id && order.user_id !== user.id) {
         return NextResponse.json({ error: "Order already linked to another user" }, { status: 409 });
     }
 
-    // 2) линкуем + чистим pending_token
+    // 2) link order + clear pending_token
     const { data: updated, error: updErr } = await admin
         .from("orders")
         .update({
@@ -60,6 +64,40 @@ export async function POST(req: Request) {
         .single();
 
     if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+    // 3) soft-fill profile from order (ONLY missing fields)
+    try {
+        const { data: profile, error: pErr } = await admin
+            .from("profiles")
+            .select("id, first_name, last_name, phone, address, postal_code")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (!pErr) {
+            const patch: Record<string, string> = {};
+
+            if (!isFilled(profile?.first_name) && isFilled(order.customer_first_name))
+                patch.first_name = String(order.customer_first_name).trim();
+
+            if (!isFilled(profile?.last_name) && isFilled(order.customer_last_name))
+                patch.last_name = String(order.customer_last_name).trim();
+
+            if (!isFilled(profile?.phone) && isFilled(order.customer_phone))
+                patch.phone = String(order.customer_phone).trim();
+
+            if (!isFilled(profile?.address) && isFilled(order.customer_address))
+                patch.address = String(order.customer_address).trim();
+
+            if (!isFilled(profile?.postal_code) && isFilled(order.customer_postal_code))
+                patch.postal_code = String(order.customer_postal_code).trim();
+
+            if (Object.keys(patch).length > 0) {
+                await admin.from("profiles").update(patch).eq("id", user.id);
+            }
+        }
+    } catch {
+        // тихо — линк заказа важнее
+    }
 
     return NextResponse.json({ orderId: String(updated.id) }, { status: 200 });
 }

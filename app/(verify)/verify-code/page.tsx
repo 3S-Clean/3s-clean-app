@@ -6,6 +6,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
+import { z } from "zod";
 
 type Flow = "signup" | "recovery";
 
@@ -19,29 +20,32 @@ function fmt(sec: number) {
     return `${mm}:${ss}`;
 }
 
+// ✅ Zod runtime-guard for link-order response
+const LinkOrderResponseSchema = z.union([
+    z.object({ orderId: z.string().min(1) }),
+    z.object({ error: z.string().min(1) }),
+]);
+type LinkOrderResponse = z.infer<typeof LinkOrderResponseSchema>;
+
 function VerifyCodeInner() {
     const router = useRouter();
     const sp = useSearchParams();
 
     const flow: Flow = sp.get("flow") === "recovery" ? "recovery" : "signup";
     const pendingOrderFromQuery = useMemo(() => sp.get("pendingOrder") || "", [sp]);
-
     const supabase = useMemo(() => createClient(), []);
     const { resetBooking } = useBookingStore();
-
     const [pendingOrderToken, setPendingOrderToken] = useState<string>(pendingOrderFromQuery);
-
     const [email, setEmail] = useState<string | null>(null);
     const [code, setCode] = useState("");
     const [status, setStatus] = useState<null | { type: "error" | "ok"; msg: string }>(null);
     const [loading, setLoading] = useState(false);
-
+    // ✅ show CTA instead of silent redirect when link-order fails
+    const [showOrdersCta, setShowOrdersCta] = useState(false);
     const [expiresLeft, setExpiresLeft] = useState<number>(OTP_TTL_SEC);
     const [cooldownLeft, setCooldownLeft] = useState<number>(0);
-
     const restartOtpTimer = () => setExpiresLeft(OTP_TTL_SEC);
     const startCooldown = () => setCooldownLeft(RESEND_COOLDOWN_SEC);
-
     const storageKey = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
 
     useEffect(() => {
@@ -106,6 +110,7 @@ function VerifyCodeInner() {
         if (loading) return;
 
         setStatus(null);
+        setShowOrdersCta(false);
         setLoading(true);
 
         try {
@@ -162,17 +167,41 @@ function VerifyCodeInner() {
                         body: JSON.stringify({ pendingToken: tokenToLink }),
                     });
 
-                    const json = await res.json();
+                    // ✅ parse JSON safely (unknown), then validate with Zod
+                    let raw: unknown = null;
+                    try {
+                        raw = await res.json();
+                    } catch {
+                        raw = null;
+                    }
 
-                    // ❗ link-order returns { orderId }
-                    if (!res.ok || !json?.orderId) {
-                        try {
-                            localStorage.removeItem("pendingOrderToken");
-                        } catch {}
-                        try {
-                            localStorage.removeItem(storageKey);
-                        } catch {}
-                        router.replace("/account/orders");
+                    const parsed = LinkOrderResponseSchema.safeParse(raw);
+                    if (!res.ok || !parsed.success || ("error" in parsed.data && !("orderId" in parsed.data))) {
+                        // 🧠 логируем реальную причину ТОЛЬКО для разработчика
+                        console.error("link-order failed", {
+                            ok: res.ok,
+                            raw,
+                            parsed,
+                        });
+
+                        // 🎯 пользователю — всегда чистый UX-текст
+                        setStatus({
+                            type: "ok",
+                            msg: "Verified. We couldn’t link the booking yet — please open your account orders.",
+                        });
+
+                        setShowOrdersCta(true);
+                        return;
+                    }
+
+                    // ✅ now we are sure we have { orderId: string }
+                    const json: LinkOrderResponse = parsed.data;
+                    if (!("orderId" in json)) {
+                        setStatus({
+                            type: "ok",
+                            msg: "Verified. We couldn’t link the booking yet — please open your account orders.",
+                        });
+                        setShowOrdersCta(true);
                         return;
                     }
 
@@ -185,7 +214,7 @@ function VerifyCodeInner() {
                         localStorage.removeItem(storageKey);
                     } catch {}
 
-                    router.replace(`/booking/success?orderId=${encodeURIComponent(String(json.orderId))}`);
+                    router.replace(`/booking/success?orderId=${encodeURIComponent(json.orderId)}`);
                     return;
                 }
             }
@@ -203,6 +232,7 @@ function VerifyCodeInner() {
 
     const resend = async () => {
         setStatus(null);
+        setShowOrdersCta(false);
 
         if (!email) {
             setStatus({ type: "error", msg: "Missing email. Please start again." });
@@ -255,12 +285,15 @@ function VerifyCodeInner() {
             </h1>
 
             <p className="mt-6 text-base text-[color:var(--muted)]">
-                We sent a verification code to <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
+                We sent a verification code to{" "}
+                <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
             </p>
 
             {flow === "signup" && pendingOrderToken ? (
                 <div className="mt-6 rounded-2xl border bg-[var(--input-bg)] border-[var(--input-border)] px-4 py-3 backdrop-blur">
-                    <p className="text-sm text-[color:var(--muted)]">✓ Booking detected — after verification it will be linked to your account.</p>
+                    <p className="text-sm text-[color:var(--muted)]">
+                        ✓ Booking detected — after verification it will be linked to your account.
+                    </p>
                 </div>
             ) : null}
 
@@ -287,7 +320,8 @@ function VerifyCodeInner() {
                     <span>
             {resendDisabled ? (
                 <>
-                    Resend available in <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
+                    Resend available in{" "}
+                    <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
                 </>
             ) : (
                 "You can resend now"
@@ -326,6 +360,20 @@ function VerifyCodeInner() {
                     <p className={["text-sm", status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
+                )}
+
+                {showOrdersCta && (
+                    <button
+                        type="button"
+                        onClick={() => router.replace("/account/orders")}
+                        className={[
+                            "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                            "bg-black text-white hover:opacity-90",
+                            "dark:bg-white dark:text-black",
+                        ].join(" ")}
+                    >
+                        Open my orders
+                    </button>
                 )}
             </div>
 

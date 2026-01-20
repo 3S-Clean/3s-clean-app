@@ -4,11 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { TIME_SLOTS, HOLIDAYS, getEstimatedHours, EXTRAS, WORKING_HOURS_END } from "@/lib/booking/config";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type ExistingBookingRow = {
     scheduled_date: string; // YYYY-MM-DD
     scheduled_time: string; // "HH:mm"
     estimated_hours: number;
+};
+
+type ProfileRow = {
+    first_name: string | null;
+    last_name: string | null;
+    phone: string | null;
+    address: string | null;
+    postal_code: string | null;
+    city: string | null;
+    country: string | null;
 };
 
 export default function ContactSchedule() {
@@ -27,6 +38,48 @@ export default function ContactSchedule() {
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
+    // ✅ profile autofill (safe: never overwrite user input)
+    useEffect(() => {
+        const supabase = createClient();
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const { data: u } = await supabase.auth.getUser();
+                const user = u?.user;
+                if (!user) return;
+
+                const { data, error } = await supabase
+                    .from("profiles")
+                    .select("first_name,last_name,phone,address,postal_code,city,country")
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+                if (cancelled || error || !data) return;
+
+                const p = data as ProfileRow;
+
+                const current = useBookingStore.getState().formData;
+                const patch: Partial<typeof current> = {};
+
+                if (!current.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
+                if (!current.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
+                if (!current.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
+                if (!current.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
+                if (!current.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
+                if (!current.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
+                if (!current.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
+                if (Object.keys(patch).length > 0) setFormData(patch);
+            } catch {
+                // тихо
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [setFormData]);
+
     // ---------- hours -> minutes (точно) ----------
     const estimatedMinutes = useMemo(() => {
         const baseHours = getEstimatedHours(selectedService || "", apartmentSize || "");
@@ -35,7 +88,6 @@ export default function ContactSchedule() {
             return sum + (e ? e.hours * qty : 0);
         }, 0);
 
-        // округляем до минут, чтобы финиш был корректный
         return Math.max(0, Math.round((baseHours + extrasHours) * 60));
     }, [selectedService, apartmentSize, extras]);
 
@@ -61,7 +113,6 @@ export default function ContactSchedule() {
                 const json = (await res.json()) as ExistingBookingRow[];
                 setExistingBookings(Array.isArray(json) ? json : []);
             } catch {
-                // если отмена / ошибка — просто пусто
                 setExistingBookings([]);
             }
         };
@@ -75,7 +126,6 @@ export default function ContactSchedule() {
         const startMin = hour * 60 + minutes;
         const endMin = startMin + estimatedMinutes;
 
-        // must finish by 18:00 (WORKING_HOURS_END = 18)
         if (endMin > WORKING_HOURS_END * 60) return false;
 
         for (const b of existingBookings) {
@@ -85,7 +135,6 @@ export default function ContactSchedule() {
             const bStartMin = (bh || 0) * 60 + (bm || 0);
             const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
 
-            // overlap check
             if (startMin < bEndMin && endMin > bStartMin) return false;
         }
 
@@ -161,7 +210,7 @@ export default function ContactSchedule() {
                 />
             </div>
 
-            <div className="mb-8">
+            <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Address *</label>
                 <input
                     type="text"
@@ -170,6 +219,43 @@ export default function ContactSchedule() {
                     placeholder="Street and house number"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
                 />
+            </div>
+
+            {/* ✅ NEW: PLZ / City / Country */}
+            <div className="grid grid-cols-3 gap-4 mb-8">
+                <div>
+                    <label className="block text-sm font-medium mb-2">PLZ *</label>
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.postalCode ?? ""}
+                        onChange={(e) => setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })}
+                        placeholder="70173"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-2">City *</label>
+                    <input
+                        type="text"
+                        value={formData.city ?? ""}
+                        onChange={(e) => setFormData({ city: e.target.value })}
+                        placeholder="Stuttgart"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium mb-2">Country *</label>
+                    <input
+                        type="text"
+                        value={formData.country ?? ""}
+                        onChange={(e) => setFormData({ country: e.target.value })}
+                        placeholder="Germany"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    />
+                </div>
             </div>
 
             {/* Calendar */}
@@ -181,7 +267,10 @@ export default function ContactSchedule() {
 
                 <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-6">
-                        <button onClick={() => setCurrentMonth(new Date(year, month - 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+                        <button
+                            onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
+                            className="p-2 rounded-full hover:bg-gray-100"
+                        >
                             <ChevronLeft className="w-5 h-5 text-gray-500" />
                         </button>
 
@@ -190,7 +279,10 @@ export default function ContactSchedule() {
                             <span className="text-gray-400">{year}</span>
                         </div>
 
-                        <button onClick={() => setCurrentMonth(new Date(year, month + 1, 1))} className="p-2 rounded-full hover:bg-gray-100">
+                        <button
+                            onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
+                            className="p-2 rounded-full hover:bg-gray-100"
+                        >
                             <ChevronRight className="w-5 h-5 text-gray-500" />
                         </button>
                     </div>
@@ -253,7 +345,11 @@ export default function ContactSchedule() {
                 <div className="mb-8 animate-fadeIn">
                     <h3 className="text-base font-semibold mb-2">
                         Available times for{" "}
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", { weekday: "long", month: "long", day: "numeric" })}
+                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
+                        })}
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">Cleaning must finish by 18:00</p>
 

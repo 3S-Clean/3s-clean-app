@@ -107,9 +107,13 @@ export default function BookingPage() {
             case 4:
                 return !!(
                     formData.firstName &&
+                    formData.lastName &&
                     formData.email &&
                     formData.phone &&
                     formData.address &&
+                    formData.postalCode &&
+                    formData.city &&
+                    formData.country &&
                     selectedDate &&
                     selectedTime
                 );
@@ -155,18 +159,15 @@ export default function BookingPage() {
                 service_type: selectedService,
                 apartment_size: apartmentSize,
                 people_count: peopleCount,
-
                 has_pets: hasPets,
                 has_kids: hasKids,
                 has_allergies: hasAllergies,
                 allergy_note: hasAllergies ? allergyNote : null,
-
                 extras: totals.extras,
                 base_price: totals.basePrice,
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
-
                 customer_first_name: formData.firstName,
                 customer_last_name: formData.lastName || null,
                 customer_email: formData.email,
@@ -174,7 +175,6 @@ export default function BookingPage() {
                 customer_address: formData.address,
                 customer_postal_code: postcode,
                 customer_notes: formData.notes || null,
-
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };

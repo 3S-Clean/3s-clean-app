@@ -1,20 +1,42 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+
+type Body = { email?: unknown; postalсode?: unknown };
+
+function isEmail(v: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+}
 
 export async function POST(req: Request) {
-    const { email, postcode } = await req.json();
-
-    const em = String(email || "").trim();
-    const pc = String(postcode || "").trim();
-
-    if (!em.includes("@") || pc.length !== 5) {
-        return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 });
+    let body: Body = {};
+    try {
+        body = (await req.json()) as Body;
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    const supabase = await createSupabaseServerClient();
+    const email = String(body.email ?? "").trim();
+    const postalCode = String(body.postalсode ?? "").trim();
 
-    const { error } = await supabase.from("notify_requests").insert({ email: em, postcode: pc });
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    if (!isEmail(email)) {
+        return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+    if (!/^\d{5}$/.test(postalCode)) {
+        return NextResponse.json({ error: "Invalid postal code" }, { status: 400 });
+    }
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    const admin = createSupabaseAdminClient();
+
+    const { error } = await admin.from("notify_requests").insert({
+        email,
+        postal_code: postalCode,
+    });
+
+    if (error) {
+        // не палим пользователю детали
+        console.error("notify insert error:", error);
+        return NextResponse.json({ error: "Failed to save request" }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 });
 }

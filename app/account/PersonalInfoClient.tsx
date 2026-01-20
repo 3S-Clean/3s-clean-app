@@ -8,6 +8,10 @@ type Profile = {
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
+    address: string | null;
+    city: string | null;
+    postal_code: string | null;
+    country: string | null;
 };
 
 function isFilled(v: string | null | undefined) {
@@ -34,6 +38,10 @@ export default function PersonalInfoClient({ email }: { email: string }) {
         first_name: "",
         last_name: "",
         phone: "",
+        address: "",
+        city: "",
+        postal_code: "",
+        country: "Germany",
     });
 
     const load = async () => {
@@ -52,7 +60,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
 
             const { data, error: pErr } = await supabase
                 .from("profiles")
-                .select("id, first_name, last_name, phone")
+                .select("id, first_name, last_name, phone, address, city, postal_code, country")
                 .eq("id", user.id)
                 .maybeSingle();
 
@@ -62,13 +70,17 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                 return;
             }
 
-            // ⚠️ Не создаём пустую запись автоматически — чтобы не было мусора
-            setProfile((data as Profile) ?? null);
+            const p = (data as Profile) ?? null;
+            setProfile(p);
 
             setForm({
-                first_name: data?.first_name ?? "",
-                last_name: data?.last_name ?? "",
-                phone: data?.phone ?? "",
+                first_name: p?.first_name ?? "",
+                last_name: p?.last_name ?? "",
+                phone: p?.phone ?? "",
+                address: p?.address ?? "",
+                city: p?.city ?? "",
+                postal_code: p?.postal_code ?? "",
+                country: p?.country ?? "Germany",
             });
 
             setLoading(false);
@@ -84,6 +96,8 @@ export default function PersonalInfoClient({ email }: { email: string }) {
     }, []);
 
     const onSave = async () => {
+        if (saving) return;
+
         setSaving(true);
         setError(null);
 
@@ -97,21 +111,56 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                 return;
             }
 
-            if (!form.first_name.trim() || !form.last_name.trim()) {
+            // ✅ в профиле делаем как в booking: основные поля обязательны
+            const first_name = form.first_name.trim();
+            const last_name = form.last_name.trim();
+            const phone = form.phone.trim();
+            const address = form.address.trim();
+            const city = form.city.trim();
+            const postal_code = form.postal_code.trim();
+            const country = form.country.trim() || "Germany";
+
+            if (!first_name || !last_name) {
                 setError("Please fill first name and last name.");
                 setSaving(false);
                 return;
             }
+            if (!phone) {
+                setError("Please fill phone.");
+                setSaving(false);
+                return;
+            }
+            if (!address) {
+                setError("Please fill address.");
+                setSaving(false);
+                return;
+            }
+            if (!postal_code || postal_code.length !== 5) {
+                setError("Please fill a valid postal code (5 digits).");
+                setSaving(false);
+                return;
+            }
+            if (!city) {
+                setError("Please fill city.");
+                setSaving(false);
+                return;
+            }
 
-            const { error: upErr } = await supabase.from("profiles").upsert(
-                {
-                    id: user.id,
-                    first_name: form.first_name.trim(),
-                    last_name: form.last_name.trim(),
-                    phone: form.phone.trim() || null,
-                },
-                { onConflict: "id" }
-            );
+            const { error: upErr } = await supabase
+                .from("profiles")
+                .upsert(
+                    {
+                        id: user.id,
+                        first_name,
+                        last_name,
+                        phone,
+                        address,
+                        city,
+                        postal_code,
+                        country,
+                    },
+                    { onConflict: "id" }
+                );
 
             if (upErr) {
                 setError(upErr.message);
@@ -137,9 +186,14 @@ export default function PersonalInfoClient({ email }: { email: string }) {
         );
     }
 
-    const hasName = isFilled(profile?.first_name) && isFilled(profile?.last_name);
-    const hasPhone = isFilled(profile?.phone);
-    const hasAny = hasName || hasPhone; // “профиль не пустой”
+    const hasAny =
+        isFilled(profile?.first_name) ||
+        isFilled(profile?.last_name) ||
+        isFilled(profile?.phone) ||
+        isFilled(profile?.address) ||
+        isFilled(profile?.city) ||
+        isFilled(profile?.postal_code) ||
+        isFilled(profile?.country);
 
     return (
         <div>
@@ -166,6 +220,10 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                                 first_name: profile?.first_name ?? "",
                                 last_name: profile?.last_name ?? "",
                                 phone: profile?.phone ?? "",
+                                address: profile?.address ?? "",
+                                city: profile?.city ?? "",
+                                postal_code: profile?.postal_code ?? "",
+                                country: profile?.country ?? "Germany",
                             });
                         }}
                         className="text-sm text-black/60 transition hover:text-black"
@@ -177,18 +235,16 @@ export default function PersonalInfoClient({ email }: { email: string }) {
 
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
-            {/* ✅ EMPTY STATE: никакого "—", никаких пустых строк */}
+            {/* EMPTY STATE */}
             {!editing && !hasAny && (
                 <div className="mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5">
                     <p className="text-[15px] font-medium text-black">Complete your profile</p>
                     <p className="mt-1 text-sm text-black/55">
-                        Add your name and phone number so booking is faster next time.
+                        Add your details so booking is faster next time.
                     </p>
 
-                    <div className="mt-4 space-y-2">
-                        <div className="text-sm text-black/70">
-                            <span className="font-medium">Email:</span> {email}
-                        </div>
+                    <div className="mt-4 text-sm text-black/70">
+                        <span className="font-medium">Email:</span> {email}
                     </div>
 
                     <button
@@ -201,25 +257,52 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                 </div>
             )}
 
-            {/* ✅ DISPLAY: показываем только существующие поля */}
+            {/* DISPLAY (только заполненные поля) */}
             {!editing && hasAny && (
                 <div className="mt-6 space-y-2 text-[15px] text-black/80">
-                    {hasName && (
+                    {isFilled(profile?.first_name) || isFilled(profile?.last_name) ? (
                         <p className="font-medium text-black">
-                            {profile?.first_name} {profile?.last_name}
+                            {[profile?.first_name, profile?.last_name].filter((x) => isFilled(x)).join(" ")}
                         </p>
-                    )}
-                    {hasPhone && <p>{profile?.phone}</p>}
+                    ) : null}
+
+                    {isFilled(profile?.phone) ? <p>{profile?.phone}</p> : null}
+
+                    {/* адрес строкой, без пустот */}
+                    {isFilled(profile?.address) || isFilled(profile?.postal_code) || isFilled(profile?.city) ? (
+                        <p>
+                            {[profile?.address, [profile?.postal_code, profile?.city].filter((x) => isFilled(x)).join(" ")]
+                                .filter((x) => isFilled(x))
+                                .join(", ")}
+                        </p>
+                    ) : null}
+
+                    {isFilled(profile?.country) ? <p>{profile?.country}</p> : null}
+
                     <p>{email}</p>
                 </div>
             )}
 
-            {/* ✅ EDIT FORM: тут поля есть всегда */}
+            {/* EDIT FORM (все поля как booking) */}
             {editing && (
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <Field label="First name" value={form.first_name} onChange={(v) => setForm({ ...form, first_name: v })} />
                     <Field label="Last name" value={form.last_name} onChange={(v) => setForm({ ...form, last_name: v })} />
+
                     <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                    <Field
+                        label="Postal code"
+                        value={form.postal_code}
+                        onChange={(v) => setForm({ ...form, postal_code: v.replace(/\D/g, "").slice(0, 5) })}
+                        inputMode="numeric"
+                    />
+
+                    <div className="md:col-span-2">
+                        <Field label="Address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+                    </div>
+
+                    <Field label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+                    <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
 
                     <div className="md:col-span-2 mt-2">
                         <button
@@ -241,16 +324,19 @@ function Field({
                    label,
                    value,
                    onChange,
+                   inputMode,
                }: {
     label: string;
     value: string;
     onChange: (v: string) => void;
+    inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
     return (
         <div className="space-y-2">
             <label className="text-sm font-medium text-black/70">{label}</label>
             <input
                 value={value}
+                inputMode={inputMode}
                 onChange={(e) => onChange(e.target.value)}
                 className={[
                     "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
