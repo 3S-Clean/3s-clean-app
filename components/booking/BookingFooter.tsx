@@ -83,12 +83,6 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
 
     const service = SERVICES.find((s) => s.id === selectedService);
     const showPrice = serviceId && sizeId && peopleId;
-    const footerHint = (() => {
-        if (step === 1) return "Select experience";
-        if (step === 2) return "Select apartment size";
-        if (step === 3) return "Select details";
-        return `inc.VAT • ~${time}`;
-    })();
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
@@ -101,7 +95,7 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                                 €&nbsp;{total.toFixed(2)}
                             </div>
                             <div className="text-sm text-gray-500 whitespace-nowrap">
-                                {footerHint}
+                                inc.VAT • ~{time}
                             </div>
                         </>
                     ) : selectedService && !apartmentSize ? (
@@ -109,13 +103,11 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                             <div className="text-xl font-semibold whitespace-nowrap">
                                 From €&nbsp;{service?.startingPrice}
                             </div>
-                            <div className="text-sm text-gray-500 whitespace-nowrap">
-                                {footerHint}
-                            </div>
+                            <div className="text-gray-400">Select a service</div>
                         </>
                     ) : (
-                        <div className="text-sm text-gray-500 whitespace-nowrap">
-                            {footerHint}
+                        <div className="text-sm text-gray-500">
+                            Select apartment size
                         </div>
                     )}
                 </div>
