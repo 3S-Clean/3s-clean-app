@@ -1,6 +1,5 @@
 // lib/booking/useBookingNavigation.ts
 "use client";
-
 import { useMemo, useCallback } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 
@@ -13,13 +12,8 @@ function clampStep(n: number) {
 
 export function useBookingNavigation() {
     const step = useBookingStore((s) => s.step);
-
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
-    const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
-
-    const postcode = useBookingStore((s) => s.postcode);
-    const setPostcode = useBookingStore((s) => s.setPostcode);
-
+    const resetPostcodeGate = useBookingStore((s) => s.resetPostcodeGate);
     const setStep = useBookingStore((s) => s.setStep);
 
     const selectedService = useBookingStore((s) => s.selectedService);
@@ -92,16 +86,17 @@ export function useBookingNavigation() {
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
-        // ✅ 1 -> 0: сбрасываем verified и очищаем сам postcode,
-        // иначе инпут останется заполненным (и авто-проверка может снова перекинуть вперед).
-        if (step === 1 && prev === 0) {
-            setPostcode("");
-            setPostcodeVerified(false);
+        // ✅ ВАЖНО: если возвращаемся на 0 — чистим PLZ+verified,
+        // иначе PostcodeCheck тебя снова авто-перекинет вперед
+        if (prev === 0) {
+            resetPostcodeGate();
+            if (typeof window !== "undefined") window.scrollTo(0, 0);
+            return;
         }
 
         setStep(prev);
         if (typeof window !== "undefined") window.scrollTo(0, 0);
-    }, [step, setStep, setPostcode, setPostcodeVerified]);
+    }, [step, setStep, resetPostcodeGate]);
 
     return { step, canContinue, next, back, goTo };
 }

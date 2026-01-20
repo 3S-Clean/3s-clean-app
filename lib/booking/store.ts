@@ -26,6 +26,10 @@ export interface BookingState {
     postcodeVerified: boolean;
     setPostcodeVerified: (verified: boolean) => void;
 
+    // ✅ NEW: reset helpers (fix back to PLZ)
+    resetPostcode: () => void;
+    resetPostcodeGate: () => void; // clears both postcode + verified + step
+
     selectedService: string | null;
     setSelectedService: (service: string | null) => void;
 
@@ -89,17 +93,23 @@ const initialState = {
     step: 0,
     postcode: "",
     postcodeVerified: false,
+
     selectedService: null as string | null,
     apartmentSize: null as string | null,
     peopleCount: null as string | null,
+
     hasPets: false,
     hasKids: false,
     hasAllergies: false,
     allergyNote: "",
+
     extras: {} as Record<string, number>,
+
     formData: initialFormData,
+
     selectedDate: null as string | null,
     selectedTime: null as string | null,
+
     pendingToken: null as string | null,
 };
 
@@ -132,18 +142,24 @@ export const useBookingStore = create<BookingState>()(
 
             setPostcodeVerified: (postcodeVerified) =>
                 set((state) => {
-                    // если снимаем verified — возвращаем на step 0
+                    // если снимаем verified — возвращаем на step 0 (НО postcode не трогаем здесь)
                     if (!postcodeVerified) return { postcodeVerified: false, step: 0 };
                     return { postcodeVerified: true };
                 }),
 
+            // ✅ NEW: explicit resets
+            resetPostcode: () => set({ postcode: "" }),
+            resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 0 }),
+
             setSelectedService: (selectedService) => set({ selectedService }),
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
             setPeopleCount: (peopleCount) => set({ peopleCount }),
+
             setHasPets: (hasPets) => set({ hasPets }),
             setHasKids: (hasKids) => set({ hasKids }),
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
             setAllergyNote: (allergyNote) => set({ allergyNote }),
+
             setExtras: (extras) => set({ extras }),
             updateExtra: (extraId, delta) =>
                 set((state) => {
@@ -158,11 +174,13 @@ export const useBookingStore = create<BookingState>()(
                 }),
 
             formData: initialFormData,
-            setFormData: (data) =>
-                set((state) => ({ formData: { ...state.formData, ...data } })),
+            setFormData: (data) => set((state) => ({ formData: { ...state.formData, ...data } })),
+
             setSelectedDate: (selectedDate) => set({ selectedDate }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
+
             setPendingToken: (pendingToken) => set({ pendingToken }),
+
             resetBooking: () => set({ ...initialState, formData: initialFormData }),
         }),
         {

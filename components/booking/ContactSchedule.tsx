@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { TIME_SLOTS, HOLIDAYS, getEstimatedHours, EXTRAS, WORKING_HOURS_END } from "@/lib/booking/config";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type ExistingBookingRow = {
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // "HH:mm"
+    scheduled_date: string;
+    scheduled_time: string;
     estimated_hours: number;
 };
 
@@ -23,6 +23,19 @@ type ProfileRow = {
     country: string | null;
 };
 
+async function waitForSession(
+    supabase: ReturnType<typeof createClient>,
+    maxAttempts = 10,
+    delayMs = 250
+) {
+    for (let i = 0; i < maxAttempts; i++) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) return data.session;
+        await new Promise((r) => setTimeout(r, delayMs));
+    }
+    return null;
+}
+
 export default function ContactSchedule() {
     const {
         selectedService,
@@ -36,16 +49,24 @@ export default function ContactSchedule() {
         setSelectedTime,
     } = useBookingStore();
 
+    const supabase = useMemo(() => createClient(), []);
+    const didAutofillRef = useRef(false); // ✅ чтобы не долбить запросами бесконечно
+
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
     // ✅ profile autofill (safe: never overwrite user input)
     useEffect(() => {
-        const supabase = createClient();
         let cancelled = false;
 
         const run = async () => {
+            // ✅ не делаем повторно, если уже один раз успешно пробовали
+            if (didAutofillRef.current) return;
+
             try {
+                // после логина/верифая сессия может появиться не сразу
+                await waitForSession(supabase);
+
                 const { data: u } = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
@@ -58,10 +79,13 @@ export default function ContactSchedule() {
 
                 if (cancelled || error || !data) return;
 
+                didAutofillRef.current = true;
+
                 const p = data as ProfileRow;
+
                 const patch: Partial<typeof formData> = {};
 
-                // ✅ email: prefer formData, else profile.email, else auth.user.email
+                // email: prefer formData, else profile.email, else auth.user.email
                 if (!formData.email?.trim()) {
                     const em = (p.email || user.email || "").trim();
                     if (em) patch.email = em;
@@ -71,6 +95,7 @@ export default function ContactSchedule() {
                 if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
                 if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
                 if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
+
                 if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
                 if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
                 if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
@@ -85,18 +110,8 @@ export default function ContactSchedule() {
         return () => {
             cancelled = true;
         };
-        // ✅ важное: зависимости — только используемые поля
-    }, [
-        setFormData,
-        formData.email,
-        formData.firstName,
-        formData.lastName,
-        formData.phone,
-        formData.address,
-        formData.postalCode,
-        formData.city,
-        formData.country,
-    ]);
+    }, [supabase, setFormData]); // ✅ не зависим от formData.*, иначе лишние перезапросы
+
 
     // ---------- hours -> minutes (точно) ----------
     const estimatedMinutes = useMemo(() => {
