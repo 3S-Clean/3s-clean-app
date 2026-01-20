@@ -164,7 +164,7 @@ export default function BookingPage() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-white mt-[85px]">
+            <div className="min-h-screen bg-white pt-[80px]">
                 {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">

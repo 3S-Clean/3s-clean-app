@@ -13,9 +13,15 @@ function clampStep(n: number) {
 
 export function useBookingNavigation() {
     const step = useBookingStore((s) => s.step);
+
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
     const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
+
+    const postcode = useBookingStore((s) => s.postcode);
+    const setPostcode = useBookingStore((s) => s.setPostcode);
+
     const setStep = useBookingStore((s) => s.setStep);
+
     const selectedService = useBookingStore((s) => s.selectedService);
     const apartmentSize = useBookingStore((s) => s.apartmentSize);
     const peopleCount = useBookingStore((s) => s.peopleCount);
@@ -23,7 +29,6 @@ export function useBookingNavigation() {
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
 
-    // ✅ единственная логика допуска перехода
     const canContinue = useMemo(() => {
         switch (step) {
             case 0:
@@ -71,8 +76,6 @@ export function useBookingNavigation() {
     const goTo = useCallback(
         (targetStep: number) => {
             const t = clampStep(targetStep);
-
-            // 🔒 guard: нельзя прыгнуть вперёд, если текущий step не валиден
             if (t > step && !canContinue) return;
 
             setStep(t);
@@ -89,21 +92,16 @@ export function useBookingNavigation() {
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
-        // ✅ Ключевой фикс: когда возвращаемся на PLZ (1 -> 0),
-        // обязаны сбросить verified, иначе тебя тут же снова перекинет вперед.
+        // ✅ 1 -> 0: сбрасываем verified и очищаем сам postcode,
+        // иначе инпут останется заполненным (и авто-проверка может снова перекинуть вперед).
         if (step === 1 && prev === 0) {
+            setPostcode("");
             setPostcodeVerified(false);
         }
 
         setStep(prev);
         if (typeof window !== "undefined") window.scrollTo(0, 0);
-    }, [step, setStep, setPostcodeVerified]);
+    }, [step, setStep, setPostcode, setPostcodeVerified]);
 
-    return {
-        step,
-        canContinue,
-        next,
-        back,
-        goTo,
-    };
+    return { step, canContinue, next, back, goTo };
 }
