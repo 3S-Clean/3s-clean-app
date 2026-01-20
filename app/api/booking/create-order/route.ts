@@ -41,6 +41,8 @@ export async function POST(req: Request) {
         "customer_phone",
         "customer_address",
         "customer_postal_code",
+        "customer_city",
+	    "customer_country",
         "scheduled_date",
         "scheduled_time",
         "total_price",
@@ -109,8 +111,6 @@ export async function POST(req: Request) {
             const cp = s(orderData.customer_phone);
             const ca = s(orderData.customer_address);
             const cpc = s(orderData.customer_postal_code);
-
-            // если ты добавишь эти колонки в orders + будешь отправлять из формы:
             const ccity = s(orderData.customer_city);
             const ccountry = s(orderData.customer_country);
 
