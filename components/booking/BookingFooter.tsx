@@ -1,6 +1,6 @@
 "use client";
 
-import { useBookingStore } from "@/lib/booking/store"; // оставляем как у тебя
+import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
 
 interface Props {
@@ -23,7 +23,6 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
         selectedTime,
     } = useBookingStore();
 
-    // ✅ "снэпшот" строк — чтобы TS не ругался на индексации
     const serviceId = selectedService ?? "";
     const sizeId = apartmentSize ?? "";
     const peopleId = peopleCount ?? "";
@@ -83,33 +82,37 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
     };
 
     const service = SERVICES.find((s) => s.id === selectedService);
+    const showPrice = serviceId && sizeId && peopleId;
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
-            <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                    {serviceId && sizeId && peopleId ? (
-                        <div>
-                            {/* ✅ FIX: € не переносится отдельной строкой */}
+            <div className="max-w-4xl mx-auto flex items-start justify-between gap-4">
+                {/* ⬅️ ЦЕНА + ОПИСАНИЕ В ОДНОЙ КОЛОНКЕ */}
+                <div className="flex flex-col">
+                    {showPrice ? (
+                        <>
                             <div className="text-2xl font-bold whitespace-nowrap">
                                 €&nbsp;{total.toFixed(2)}
                             </div>
                             <div className="text-sm text-gray-500 whitespace-nowrap">
                                 inc.VAT • ~{time}
                             </div>
-                        </div>
+                        </>
                     ) : selectedService && !apartmentSize ? (
-                        <div>
+                        <>
                             <div className="text-xl font-semibold whitespace-nowrap">
                                 From €&nbsp;{service?.startingPrice}
                             </div>
-                            <div className="text-sm text-gray-500">Select apartment size</div>
-                        </div>
+                            <div className="text-sm text-gray-500">
+                                Select apartment size
+                            </div>
+                        </>
                     ) : (
                         <div className="text-gray-400">Select a service</div>
                     )}
                 </div>
 
+                {/* ➡️ КНОПКИ */}
                 <div className="flex gap-3 shrink-0">
                     {step > 0 && (
                         <button
