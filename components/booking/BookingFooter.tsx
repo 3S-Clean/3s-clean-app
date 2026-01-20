@@ -85,7 +85,8 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
     const showPrice = serviceId && sizeId && peopleId;
     const footerHint = (() => {
         if (step === 1) return "Select experience";
-        if (step === 2) return "Select details";
+        if (step === 2) return "Select apartment size";
+        if (step === 3) return "Select details";
         return `inc.VAT • ~${time}`;
     })();
 
@@ -108,8 +109,8 @@ export default function BookingFooter({ onBack, onNext, onSubmit, isSubmitting }
                             <div className="text-xl font-semibold whitespace-nowrap">
                                 From €&nbsp;{service?.startingPrice}
                             </div>
-                            <div className="text-sm text-gray-500">
-                                Select apartment size
+                            <div className="text-sm text-gray-500 whitespace-nowrap">
+                                {footerHint}
                             </div>
                         </>
                     ) : (
