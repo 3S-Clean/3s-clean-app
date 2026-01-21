@@ -49,7 +49,7 @@ export default function AccountClient({ email, firstName }:
                                 <h1 className="text-3xl font-semibold tracking-tight text-black">
                                     Account
                                 </h1>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm pt-1 text-gray-600">
                                     {greeting},{" "}
                                     <span className="text-black font-medium">
                                          {displayName}

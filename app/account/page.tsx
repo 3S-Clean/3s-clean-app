@@ -12,5 +12,17 @@ export default async function AccountPage() {
 
     if (error || !user) redirect("/login");
 
-    return <AccountClient email={user.email ?? ""} />;
+    // 👉 берём имя из profiles
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", user.id)
+        .single();
+
+    return (
+        <AccountClient
+            email={user.email ?? ""}
+            firstName={profile?.first_name ?? null}
+        />
+    );
 }
