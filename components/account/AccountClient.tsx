@@ -101,7 +101,7 @@ export default function AccountClient({
                                     email={email}
                                     color={currentAvatarColor}
                                     seed={(userId || email) ?? email}
-                                    size={44}
+                                    size={52}
                                 />
                                 <AvatarColorPicker value={currentAvatarColor} onChangeAction={saveAvatarColor} />
                             </div>

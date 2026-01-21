@@ -104,10 +104,8 @@ export default function BookingClient() {
         hasAllergies,
         allergyNote,
         extras,
-
         formData,
         setFormData,
-
         selectedDate,
         selectedTime,
         setPendingToken,
@@ -240,7 +238,6 @@ export default function BookingClient() {
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
-
                 customer_first_name: (formData.firstName || "").trim(),
                 customer_last_name: (formData.lastName || "").trim() || null,
                 customer_email: (formData.email || "").trim(),
@@ -250,7 +247,6 @@ export default function BookingClient() {
                 customer_city: (formData.city || "").trim() || null,
                 customer_country: (formData.country || "").trim(),
                 customer_notes: (formData.notes || "").trim() || null,
-
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };
