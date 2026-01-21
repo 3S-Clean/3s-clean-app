@@ -307,7 +307,7 @@ export default function BookingClient() {
                 </main>
 
                 {/* Button on step 0 — OK */}
-                {step === 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+                {step <=4 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );
