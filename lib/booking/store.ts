@@ -26,9 +26,9 @@ export interface BookingState {
     postcodeVerified: boolean;
     setPostcodeVerified: (verified: boolean) => void;
 
-    // ✅ NEW: reset helpers (fix back to PLZ)
+    // reset helpers
     resetPostcode: () => void;
-    resetPostcodeGate: () => void; // clears both postcode + verified + step
+    resetPostcodeGate: () => void; // clears postcode + verified + step
 
     selectedService: string | null;
     setSelectedService: (service: string | null) => void;
@@ -125,15 +125,16 @@ const DATA_TTL_MS = 30 * 60 * 1000;
 
 export const useBookingStore = create<BookingState>()(
     persist(
-        (set, get) => ({
+        (set) => ({
             ...initialState,
 
             setStep: (step) =>
                 set((state) => {
                     const next = clampStep(step);
 
-                    // 🔒 guard: шаги > 0 только если verified
-                    if (next > 0 && !state.postcodeVerified) return state;
+                    // ✅ step 0 (service) and step 1 (PLZ) are always allowed
+                    // 🔒 step 2+ requires PLZ verified
+                    if (next >= 2 && !state.postcodeVerified) return state;
 
                     return { step: next };
                 }),
@@ -141,13 +142,12 @@ export const useBookingStore = create<BookingState>()(
             setPostcode: (postcode) => set({ postcode }),
 
             setPostcodeVerified: (postcodeVerified) =>
-                set((state) => {
-                    // если снимаем verified — возвращаем на step 0 (НО postcode не трогаем здесь)
+                set(() => {
+                    // If un-verifying, go back to service (step 0). (Keep postcode untouched)
                     if (!postcodeVerified) return { postcodeVerified: false, step: 0 };
                     return { postcodeVerified: true };
                 }),
 
-            // ✅ NEW: explicit resets
             resetPostcode: () => set({ postcode: "" }),
             resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 0 }),
 
@@ -187,6 +187,7 @@ export const useBookingStore = create<BookingState>()(
             name: "3s-booking-storage",
 
             partialize: (state): Partial<PersistSlice> => {
+                // Save only after completing booking details (step 4)
                 if (state.step !== 4) return {};
                 return {
                     formData: state.formData,
