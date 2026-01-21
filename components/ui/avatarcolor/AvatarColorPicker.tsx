@@ -39,7 +39,7 @@ export function AvatarColorPicker({ value, onChangeAction, disabled }: Props) {
             </button>
 
             {open && (
-                <div className="absolute right-0 top-[38px] z-50 grid grid-cols-6 gap-2 rounded-2xl border border-black/10 bg-white/90 p-3 shadow-xl backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-2 z-[999] flex items-center gap-2 rounded-2xl border border-black/10 bg-white/95 p-3 shadow-xl backdrop-blur-xl">
                     {AVATAR_COLORS.map((c) => {
                         const isActive = selected === c.toUpperCase();
                         return (
@@ -47,11 +47,11 @@ export function AvatarColorPicker({ value, onChangeAction, disabled }: Props) {
                                 key={c}
                                 type="button"
                                 onClick={async () => {
-                                    await onChangeAction(c); // ✅ было onChange
+                                    await onChangeAction(c);
                                     setOpen(false);
                                 }}
                                 className={[
-                                    "h-[22px] w-[22px] rounded-full border transition",
+                                    "h-7 w-7 rounded-full border transition",
                                     isActive ? "border-[#11A97D] border-2" : "border-black/10",
                                 ].join(" ")}
                                 style={{ background: c }}

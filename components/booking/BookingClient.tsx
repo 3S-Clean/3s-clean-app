@@ -284,22 +284,21 @@ export default function BookingClient() {
             <Header />
 
             <div className="min-h-screen bg-white mt-[80px]">
-                {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
                                 key={s}
                                 className={`w-3 h-3 rounded-full transition-all
-                  ${s < step ? "bg-gray-900" : ""}
-                  ${s === step ? "bg-gray-900 scale-125" : ""}
-                  ${s > step ? "bg-gray-200" : ""}`}
+              ${s < step ? "bg-gray-900" : ""}
+              ${s === step ? "bg-gray-900 scale-125" : ""}
+              ${s > step ? "bg-gray-200" : ""}`}
                             />
                         ))}
                     </div>
                 </header>
 
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
+                <main className={`max-w-2xl mx-auto px-6 py-10 ${step === 0 ? "pb-32" : "pb-10"}`}>
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
@@ -307,7 +306,7 @@ export default function BookingClient() {
                     {step === 4 && <ContactSchedule />}
                 </main>
 
-                {/* ✅ Submit footer ONLY on the final step */}
+                {/* Button on step 0 — OK */}
                 {step === 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
