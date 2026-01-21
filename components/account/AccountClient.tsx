@@ -103,7 +103,7 @@ export default function AccountClient({
                                     seed={(userId || email) ?? email}
                                     size={44}
                                 />
-                                <AvatarColorPicker value={currentAvatarColor} onChange={saveAvatarColor} />
+                                <AvatarColorPicker value={currentAvatarColor} onChangeAction={saveAvatarColor} />
                             </div>
 
                             {/* ❌ Logout md+ убрали отсюда, чтобы не было дублей (он уже есть в Tabs) */}
