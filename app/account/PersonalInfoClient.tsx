@@ -301,7 +301,6 @@ export default function PersonalInfoClient({ email }: { email: string }) {
 
                     <Field label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
                     <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
-
                     <div className="md:col-span-2 mt-2">
                         <button
                             type="button"

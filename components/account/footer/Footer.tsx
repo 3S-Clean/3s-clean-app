@@ -1,11 +1,9 @@
 "use client";
 
 import "./footer.css";
-
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Youtube, Instagram } from "lucide-react";
-
 import { footerColumns, legalLinks } from "@/lib/navigation/navigation";
 
 interface SocialLink {
@@ -55,7 +53,6 @@ function FooterLinkItem({
 
 export default function AccountFooter() {
     const currentYear = new Date().getFullYear();
-
     const socialLinks: SocialLink[] = [
         { icon: <Youtube className="social-icon" strokeWidth={1.5} />, href: "https://youtube.com/@3sclean", label: "YouTube" },
         { icon: <WhatsAppIcon className="social-icon" />, href: "https://wa.me/your-number", label: "WhatsApp" },
@@ -101,7 +98,6 @@ export default function AccountFooter() {
 
                 <p className="footer-copyright">© {currentYear} 3S-Clean. All rights reserved.</p>
             </div>
-
             {/* Social Links */}
             <div className="footer-social">
                 {socialLinks.map((social) => (

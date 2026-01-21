@@ -14,10 +14,8 @@ import { webflowUrl } from "@/lib/navigation/navigation";
 
 export default function Header() {
     const pathname = usePathname();
-
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
 

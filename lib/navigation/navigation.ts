@@ -45,15 +45,13 @@ export const footerColumns: FooterColumn[] = [
     {
         title: "Get Started",
         links: [
-            // берём из mainNav (Experience)
             { label: "Experience", href: mainNav[0].href, external: true },
-            { label: "Booking", href: "/book" },
+            { label: "Booking", href: "/booking" },
         ],
     },
     {
         title: "Explore",
         links: [
-            // берём из mainNav (Inside 3S)
             { label: "Inside 3S", href: mainNav[2].href, external: true },
             { label: "Careers", href: `${WEBFLOW_BASE}/career`, external: true },
         ],
@@ -61,7 +59,6 @@ export const footerColumns: FooterColumn[] = [
     {
         title: "Help & Support",
         links: [
-            // берём из mainNav (FAQ)
             { label: "FAQ", href: mainNav[3].href, external: true },
             { label: "Contact", href: `${WEBFLOW_BASE}/contact`, external: true },
         ],

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { User, Video, BookOpen, LogOut, Film } from "lucide-react";
-
 import LogoutButton from "@/components/auth/LogoutButton";
 import Header from "@/components/account/header/Header";
 import Footer from "@/components/account/footer/Footer";
@@ -75,7 +74,6 @@ export default function AccountClient({ email }: { email: string }) {
                             })}
 
                             <div className="mx-2 h-6 w-px bg-black/10" />
-
                             <div className="flex items-center gap-2">
                                 <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
                                 <LogoutButton label="Logout" />
@@ -126,8 +124,6 @@ export default function AccountClient({ email }: { email: string }) {
                         {activeTab === "orders" && <OrderHistory />}
                     </div>
                 </main>
-
-                {/* FOOTER */}
                 <Footer />
             </div>
         </>
