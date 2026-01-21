@@ -107,26 +107,11 @@ export default async function OrdersPage() {
                         <h1 className="text-3xl font-semibold">Order History</h1>
                         <p className="text-gray-500 mt-1">All your bookings appear here.</p>
                     </div>
-
-                    <Link
-                        href="/booking"
-                        className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition"
-                    >
-                        Book Now
-                    </Link>
                 </div>
 
                 {orders.length === 0 ? (
                     <div className="rounded-3xl border border-gray-200 p-10">
                         <OrderHistory />
-                        <div className="mt-6 text-center">
-                            <Link
-                                href="/booking"
-                                className="inline-block px-6 py-3 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 transition"
-                            >
-                                Create your first booking
-                            </Link>
-                        </div>
                     </div>
                 ) : (
                     <div className="space-y-4">

@@ -159,16 +159,3 @@ function VideoHistory() {
         </div>
     );
 }
-
-function OrderHistory() {
-    return (
-        <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Order History
-            </h2>
-            <p className="mt-4 text-black/55">
-                Your past orders will appear here.
-            </p>
-        </div>
-    );
-}
