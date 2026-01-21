@@ -151,36 +151,38 @@ export default function OrdersTabClient() {
                     <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
                     <p className="mt-1 text-black/55">All your bookings appear here.</p>
                 </div>
-
-                <Link
-                    href="/booking"
-                    className="px-5 py-2.5 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition"
-                >
-                    Book Now
-                </Link>
             </div>
-
             <div className="space-y-4">
                 {orders.map((o) => (
                     <Link
                         key={o.id}
                         href={`/account/orders/${o.id}`}
-                        className="block rounded-3xl border border-gray-200 p-6 hover:shadow-sm transition"
+                        className="block rounded-3xl p-6 hover:bg-gray-50 transition"
                     >
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start justify-between gap-6">
+                            {/* LEFT */}
                             <div>
-                                <div className="text-lg font-semibold">{o.service_type}</div>
+                                <div className="text-lg font-semibold capitalize">
+                                    {o.service_type}
+                                </div>
+
                                 <div className="text-sm text-gray-500 mt-1">
                                     {formatDate(o.scheduled_date)} • {o.scheduled_time} • {hours(o.estimated_hours)}
                                 </div>
+
                                 <div className="text-sm text-gray-500 mt-1">
                                     {o.apartment_size} • {o.people_count} people
                                 </div>
                             </div>
 
-                            <div className="text-right">
-                                <div className="text-lg font-bold">{money(o.total_price)}</div>
-                                <div className="text-sm text-gray-500 mt-1">{statusLabel(o.status)}</div>
+                            {/* RIGHT */}
+                            <div className="text-right whitespace-nowrap">
+                                <div className="text-lg font-bold">
+                                    € {Number(o.total_price).toFixed(2)}
+                                    <span className="ml-3 text-sm font-normal text-gray-500">
+                            {statusLabel(o.status)}
+                        </span>
+                                </div>
                             </div>
                         </div>
                     </Link>
