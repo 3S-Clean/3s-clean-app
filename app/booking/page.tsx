@@ -141,7 +141,7 @@ export default function BookingPage() {
 
             if (Object.keys(patch).length) setFormData(patch);
 
-            // Postcode gate: if profile has postal code, auto-verify and move past step 1
+            //Postcode gate: if profile has postal code, auto-verify and move past step 1
             const plz = (p.postal_code || "").trim();
             if (plz) {
                 if (!postcode) setPostcode(plz);
@@ -281,7 +281,7 @@ export default function BookingPage() {
                 </main>
 
                 {/* ✅ Submit footer ONLY on the final step */}
-                {step === 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+                {step === 4 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );

@@ -11,25 +11,22 @@ interface Props {
 
 export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const { step, canContinue, next, back } = useBookingNavigation();
-    const {
-        selectedService,
-        apartmentSize,
-        peopleCount,
-        hasPets,
-        extras,
-    } = useBookingStore();
+
+    const { selectedService, apartmentSize, peopleCount, hasPets, extras } = useBookingStore();
+
     const serviceId = selectedService ?? "";
     const sizeId = apartmentSize ?? "";
     const peopleId = peopleCount ?? "";
+
     const total = (() => {
         if (!serviceId || !sizeId || !peopleId) return 0;
 
         const base =
             FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[hasPets ? "pet" : "noPet"] ?? 0;
 
-        const ext = Object.entries(extras).reduce((s, [id, q]) => {
+        const ext = Object.entries(extras || {}).reduce((s, [id, q]) => {
             const e = EXTRAS.find((x) => x.id === id);
-            return s + (e ? e.price * q : 0);
+            return s + (e ? e.price * (Number(q) || 0) : 0);
         }, 0);
 
         return base + ext;
@@ -40,7 +37,8 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
         let h = getEstimatedHours(serviceId, sizeId);
 
-        Object.entries(extras).forEach(([id, q]) => {
+        Object.entries(extras || {}).forEach(([id, qRaw]) => {
+            const q = Number(qRaw) || 0;
             const e = EXTRAS.find((x) => x.id === id);
             if (e && q > 0) h += e.hours * q;
         });
@@ -54,7 +52,27 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     })();
 
     const service = SERVICES.find((s) => s.id === selectedService);
-    const showPrice = serviceId && sizeId && peopleId;
+    const showPrice = Boolean(serviceId && sizeId && peopleId);
+
+    // подсказка слева (когда ещё не всё выбрано)
+    const hint = (() => {
+        switch (step) {
+            case 0:
+                return "Select a service";
+            case 1:
+                return "Enter your PLZ";
+            case 2:
+                return "Apartment details";
+            case 3:
+                return "Extras";
+            case 4:
+                return "Contact & schedule";
+            default:
+                return "Continue";
+        }
+    })();
+
+    const isFinalStep = step === 4;
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
@@ -73,14 +91,13 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                             <div className="text-sm text-gray-500">Select apartment size</div>
                         </>
                     ) : (
-                        <div className="text-sm text-gray-500">
-                            {step === 0 ? "Enter your PLZ" : step === 1 ? "Select a service" : "Continue"}
-                        </div>
+                        <div className="text-sm text-gray-500">{hint}</div>
                     )}
                 </div>
 
                 <div className="flex gap-3 shrink-0">
-                    {step === 0 && (
+                    {/* Back на всех шагах кроме первого */}
+                    {step > 0 && (
                         <button
                             onClick={back}
                             className="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
@@ -89,13 +106,13 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                         </button>
                     )}
 
-                    {step === 4 ? (
+                    {isFinalStep ? (
                         <button
-                            onClick={onSubmit}
+                            onClick={() => onSubmit?.()}
                             disabled={!canContinue || isSubmitting}
                             className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
                         >
-                            {isSubmitting ? "Booking..." : "Continue"}
+                            {isSubmitting ? "Booking..." : "Book now"}
                         </button>
                     ) : (
                         <button

@@ -1,5 +1,6 @@
 // lib/booking/useBookingNavigation.ts
 "use client";
+
 import { useMemo, useCallback } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 
@@ -12,56 +13,65 @@ function clampStep(n: number) {
 
 export function useBookingNavigation() {
     const step = useBookingStore((s) => s.step);
+    const setStep = useBookingStore((s) => s.setStep);
+
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
     const resetPostcodeGate = useBookingStore((s) => s.resetPostcodeGate);
-    const setStep = useBookingStore((s) => s.setStep);
 
     const selectedService = useBookingStore((s) => s.selectedService);
     const apartmentSize = useBookingStore((s) => s.apartmentSize);
     const peopleCount = useBookingStore((s) => s.peopleCount);
+
     const formData = useBookingStore((s) => s.formData);
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
 
+    // ✅ Updated for steps:
+    // 0 Service
+    // 1 PLZ
+    // 2 Apartment details
+    // 3 Extras
+    // 4 Contact & schedule
     const canContinue = useMemo(() => {
         switch (step) {
             case 0:
-                return !!postcodeVerified;
-            case 1:
                 return !!selectedService;
+
+            case 1:
+                return !!postcodeVerified;
+
             case 2:
                 return !!apartmentSize && !!peopleCount;
+
             case 3:
                 return true;
+
             case 4:
                 return !!(
                     formData.firstName?.trim() &&
-                    formData.lastName?.trim() &&
                     formData.email?.trim() &&
                     formData.phone?.trim() &&
                     formData.address?.trim() &&
                     formData.postalCode?.trim() &&
-                    formData.city?.trim() &&
                     formData.country?.trim() &&
                     selectedDate &&
                     selectedTime
                 );
+
             default:
                 return false;
         }
     }, [
         step,
-        postcodeVerified,
         selectedService,
+        postcodeVerified,
         apartmentSize,
         peopleCount,
         formData.firstName,
-        formData.lastName,
         formData.email,
         formData.phone,
         formData.address,
         formData.postalCode,
-        formData.city,
         formData.country,
         selectedDate,
         selectedTime,
@@ -86,10 +96,11 @@ export function useBookingNavigation() {
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
-        // ✅ ВАЖНО: если возвращаемся на 0 — чистим PLZ+verified,
-        // иначе PostcodeCheck тебя снова авто-перекинет вперед
-        if (prev === 0) {
+        // ✅ Important: when returning to PostcodeCheck (step 1),
+        // reset PLZ + verified so it doesn't auto-skip forward.
+        if (prev === 1) {
             resetPostcodeGate();
+            setStep(prev);
             if (typeof window !== "undefined") window.scrollTo(0, 0);
             return;
         }
