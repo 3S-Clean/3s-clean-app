@@ -153,11 +153,11 @@ export default function LoginClient() {
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className="
-  w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-  bg-[var(--primary)] text-[var(--primary-text)]
-  hover:opacity-90
-  disabled:opacity-40 disabled:cursor-not-allowed
-"
+                        w-full rounded-2xl py-3.5 text-[15px] font-medium transition
+                        bg-[var(--primary)] text-[var(--primary-text)]
+                        hover:opacity-90
+                        disabled:opacity-40 disabled:cursor-not-allowed
+                    "
                 >
                     {isSubmitting ? "Logging in…" : "Log in"}
                 </button>
