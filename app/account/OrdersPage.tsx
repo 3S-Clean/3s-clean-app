@@ -1,4 +1,4 @@
-// app/account/orders/page.tsx
+// app/account/orders/OrdersPage.tsx
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -17,7 +17,6 @@ type OrderRow = {
 };
 
 function formatDate(d: string) {
-    // d = "2026-01-29"
     const dt = new Date(d + "T00:00:00");
     return dt.toLocaleDateString("en-GB", {
         weekday: "short",
@@ -56,6 +55,19 @@ function statusLabel(s: string) {
     }
 }
 
+function OrderHistory() {
+    return (
+        <div className="text-center">
+            <h2 className="text-xl font-semibold text-black md:text-2xl">
+                Order History
+            </h2>
+            <p className="mt-4 text-black/55">
+                Your past orders will appear here.
+            </p>
+        </div>
+    );
+}
+
 export default async function OrdersPage() {
     const supabase = await createSupabaseServerClient();
 
@@ -63,10 +75,7 @@ export default async function OrdersPage() {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-        // если не залогинен — кидаем на логин
-        redirect("/login");
-    }
+    if (!user) redirect("/login");
 
     const { data, error } = await supabase
         .from("orders")
@@ -78,7 +87,6 @@ export default async function OrdersPage() {
         .order("scheduled_time", { ascending: true });
 
     if (error) {
-        // тут лучше не показывать raw error пользователю
         return (
             <div className="min-h-screen bg-white px-6 py-12">
                 <div className="max-w-3xl mx-auto">
@@ -109,15 +117,16 @@ export default async function OrdersPage() {
                 </div>
 
                 {orders.length === 0 ? (
-                    <div className="rounded-3xl border border-gray-200 p-10 text-center">
-                        <div className="text-xl font-semibold mb-2">No bookings yet</div>
-                        <div className="text-gray-500 mb-6">Your past orders will appear here.</div>
-                        <Link
-                            href="/booking"
-                            className="inline-block px-6 py-3 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 transition"
-                        >
-                            Create your first booking
-                        </Link>
+                    <div className="rounded-3xl border border-gray-200 p-10">
+                        <OrderHistory />
+                        <div className="mt-6 text-center">
+                            <Link
+                                href="/booking"
+                                className="inline-block px-6 py-3 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 transition"
+                            >
+                                Create your first booking
+                            </Link>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-4">

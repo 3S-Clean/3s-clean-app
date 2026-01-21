@@ -15,7 +15,6 @@ function s(v: unknown) {
 function isFilled(v: unknown) {
     return typeof v === "string" ? v.trim().length > 0 : s(v).length > 0;
 }
-
 export async function POST(req: Request) {
     let body: CreateOrderBody = {};
     try {
@@ -23,15 +22,11 @@ export async function POST(req: Request) {
     } catch {
         return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
-
     const orderDataRaw = (body?.orderData ?? body) as unknown;
     if (!orderDataRaw || typeof orderDataRaw !== "object") {
         return NextResponse.json({ error: "Missing order data" }, { status: 400 });
     }
-
     const orderData = orderDataRaw as OrderPayload;
-
-    // обязательные поля (минимум, чтобы не писать мусор)
     const required = [
         "service_type",
         "apartment_size",
@@ -48,27 +43,19 @@ export async function POST(req: Request) {
         "total_price",
         "estimated_hours",
     ] as const;
-
     for (const k of required) {
         const v = orderData[k];
         if (v === null || v === undefined || String(v).trim() === "") {
             return NextResponse.json({ error: `Missing field: ${k}` }, { status: 400 });
         }
     }
-
     // кто залогинен (если есть)
     const supabase = await createSupabaseServerClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
-
-    // pending token ВСЕГДА
     const pendingToken = crypto.randomUUID();
-
-    // админ-клиент, чтобы вставка работала и для гостя (обходит RLS)
     const admin = createSupabaseAdminClient();
-
-    // защита от подмены важных полей
     const {
         user_id: _ignoreUserId,
         pending_token: _ignorePending,
@@ -102,9 +89,7 @@ export async function POST(req: Request) {
                 .select("id, first_name, last_name, phone, email, address, postal_code, city, country")
                 .eq("id", user.id)
                 .maybeSingle();
-
             const patch: Record<string, string> = {};
-
             const cf = s(orderData.customer_first_name);
             const cl = s(orderData.customer_last_name);
             const ce = s(orderData.customer_email);
@@ -113,19 +98,14 @@ export async function POST(req: Request) {
             const cpc = s(orderData.customer_postal_code);
             const ccity = s(orderData.customer_city);
             const ccountry = s(orderData.customer_country);
-
-            if (!isFilled(profile?.first_name) && cf) patch.first_name = cf;
-            if (!isFilled(profile?.last_name) && cl) patch.last_name = cl;
-
-            if (!isFilled(profile?.phone) && cp) patch.phone = cp;
-            if (!isFilled(profile?.email) && ce) patch.email = ce;
-
-            if (!isFilled(profile?.address) && ca) patch.address = ca;
-            if (!isFilled(profile?.postal_code) && cpc) patch.postal_code = cpc;
-
-            if (!isFilled(profile?.city) && ccity) patch.city = ccity;
-            if (!isFilled(profile?.country) && ccountry) patch.country = ccountry;
-
+            if (cf && s(profile?.first_name) !== cf) patch.first_name = cf;
+            if (cl && s(profile?.last_name) !== cl) patch.last_name = cl;
+            if (cp && s(profile?.phone) !== cp) patch.phone = cp;
+            if (ce && s(profile?.email) !== ce) patch.email = ce;
+            if (ca && s(profile?.address) !== ca) patch.address = ca;
+            if (cpc && s(profile?.postal_code) !== cpc) patch.postal_code = cpc;
+            if (ccity && s(profile?.city) !== ccity) patch.city = ccity;
+            if (ccountry && s(profile?.country) !== ccountry) patch.country = ccountry;
             if (Object.keys(patch).length > 0) {
                 await admin.from("profiles").upsert({ id: user.id, ...patch }, { onConflict: "id" });
             }

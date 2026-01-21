@@ -37,7 +37,7 @@ function Content() {
     // ✅ поддержим ОБА формата, чтобы ничего не ломалось:
     // - orderId
     // - pendingToken (старое)
-    // - pendingOrder (новое, как в booking/page.tsx)
+    // - pendingOrder (новое, как в booking/OrdersPage.tsx)
     const orderId = sp.get("orderId") || "";
     const pendingToken = sp.get("pendingToken") || sp.get("pendingOrder") || "";
 

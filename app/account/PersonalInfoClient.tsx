@@ -232,7 +232,6 @@ export default function PersonalInfoClient({ email }: { email: string }) {
             </div>
 
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-
             {/* EMPTY STATE */}
             {!editing && !hasAny && (
                 <div className="mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5">

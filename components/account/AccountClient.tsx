@@ -6,6 +6,8 @@ import LogoutButton from "@/components/auth/LogoutButton";
 import Header from "@/components/account/header/Header";
 import Footer from "@/components/account/footer/Footer";
 import PersonalInfoClient from "@/app/account/PersonalInfoClient";
+import OrdersPage from "@/app/account/OrdersPage";
+
 
 type Tab = "personal" | "live" | "history" | "orders";
 
@@ -121,7 +123,7 @@ export default function AccountClient({ email }: { email: string }) {
                         {activeTab === "personal" && <PersonalInfoClient email={email} />}
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
-                        {activeTab === "orders" && <OrderHistory />}
+                        {activeTab === "orders" && <OrdersPage />}
                     </div>
                 </main>
                 <Footer />
