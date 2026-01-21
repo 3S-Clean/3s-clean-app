@@ -16,6 +16,7 @@ import Header from "@/components/header/Header";
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
 type CreateOrderErr = { error: string };
+
 type CreateOrderResponse = CreateOrderOk | CreateOrderErr;
 
 function isCreateOrderOk(v: unknown): v is CreateOrderOk {
@@ -23,7 +24,6 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
     const o = v as Record<string, unknown>;
     return typeof o.orderId === "string" && typeof o.pendingToken === "string";
 }
-
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 function calculateTotals(

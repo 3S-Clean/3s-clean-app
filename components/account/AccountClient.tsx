@@ -8,7 +8,6 @@ import Footer from "@/components/footer/Footer";
 import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
 import Settings from "@/components/account/Settings";
-
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/ui/avatar/Avatar";
 import { AvatarColorPicker } from "@/components/ui/avatarcolor/AvatarColorPicker";

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -11,22 +11,20 @@ const inter = Inter({
 export const metadata: Metadata = {
     title: "3S Clean",
     description: "Premium cleaning service",
+    // ❌ themeColor убрать отсюда
+};
+
+export const viewport: Viewport = {
     themeColor: [
         { media: "(prefers-color-scheme: light)", color: "#F6F7F8" },
         { media: "(prefers-color-scheme: dark)", color: "#070A0D" },
     ],
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-        <body className={`${inter.variable} antialiased`}>
-        {children}
-        </body>
+        <body className={`${inter.variable} antialiased`}>{children}</body>
         </html>
     );
 }

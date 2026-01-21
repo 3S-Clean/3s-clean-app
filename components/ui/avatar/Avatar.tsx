@@ -4,7 +4,6 @@ type AvatarProps = {
     firstName?: string | null;
     lastName?: string | null;
     email?: string | null;
-
     color?: string | null; // из profiles.avatar_color
     seed?: string | null;  // fallback: user.id / email
     size?: number;         // px
