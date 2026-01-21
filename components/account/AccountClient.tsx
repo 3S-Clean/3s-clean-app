@@ -5,8 +5,8 @@ import { User, Video, BookOpen, LogOut, Film } from "lucide-react";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Header from "@/components/account/header/Header";
 import Footer from "@/components/account/footer/Footer";
-import PersonalInfoClient from "@/app/account/PersonalInfoClient";
-import OrdersPage from "@/app/account/OrdersPage";
+import PersonalInfoClient from "@/components/account/PersonalInfoClient";
+import OrdersTabClient from "@/components/account/OrdersTabClient";
 
 
 type Tab = "personal" | "live" | "history" | "orders";
@@ -123,7 +123,7 @@ export default function AccountClient({ email }: { email: string }) {
                         {activeTab === "personal" && <PersonalInfoClient email={email} />}
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
-                        {activeTab === "orders" && <OrdersPage />}
+                        {activeTab === "orders" && <OrdersTabClient />}
                     </div>
                 </main>
                 <Footer />
