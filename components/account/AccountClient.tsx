@@ -7,8 +7,11 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
-import Settings  from "@/components/account/Settings";
+import Settings from "@/components/account/Settings";
 
+import { createClient } from "@/lib/supabase/client";
+import { Avatar } from "@/components/ui/avatar/Avatar";
+import { AvatarColorPicker } from "@/components/ui/avatarcolor/AvatarColorPicker";
 
 type Tab = "personal" | "live" | "history" | "orders" | "settings";
 
@@ -22,44 +25,86 @@ const tabs = [
 
 function getGreeting(): string {
     const hour = new Date().getHours();
-
     if (hour >= 5 && hour < 11) return "Good morning";
     if (hour >= 11 && hour < 17) return "Hello";
     if (hour >= 17 && hour < 22) return "Good evening";
     return "Good night";
 }
 
-export default function AccountClient({ email, firstName }:
-{ email: string; firstName?: string | null; }) {
+export default function AccountClient({
+                                          userId,
+                                          email,
+                                          firstName,
+                                          lastName,
+                                          avatarColor: initialAvatarColor,
+                                      }: {
+    userId: string;
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    avatarColor?: string | null;
+}) {
     const [activeTab, setActiveTab] = useState<Tab>("personal");
     const greeting = getGreeting();
+
     const displayName = firstName?.trim() || email;
+
+    const [avatarColor, setAvatarColor] = useState<string | null>(initialAvatarColor ?? null);
+    const supabase = createClient();
+
+    const saveAvatarColor = async (color: string) => {
+        const prev = avatarColor;
+        setAvatarColor(color);
+
+        const { error } = await supabase
+            .from("profiles")
+            .update({ avatar_color: color })
+            .eq("id", userId);
+
+        if (error) {
+            setAvatarColor(prev ?? null);
+            console.error("Failed to update avatar_color:", error);
+            alert("Could not save color. Please try again.");
+        }
+    };
+
     return (
         <>
-            {/* FIXED HEADER */}
             <Header />
-            {/* PAGE */}
+
             <div className="min-h-screen bg-[#f8f8f8] pt-[92px]">
-                {/* CONTENT */}
-                <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
+                <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-6 lg:px-8">
                     {/* Top Card */}
                     <div className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
                         <div className="flex items-start justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl font-semibold tracking-tight text-black">
-                                    Account
-                                </h1>
-                                <p className="text-sm pt-1 text-gray-600">
+                                <h1 className="text-3xl font-semibold tracking-tight text-black">Account</h1>
+                                <p className="pt-1 text-sm text-gray-600">
                                     {greeting},{" "}
-                                    <span className="text-black font-medium">
-                                         {displayName}
-                                    </span>
+                                    <span className="font-medium text-black">{displayName}</span>
                                 </p>
                             </div>
-                            {/* Logout md+ */}
-                            <div className="hidden md:flex items-center gap-2">
-                                <LogoutButton label="Logout" className="gap-2" />
-                                <span className="sr-only">Logout</span>
+
+                            {/* RIGHT SIDE: Avatar + palette + logout */}
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                    <Avatar
+                                        firstName={firstName}
+                                        lastName={lastName}
+                                        email={email}
+                                        color={avatarColor}
+                                        seed={userId}
+                                        size={44}
+                                        className="shrink-0"
+                                    />
+                                    <AvatarColorPicker value={avatarColor} onChange={saveAvatarColor} />
+                                </div>
+
+                                {/* Logout md+ */}
+                                <div className="hidden md:flex items-center gap-2">
+                                    <LogoutButton label="Logout" className="gap-2" />
+                                    <span className="sr-only">Logout</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,9 +152,7 @@ export default function AccountClient({ email, firstName }:
                                         onClick={() => setActiveTab(tab.id)}
                                         className={[
                                             "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                            isActive
-                                                ? "bg-black/5 text-black"
-                                                : "text-black/70 hover:bg-black/5",
+                                            isActive ? "bg-black/5 text-black" : "text-black/70 hover:bg-black/5",
                                         ].join(" ")}
                                     >
                                         <Icon size={20} strokeWidth={1.5} />
@@ -122,10 +165,7 @@ export default function AccountClient({ email, firstName }:
 
                             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5">
                                 <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
-                                <LogoutButton
-                                    label="Logout"
-                                    className="px-0 py-0 hover:bg-transparent"
-                                />
+                                <LogoutButton label="Logout" className="px-0 py-0 hover:bg-transparent" />
                             </div>
                         </div>
                     </nav>
@@ -136,9 +176,10 @@ export default function AccountClient({ email, firstName }:
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
                         {activeTab === "orders" && <OrdersTabClient />}
-                        {activeTab === "settings" && <Settings/>}
+                        {activeTab === "settings" && <Settings />}
                     </div>
                 </main>
+
                 <Footer />
             </div>
         </>
@@ -150,12 +191,8 @@ export default function AccountClient({ email, firstName }:
 function LiveCleaningVideo() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Live Cleaning Video
-            </h2>
-            <p className="mt-4 text-black/55">
-                Your live stream will appear here during an active service.
-            </p>
+            <h2 className="text-xl font-semibold text-black md:text-2xl">Live Cleaning Video</h2>
+            <p className="mt-4 text-black/55">Your live stream will appear here during an active service.</p>
         </div>
     );
 }
@@ -163,12 +200,8 @@ function LiveCleaningVideo() {
 function VideoHistory() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
-                Video History
-            </h2>
-            <p className="mt-4 text-black/55">
-                Saved recordings will appear here after your service.
-            </p>
+            <h2 className="text-xl font-semibold text-black md:text-2xl">Video History</h2>
+            <p className="mt-4 text-black/55">Saved recordings will appear here after your service.</p>
         </div>
     );
 }

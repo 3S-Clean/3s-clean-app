@@ -12,17 +12,20 @@ export default async function AccountPage() {
 
     if (error || !user) redirect("/login");
 
-    // 👉 берём имя из profiles
+    // Берём данные из profiles
     const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name")
+        .select("first_name, last_name, avatar_color")
         .eq("id", user.id)
         .single();
 
     return (
         <AccountClient
+            userId={user.id}
             email={user.email ?? ""}
             firstName={profile?.first_name ?? null}
+            lastName={profile?.last_name ?? null}
+            avatarColor={profile?.avatar_color ?? null}
         />
     );
 }
