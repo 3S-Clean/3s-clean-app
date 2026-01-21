@@ -152,36 +152,41 @@ export default function OrdersTabClient() {
                     <p className="mt-1 text-black/55">All your bookings appear here.</p>
                 </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-5">
                 {orders.map((o) => (
                     <Link
                         key={o.id}
                         href={`/account/orders/${o.id}`}
-                        className="block rounded-3xl p-6 hover:bg-gray-50 transition"
+                        className="
+                block rounded-3xl bg-[#f6f7f8]
+                p-6 transition
+                hover:bg-[#f1f2f3]
+            "
                     >
                         <div className="flex items-start justify-between gap-6">
                             {/* LEFT */}
                             <div>
-                                <div className="text-lg font-semibold capitalize">
+                                <div className="text-lg font-semibold capitalize text-black">
                                     {o.service_type}
                                 </div>
 
-                                <div className="text-sm text-gray-500 mt-1">
+                                <div className="mt-2 text-sm text-black/55">
                                     {formatDate(o.scheduled_date)} • {o.scheduled_time} • {hours(o.estimated_hours)}
                                 </div>
 
-                                <div className="text-sm text-gray-500 mt-1">
+                                <div className="mt-1 text-sm text-black/55">
                                     {o.apartment_size} • {o.people_count} people
                                 </div>
                             </div>
 
                             {/* RIGHT */}
-                            <div className="text-right whitespace-nowrap">
-                                <div className="text-lg font-bold">
-                                    € {Number(o.total_price).toFixed(2)}
-                                    <span className="ml-3 text-sm font-normal text-gray-500">
-                            {statusLabel(o.status)}
-                        </span>
+                            <div className="text-right shrink-0">
+                                <div className="text-xl font-semibold text-black">
+                                    {money(o.total_price)}
+                                </div>
+
+                                <div className="mt-1 text-sm text-black/50">
+                                    {statusLabel(o.status)}
                                 </div>
                             </div>
                         </div>
