@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
+
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
 import ServiceSelection from "@/components/booking/ServiceSelection";
 import ApartmentDetails from "@/components/booking/ApartmentDetails";
@@ -12,6 +11,9 @@ import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
+
+import { useBookingStore } from "@/lib/booking/store";
+import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
