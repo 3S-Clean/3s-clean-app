@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
@@ -14,10 +13,8 @@ type Status = null | { type: "ok" | "error"; msg: string };
 export default function LoginClient() {
     const router = useRouter();
     const sp = useSearchParams();
-
     const supabase = useMemo(() => createClient(), []);
     const { resetBooking } = useBookingStore();
-
     const pendingOrderToken = sp.get("pendingOrder") || "";
 
     const {
@@ -32,10 +29,8 @@ export default function LoginClient() {
 
     const [status, setStatus] = useState<Status>(null);
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
-
     const onSubmit = async (values: LoginValues) => {
         setStatus(null);
-
         const { error } = await supabase.auth.signInWithPassword({
             email: values.email,
             password: values.password,
@@ -55,35 +50,32 @@ export default function LoginClient() {
         }
 
         // ✅ если юзер пришёл из booking с pendingOrder — линкуем и кидаем на success
+        // ✅ если юзер пришёл из booking с pendingOrder — линкуем и кидаем на success
         if (pendingOrderToken) {
             try {
-                // на всякий сохраним, если страница перезагрузится
-                localStorage.setItem("pendingOrderToken", pendingOrderToken);
-            } catch {}
+                try {
+                    localStorage.setItem("pendingOrderToken", pendingOrderToken);
+                } catch {}
 
-            try {
                 const res = await fetch("/api/booking/link-order", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ pendingToken: pendingOrderToken }),
                 });
 
-                const json: { success?: boolean; orderId?: string; error?: string } = await res.json();
+                const json: { orderId?: string; error?: string } = await res.json().catch(() => ({}));
 
-                // очистим локальное состояние букинга (заказ уже в БД)
                 resetBooking();
-
                 try {
                     localStorage.removeItem("pendingOrderToken");
                 } catch {}
 
-                if (res.ok && json?.success && json?.orderId) {
+                if (res.ok && json?.orderId) {
                     router.replace(`/booking/success?orderId=${encodeURIComponent(String(json.orderId))}`);
                     router.refresh();
                     return;
                 }
 
-                // если линковка не удалась — пользователь всё равно залогинен
                 router.replace("/account/orders");
                 router.refresh();
                 return;

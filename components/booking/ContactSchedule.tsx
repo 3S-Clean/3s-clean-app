@@ -11,7 +11,6 @@ type ExistingBookingRow = {
     scheduled_time: string;
     estimated_hours: number;
 };
-
 type ProfileRow = {
     first_name: string | null;
     last_name: string | null;
@@ -51,55 +50,51 @@ export default function ContactSchedule() {
 
     const supabase = useMemo(() => createClient(), []);
     const didAutofillRef = useRef(false); // ✅ чтобы не долбить запросами бесконечно
-
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
     // ✅ profile autofill (safe: never overwrite user input)
     useEffect(() => {
         let cancelled = false;
-
         const run = async () => {
             // ✅ не делаем повторно, если уже один раз успешно пробовали
             if (didAutofillRef.current) return;
-
             try {
                 // после логина/верифая сессия может появиться не сразу
                 await waitForSession(supabase);
-
                 const { data: u } = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
-
                 const { data, error } = await supabase
                     .from("profiles")
                     .select("first_name,last_name,phone,address,postal_code,city,country,email")
                     .eq("id", user.id)
                     .maybeSingle();
-
                 if (cancelled || error || !data) return;
-
                 didAutofillRef.current = true;
-
                 const p = data as ProfileRow;
-
                 const patch: Partial<typeof formData> = {};
-
                 // email: prefer formData, else profile.email, else auth.user.email
                 if (!formData.email?.trim()) {
                     const em = (p.email || user.email || "").trim();
                     if (em) patch.email = em;
                 }
-
                 if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
                 if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
                 if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
                 if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
-
                 if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
                 if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
                 if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
-
+                const userStarted =
+                    formData.firstName.trim() ||
+                    formData.lastName.trim() ||
+                    formData.email.trim() ||
+                    formData.phone.trim() ||
+                    formData.address.trim() ||
+                    formData.postalCode.trim() ||
+                    formData.city.trim();
+                if (userStarted) return;
                 if (Object.keys(patch).length) setFormData(patch);
             } catch {
                 // тихо
@@ -110,8 +105,7 @@ export default function ContactSchedule() {
         return () => {
             cancelled = true;
         };
-    }, [supabase, setFormData]); // ✅ не зависим от formData.*, иначе лишние перезапросы
-
+    }, [supabase, setFormData]);
 
     // ---------- hours -> minutes (точно) ----------
     const estimatedMinutes = useMemo(() => {
@@ -123,17 +117,14 @@ export default function ContactSchedule() {
 
         return Math.max(0, Math.round((baseHours + extrasHours) * 60));
     }, [selectedService, apartmentSize, extras]);
-
     // ---------- fetch existing bookings via API ----------
     useEffect(() => {
         const controller = new AbortController();
-
         const run = async () => {
             const y = currentMonth.getFullYear();
             const m = currentMonth.getMonth();
             const start = new Date(y, m, 1).toISOString().split("T")[0];
             const end = new Date(y, m + 1, 0).toISOString().split("T")[0];
-
             try {
                 const res = await fetch("/api/booking/existing-bookings", {
                     method: "POST",
@@ -157,16 +148,12 @@ export default function ContactSchedule() {
     const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
         const startMin = hour * 60 + minutes;
         const endMin = startMin + estimatedMinutes;
-
         if (endMin > WORKING_HOURS_END * 60) return false;
-
         for (const b of existingBookings) {
             if (b.scheduled_date !== dateKey) continue;
-
             const [bh, bm] = b.scheduled_time.split(":").map(Number);
             const bStartMin = (bh || 0) * 60 + (bm || 0);
             const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
-
             if (startMin < bEndMin && endMin > bStartMin) return false;
         }
 
@@ -174,7 +161,6 @@ export default function ContactSchedule() {
     };
 
     const hasSlots = (dateKey: string) => TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
-
     // ---------- calendar calc ----------
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -184,11 +170,9 @@ export default function ContactSchedule() {
         if (!selectedTime) return "";
         const slot = TIME_SLOTS.find((s) => s.id === selectedTime);
         if (!slot) return "";
-
         const endMin = slot.hour * 60 + slot.minutes + estimatedMinutes;
         const endH = Math.floor(endMin / 60);
         const endM = endMin % 60;
-
         return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
     };
 
