@@ -7,7 +7,7 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
-import { Settings } from "@/components/account/Settings";
+import Settings  from "@/components/account/Settings";
 
 
 type Tab = "personal" | "live" | "history" | "orders" | "settings";
