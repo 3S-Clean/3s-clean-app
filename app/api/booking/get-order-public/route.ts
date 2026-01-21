@@ -1,3 +1,4 @@
+// app/api/booking/get-order-public/route.ts
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -24,9 +25,27 @@ export async function POST(req: Request) {
 
     const supabase = createSupabaseAdminClient();
 
-    // ⚠️ Отдаём ТОЛЬКО безопасные поля
-    const selectSafe =
-        "id, service_type, scheduled_date, scheduled_time, estimated_hours, total_price, status, created_at";
+    // ✅ safe fields для success page (то, что ты хочешь показывать в карточке)
+    const selectSafe = `
+    id,
+    status,
+    service_type,
+    scheduled_date,
+    scheduled_time,
+    estimated_hours,
+    total_price,
+    created_at,
+
+    customer_first_name,
+    customer_last_name,
+    customer_email,
+    customer_phone,
+    customer_address,
+    customer_postal_code,
+    customer_city,
+    customer_country,
+    customer_notes
+  `;
 
     let q = supabase.from("orders").select(selectSafe).limit(1);
 
