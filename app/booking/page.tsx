@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
-import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
+import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
 import ServiceSelection from "@/components/booking/ServiceSelection";
 import ApartmentDetails from "@/components/booking/ApartmentDetails";
@@ -81,6 +81,8 @@ type ProfileRow = {
 
 export default function BookingPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const supabase = useMemo(() => createClient(), []);
 
@@ -91,7 +93,10 @@ export default function BookingPage() {
         setPostcode,
         postcodeVerified,
         setPostcodeVerified,
+
         selectedService,
+        setSelectedService, // ✅ важно для deep-link
+
         apartmentSize,
         peopleCount,
         hasPets,
@@ -99,12 +104,34 @@ export default function BookingPage() {
         hasAllergies,
         allergyNote,
         extras,
+
         formData,
         setFormData,
+
         selectedDate,
         selectedTime,
         setPendingToken,
     } = useBookingStore();
+
+    // ✅ Deep-link: /booking?service=regular|deep|intensive|handover
+    useEffect(() => {
+        const raw = (searchParams.get("service") || "").trim().toLowerCase();
+        if (!raw) return;
+
+        const allowed = new Set(["regular", "deep", "intensive", "handover"]);
+        if (!allowed.has(raw)) return;
+
+        // если сервис уже выбран (пользователь кликал) — не мешаем
+        if (selectedService) return;
+
+        const found = SERVICES.find((s) => s.id === raw);
+        if (!found) return;
+
+        setSelectedService(found.id);
+
+        // если сейчас на выборе сервиса — сразу идём на PLZ
+        if (step === 0) setStep(1);
+    }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
     // Prefill profile data if user is logged in
     useEffect(() => {
@@ -141,7 +168,7 @@ export default function BookingPage() {
 
             if (Object.keys(patch).length) setFormData(patch);
 
-            //Postcode gate: if profile has postal code, auto-verify and move past step 1
+            // Postcode gate: if profile has postal code, auto-verify and move past step 1
             const plz = (p.postal_code || "").trim();
             if (plz) {
                 if (!postcode) setPostcode(plz);
@@ -281,7 +308,7 @@ export default function BookingPage() {
                 </main>
 
                 {/* ✅ Submit footer ONLY on the final step */}
-                {step === 4 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+                {step > 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );
