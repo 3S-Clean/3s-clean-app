@@ -80,7 +80,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                 </div>
 
                 <div className="flex gap-3 shrink-0">
-                    {step > 0 && (
+                    {step === 0 && (
                         <button
                             onClick={back}
                             className="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"

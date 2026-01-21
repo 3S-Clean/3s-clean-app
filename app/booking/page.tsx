@@ -37,14 +37,17 @@ function calculateTotals(
     let extrasPrice = 0;
     let extrasHours = 0;
     const extrasArray: OrderExtraLine[] = [];
+
     for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
         const qty = Number(qtyRaw) || 0;
         if (qty <= 0) continue;
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (!extra) continue;
+
         const linePrice = extra.price * qty;
         extrasPrice += linePrice;
         extrasHours += extra.hours * qty;
+
         extrasArray.push({
             id: extraId,
             quantity: qty,
@@ -54,6 +57,7 @@ function calculateTotals(
     }
 
     const estimatedHours = getEstimatedHours(service, size) + extrasHours;
+
     return {
         basePrice: r2(basePrice),
         extrasPrice: r2(extrasPrice),
@@ -79,6 +83,7 @@ export default function BookingPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const supabase = useMemo(() => createClient(), []);
+
     const {
         step,
         setStep,
@@ -101,20 +106,26 @@ export default function BookingPage() {
         setPendingToken,
     } = useBookingStore();
 
+    // Prefill profile data if user is logged in
     useEffect(() => {
         let cancelled = false;
+
         const run = async () => {
             const { data: u } = await supabase.auth.getUser();
             const user = u?.user;
             if (!user || cancelled) return;
+
             const { data, error } = await supabase
                 .from("profiles")
                 .select("first_name,last_name,email,phone,address,postal_code,city,country,notes")
                 .eq("id", user.id)
                 .maybeSingle();
+
             if (cancelled || error || !data) return;
+
             const p = data as ProfileRow;
             const patch: Partial<typeof formData> = {};
+
             if (!formData.email?.trim()) {
                 const em = (p.email || user.email || "").trim();
                 if (em) patch.email = em;
@@ -127,14 +138,15 @@ export default function BookingPage() {
             if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
             if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
             if (!formData.notes?.trim() && p.notes?.trim()) patch.notes = p.notes.trim();
+
             if (Object.keys(patch).length) setFormData(patch);
 
-            // 2) postcode gate (важно для step 0 / Back)
+            // Postcode gate: if profile has postal code, auto-verify and move past step 1
             const plz = (p.postal_code || "").trim();
             if (plz) {
                 if (!postcode) setPostcode(plz);
                 if (!postcodeVerified) setPostcodeVerified(true);
-                if (step === 0) setStep(1);
+                if (step === 1) setStep(2);
             }
         };
 
@@ -164,7 +176,24 @@ export default function BookingPage() {
 
     const submitBooking = async () => {
         if (isSubmitting) return;
+
+        // Must be on final step and have all required selections
+        if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
+
+        // Required customer fields
+        if (
+            !(formData.firstName || "").trim() ||
+            !(formData.email || "").trim() ||
+            !(formData.phone || "").trim() ||
+            !(formData.address || "").trim() ||
+            !(formData.postalCode || "").trim() ||
+            !(formData.country || "").trim()
+        ) {
+            alert("Please fill in all required contact details.");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -177,21 +206,24 @@ export default function BookingPage() {
                 has_pets: hasPets,
                 has_kids: hasKids,
                 has_allergies: hasAllergies,
-                allergy_note: hasAllergies ? allergyNote : null,
+                allergy_note: hasAllergies ? (allergyNote || null) : null,
+
                 extras: totals.extras,
                 base_price: totals.basePrice,
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
-                customer_first_name: formData.firstName.trim(),
-                customer_last_name: formData.lastName?.trim() || null,
-                customer_email: formData.email.trim(),
-                customer_phone: formData.phone.trim(),
-                customer_address: formData.address.trim(),
-                customer_postal_code: formData.postalCode.trim(),
-                customer_city: formData.city.trim(),
-                customer_country: formData.country.trim(),
-                customer_notes: formData.notes?.trim() || null,
+
+                customer_first_name: (formData.firstName || "").trim(),
+                customer_last_name: (formData.lastName || "").trim() || null,
+                customer_email: (formData.email || "").trim(),
+                customer_phone: (formData.phone || "").trim(),
+                customer_address: (formData.address || "").trim(),
+                customer_postal_code: (formData.postalCode || "").trim(),
+                customer_city: (formData.city || "").trim() || null,
+                customer_country: (formData.country || "").trim(),
+                customer_notes: (formData.notes || "").trim() || null,
+
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };
@@ -210,10 +242,7 @@ export default function BookingPage() {
                 return;
             }
 
-            // ✅ всегда есть pendingToken
             setPendingToken(jsonUnknown.pendingToken);
-
-            // ✅ IMPORTANT: чтобы совпадало с SignupClient/VerifyCode — используем pendingOrder
             router.push(`/booking/success?pendingOrder=${encodeURIComponent(jsonUnknown.pendingToken)}`);
         } catch (e) {
             console.error(e);
@@ -226,6 +255,7 @@ export default function BookingPage() {
     return (
         <>
             <Header />
+
             <div className="min-h-screen bg-white mt-[80px]">
                 {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
@@ -241,14 +271,17 @@ export default function BookingPage() {
                         ))}
                     </div>
                 </header>
+
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
-                    {step === 0 && <PostcodeCheck />}
-                    {step === 1 && <ServiceSelection />}
+                    {step === 0 && <ServiceSelection />}
+                    {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
                     {step === 3 && <ExtraServices />}
                     {step === 4 && <ContactSchedule />}
                 </main>
-                {step > 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+
+                {/* ✅ Submit footer ONLY on the final step */}
+                {step === 4 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );

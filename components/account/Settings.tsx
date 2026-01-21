@@ -137,14 +137,12 @@ function DeleteAccount() {
                 Deleting your account is permanent. Orders will be kept for accounting,
                 but personal data in orders will be anonymized.
             </p>
-
             <button
                 onClick={() => setOpen(true)}
                 className="mt-4 block h-11 mx-auto rounded-xl border border-red-600/30 bg-red-600/10 px-4 text-sm font-medium text-red-700"
             >
                 Delete account
             </button>
-
             {open && (
                 <div className="mt-4 rounded-2xl border border-black/10 p-4">
                     <p className="text-sm text-black/70">
