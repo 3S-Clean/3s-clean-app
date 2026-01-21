@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
 import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
@@ -13,7 +14,6 @@ import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/account/header/Header";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
-
 type CreateOrderOk = { orderId: string; pendingToken: string };
 type CreateOrderErr = { error: string };
 type CreateOrderResponse = CreateOrderOk | CreateOrderErr;
@@ -34,23 +34,17 @@ function calculateTotals(
     extras: Record<string, number>
 ) {
     const basePrice = getBasePrice(service, size, people, hasPets);
-
     let extrasPrice = 0;
     let extrasHours = 0;
-
     const extrasArray: OrderExtraLine[] = [];
-
     for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
         const qty = Number(qtyRaw) || 0;
         if (qty <= 0) continue;
-
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (!extra) continue;
-
         const linePrice = extra.price * qty;
         extrasPrice += linePrice;
         extrasHours += extra.hours * qty;
-
         extrasArray.push({
             id: extraId,
             quantity: qty,
@@ -60,7 +54,6 @@ function calculateTotals(
     }
 
     const estimatedHours = getEstimatedHours(service, size) + extrasHours;
-
     return {
         basePrice: r2(basePrice),
         extrasPrice: r2(extrasPrice),
@@ -70,35 +63,108 @@ function calculateTotals(
     };
 }
 
+type ProfileRow = {
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+    phone: string | null;
+    address: string | null;
+    postal_code: string | null;
+    city: string | null;
+    country: string | null;
+    notes: string | null;
+};
+
 export default function BookingPage() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const supabase = useMemo(() => createClient(), []);
     const {
         step,
-
+        setStep,
+        postcode,
+        setPostcode,
+        postcodeVerified,
+        setPostcodeVerified,
         selectedService,
         apartmentSize,
         peopleCount,
-
         hasPets,
         hasKids,
         hasAllergies,
         allergyNote,
-
         extras,
         formData,
+        setFormData,
         selectedDate,
         selectedTime,
-
         setPendingToken,
     } = useBookingStore();
 
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            const { data: u } = await supabase.auth.getUser();
+            const user = u?.user;
+            if (!user || cancelled) return;
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("first_name,last_name,email,phone,address,postal_code,city,country,notes")
+                .eq("id", user.id)
+                .maybeSingle();
+            if (cancelled || error || !data) return;
+            const p = data as ProfileRow;
+            const patch: Partial<typeof formData> = {};
+            if (!formData.email?.trim()) {
+                const em = (p.email || user.email || "").trim();
+                if (em) patch.email = em;
+            }
+            if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
+            if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
+            if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
+            if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
+            if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
+            if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
+            if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
+            if (!formData.notes?.trim() && p.notes?.trim()) patch.notes = p.notes.trim();
+            if (Object.keys(patch).length) setFormData(patch);
+
+            // 2) postcode gate (важно для step 0 / Back)
+            const plz = (p.postal_code || "").trim();
+            if (plz) {
+                if (!postcode) setPostcode(plz);
+                if (!postcodeVerified) setPostcodeVerified(true);
+                if (step === 0) setStep(1);
+            }
+        };
+
+        run();
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        supabase,
+        step,
+        setStep,
+        postcode,
+        setPostcode,
+        postcodeVerified,
+        setPostcodeVerified,
+        setFormData,
+        formData.email,
+        formData.firstName,
+        formData.lastName,
+        formData.phone,
+        formData.address,
+        formData.postalCode,
+        formData.city,
+        formData.country,
+        formData.notes,
+    ]);
+
     const submitBooking = async () => {
         if (isSubmitting) return;
-
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
-
         setIsSubmitting(true);
 
         try {
@@ -147,7 +213,8 @@ export default function BookingPage() {
             // ✅ всегда есть pendingToken
             setPendingToken(jsonUnknown.pendingToken);
 
-            router.push(`/booking/success?pendingToken=${encodeURIComponent(jsonUnknown.pendingToken)}`);
+            // ✅ IMPORTANT: чтобы совпадало с SignupClient/VerifyCode — используем pendingOrder
+            router.push(`/booking/success?pendingOrder=${encodeURIComponent(jsonUnknown.pendingToken)}`);
         } catch (e) {
             console.error(e);
             alert("Something went wrong.");
@@ -159,7 +226,6 @@ export default function BookingPage() {
     return (
         <>
             <Header />
-
             <div className="min-h-screen bg-white mt-[80px]">
                 {/* progress dots */}
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
@@ -175,7 +241,6 @@ export default function BookingPage() {
                         ))}
                     </div>
                 </header>
-
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-32">
                     {step === 0 && <PostcodeCheck />}
                     {step === 1 && <ServiceSelection />}
@@ -183,10 +248,7 @@ export default function BookingPage() {
                     {step === 3 && <ExtraServices />}
                     {step === 4 && <ContactSchedule />}
                 </main>
-
-                {step > 0 && (
-                    <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />
-                )}
+                {step > 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );

@@ -17,7 +17,6 @@ type Order = {
     total_price: number | string;
     status: string;
 
-    // optional (если вернёшь их из API)
     customer_first_name?: string | null;
     customer_last_name?: string | null;
     customer_email?: string | null;
@@ -35,8 +34,12 @@ function Content() {
 
     const supabase = useMemo(() => createClient(), []);
 
+    // ✅ поддержим ОБА формата, чтобы ничего не ломалось:
+    // - orderId
+    // - pendingToken (старое)
+    // - pendingOrder (новое, как в booking/page.tsx)
     const orderId = sp.get("orderId") || "";
-    const pendingToken = sp.get("pendingToken") || "";
+    const pendingToken = sp.get("pendingToken") || sp.get("pendingOrder") || "";
 
     // ✅ приоритет: orderId > pendingToken
     const query = useMemo(() => {
@@ -89,7 +92,10 @@ function Content() {
                     signal: controller.signal,
                 });
 
-                const json = (await res.json().catch(() => null)) as null | { order?: Order; error?: string };
+                const json = (await res.json().catch(() => null)) as null | {
+                    order?: Order;
+                    error?: string;
+                };
 
                 if (!res.ok) {
                     setError(json?.error || "Failed to load booking.");
@@ -124,6 +130,32 @@ function Content() {
 
     const showSignupToPay = isAuthed === false && !!pendingToken;
 
+    const fullName = useMemo(() => {
+        const fn = (order?.customer_first_name || "").trim();
+        const ln = (order?.customer_last_name || "").trim();
+        const v = [fn, ln].filter(Boolean).join(" ");
+        return v || "—";
+    }, [order]);
+
+    const addrLine = useMemo(() => {
+        const a = (order?.customer_address || "").trim();
+        const plz = (order?.customer_postal_code || "").trim();
+        const city = (order?.customer_city || "").trim();
+        const country = (order?.customer_country || "").trim();
+
+        const line2 = [plz, city].filter(Boolean).join(" ");
+        const line3 = country;
+
+        const lines = [a, line2, line3].filter(Boolean);
+        return lines.length ? lines : ["—"];
+    }, [order]);
+
+    const safeMoney = (v: number | string) => {
+        const n = typeof v === "string" ? Number(v) : v;
+        if (!Number.isFinite(n)) return "—";
+        return `€ ${n.toFixed(2)}`;
+    };
+
     return (
         <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
             <div className="max-w-md w-full text-center">
@@ -149,29 +181,77 @@ function Content() {
                         <h3 className="font-semibold mb-4">Booking Details</h3>
 
                         <div className="space-y-3 text-sm">
-                            <div className="flex justify-between">
+                            {/* Service */}
+                            <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Service</span>
-                                <span className="font-medium">{service?.name ?? order.service_type}</span>
+                                <span className="font-medium text-right">
+                  {service?.name ?? order.service_type}
+                </span>
                             </div>
 
-                            <div className="flex justify-between">
+                            {/* Date */}
+                            <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Date</span>
-                                <span className="font-medium">{formatDate(order.scheduled_date)}</span>
+                                <span className="font-medium text-right">{formatDate(order.scheduled_date)}</span>
                             </div>
 
-                            <div className="flex justify-between">
+                            {/* Time */}
+                            <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Time</span>
-                                <span className="font-medium">{order.scheduled_time}</span>
+                                <span className="font-medium text-right">{order.scheduled_time}</span>
                             </div>
 
-                            <div className="flex justify-between">
+                            {/* Duration */}
+                            <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Duration</span>
-                                <span className="font-medium">~{order.estimated_hours}h</span>
+                                <span className="font-medium text-right">~{order.estimated_hours}h</span>
                             </div>
 
+                            {/* Divider */}
+                            <div className="border-t border-gray-200 pt-3 mt-3" />
+
+                            {/* Customer */}
+                            <div className="flex justify-between gap-4">
+                                <span className="text-gray-500">Name</span>
+                                <span className="font-medium text-right">{fullName}</span>
+                            </div>
+
+                            <div className="flex justify-between gap-4">
+                                <span className="text-gray-500">Email</span>
+                                <span className="font-medium text-right break-all">
+                  {order.customer_email?.trim() || "—"}
+                </span>
+                            </div>
+
+                            <div className="flex justify-between gap-4">
+                                <span className="text-gray-500">Phone</span>
+                                <span className="font-medium text-right">
+                  {order.customer_phone?.trim() || "—"}
+                </span>
+                            </div>
+
+                            <div className="flex justify-between gap-4">
+                                <span className="text-gray-500">Address</span>
+                                <span className="font-medium text-right">
+                  {addrLine.map((l, i) => (
+                      <span key={i} className="block">
+                      {l}
+                    </span>
+                  ))}
+                </span>
+                            </div>
+
+                            {order.customer_notes?.trim() ? (
+                                <div className="flex justify-between gap-4">
+                                    <span className="text-gray-500">Notes</span>
+                                    <span className="font-medium text-right">{order.customer_notes.trim()}</span>
+                                </div>
+                            ) : null}
+
+                            {/* Total */}
                             <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between">
                                 <span className="font-semibold">Total</span>
-                                <span className="font-bold text-lg">€ {Number(order.total_price).toFixed(2)}</span>
+                                <span className="font-bold text-lg">{safeMoney(order.total_price)}</span>
                             </div>
                         </div>
                     </div>
@@ -182,7 +262,9 @@ function Content() {
                     {showSignupToPay ? (
                         <button
                             type="button"
-                            onClick={() => router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)}
+                            onClick={() =>
+                                router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)
+                            }
                             className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                         >
                             Create account to pay
@@ -223,7 +305,9 @@ function Content() {
 
 export default function SuccessPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Suspense
+            fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}
+        >
             <Content />
         </Suspense>
     );
