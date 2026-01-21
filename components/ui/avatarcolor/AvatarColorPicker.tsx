@@ -1,12 +1,20 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { Droplet } from "lucide-react";
 
-export const AVATAR_COLORS = ["#EAF7FF", "#F2FBF7", "#ECFDF5", "#F5F3FF", "#FFF7ED", "#FDF2F8"] as const;
+export const AVATAR_COLORS = [
+    "#EAF7FF",
+    "#F2FBF7",
+    "#ECFDF5",
+    "#F5F3FF",
+    "#FFF7ED",
+    "#FDF2F8",
+] as const;
 
 type Props = {
     value?: string | null;
-    onChangeAction: (color: string) => Promise<void> | void; // ✅ было onChange
+    onChangeAction: (color: string) => Promise<void> | void;
     disabled?: boolean;
 };
 
@@ -28,20 +36,39 @@ export function AvatarColorPicker({ value, onChangeAction, disabled }: Props) {
 
     return (
         <div ref={ref} className="relative">
+            {/* Trigger */}
             <button
                 type="button"
                 disabled={disabled}
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Change avatar color"
-                className="grid h-[30px] w-[30px] place-items-center rounded-full border border-black/10 bg-white/80 backdrop-blur-md transition hover:bg-white disabled:opacity-50"
+                className="
+          p-1
+          text-black/50
+          transition
+          hover:text-black/80
+          disabled:opacity-40
+        "
             >
-                🎨
+                <Droplet size={18} strokeWidth={1.75} />
             </button>
 
+            {/* Picker */}
             {open && (
-                <div className="absolute right-0 top-full mt-2 z-[999] flex items-center gap-2 rounded-2xl border border-black/10 bg-white/95 p-3 shadow-xl backdrop-blur-xl">
+                <div
+                    className="
+            absolute right-0 top-full mt-2 z-[999]
+            flex items-center gap-2
+            rounded-2xl
+            bg-white/95
+            p-3
+            shadow-xl
+            backdrop-blur-xl
+          "
+                >
                     {AVATAR_COLORS.map((c) => {
                         const isActive = selected === c.toUpperCase();
+
                         return (
                             <button
                                 key={c}
@@ -50,9 +77,12 @@ export function AvatarColorPicker({ value, onChangeAction, disabled }: Props) {
                                     await onChangeAction(c);
                                     setOpen(false);
                                 }}
+                                aria-label={`Set avatar color ${c}`}
                                 className={[
-                                    "h-7 w-7 rounded-full border transition",
-                                    isActive ? "border-[#11A97D] border-2" : "border-black/10",
+                                    "h-7 w-7 rounded-full transition",
+                                    isActive
+                                        ? "ring-2 ring-[#11A97D]"
+                                        : "hover:scale-110",
                                 ].join(" ")}
                                 style={{ background: c }}
                             />
