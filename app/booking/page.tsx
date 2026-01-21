@@ -11,7 +11,7 @@ import ApartmentDetails from "@/components/booking/ApartmentDetails";
 import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
-import Header from "@/components/account/header/Header";
+import Header from "@/components/header/Header";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };

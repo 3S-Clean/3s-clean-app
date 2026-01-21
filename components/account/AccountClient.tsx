@@ -1,26 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { User, Video, BookOpen, LogOut, Film } from "lucide-react";
+import { User, Video, BookOpen, LogOut, Film, UserRoundPen } from "lucide-react";
 import LogoutButton from "@/components/auth/LogoutButton";
-import Header from "@/components/account/header/Header";
-import Footer from "@/components/account/footer/Footer";
+import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
 import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
+import { Settings } from "@/components/account/Settings";
 
 
-type Tab = "personal" | "live" | "history" | "orders";
+type Tab = "personal" | "live" | "history" | "orders" | "settings";
 
 const tabs = [
     { id: "personal" as const, label: "Personal Information", icon: User },
     { id: "live" as const, label: "Live Cleaning Video", icon: Video },
     { id: "history" as const, label: "Video History", icon: Film },
     { id: "orders" as const, label: "Order History", icon: BookOpen },
+    { id: "settings" as const, label: "Settings", icon: UserRoundPen },
 ];
 
-export default function AccountClient({ email }: { email: string }) {
-    const [activeTab, setActiveTab] = useState<Tab>("personal");
+function getGreeting(): string {
+    const hour = new Date().getHours();
 
+    if (hour >= 5 && hour < 11) return "Good morning";
+    if (hour >= 11 && hour < 17) return "Hello";
+    if (hour >= 17 && hour < 22) return "Good evening";
+    return "Good night";
+}
+
+export default function AccountClient({ email, firstName }:
+{ email: string; firstName?: string | null; }) {
+    const [activeTab, setActiveTab] = useState<Tab>("personal");
+    const greeting = getGreeting();
+    const displayName = firstName?.trim() || email;
     return (
         <>
             {/* FIXED HEADER */}
@@ -36,11 +49,13 @@ export default function AccountClient({ email }: { email: string }) {
                                 <h1 className="text-3xl font-semibold tracking-tight text-black">
                                     Account
                                 </h1>
-                                <p className="mt-2 text-sm text-black/55">
-                                    Signed in as <span className="text-black">{email}</span>
+                                <p className="text-sm text-gray-600">
+                                    {greeting},{" "}
+                                    <span className="text-black font-medium">
+                                         {displayName}
+                                    </span>
                                 </p>
                             </div>
-
                             {/* Logout md+ */}
                             <div className="hidden md:flex items-center gap-2">
                                 <LogoutButton label="Logout" className="gap-2" />
@@ -56,7 +71,6 @@ export default function AccountClient({ email }: { email: string }) {
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
-
                                 return (
                                     <button
                                         key={tab.id}
@@ -74,7 +88,6 @@ export default function AccountClient({ email }: { email: string }) {
                                     </button>
                                 );
                             })}
-
                             <div className="mx-2 h-6 w-px bg-black/10" />
                             <div className="flex items-center gap-2">
                                 <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
@@ -87,7 +100,6 @@ export default function AccountClient({ email }: { email: string }) {
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
-
                                 return (
                                     <button
                                         key={tab.id}
@@ -124,6 +136,7 @@ export default function AccountClient({ email }: { email: string }) {
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
                         {activeTab === "orders" && <OrdersTabClient />}
+                        {activeTab === "settings" && <Settings/>}
                     </div>
                 </main>
                 <Footer />
