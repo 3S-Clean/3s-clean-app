@@ -308,7 +308,7 @@ export default function BookingPage() {
                 </main>
 
                 {/* ✅ Submit footer ONLY on the final step */}
-                {step > 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+                {step === 0 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
             </div>
         </>
     );

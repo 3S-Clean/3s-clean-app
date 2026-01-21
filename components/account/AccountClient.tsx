@@ -8,6 +8,7 @@ import Footer from "@/components/footer/Footer";
 import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
 import Settings from "@/components/account/Settings";
+
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/ui/avatar/Avatar";
 import { AvatarColorPicker } from "@/components/ui/avatarcolor/AvatarColorPicker";
@@ -24,6 +25,7 @@ const tabs = [
 
 function getGreeting(): string {
     const hour = new Date().getHours();
+
     if (hour >= 5 && hour < 11) return "Good morning";
     if (hour >= 11 && hour < 17) return "Hello";
     if (hour >= 17 && hour < 22) return "Good evening";
@@ -31,37 +33,41 @@ function getGreeting(): string {
 }
 
 export default function AccountClient({
-                                          userId,
                                           email,
                                           firstName,
+                                          userId,
                                           lastName,
-                                          avatarColor: initialAvatarColor,
+                                          avatarColor,
                                       }: {
-    userId: string;
     email: string;
     firstName?: string | null;
+
+    // ✅ добавили, но название компонента и остальное не меняем
+    userId?: string | null;
     lastName?: string | null;
     avatarColor?: string | null;
 }) {
     const [activeTab, setActiveTab] = useState<Tab>("personal");
     const greeting = getGreeting();
-
     const displayName = firstName?.trim() || email;
 
-    const [avatarColor, setAvatarColor] = useState<string | null>(initialAvatarColor ?? null);
-    const supabase = createClient();
+    const [currentAvatarColor, setCurrentAvatarColor] = useState<string | null>(avatarColor ?? null);
 
     const saveAvatarColor = async (color: string) => {
-        const prev = avatarColor;
-        setAvatarColor(color);
+        // если userId нет — просто меняем локально (чтобы UI не ломался)
+        if (!userId) {
+            setCurrentAvatarColor(color);
+            return;
+        }
 
-        const { error } = await supabase
-            .from("profiles")
-            .update({ avatar_color: color })
-            .eq("id", userId);
+        const prev = currentAvatarColor;
+        setCurrentAvatarColor(color);
+
+        const supabase = createClient();
+        const { error } = await supabase.from("profiles").update({ avatar_color: color }).eq("id", userId);
 
         if (error) {
-            setAvatarColor(prev ?? null);
+            setCurrentAvatarColor(prev ?? null);
             console.error("Failed to update avatar_color:", error);
             alert("Could not save color. Please try again.");
         }
@@ -69,42 +75,38 @@ export default function AccountClient({
 
     return (
         <>
+            {/* FIXED HEADER */}
             <Header />
 
+            {/* PAGE */}
             <div className="min-h-screen bg-[#f8f8f8] pt-[92px]">
-                <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-6 lg:px-8">
+                {/* CONTENT */}
+                <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
                     <div className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <h1 className="text-3xl font-semibold tracking-tight text-black">Account</h1>
-                                <p className="pt-1 text-sm text-gray-600">
+                                <p className="text-sm pt-1 text-gray-600">
                                     {greeting},{" "}
-                                    <span className="font-medium text-black">{displayName}</span>
+                                    <span className="text-black font-medium">{displayName}</span>
                                 </p>
                             </div>
 
-                            {/* RIGHT SIDE: Avatar + palette + logout */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2">
-                                    <Avatar
-                                        firstName={firstName}
-                                        lastName={lastName}
-                                        email={email}
-                                        color={avatarColor}
-                                        seed={userId}
-                                        size={44}
-                                        className="shrink-0"
-                                    />
-                                    <AvatarColorPicker value={avatarColor} onChange={saveAvatarColor} />
-                                </div>
-
-                                {/* Logout md+ */}
-                                <div className="hidden md:flex items-center gap-2">
-                                    <LogoutButton label="Logout" className="gap-2" />
-                                    <span className="sr-only">Logout</span>
-                                </div>
+                            {/* ✅ Avatar + Palette (всегда видно, и на мобиле тоже) */}
+                            <div className="flex items-center gap-2 shrink-0">
+                                <Avatar
+                                    firstName={firstName}
+                                    lastName={lastName}
+                                    email={email}
+                                    color={currentAvatarColor}
+                                    seed={(userId || email) ?? email}
+                                    size={44}
+                                />
+                                <AvatarColorPicker value={currentAvatarColor} onChange={saveAvatarColor} />
                             </div>
+
+                            {/* ❌ Logout md+ убрали отсюда, чтобы не было дублей (он уже есть в Tabs) */}
                         </div>
                     </div>
 
