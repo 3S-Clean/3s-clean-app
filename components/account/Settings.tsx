@@ -122,7 +122,7 @@ function DeleteAccount() {
 
             const supabase = createClient();
             await supabase.auth.signOut();
-            window.location.href = "/";
+            window.location.href = "/signup";
         } catch (e: unknown) {
             const message = e instanceof Error ? e.message : "Delete failed";
             setErr(message);
@@ -131,7 +131,7 @@ function DeleteAccount() {
     };
 
     return (
-        <section className="mt-6 rounded-2xl border border-red-600/20 bg-white p-4">
+        <section className="mt-6 rounded-2xl border  bg-white p-4">
             <h3 className="text-lg font-semibold text-black">Danger zone</h3>
             <p className="mt-1 text-sm text-black/60">
                 Deleting your account is permanent. Orders will be kept for accounting,
@@ -140,7 +140,7 @@ function DeleteAccount() {
 
             <button
                 onClick={() => setOpen(true)}
-                className="mt-4 h-11 rounded-xl border border-red-600/30 bg-red-600/10 px-4 text-sm font-medium text-red-700"
+                className="mt-4 block h-11 mx-auto rounded-xl border border-red-600/30 bg-red-600/10 px-4 text-sm font-medium text-red-700"
             >
                 Delete account
             </button>
