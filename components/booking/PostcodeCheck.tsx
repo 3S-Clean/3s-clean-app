@@ -161,7 +161,7 @@ export default function PostcodeCheck() {
                 type="text"
                 inputMode="numeric"
                 maxLength={5}
-                placeholder="Your postal code"
+                placeholder="Postal code"
                 value={postcode}
                 onChange={(e) => {
                     const v = clean5(e.target.value);
@@ -202,9 +202,6 @@ export default function PostcodeCheck() {
                     </div>
                     <div className="text-lg font-semibold mb-1 text-black">Not available</div>
                     <div className="text-black/60 mb-4">We don’t serve PLZ {postcode} yet.</div>
-
-                    <div className="rounded-2xl border border-black/10 bg-white/70 backdrop-blur px-4 py-3 flex items-center gap-3">
-                        <Mail className="w-5 h-5 text-black/40" />
                         <input
                             type="email"
                             value={notifyEmail}
@@ -217,8 +214,6 @@ export default function PostcodeCheck() {
                                 "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
                             ].join(" ")}
                         />
-                    </div>
-
                     <button
                         type="button"
                         onClick={submitNotify}
