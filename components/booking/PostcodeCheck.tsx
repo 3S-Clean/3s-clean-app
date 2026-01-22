@@ -23,11 +23,13 @@ function isValidEmail(v: string) {
 }
 
 export default function PostcodeCheck() {
-    const { postcode, setPostcode, setPostcodeVerified, setStep, setFormData } = useBookingStore();
+    const { postcode, setPostcode, setPostcodeVerified, setFormData } = useBookingStore();
+
     const [status, setStatus] = useState<Status>("idle");
-    // notify UI
+
     const [notifyEmail, setNotifyEmail] = useState("");
     const [notifyLoading, setNotifyLoading] = useState(false);
+
     const canNotify = useMemo(
         () => isValidEmail(notifyEmail) && postcode.length === 5,
         [notifyEmail, postcode]
@@ -36,27 +38,32 @@ export default function PostcodeCheck() {
     // ✅ autofill postcode from profile (only if empty)
     useEffect(() => {
         if (postcode.trim()) return;
+
         const supabase = createClient();
         let cancelled = false;
+
         (async () => {
             try {
                 const { data: u } = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
+
                 const { data } = await supabase
                     .from("profiles")
                     .select("postal_code")
                     .eq("id", user.id)
                     .maybeSingle();
+
                 if (cancelled) return;
+
                 const p = data as ProfileRow | null;
                 if (p?.postal_code?.trim()) {
                     const v = p.postal_code.trim();
                     setPostcode(v);
-                    setFormData({ postalCode: v }); // ✅ ВАЖНО: синк в formData
+                    setFormData({ postalCode: v }); // sync in formData
                 }
             } catch {
-                // тихо
+                // silent
             }
         })();
 
@@ -65,52 +72,64 @@ export default function PostcodeCheck() {
         };
     }, [postcode, setPostcode, setFormData]);
 
-    // ✅ auto-check + auto-continue when 5 digits
+    // ✅ auto-check when 5 digits
     useEffect(() => {
         if (postcode.length !== 5) {
             setStatus("idle");
+            setPostcodeVerified(false);
             return;
         }
+
         let cancelled = false;
         setStatus("checking");
+
         const t = window.setTimeout(async () => {
             if (cancelled) return;
-            // быстрый local check
+
+            // local allow-list fast path
             if (SERVICE_AREAS.includes(postcode)) {
                 setStatus("available");
                 setPostcodeVerified(true);
-                setStep(1);
                 return;
             }
+
             try {
                 const res = await fetch("/api/booking/check-postcode", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ postcode }),
                 });
+
                 const raw = await res.json().catch(() => null);
                 const parsed = CheckPostcodeResponse.safeParse(raw);
                 const available = parsed.success ? parsed.data.available : false;
+
                 if (cancelled) return;
+
                 if (res.ok && available) {
                     setStatus("available");
                     setPostcodeVerified(true);
-                    setStep(1);
                 } else {
                     setStatus("unavailable");
+                    setPostcodeVerified(false);
                 }
             } catch {
-                if (!cancelled) setStatus("unavailable");
+                if (!cancelled) {
+                    setStatus("unavailable");
+                    setPostcodeVerified(false);
+                }
             }
-        }, 250); // небольшой debounce
+        }, 250);
+
         return () => {
             cancelled = true;
             window.clearTimeout(t);
         };
-    }, [postcode, setPostcodeVerified, setStep]);
+    }, [postcode, setPostcodeVerified]);
 
     const submitNotify = async () => {
         if (!canNotify || notifyLoading) return;
+
         setNotifyLoading(true);
         try {
             const res = await fetch("/api/booking/notify", {
@@ -118,12 +137,15 @@ export default function PostcodeCheck() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: notifyEmail.trim(), postcode }),
             });
+
             const raw = await res.json().catch(() => null);
             const parsed = NotifyResponse.safeParse(raw);
+
             if (!res.ok || !parsed.success || !parsed.data.success) {
                 console.error("notify failed", { status: res.status, raw });
                 return;
             }
+
             setStatus("notified");
         } finally {
             setNotifyLoading(false);
@@ -133,9 +155,8 @@ export default function PostcodeCheck() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fadeIn">
             <h1 className="text-3xl font-semibold mb-3">Check Availability</h1>
-            <p className="text-gray-500 mb-8">
-                Enter your postal code to see if we currently serve your area.
-            </p>
+            <p className="text-gray-500 mb-8">Enter your postal code to see if we currently serve your area.</p>
+
             <input
                 type="text"
                 inputMode="numeric"
@@ -145,11 +166,13 @@ export default function PostcodeCheck() {
                 onChange={(e) => {
                     const v = clean5(e.target.value);
                     setPostcode(v);
-                    setFormData({ postalCode: v }); // ✅ ВАЖНО: синк в formData
+                    setFormData({ postalCode: v }); // sync in formData
+
                     // reset UI when editing
                     if (v.length < 5) {
                         setStatus("idle");
                         setNotifyEmail("");
+                        setPostcodeVerified(false);
                     }
                 }}
                 className={[
@@ -160,7 +183,19 @@ export default function PostcodeCheck() {
                     "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
                 ].join(" ")}
             />
+
             {status === "checking" && <div className="mt-4 text-sm text-gray-400">Checking…</div>}
+
+            {status === "available" && (
+                <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
+                    <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Check className="w-6 h-6 text-black/70" />
+                    </div>
+                    <div className="text-lg font-semibold mb-1 text-black">Available</div>
+                    <div className="text-black/60">Great — we serve PLZ {postcode}. You can continue.</div>
+                </div>
+            )}
+
             {status === "unavailable" && (
                 <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
                     <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -168,6 +203,7 @@ export default function PostcodeCheck() {
                     </div>
                     <div className="text-lg font-semibold mb-1 text-black">Not available</div>
                     <div className="text-black/60 mb-4">We don’t serve PLZ {postcode} yet.</div>
+
                     <div className="rounded-2xl border border-black/10 bg-white/70 backdrop-blur px-4 py-3 flex items-center gap-3">
                         <Mail className="w-5 h-5 text-black/40" />
                         <input
@@ -178,6 +214,7 @@ export default function PostcodeCheck() {
                             className="w-full bg-transparent outline-none text-[15px] placeholder:text-black/30"
                         />
                     </div>
+
                     <button
                         type="button"
                         onClick={submitNotify}
@@ -192,16 +229,14 @@ export default function PostcodeCheck() {
                     </button>
                 </div>
             )}
+
             {status === "notified" && (
                 <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
                     <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Check className="w-6 h-6 text-black/70" />
                     </div>
-
                     <div className="text-lg font-semibold mb-1 text-black">You’ll be notified</div>
-                    <div className="text-black/60">
-                        We’ll email you when we expand to PLZ {postcode}.
-                    </div>
+                    <div className="text-black/60">We’ll email you when we expand to PLZ {postcode}.</div>
                 </div>
             )}
         </div>

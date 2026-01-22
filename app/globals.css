@@ -133,3 +133,15 @@ input:-webkit-autofill::first-line{
         transform: translateZ(0);
     }
 }
+/* hide scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* soft snap scrolling */
+.snap-x-soft {
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+}
+.snap-item {
+    scroll-snap-align: start;
+}

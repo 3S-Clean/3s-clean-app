@@ -11,7 +11,6 @@ interface Props {
 
 export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const { step, canContinue, next, back } = useBookingNavigation();
-
     const { selectedService, apartmentSize, peopleCount, hasPets, extras } = useBookingStore();
 
     const serviceId = selectedService ?? "";
@@ -54,7 +53,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const service = SERVICES.find((s) => s.id === selectedService);
     const showPrice = Boolean(serviceId && sizeId && peopleId);
 
-    // подсказка слева (когда ещё не всё выбрано)
     const hint = (() => {
         switch (step) {
             case 0:
@@ -75,54 +73,62 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const isFinalStep = step === 4;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-4 z-50">
-            <div className="max-w-4xl mx-auto flex items-start justify-between gap-4">
-                <div className="flex flex-col">
-                    {showPrice ? (
-                        <>
-                            <div className="text-2xl font-bold whitespace-nowrap">€&nbsp;{total.toFixed(2)}</div>
-                            <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
-                        </>
-                    ) : selectedService && !apartmentSize ? (
-                        <>
-                            <div className="text-xl font-semibold whitespace-nowrap">
-                                From €&nbsp;{service?.startingPrice}
-                            </div>
-                            <div className="text-sm text-gray-500">Select apartment size</div>
-                        </>
-                    ) : (
-                        <div className="text-sm text-gray-500">{hint}</div>
-                    )}
-                </div>
+        <div
+            className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white"
+            style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
+        >
+            <div className="px-4 md:px-6 pt-4">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                    <div className="flex flex-col min-w-0">
+                        {showPrice ? (
+                            <>
+                                <div className="text-2xl font-bold whitespace-nowrap">
+                                    €&nbsp;{total.toFixed(2)}
+                                </div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">
+                                    inc.VAT • ~{time}
+                                </div>
+                            </>
+                        ) : selectedService && !apartmentSize ? (
+                            <>
+                                <div className="text-xl font-semibold whitespace-nowrap">
+                                    From €&nbsp;{service?.startingPrice}
+                                </div>
+                                <div className="text-sm text-gray-500">Select apartment size</div>
+                            </>
+                        ) : (
+                            <div className="text-sm text-gray-500">{hint}</div>
+                        )}
+                    </div>
 
-                <div className="flex gap-3 shrink-0">
-                    {/* Back на всех шагах кроме первого */}
-                    {step > 0 && (
-                        <button
-                            onClick={back}
-                            className="px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
-                        >
-                            Back
-                        </button>
-                    )}
+                    <div className="flex gap-2 md:gap-3 shrink-0">
+                        {step > 0 && (
+                            <button
+                                onClick={back}
+                                className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                            >
+                                Back
+                            </button>
+                        )}
 
-                    {isFinalStep ? (
-                        <button
-                            onClick={() => onSubmit?.()}
-                            disabled={!canContinue || isSubmitting}
-                            className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                        >
-                            {isSubmitting ? "Booking..." : "Book now"}
-                        </button>
-                    ) : (
-                        <button
-                            onClick={next}
-                            disabled={!canContinue}
-                            className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                        >
-                            Continue
-                        </button>
-                    )}
+                        {isFinalStep ? (
+                            <button
+                                onClick={() => onSubmit?.()}
+                                disabled={!canContinue || isSubmitting}
+                                className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                            >
+                                {isSubmitting ? "Booking..." : "Book now"}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={next}
+                                disabled={!canContinue}
+                                className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                            >
+                                Continue
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

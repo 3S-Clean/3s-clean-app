@@ -20,42 +20,51 @@ export default function ServiceSelection() {
                     const isDark = !!service.isDark;
 
                     return (
-                        <div
+                        <button
                             key={service.id}
+                            type="button"
                             onClick={() => setSelectedService(isSelected ? null : service.id)}
-                            className={`relative p-7 rounded-3xl cursor-pointer transition-all duration-300
-                ${isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}
-                ${
+                            aria-pressed={isSelected}
+                            className={[
+                                "relative w-full text-left p-7 rounded-3xl transition-all duration-300",
+                                "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/20",
+                                isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900",
                                 isSelected
                                     ? isDark
                                         ? "ring-4 ring-white"
                                         : "ring-4 ring-gray-900"
-                                    : "hover:shadow-xl hover:-translate-y-1"
-                            }`}
+                                    : "hover:shadow-xl hover:-translate-y-1",
+                                // мобила: hover не нужен, лучше tap feedback
+                                "active:scale-[0.99]",
+                            ].join(" ")}
                         >
                             {/* CHECKMARK */}
                             {isSelected && (
                                 <div
-                                    className={`absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center
-                    ${isDark ? "bg-white" : "bg-gray-900"}`}
+                                    className={[
+                                        "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center",
+                                        isDark ? "bg-white" : "bg-gray-900",
+                                    ].join(" ")}
+                                    aria-hidden="true"
                                 >
-                                    <Check className={`w-5 h-5 ${isDark ? "text-gray-900" : "text-white"}`} />
+                                    <Check className={["w-5 h-5", isDark ? "text-gray-900" : "text-white"].join(" ")} />
                                 </div>
                             )}
 
                             <h3 className="text-2xl font-semibold mb-3">{service.name}</h3>
 
-                            <p className={`text-sm mb-5 leading-relaxed ${isDark ? "opacity-75" : "opacity-70"}`}>
+                            <p className={["text-sm mb-5 leading-relaxed", isDark ? "opacity-75" : "opacity-70"].join(" ")}>
                                 {service.description}
                             </p>
 
                             <div
-                                className={`text-lg font-semibold pb-5 mb-5 border-b ${
-                                    isDark ? "border-white/20" : "border-black/10"
-                                }`}
+                                className={[
+                                    "text-lg font-semibold pb-5 mb-5 border-b",
+                                    isDark ? "border-white/20" : "border-black/10",
+                                ].join(" ")}
                             >
                                 From € {service.startingPrice}{" "}
-                                <span className={`text-sm font-normal ${isDark ? "opacity-70" : "opacity-60"}`}>
+                                <span className={["text-sm font-normal", isDark ? "opacity-70" : "opacity-60"].join(" ")}>
                   inc.VAT
                 </span>
                             </div>
@@ -66,16 +75,18 @@ export default function ServiceSelection() {
                                     {service.includes.map((item, i) => (
                                         <div key={i} className="flex items-center gap-3 text-sm opacity-85">
                       <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                              isDark ? "bg-white/60" : "bg-gray-900/60"
-                          }`}
+                          className={[
+                              "w-1.5 h-1.5 rounded-full",
+                              isDark ? "bg-white/60" : "bg-gray-900/60",
+                          ].join(" ")}
+                          aria-hidden="true"
                       />
                                             {item}
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        </button>
                     );
                 })}
             </div>

@@ -1,4 +1,3 @@
-// lib/booking/useBookingNavigation.ts
 "use client";
 
 import { useMemo, useCallback } from "react";
@@ -16,7 +15,7 @@ export function useBookingNavigation() {
     const setStep = useBookingStore((s) => s.setStep);
 
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
-    const resetPostcodeGate = useBookingStore((s) => s.resetPostcodeGate);
+    const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
 
     const selectedService = useBookingStore((s) => s.selectedService);
     const apartmentSize = useBookingStore((s) => s.apartmentSize);
@@ -26,26 +25,16 @@ export function useBookingNavigation() {
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
 
-    // ✅ Updated for steps:
-    // 0 Service
-    // 1 PLZ
-    // 2 Apartment details
-    // 3 Extras
-    // 4 Contact & schedule
     const canContinue = useMemo(() => {
         switch (step) {
             case 0:
                 return !!selectedService;
-
             case 1:
                 return !!postcodeVerified;
-
             case 2:
                 return !!apartmentSize && !!peopleCount;
-
             case 3:
                 return true;
-
             case 4:
                 return !!(
                     formData.firstName?.trim() &&
@@ -57,7 +46,6 @@ export function useBookingNavigation() {
                     selectedDate &&
                     selectedTime
                 );
-
             default:
                 return false;
         }
@@ -77,13 +65,17 @@ export function useBookingNavigation() {
         selectedTime,
     ]);
 
+    const scrollTop = () => {
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    };
+
     const goTo = useCallback(
         (targetStep: number) => {
             const t = clampStep(targetStep);
             if (t > step && !canContinue) return;
 
             setStep(t);
-            if (typeof window !== "undefined") window.scrollTo(0, 0);
+            scrollTop();
         },
         [step, canContinue, setStep]
     );
@@ -96,18 +88,17 @@ export function useBookingNavigation() {
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
-        // ✅ Important: when returning to PostcodeCheck (step 1),
-        // reset PLZ + verified so it doesn't auto-skip forward.
+        // When returning to PLZ, remove verified so user can change it.
         if (prev === 1) {
-            resetPostcodeGate();
-            setStep(prev);
-            if (typeof window !== "undefined") window.scrollTo(0, 0);
+            setPostcodeVerified(false);
+            setStep(1);
+            scrollTop();
             return;
         }
 
         setStep(prev);
-        if (typeof window !== "undefined") window.scrollTo(0, 0);
-    }, [step, setStep, resetPostcodeGate]);
+        scrollTop();
+    }, [step, setStep, setPostcodeVerified]);
 
     return { step, canContinue, next, back, goTo };
 }

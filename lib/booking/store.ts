@@ -1,4 +1,3 @@
-// lib/booking/store.ts
 "use client";
 
 import { create } from "zustand";
@@ -26,9 +25,8 @@ export interface BookingState {
     postcodeVerified: boolean;
     setPostcodeVerified: (verified: boolean) => void;
 
-    // reset helpers
     resetPostcode: () => void;
-    resetPostcodeGate: () => void; // clears postcode + verified + step
+    resetPostcodeGate: () => void;
 
     selectedService: string | null;
     setSelectedService: (service: string | null) => void;
@@ -113,7 +111,6 @@ const initialState = {
     pendingToken: null as string | null,
 };
 
-// Persist slice
 type PersistSlice = {
     formData: BookingState["formData"];
     selectedDate: string | null;
@@ -132,34 +129,26 @@ export const useBookingStore = create<BookingState>()(
                 set((state) => {
                     const next = clampStep(step);
 
-                    // ✅ step 0 (service) and step 1 (PLZ) are always allowed
-                    // 🔒 step 2+ requires PLZ verified
+                    // step 0 and step 1 are always allowed
+                    // step 2+ requires PLZ verified
                     if (next >= 2 && !state.postcodeVerified) return state;
 
                     return { step: next };
                 }),
 
             setPostcode: (postcode) => set({ postcode }),
-
-            setPostcodeVerified: (postcodeVerified) =>
-                set(() => {
-                    // If un-verifying, go back to service (step 0). (Keep postcode untouched)
-                    if (!postcodeVerified) return { postcodeVerified: false, step: 0 };
-                    return { postcodeVerified: true };
-                }),
-
+            // ✅ IMPORTANT: do NOT force step changes here
+            setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
             resetPostcode: () => set({ postcode: "" }),
-            resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 0 }),
-
+            // ✅ gate reset should bring you to PLZ step (1), not service (0)
+            resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 1 }),
             setSelectedService: (selectedService) => set({ selectedService }),
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
             setPeopleCount: (peopleCount) => set({ peopleCount }),
-
             setHasPets: (hasPets) => set({ hasPets }),
             setHasKids: (hasKids) => set({ hasKids }),
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
             setAllergyNote: (allergyNote) => set({ allergyNote }),
-
             setExtras: (extras) => set({ extras }),
             updateExtra: (extraId, delta) =>
                 set((state) => {
@@ -175,19 +164,15 @@ export const useBookingStore = create<BookingState>()(
 
             formData: initialFormData,
             setFormData: (data) => set((state) => ({ formData: { ...state.formData, ...data } })),
-
             setSelectedDate: (selectedDate) => set({ selectedDate }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
-
             setPendingToken: (pendingToken) => set({ pendingToken }),
-
             resetBooking: () => set({ ...initialState, formData: initialFormData }),
         }),
         {
             name: "3s-booking-storage",
 
             partialize: (state): Partial<PersistSlice> => {
-                // Save only after completing booking details (step 4)
                 if (state.step !== 4) return {};
                 return {
                     formData: state.formData,
