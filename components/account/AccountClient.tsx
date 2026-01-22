@@ -112,45 +112,43 @@ export default function AccountClient({
                     <nav className="rounded-2xl bg-white p-2 shadow-sm">
                         {/* Desktop */}
                         <div className="hidden md:block">
-                            <div className="relative">
-                                <div className="flex items-center">
-                                    {/* Tabs scroll area (only tabs scroll) */}
-                                    <div className="flex-1 overflow-x-auto whitespace-nowrap no-scrollbar snap-x-soft pr-36">
-                                        <div className="flex items-center gap-2 px-2">
-                                            {tabs.map((tab) => {
-                                                const Icon = tab.icon;
-                                                const isActive = activeTab === tab.id;
+                            <div className="flex items-center gap-2">
+                                {/* Tabs scroll area (only tabs scroll) */}
+                                <div className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap no-scrollbar snap-x-soft relative">
+                                    <div className="flex items-center gap-2 px-2">
+                                        {tabs.map((tab) => {
+                                            const Icon = tab.icon;
+                                            const isActive = activeTab === tab.id;
 
-                                                return (
-                                                    <button
-                                                        key={tab.id}
-                                                        type="button"
-                                                        onClick={() => setActiveTab(tab.id)}
-                                                        className={[
-                                                            "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
-                                                            isActive
-                                                                ? "bg-black/5 text-black"
-                                                                : "text-black/70 hover:bg-black/5 hover:text-black",
-                                                        ].join(" ")}
-                                                    >
-                                                        <Icon size={20} strokeWidth={1.5} />
-                                                        <span className="whitespace-nowrap">{tab.label}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                            return (
+                                                <button
+                                                    key={tab.id}
+                                                    type="button"
+                                                    onClick={() => setActiveTab(tab.id)}
+                                                    className={[
+                                                        "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
+                                                        isActive
+                                                            ? "bg-black/5 text-black"
+                                                            : "text-black/70 hover:bg-black/5 hover:text-black",
+                                                    ].join(" ")}
+                                                >
+                                                    <Icon size={20} strokeWidth={1.5} />
+                                                    <span className="whitespace-nowrap">{tab.label}</span>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
 
-                                    {/* Pinned logout (does not scroll) */}
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                                        <div className="flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-4 py-2 shadow-sm backdrop-blur-md">
-                                            <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
-                                            <LogoutButton label="Logout" />
-                                        </div>
-                                    </div>
+                                    {/* Fade hint on the right edge of the scroll area */}
+                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-white/0" />
+                                </div>
 
-                                    {/* Fade hint under pinned area */}
-                                    <div className="pointer-events-none absolute right-0 top-0 h-full w-36 bg-gradient-to-l from-white to-white/0" />
+                                {/* Pinned logout (does not scroll, does not overlap) */}
+                                <div className="shrink-0">
+                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-4 py-2 shadow-sm backdrop-blur-md">
+                                        <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
+                                        <LogoutButton label="Logout" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
