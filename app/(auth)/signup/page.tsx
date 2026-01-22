@@ -127,13 +127,12 @@ export default function SignupClient() {
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
-                    className={["" +
-                    "w-full rounded-2xl py-3.5 text-[15px] font-medium transition  " +
-                    "bg-[var(--primary)] text-[var(--primary-text)] " +
-                    "hover:opacity-90\n" +
-                    "disabled:opacity-40 disabled:cursor-not-allowed"
-
-                    ].join("")}
+                    className={[
+                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "bg-[var(--primary)] text-[var(--primary-text)]",
+                        "hover:opacity-90",
+                        "disabled:opacity-40 disabled:cursor-not-allowed",
+                    ].join(" ")}
                 >
                     {isSubmitting ? "Sending code…" : "Send code"}
                 </button>

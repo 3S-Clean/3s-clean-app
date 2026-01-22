@@ -161,7 +161,7 @@ export default function PostcodeCheck() {
                 type="text"
                 inputMode="numeric"
                 maxLength={5}
-                placeholder="Enter your postal code"
+                placeholder="Your postal code"
                 value={postcode}
                 onChange={(e) => {
                     const v = clean5(e.target.value);
@@ -176,10 +176,9 @@ export default function PostcodeCheck() {
                     }
                 }}
                 className={[
-                    "w-full max-w-sm rounded-2xl border px-4 py-3.5 text-center outline-none transition backdrop-blur",
+                    "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
                     "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                    "text-[20px] font-semibold tracking-[0.20em]",
-                    "placeholder:text-[color:var(--muted)]/60",
+                    "placeholder:text-[color:var(--muted)]/70",
                     "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
                 ].join(" ")}
             />
@@ -211,7 +210,12 @@ export default function PostcodeCheck() {
                             value={notifyEmail}
                             onChange={(e) => setNotifyEmail(e.target.value)}
                             placeholder="Enter your email"
-                            className="w-full bg-transparent outline-none text-[15px] placeholder:text-black/30"
+                            className={[
+                                "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                                "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
+                                "placeholder:text-[color:var(--muted)]/70",
+                                "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                            ].join(" ")}
                         />
                     </div>
 
