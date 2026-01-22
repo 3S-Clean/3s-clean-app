@@ -295,7 +295,7 @@ export default function BookingClient() {
                         ))}
                     </div>
                 </header>
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(120px+env(safe-area-inset-bottom))]">
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(140px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}

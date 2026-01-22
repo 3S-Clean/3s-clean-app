@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICE_AREAS } from "@/lib/booking/config";
 import { createClient } from "@/lib/supabase/client";
-import { Check, X, Mail } from "lucide-react";
+import { Check, X,  } from "lucide-react";
 import { z } from "zod";
 
 type Status = "idle" | "checking" | "available" | "unavailable" | "notified";
@@ -167,7 +167,6 @@ export default function PostcodeCheck() {
                     const v = clean5(e.target.value);
                     setPostcode(v);
                     setFormData({ postalCode: v }); // sync in formData
-
                     // reset UI when editing
                     if (v.length < 5) {
                         setStatus("idle");
@@ -176,7 +175,7 @@ export default function PostcodeCheck() {
                     }
                 }}
                 className={[
-                    "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                    "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
                     "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
                     "placeholder:text-[color:var(--muted)]/70",
                     "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
@@ -208,7 +207,7 @@ export default function PostcodeCheck() {
                             onChange={(e) => setNotifyEmail(e.target.value)}
                             placeholder="Enter your email"
                             className={[
-                                "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                                "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
                                 "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
                                 "placeholder:text-[color:var(--muted)]/70",
                                 "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",

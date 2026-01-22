@@ -27,7 +27,6 @@ type LinkOrderResponse = z.infer<typeof LinkOrderResponseSchema>;
 function VerifyCodeInner() {
     const router = useRouter();
     const sp = useSearchParams();
-
     const flow: Flow = sp.get("flow") === "recovery" ? "recovery" : "signup";
     const pendingOrderFromQuery = useMemo(() => sp.get("pendingOrder") || "", [sp]);
     const supabase = useMemo(() => createClient(), []);
@@ -105,7 +104,6 @@ function VerifyCodeInner() {
 
     const verify = async () => {
         if (loading) return;
-
         setStatus(null);
         setShowOrdersCta(false);
         setLoading(true);

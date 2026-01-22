@@ -115,7 +115,7 @@ export default function LoginClient() {
                         type="email"
                         placeholder="Enter your email address"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
                             "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
                             "placeholder:text-[color:var(--muted)]/70",
                             "focus:ring-2 focus:ring-[var(--ring)] focus:border-[color:var(--input-border)]",
@@ -132,7 +132,7 @@ export default function LoginClient() {
                         type="password"
                         placeholder="Enter your password"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
                             "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
                             "placeholder:text-[color:var(--muted)]/70",
                             "focus:ring-2 focus:ring-[var(--ring)] focus:border-[color:var(--input-border)]",
@@ -161,7 +161,6 @@ export default function LoginClient() {
                 >
                     {isSubmitting ? "Logging in…" : "Log in"}
                 </button>
-
                 {status && (
                     <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
                         {status.msg}

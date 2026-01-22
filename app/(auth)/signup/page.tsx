@@ -113,7 +113,7 @@ export default function SignupClient() {
                         type="email"
                         placeholder="name@domain.com"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
+                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
                             "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
                             "placeholder:text-[color:var(--muted)]/70",
                             "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
