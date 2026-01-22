@@ -65,6 +65,9 @@ export interface BookingState {
     pendingToken: string | null;
     setPendingToken: (token: string | null) => void;
 
+    plzAutofillDisabled: boolean;
+    setPlzAutofillDisabled: (v: boolean) => void;
+
     resetBooking: () => void;
 }
 
@@ -91,6 +94,7 @@ const initialState = {
     step: 0,
     postcode: "",
     postcodeVerified: false,
+    plzAutofillDisabled: false,
 
     selectedService: null as string | null,
     apartmentSize: null as string | null,
@@ -129,8 +133,7 @@ export const useBookingStore = create<BookingState>()(
                 set((state) => {
                     const next = clampStep(step);
 
-                    // step 0 and step 1 are always allowed
-                    // step 2+ requires PLZ verified
+
                     if (next >= 2 && !state.postcodeVerified) return state;
 
                     return { step: next };
@@ -139,8 +142,8 @@ export const useBookingStore = create<BookingState>()(
             setPostcode: (postcode) => set({ postcode }),
             // ✅ IMPORTANT: do NOT force step changes here
             setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
+            setPlzAutofillDisabled: (plzAutofillDisabled) => set({ plzAutofillDisabled }),
             resetPostcode: () => set({ postcode: "" }),
-            // ✅ gate reset should bring you to PLZ step (1), not service (0)
             resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 1 }),
             setSelectedService: (selectedService) => set({ selectedService }),
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
@@ -154,11 +157,9 @@ export const useBookingStore = create<BookingState>()(
                 set((state) => {
                     const current = state.extras[extraId] || 0;
                     const next = Math.max(0, current + delta);
-
                     const extras = { ...state.extras };
                     if (next === 0) delete extras[extraId];
                     else extras[extraId] = next;
-
                     return { extras };
                 }),
 

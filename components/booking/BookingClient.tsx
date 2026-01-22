@@ -17,9 +17,6 @@ import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
-type CreateOrderErr = { error: string };
-
-type CreateOrderResponse = CreateOrderOk | CreateOrderErr;
 
 function isCreateOrderOk(v: unknown): v is CreateOrderOk {
     if (!v || typeof v !== "object") return false;
@@ -84,19 +81,16 @@ type ProfileRow = {
 export default function BookingClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [autoPlzAdvanceDone, setAutoPlzAdvanceDone] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const supabase = useMemo(() => createClient(), []);
 
     const {
         step,
         setStep,
-        postcode,
-        setPostcode,
-        postcodeVerified,
-        setPostcodeVerified,
+
         selectedService,
-        setSelectedService, // ✅ важно для deep-link
+        setSelectedService,
+
         apartmentSize,
         peopleCount,
         hasPets,
@@ -104,10 +98,13 @@ export default function BookingClient() {
         hasAllergies,
         allergyNote,
         extras,
+
         formData,
         setFormData,
+
         selectedDate,
         selectedTime,
+
         setPendingToken,
     } = useBookingStore();
 
@@ -131,7 +128,7 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // Prefill profile data if user is logged in
+    // ✅ Prefill profile data if user is logged in (ONLY contact fields, no PLZ auto-gate here)
     useEffect(() => {
         let cancelled = false;
 
@@ -163,35 +160,17 @@ export default function BookingClient() {
             if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
             if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
             if (!formData.notes?.trim() && p.notes?.trim()) patch.notes = p.notes.trim();
-            if (Object.keys(patch).length) setFormData(patch);
-            // Postcode gate: if profile has postal code, auto-verify and move past step 1
-            const plz = (p.postal_code || "").trim();
-            if (plz) {
-                if (!postcode) setPostcode(plz);
-                if (!postcodeVerified) setPostcodeVerified(true);
 
-                // ✅ автопереход 1 -> 2 только один раз
-                if (step === 1 && !autoPlzAdvanceDone) {
-                    setStep(2);
-                    setAutoPlzAdvanceDone(true);
-                }
-            }
+            if (Object.keys(patch).length) setFormData(patch);
         };
 
-        run();
+        void run();
         return () => {
             cancelled = true;
         };
     }, [
         supabase,
-        step,
-        setStep,
-        postcode,
-        setPostcode,
-        postcodeVerified,
-        setPostcodeVerified,
         setFormData,
-        autoPlzAdvanceDone,
         formData.email,
         formData.firstName,
         formData.lastName,
@@ -209,6 +188,7 @@ export default function BookingClient() {
         // Must be on final step and have all required selections
         if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
+
         // Required customer fields
         if (
             !(formData.firstName || "").trim() ||
@@ -241,6 +221,7 @@ export default function BookingClient() {
                 extras_price: totals.extrasPrice,
                 total_price: totals.totalPrice,
                 estimated_hours: totals.estimatedHours,
+
                 customer_first_name: (formData.firstName || "").trim(),
                 customer_last_name: (formData.lastName || "").trim() || null,
                 customer_email: (formData.email || "").trim(),
@@ -250,6 +231,7 @@ export default function BookingClient() {
                 customer_city: (formData.city || "").trim() || null,
                 customer_country: (formData.country || "").trim(),
                 customer_notes: (formData.notes || "").trim() || null,
+
                 scheduled_date: selectedDate,
                 scheduled_time: selectedTime,
             };
@@ -281,6 +263,7 @@ export default function BookingClient() {
     return (
         <>
             <Header />
+
             <div className="min-h-screen bg-white mt-[80px]">
                 <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
                     <div className="flex justify-center gap-2">
@@ -288,13 +271,14 @@ export default function BookingClient() {
                             <div
                                 key={s}
                                 className={`w-3 h-3 rounded-full transition-all
-              ${s < step ? "bg-gray-900" : ""}
-              ${s === step ? "bg-gray-900 scale-125" : ""}
-              ${s > step ? "bg-gray-200" : ""}`}
+                  ${s < step ? "bg-gray-900" : ""}
+                  ${s === step ? "bg-gray-900 scale-125" : ""}
+                  ${s > step ? "bg-gray-200" : ""}`}
                             />
                         ))}
                     </div>
                 </header>
+
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(140px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
@@ -302,8 +286,8 @@ export default function BookingClient() {
                     {step === 3 && <ExtraServices />}
                     {step === 4 && <ContactSchedule />}
                 </main>
-                {/* Button on step 0 — OK */}
-                {step <=4 && <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />}
+
+                <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />
             </div>
         </>
     );

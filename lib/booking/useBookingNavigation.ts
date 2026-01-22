@@ -13,14 +13,11 @@ function clampStep(n: number) {
 export function useBookingNavigation() {
     const step = useBookingStore((s) => s.step);
     const setStep = useBookingStore((s) => s.setStep);
-
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
     const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
-
     const selectedService = useBookingStore((s) => s.selectedService);
     const apartmentSize = useBookingStore((s) => s.apartmentSize);
     const peopleCount = useBookingStore((s) => s.peopleCount);
-
     const formData = useBookingStore((s) => s.formData);
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
@@ -73,7 +70,6 @@ export function useBookingNavigation() {
         (targetStep: number) => {
             const t = clampStep(targetStep);
             if (t > step && !canContinue) return;
-
             setStep(t);
             scrollTop();
         },
@@ -85,19 +81,19 @@ export function useBookingNavigation() {
         goTo(step + 1);
     }, [canContinue, goTo, step]);
 
+
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
-        // When returning to PLZ, remove verified so user can change it.
         if (prev === 1) {
             setPostcodeVerified(false);
             setStep(1);
-            scrollTop();
+            if (typeof window !== "undefined") window.scrollTo(0, 0);
             return;
         }
 
         setStep(prev);
-        scrollTop();
+        if (typeof window !== "undefined") window.scrollTo(0, 0);
     }, [step, setStep, setPostcodeVerified]);
 
     return { step, canContinue, next, back, goTo };
