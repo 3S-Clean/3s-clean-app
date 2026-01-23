@@ -73,17 +73,20 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     const isFinalStep = step === 4;
 
-    // ✅ primary disabled state (we DO NOT use the HTML disabled attribute on iOS)
-    const primaryBlocked = !canContinue || Boolean(isSubmitting);
+    // ✅ hint under primary button (only when disabled)
+    const showButtonHint = !canContinue && !isSubmitting;
     const buttonHintText = isFinalStep ? "Complete required fields" : hint;
+
+    // ✅ iOS: prevent tap-through when disabled
+    const blockTap = (e: React.PointerEvent | React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
     return (
         <div
             className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white"
             style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
-            // extra safety: don't let taps bubble to underlying page
-            onPointerDownCapture={(e) => e.stopPropagation()}
-            onClickCapture={(e) => e.stopPropagation()}
         >
             <div className="px-4 md:px-6 pt-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
@@ -91,27 +94,32 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                         {showPrice ? (
                             <>
                                 <div className="text-2xl font-bold whitespace-nowrap">€&nbsp;{total.toFixed(2)}</div>
-                                <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">
+                                    inc.VAT • ~{time} • step {step + 1}/5
+                                </div>
                             </>
                         ) : selectedService && !apartmentSize ? (
                             <>
                                 <div className="text-xl font-semibold whitespace-nowrap">
                                     From €&nbsp;{service?.startingPrice}
                                 </div>
-                                <div className="text-sm text-gray-500">Select apartment size</div>
+                                <div className="text-sm text-gray-500">
+                                    Select apartment size • step {step + 1}/5
+                                </div>
                             </>
                         ) : (
-                            <div className="text-sm text-gray-500">{hint}</div>
+                            <div className="text-sm text-gray-500">
+                                {hint} • step {step + 1}/5
+                            </div>
                         )}
                     </div>
 
-                    {/* Right side: buttons + hint under primary button */}
                     <div className="flex flex-col items-end gap-1 shrink-0">
                         <div className="flex gap-2 md:gap-3 shrink-0">
                             {step > 0 && (
                                 <button
                                     type="button"
-                                    onClick={() => back()}
+                                    onClick={back}
                                     className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
                                 >
                                     Back
@@ -119,45 +127,52 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                             )}
 
                             {isFinalStep ? (
-                                <button
-                                    type="button"
-                                    aria-disabled={primaryBlocked}
-                                    onClick={() => {
-                                        if (primaryBlocked) return; // ✅ blocks tap without disabled="true"
-                                        onSubmit?.();
-                                    }}
-                                    className={[
-                                        "px-5 md:px-8 py-3 font-semibold rounded-full transition-all",
-                                        primaryBlocked
-                                            ? "bg-gray-300 text-white cursor-not-allowed"
-                                            : "bg-gray-900 text-white hover:bg-gray-800",
-                                    ].join(" ")}
-                                >
-                                    {isSubmitting ? "Booking..." : "Book now"}
-                                </button>
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={() => onSubmit?.()}
+                                        disabled={!canContinue || isSubmitting}
+                                        className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                    >
+                                        {isSubmitting ? "Booking..." : "Book now"}
+                                    </button>
+
+                                    {/* ✅ Overlay catches taps when disabled (prevents click-through on iOS) */}
+                                    {(!canContinue || isSubmitting) && (
+                                        <div
+                                            className="absolute inset-0 rounded-full"
+                                            onPointerDown={blockTap}
+                                            onClick={blockTap}
+                                            aria-hidden="true"
+                                        />
+                                    )}
+                                </div>
                             ) : (
-                                <button
-                                    type="button"
-                                    aria-disabled={primaryBlocked}
-                                    onClick={() => {
-                                        if (primaryBlocked) return;
-                                        next();
-                                    }}
-                                    className={[
-                                        "px-5 md:px-8 py-3 font-semibold rounded-full transition-all",
-                                        primaryBlocked
-                                            ? "bg-gray-300 text-white cursor-not-allowed"
-                                            : "bg-gray-900 text-white hover:bg-gray-800",
-                                    ].join(" ")}
-                                >
-                                    Continue
-                                </button>
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={next}
+                                        disabled={!canContinue}
+                                        className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                    >
+                                        Continue
+                                    </button>
+
+                                    {/* ✅ Overlay catches taps when disabled (prevents click-through on iOS) */}
+                                    {!canContinue && (
+                                        <div
+                                            className="absolute inset-0 rounded-full"
+                                            onPointerDown={blockTap}
+                                            onClick={blockTap}
+                                            aria-hidden="true"
+                                        />
+                                    )}
+                                </div>
                             )}
                         </div>
 
-                        {/* ✅ Button hint (appears only when blocked) */}
                         <AnimatePresence initial={false}>
-                            {primaryBlocked && !isSubmitting && (
+                            {showButtonHint && (
                                 <motion.div
                                     key="footer-hint"
                                     initial={{ opacity: 0, y: -2 }}
