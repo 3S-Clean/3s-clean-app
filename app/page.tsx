@@ -25,9 +25,9 @@ export default function HomePage() {
                             <br />
                             cleaning
                             <br />
-                            service in
+                            service
                             <br />
-                            Stuttgart!
+                            in Stuttgart!
                         </h1>
                     </div>
 
