@@ -15,8 +15,8 @@ export default function HomePage() {
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
                     {/* Hero - Left Column */}
                     <div>
-                        <h1 className="max-w-[9ch] m-0 p-0 font-sans font-bold tracking-tight leading-[1.05] text-left
-            lg:text-7xl xl:text-8xl">
+                        <h1 className="max-w-[10ch] m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.01] text-left
+           text-[80px] sm:text-[88px] md:text-[96px] lg:text-[110px] xl:text-[120px]">
                             Your
                             <br />
                             premium
