@@ -1,9 +1,11 @@
+// components/ui/InfoHelp.tsx
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Info } from "lucide-react";
 
-/** tiny hook: mobile < md */
+/** mobile < md */
 function useIsMobile(breakpointPx = 768) {
     const [isMobile, setIsMobile] = useState(false);
 
@@ -33,11 +35,6 @@ function lockBodyScroll(locked: boolean) {
     }
 }
 
-/**
- * Desktop: Tooltip
- * Mobile: Bottom-sheet
- * One icon ⓘ
- */
 export function InfoHelp({
                              text,
                              title = "Details",
@@ -56,7 +53,7 @@ export function InfoHelp({
         e.stopPropagation();
     };
 
-    // lock scroll when sheet open
+    // lock scroll when sheet open (mobile)
     useEffect(() => {
         if (isMobile) lockBodyScroll(open);
         return () => lockBodyScroll(false);
@@ -80,7 +77,6 @@ export function InfoHelp({
             const t = e.target as Node | null;
             if (!t) return;
 
-            // if click is inside the button wrapper, ignore
             const root = btnRef.current?.closest("[data-infohelp-root]");
             if (root && root.contains(t)) return;
 
@@ -88,20 +84,21 @@ export function InfoHelp({
         };
 
         window.addEventListener("pointerdown", onDown, { capture: true });
-        return () => window.removeEventListener("pointerdown", onDown, { capture: true } as any);
+        return () =>
+            window.removeEventListener("pointerdown", onDown, { capture: true } as any);
     }, [open, isMobile]);
 
     const iconClass = useMemo(() => {
-        // чуть контрастнее на dark карточках
-        if (dark) return "text-white/60 hover:text-white/85";
-        return "text-gray-400 hover:text-gray-600";
+        return dark
+            ? "text-white/60 hover:text-white/85"
+            : "text-gray-400 hover:text-gray-600";
     }, [dark]);
 
     return (
         <span
             data-infohelp-root
             className="relative inline-block"
-            onPointerDown={stop} // ✅ не даём выбрать карточку
+            onPointerDown={stop} // ✅ don't select card on mobile
             onClick={stop}
         >
       <button
@@ -111,8 +108,7 @@ export function InfoHelp({
           className={[
               "ml-1.5 inline-flex items-center justify-center transition-colors",
               iconClass,
-              // увеличили hit-area (важно для мобилы)
-              "p-2 -m-2",
+              "p-2 -m-2", // bigger hit area
           ].join(" ")}
           onMouseEnter={() => {
               if (!isMobile) setOpen(true);
@@ -134,7 +130,9 @@ export function InfoHelp({
                     role="tooltip"
                     className={[
                         "absolute z-50 w-72 p-3 text-sm rounded-lg shadow-lg",
-                        dark ? "bg-gray-900 text-white border border-white/10" : "bg-white text-gray-700 border border-gray-200",
+                        dark
+                            ? "bg-gray-900 text-white border border-white/10"
+                            : "bg-white text-gray-700 border border-gray-200",
                         "-top-2 left-6",
                     ].join(" ")}
                     onPointerDown={stop}
@@ -144,74 +142,79 @@ export function InfoHelp({
                 </div>
             )}
 
-            {/* MOBILE BOTTOM-SHEET */}
-            {isMobile && open && (
-                <div
-                    className="fixed inset-0 z-[60]"
-                    aria-modal="true"
-                    role="dialog"
-                    onPointerDown={(e) => {
-                        // tap on backdrop closes
-                        // (если тапнули по самому шиту — не закрываем)
-                        const target = e.target as HTMLElement;
-                        if (target?.dataset?.sheet === "true") return;
-                        setOpen(false);
-                    }}
-                >
-                    {/* backdrop */}
-                    <div className="absolute inset-0 bg-black/40" />
-
-                    {/* sheet */}
+            {/* MOBILE BOTTOM-SHEET (PORTAL) */}
+            {isMobile && open
+                ? createPortal(
                     <div
-                        data-sheet="true"
-                        className={[
-                            "absolute bottom-0 left-0 right-0",
-                            "rounded-t-3xl bg-white",
-                            "px-5 pt-4 pb-6",
-                            "shadow-2xl",
-                            // лёгкая анимация “дорого”
-                            "animate-[sheetIn_180ms_ease-out]",
-                        ].join(" ")}
-                        onPointerDown={stop}
-                        onClick={stop}
+                        className="fixed inset-0 z-[2147483647]"
+                        aria-modal="true"
+                        role="dialog"
+                        onPointerDown={(e) => {
+                            // Tap on backdrop closes; tap on sheet does not.
+                            const target = e.target as HTMLElement;
+                            if (target?.dataset?.sheet === "true") return;
+                            setOpen(false);
+                        }}
                     >
-                        {/* grabber */}
-                        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/10" />
+                        {/* backdrop */}
+                        <div className="absolute inset-0 bg-black/40" />
 
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <div className="text-base font-semibold text-gray-900">{title}</div>
-                                <div className="mt-2 text-sm leading-relaxed text-gray-600">{text}</div>
+                        {/* sheet */}
+                        <div
+                            data-sheet="true"
+                            className={[
+                                "absolute bottom-0 left-0 right-0",
+                                "rounded-t-3xl bg-white",
+                                "px-5 pt-4 pb-6",
+                                "shadow-2xl",
+                                "animate-[sheetIn_180ms_ease-out]",
+                            ].join(" ")}
+                            onPointerDown={stop}
+                            onClick={stop}
+                        >
+                            {/* grabber */}
+                            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/10" />
+
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="min-w-0">
+                                    <div className="text-base font-semibold text-gray-900">
+                                        {title}
+                                    </div>
+                                    <div className="mt-2 text-sm leading-relaxed text-gray-600">
+                                        {text}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="text-sm font-semibold text-gray-900/70 px-3 py-2 -mr-2"
+                                    onClick={(e) => {
+                                        stop(e);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    Close
+                                </button>
                             </div>
-
-                            <button
-                                type="button"
-                                className="text-sm font-semibold text-gray-900/70 px-3 py-2 -mr-2"
-                                onClick={(e) => {
-                                    stop(e);
-                                    setOpen(false);
-                                }}
-                            >
-                                Close
-                            </button>
                         </div>
-                    </div>
 
-                    {/* keyframes inline (без глобального css) */}
-                    <style jsx>{`
-            @keyframes sheetIn {
-              from {
-                transform: translateY(16px);
-                opacity: 0;
-              }
-              to {
-                transform: translateY(0);
-                opacity: 1;
-              }
-            }
-          `}</style>
-                </div>
-            )}
+                        {/* keyframes (scoped) */}
+                        <style jsx>{`
+                @keyframes sheetIn {
+                  from {
+                    transform: translateY(16px);
+                    opacity: 0;
+                  }
+                  to {
+                    transform: translateY(0);
+                    opacity: 1;
+                  }
+                }
+              `}</style>
+                    </div>,
+                    document.body
+                )
+                : null}
     </span>
     );
 }

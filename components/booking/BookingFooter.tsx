@@ -74,7 +74,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     return (
         <div
-            className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white"
+            className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white"
             style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
         >
             <div className="px-4 md:px-6 pt-4">
