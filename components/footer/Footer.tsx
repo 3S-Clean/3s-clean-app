@@ -26,33 +26,9 @@ const WhatsAppIcon = ({ className = "" }: { className?: string }) => (
     </svg>
 );
 
-function FooterLinkItem({
-                            href,
-                            external,
-                            className,
-                            children,
-                        }: {
-    href: string;
-    external?: boolean;
-    className: string;
-    children: ReactNode;
-}) {
-    if (external) {
-        return (
-            <a href={href} className={className} target="_self" rel="noreferrer">
-                {children}
-            </a>
-        );
-    }
-    return (
-        <Link href={href} className={className}>
-            {children}
-        </Link>
-    );
-}
-
 export default function AccountFooter() {
     const currentYear = new Date().getFullYear();
+
     const socialLinks: SocialLink[] = [
         { icon: <Youtube className="social-icon" strokeWidth={1.5} />, href: "https://youtube.com/@3sclean", label: "YouTube" },
         { icon: <WhatsAppIcon className="social-icon" />, href: "https://wa.me/your-number", label: "WhatsApp" },
@@ -62,7 +38,7 @@ export default function AccountFooter() {
 
     return (
         <footer className="footer">
-            {/* Navigation Columns */}
+            {/* Navigation Columns (IN-APP ONLY) */}
             <div className="footer-columns">
                 {footerColumns.map((column) => (
                     <div key={column.title} className="footer-column">
@@ -70,9 +46,9 @@ export default function AccountFooter() {
                         <ul className="footer-column-links">
                             {column.links.map((link) => (
                                 <li key={`${column.title}-${link.href}`}>
-                                    <FooterLinkItem href={link.href} external={link.external} className="footer-column-link">
+                                    <Link href={link.href} className="footer-column-link">
                                         {link.label}
-                                    </FooterLinkItem>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
@@ -80,17 +56,16 @@ export default function AccountFooter() {
                 ))}
             </div>
 
-            {/* Legal Section */}
+            {/* Legal Section (IN-APP ONLY) */}
             <div className="footer-legal">
                 <h4 className="footer-legal-title">Legal</h4>
 
                 <div className="footer-legal-links">
                     {legalLinks.map((link, index) => (
                         <span key={link.href}>
-              <FooterLinkItem href={link.href} external={link.external} className="footer-legal-link">
+              <Link href={link.href} className="footer-legal-link">
                 {link.label}
-              </FooterLinkItem>
-
+              </Link>
                             {index < legalLinks.length - 1 && <span className="footer-legal-separator" />}
             </span>
                     ))}
@@ -98,7 +73,8 @@ export default function AccountFooter() {
 
                 <p className="footer-copyright">© {currentYear} 3S-Clean. All rights reserved.</p>
             </div>
-            {/* Social Links */}
+
+            {/* Social Links (EXTERNAL OK) */}
             <div className="footer-social">
                 {socialLinks.map((social) => (
                     <a

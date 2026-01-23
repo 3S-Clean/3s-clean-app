@@ -1,33 +1,15 @@
-export const WEBFLOW_BASE = "https://s3-final.webflow.io";
-
-export function webflowUrl(path = "/") {
-    const url = new URL(path, WEBFLOW_BASE);
-
-    // флаг, по которому Webflow прячет Sign Up / Log In и показывает Account
-    url.searchParams.set("auth", "1");
-
-    return url.toString();
-}
-
-
-export type NavItem = {
-    label: string;
-    href: string;
-    external?: boolean;
-};
-
-export const mainNav: NavItem[] = [
-    { label: "Experience", href: webflowUrl("/experience"), external: true },
-    { label: "Definition", href: webflowUrl("/definition"), external: true },
-    { label: "Inside 3S", href: webflowUrl("/inside-3s"), external: true },
-    { label: "FAQ", href: webflowUrl("/faq"), external: true },
+export const mainNav = [
+    { label: "Inside", href: "/inside" },
+    { label: "Experience", href: "/experience" },
+    { label: "Definition", href: "/definition" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Contact", href: "/contact" },
 ];
 
 // --- Footer
 export type FooterLink = {
     label: string;
     href: string;
-    external?: boolean;
 };
 
 export type FooterColumn = {
@@ -38,35 +20,34 @@ export type FooterColumn = {
 export type LegalLink = {
     label: string;
     href: string;
-    external?: boolean;
 };
-
 export const footerColumns: FooterColumn[] = [
     {
         title: "Get Started",
         links: [
-            { label: "Experience", href: mainNav[0].href, external: true },
+            { label: "Experience", href: "/experience" },
             { label: "Booking", href: "/booking" },
         ],
     },
     {
         title: "Explore",
         links: [
-            { label: "Inside 3S", href: mainNav[2].href, external: true },
-            { label: "Careers", href: `${WEBFLOW_BASE}/career`, external: true },
+            { label: "Inside 3S", href: "/inside" },
+            // если Careers пока нет в app — лучше убрать, чем вести наружу
+            // { label: "Careers", href: "/careers" },
         ],
     },
     {
         title: "Help & Support",
         links: [
-            { label: "FAQ", href: mainNav[3].href, external: true },
-            { label: "Contact", href: `${WEBFLOW_BASE}/contact`, external: true },
+            { label: "FAQ", href: "/faq" },
+            { label: "Contact", href: "/contact" },
         ],
     },
 ];
 
 export const legalLinks: LegalLink[] = [
-    { label: "Impressum", href: `${WEBFLOW_BASE}/impressum`, external: true },
-    { label: "Datenschutz", href: `${WEBFLOW_BASE}/datenschutz`, external: true },
-    { label: "AGB", href: `${WEBFLOW_BASE}/agb`, external: true },
+    { label: "Impressum", href: "/impressum" },
+    { label: "Datenschutz", href: "/datenschutz" },
+    { label: "AGB", href: "/agb" },
 ];

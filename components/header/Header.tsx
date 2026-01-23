@@ -10,12 +10,13 @@ import { mainNav } from "@/lib/navigation/navigation";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
 import { UserCheckIcon } from "@/components/ui/icons/UserCheckIcon";
 import { MenuIcon } from "@/components/ui/icons/MenuIcon";
-import { webflowUrl } from "@/lib/navigation/navigation";
 
 export default function Header() {
     const pathname = usePathname();
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
 
@@ -35,10 +36,7 @@ export default function Header() {
     }, []);
 
     const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-
-    const toggleMenu = useCallback(() => {
-        setIsMenuOpen((v) => !v);
-    }, []);
+    const toggleMenu = useCallback(() => setIsMenuOpen((v) => !v), []);
 
     // ✅ scroll lock
     useEffect(() => {
@@ -65,11 +63,10 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
-    // ✅ ИСПРАВЛЕНО: close menu on route change (без isMenuOpen в deps)
+    // ✅ close menu on route change
     useEffect(() => {
         if (prevPathnameRef.current !== pathname) {
             prevPathnameRef.current = pathname;
-            // Используем queueMicrotask чтобы не было синхронного setState
             queueMicrotask(closeMenu);
         }
     }, [pathname, closeMenu]);
@@ -77,9 +74,7 @@ export default function Header() {
     // ✅ close menu on resize above breakpoint
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth > 568) {
-                closeMenu();
-            }
+            if (window.innerWidth > 568) closeMenu();
         };
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
@@ -87,40 +82,34 @@ export default function Header() {
 
     const accountHref = isAuthenticated ? "/account" : "/signup";
 
+    // ✅ helper: highlight active for nested routes too (e.g. /account/settings)
+    const isActive = (href: string) => {
+        if (href === "/") return pathname === "/";
+        return pathname === href || pathname.startsWith(href + "/");
+    };
+
     return (
         <>
             <header className="header">
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        <a
-                            href={webflowUrl("/")}
-                            aria-label="Go to main website"
-                            className="logo-link"
-                            rel="noopener noreferrer"
-                        >
-                            <Logo className="logo"  />
-                        </a>
+                        {/* ✅ HOME = "/" (no "/#") */}
+                        <Link href="/" aria-label="Go to home" className="logo-link">
+                            <Logo className="logo" />
+                        </Link>
+
+                        {/* ✅ ONLY internal app routes */}
                         <nav className="nav-desktop" aria-label="Main navigation">
-                            {mainNav.map((item) =>
-                                item.external ? (
-                                    <a
-                                        key={item.href}
-                                        href={item.href}
-                                        className={`nav-link ${pathname === item.href ? "active" : ""}`}
-                                    >
-                                        {item.label}
-                                    </a>
-                                ) : (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className={`nav-link ${pathname === item.href ? "active" : ""}`}
-                                    >
-                                        {item.label}
-                                    </Link>
-                                )
-                            )}
+                            {mainNav.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`nav-link ${isActive(item.href) ? "active" : ""}`}
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
                         </nav>
                     </div>
 
@@ -149,9 +138,10 @@ export default function Header() {
                         <MenuIcon className="menu-icon" />
                     </button>
 
-                    <a href={webflowUrl("/")} className="logo-link-mobile" aria-label="Go to main website" rel="noopener noreferrer">
+                    {/* ✅ HOME = "/" */}
+                    <Link href="/" className="logo-link-mobile" aria-label="Go to home">
                         <Logo className="logo-mobile" />
-                    </a>
+                    </Link>
 
                     <Link href="/booking" className="book-button-mobile">
                         Book Now
@@ -160,32 +150,18 @@ export default function Header() {
             </header>
 
             {/* Mobile Menu Overlay */}
-            <div
-                className={`mob-menu ${isMenuOpen ? "open" : ""}`}
-                onClick={closeMenu}
-            >
+            <div className={`mob-menu ${isMenuOpen ? "open" : ""}`} onClick={closeMenu}>
                 <div className="mob-menu-panel" onClick={(e) => e.stopPropagation()}>
-                    {mainNav.map((item) =>
-                        item.external ? (
-                            <a
-                                key={item.href}
-                                href={item.href}
-                                className={`mob-menu-link ${pathname === item.href ? "current" : ""}`}
-                                onClick={closeMenu}
-                            >
-                                {item.label}
-                            </a>
-                        ) : (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`mob-menu-link ${pathname === item.href ? "current" : ""}`}
-                                onClick={closeMenu}
-                            >
-                                {item.label}
-                            </Link>
-                        )
-                    )}
+                    {mainNav.map((item) => (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`mob-menu-link ${isActive(item.href) ? "current" : ""}`}
+                            onClick={closeMenu}
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
 
                     <div className="mob-menu-auth">
                         {isAuthenticated ? (
@@ -208,4 +184,3 @@ export default function Header() {
         </>
     );
 }
-

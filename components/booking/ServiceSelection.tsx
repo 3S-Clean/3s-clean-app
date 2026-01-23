@@ -1,8 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES } from "@/lib/booking/config";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
+
+/** Tooltip: hover + click (как у тебя на ExperiencePage) */
+function Tooltip({ text }: { text: string }) {
+    const [isVisible, setIsVisible] = useState(false);
+
+    return (
+        <div className="relative inline-block">
+            <button
+                type="button"
+                onMouseEnter={() => setIsVisible(true)}
+                onMouseLeave={() => setIsVisible(false)}
+                onClick={() => setIsVisible((v) => !v)}
+                className="ml-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="More info"
+            >
+                <Info className="w-4 h-4" />
+            </button>
+
+            {isVisible && (
+                <div className="absolute z-50 w-72 p-3 text-sm bg-white border border-gray-200 rounded-lg shadow-lg -top-2 left-6 text-gray-600">
+                    {text}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function ServiceSelection() {
     const { selectedService, setSelectedService } = useBookingStore();
@@ -34,7 +61,6 @@ export default function ServiceSelection() {
                                         ? "ring-4 ring-white"
                                         : "ring-4 ring-gray-900"
                                     : "hover:shadow-xl hover:-translate-y-1",
-                                // мобила: hover не нужен, лучше tap feedback
                                 "active:scale-[0.99]",
                             ].join(" ")}
                         >
@@ -69,22 +95,31 @@ export default function ServiceSelection() {
                 </span>
                             </div>
 
-                            <div>
+                            {/* Base features line (если есть) */}
+                            {service.baseFeatures ? (
+                                <p className={["text-sm font-medium mb-4", isDark ? "opacity-75" : "text-gray-600"].join(" ")}>
+                                    {service.baseFeatures}
+                                </p>
+                            ) : (
                                 <p className="text-sm font-semibold mb-3">Includes:</p>
-                                <div className="flex flex-col gap-2">
-                                    {service.includes.map((item, i) => (
-                                        <div key={i} className="flex items-center gap-3 text-sm opacity-85">
-                      <span
-                          className={[
-                              "w-1.5 h-1.5 rounded-full",
-                              isDark ? "bg-white/60" : "bg-gray-900/60",
-                          ].join(" ")}
-                          aria-hidden="true"
-                      />
-                                            {item}
-                                        </div>
-                                    ))}
-                                </div>
+                            )}
+
+                            <div className="flex flex-col gap-2">
+                                {service.includes.map((item, i) => (
+                                    <div key={i} className="flex items-start gap-3 text-sm opacity-85">
+                    <span
+                        className={[
+                            "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0",
+                            isDark ? "bg-white/60" : "bg-gray-900/60",
+                        ].join(" ")}
+                        aria-hidden="true"
+                    />
+                                        <span className="flex items-center flex-wrap">
+                      {item.name}
+                                            {item.description ? <Tooltip text={item.description} /> : null}
+                    </span>
+                                    </div>
+                                ))}
                             </div>
                         </button>
                     );
