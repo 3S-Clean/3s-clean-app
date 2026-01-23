@@ -73,15 +73,17 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     const isFinalStep = step === 4;
 
-    // ✅ Button-side hint logic (UI only)
-    const showButtonHint =
-        (!canContinue && !isSubmitting) || (!canContinue && !isFinalStep); // safe default
+    // ✅ primary disabled state (we DO NOT use the HTML disabled attribute on iOS)
+    const primaryBlocked = !canContinue || Boolean(isSubmitting);
     const buttonHintText = isFinalStep ? "Complete required fields" : hint;
 
     return (
         <div
-            className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white"
+            className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white"
             style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
+            // extra safety: don't let taps bubble to underlying page
+            onPointerDownCapture={(e) => e.stopPropagation()}
+            onClickCapture={(e) => e.stopPropagation()}
         >
             <div className="px-4 md:px-6 pt-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
@@ -108,7 +110,8 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                         <div className="flex gap-2 md:gap-3 shrink-0">
                             {step > 0 && (
                                 <button
-                                    onClick={back}
+                                    type="button"
+                                    onClick={() => back()}
                                     className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
                                 >
                                     Back
@@ -117,26 +120,44 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
                             {isFinalStep ? (
                                 <button
-                                    onClick={() => onSubmit?.()}
-                                    disabled={!canContinue || isSubmitting}
-                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                    type="button"
+                                    aria-disabled={primaryBlocked}
+                                    onClick={() => {
+                                        if (primaryBlocked) return; // ✅ blocks tap without disabled="true"
+                                        onSubmit?.();
+                                    }}
+                                    className={[
+                                        "px-5 md:px-8 py-3 font-semibold rounded-full transition-all",
+                                        primaryBlocked
+                                            ? "bg-gray-300 text-white cursor-not-allowed"
+                                            : "bg-gray-900 text-white hover:bg-gray-800",
+                                    ].join(" ")}
                                 >
                                     {isSubmitting ? "Booking..." : "Book now"}
                                 </button>
                             ) : (
                                 <button
-                                    onClick={next}
-                                    disabled={!canContinue}
-                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                    type="button"
+                                    aria-disabled={primaryBlocked}
+                                    onClick={() => {
+                                        if (primaryBlocked) return;
+                                        next();
+                                    }}
+                                    className={[
+                                        "px-5 md:px-8 py-3 font-semibold rounded-full transition-all",
+                                        primaryBlocked
+                                            ? "bg-gray-300 text-white cursor-not-allowed"
+                                            : "bg-gray-900 text-white hover:bg-gray-800",
+                                    ].join(" ")}
                                 >
                                     Continue
                                 </button>
                             )}
                         </div>
 
-                        {/* ✅ Button hint (appears only when disabled) */}
+                        {/* ✅ Button hint (appears only when blocked) */}
                         <AnimatePresence initial={false}>
-                            {(!canContinue && !isSubmitting) && (
+                            {primaryBlocked && !isSubmitting && (
                                 <motion.div
                                     key="footer-hint"
                                     initial={{ opacity: 0, y: -2 }}
