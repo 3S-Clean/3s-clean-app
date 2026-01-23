@@ -15,7 +15,8 @@ export default function HomePage() {
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
                     {/* Hero - Left Column */}
                     <div>
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05]">
+                        <h1 className="max-w-[9ch] m-0 p-0 font-sans font-bold tracking-tight leading-[1.05] text-left
+           text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                             Your
                             <br />
                             premium
@@ -103,7 +104,7 @@ export default function HomePage() {
                         playsInline
                         className="w-full h-full object-cover"
                     >
-                        <source src="/videos/live-video.MP4" type="video/MP4" />
+                        <source src="/videos/live-video.mp4" type="video/mp4" />
                     </video>
                     {/* Fallback gradient if no videos */}
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 -z-10" />
