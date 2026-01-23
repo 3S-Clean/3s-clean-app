@@ -1,16 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Props {
     onSubmit?: () => void;
     isSubmitting?: boolean;
 }
-
-export const BOOKING_FOOTER_H = 96; // px (base height; safe-area added via padding)
 
 export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const { step, canContinue, next, back } = useBookingNavigation();
@@ -20,7 +18,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const sizeId = apartmentSize ?? "";
     const peopleId = peopleCount ?? "";
 
-    const total = useMemo(() => {
+    const total = (() => {
         if (!serviceId || !sizeId || !peopleId) return 0;
 
         const base =
@@ -32,9 +30,9 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
         }, 0);
 
         return base + ext;
-    }, [serviceId, sizeId, peopleId, hasPets, extras]);
+    })();
 
-    const time = useMemo(() => {
+    const time = (() => {
         if (!serviceId || !sizeId) return "";
 
         let h = getEstimatedHours(serviceId, sizeId);
@@ -45,19 +43,18 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
             if (e && q > 0) h += e.hours * q;
         });
 
-        const totalMin = Math.round(h * 60);
-        const wh = Math.floor(totalMin / 60);
-        const m = totalMin % 60;
+        const wh = Math.floor(h);
+        const m = Math.round((h - wh) * 60);
 
         if (m === 0) return `${wh}h`;
         if (wh === 0) return `${m}min`;
         return `${wh}h ${m}min`;
-    }, [serviceId, sizeId, extras]);
+    })();
 
     const service = SERVICES.find((s) => s.id === selectedService);
     const showPrice = Boolean(serviceId && sizeId && peopleId);
 
-    const hint = useMemo(() => {
+    const hint = (() => {
         switch (step) {
             case 0:
                 return "Select a service";
@@ -72,22 +69,27 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
             default:
                 return "Continue";
         }
-    }, [step]);
+    })();
 
     const isFinalStep = step === 4;
+    const buttonHintText = isFinalStep ? "Complete required fields" : hint;
 
     return (
         <div
             className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white"
-            style={{ paddingBottom: "calc(14px + env(safe-area-inset-bottom))" }}
+            style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
         >
             <div className="px-4 md:px-6 pt-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
                     <div className="flex flex-col min-w-0">
                         {showPrice ? (
                             <>
-                                <div className="text-2xl font-bold whitespace-nowrap">€&nbsp;{total.toFixed(2)}</div>
-                                <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
+                                <div className="text-2xl font-bold whitespace-nowrap">
+                                    €&nbsp;{total.toFixed(2)}
+                                </div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">
+                                    inc.VAT • ~{time}
+                                </div>
                             </>
                         ) : selectedService && !apartmentSize ? (
                             <>
@@ -105,7 +107,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                         <div className="flex gap-2 md:gap-3 shrink-0">
                             {step > 0 && (
                                 <button
-                                    type="button"
                                     onClick={back}
                                     className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
                                 >
@@ -134,9 +135,20 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                             )}
                         </div>
 
-                        {!canContinue && !isSubmitting && (
-                            <div className="text-xs text-gray-500 pr-1">{hint}</div>
-                        )}
+                        <AnimatePresence initial={false}>
+                            {!canContinue && !isSubmitting && (
+                                <motion.div
+                                    key="footer-hint"
+                                    initial={{ opacity: 0, y: -2 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -2 }}
+                                    transition={{ duration: 0.18 }}
+                                    className="text-xs text-gray-500 pr-1"
+                                >
+                                    {buttonHintText}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>

@@ -9,7 +9,7 @@ import ServiceSelection from "@/components/booking/ServiceSelection";
 import ApartmentDetails from "@/components/booking/ApartmentDetails";
 import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
-import BookingFooter, { BOOKING_FOOTER_H } from "@/components/booking/BookingFooter";
+import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
 import { useBookingStore } from "@/lib/booking/store";
@@ -32,6 +32,9 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
+
+// высота самого футера (без safe-area), под неё "прижимаем" summary
+const BOOKING_FOOTER_H = 96;
 
 function calculateTotals(
     service: string,
@@ -113,7 +116,7 @@ export default function BookingClient() {
         setPendingToken,
     } = useBookingStore();
 
-    // Deep-link: /booking?service=maintenance|reset|initial|handover
+    // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
         if (!raw) return;
@@ -130,7 +133,7 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // Prefill profile (ONE place for all steps; never overwrite user input)
+    // ✅ Prefill profile (ONE place for all steps; never overwrite user input)
     useEffect(() => {
         let cancelled = false;
 
@@ -186,6 +189,7 @@ export default function BookingClient() {
 
     const submitBooking = async () => {
         if (isSubmitting) return;
+
         if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
@@ -256,24 +260,19 @@ export default function BookingClient() {
         }
     };
 
-    // summary UI data
+    // ---------- summary UI data ----------
     const service = SERVICES.find((s) => s.id === selectedService);
     const sizeLabel = APARTMENT_SIZES.find((s) => s.id === apartmentSize)?.label ?? apartmentSize ?? "";
     const peopleLabel = PEOPLE_OPTIONS.find((p) => p.id === peopleCount)?.label ?? peopleCount ?? "";
     const extrasCount = Object.values(extras || {}).reduce((a, b) => a + (Number(b) || 0), 0);
 
     const totals = useMemo(() => {
-        if (!selectedService || !apartmentSize || !peopleCount) {
-            return { totalPrice: 0, estimatedHours: 0 };
-        }
+        if (!selectedService || !apartmentSize || !peopleCount) return { totalPrice: 0, estimatedHours: 0 };
         const t = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
         return { totalPrice: t.totalPrice, estimatedHours: t.estimatedHours };
     }, [selectedService, apartmentSize, peopleCount, hasPets, extras]);
 
     const stepText = `${step + 1}/5`;
-
-    // Summary height (tight, premium)
-    const SUMMARY_H = 64;
 
     return (
         <>
@@ -295,11 +294,11 @@ export default function BookingClient() {
                     </div>
                 </header>
 
-                {/* pinned summary прямо над футером */}
-                {selectedService && step > 0 && (
+                {/* ✅ floating summary (прижато к футеру) */}
+                {selectedService && (
                     <div
                         className="fixed left-0 right-0 z-30 px-4 pointer-events-none"
-                        style={{ bottom: `calc(${BOOKING_FOOTER_H}px + env(safe-area-inset-bottom))` }}
+                        style={{ bottom: `${BOOKING_FOOTER_H}px` }}
                     >
                         <div className="max-w-2xl mx-auto">
                             <div className="rounded-2xl border border-gray-200 bg-white/95 backdrop-blur-md shadow-sm px-4 py-2 pointer-events-auto">
@@ -334,12 +333,7 @@ export default function BookingClient() {
                     </div>
                 )}
 
-                <main
-                    className="max-w-2xl mx-auto px-6 py-10"
-                    style={{
-                        paddingBottom: `calc(${BOOKING_FOOTER_H + SUMMARY_H + 24}px + env(safe-area-inset-bottom))`,
-                    }}
-                >
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(160px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
