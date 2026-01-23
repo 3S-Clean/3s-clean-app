@@ -6,18 +6,19 @@ import { useBookingStore } from "@/lib/booking/store";
 const MIN_STEP = 0;
 const MAX_STEP = 4;
 
-function clampStep(n: number) {
-    return Math.max(MIN_STEP, Math.min(MAX_STEP, n));
-}
+const clampStep = (n: number) => Math.max(MIN_STEP, Math.min(MAX_STEP, n));
 
 export function useBookingNavigation() {
     const step = useBookingStore((s) => s.step);
     const setStep = useBookingStore((s) => s.setStep);
+
     const postcodeVerified = useBookingStore((s) => s.postcodeVerified);
     const setPostcodeVerified = useBookingStore((s) => s.setPostcodeVerified);
+
     const selectedService = useBookingStore((s) => s.selectedService);
     const apartmentSize = useBookingStore((s) => s.apartmentSize);
     const peopleCount = useBookingStore((s) => s.peopleCount);
+
     const formData = useBookingStore((s) => s.formData);
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
@@ -26,12 +27,16 @@ export function useBookingNavigation() {
         switch (step) {
             case 0:
                 return !!selectedService;
+
             case 1:
                 return !!postcodeVerified;
+
             case 2:
                 return !!apartmentSize && !!peopleCount;
+
             case 3:
                 return true;
+
             case 4:
                 return !!(
                     formData.firstName?.trim() &&
@@ -43,6 +48,7 @@ export function useBookingNavigation() {
                     selectedDate &&
                     selectedTime
                 );
+
             default:
                 return false;
         }
@@ -67,8 +73,9 @@ export function useBookingNavigation() {
     };
 
     const goTo = useCallback(
-        (targetStep: number) => {
-            const t = clampStep(targetStep);
+        (target: number) => {
+            const t = clampStep(target);
+            // не даём прыгать вперёд если нельзя
             if (t > step && !canContinue) return;
             setStep(t);
             scrollTop();
@@ -81,19 +88,19 @@ export function useBookingNavigation() {
         goTo(step + 1);
     }, [canContinue, goTo, step]);
 
-
     const back = useCallback(() => {
         const prev = clampStep(step - 1);
 
+        // если возвращаемся на PLZ — сбрасываем verified
         if (prev === 1) {
             setPostcodeVerified(false);
             setStep(1);
-            if (typeof window !== "undefined") window.scrollTo(0, 0);
+            scrollTop();
             return;
         }
 
         setStep(prev);
-        if (typeof window !== "undefined") window.scrollTo(0, 0);
+        scrollTop();
     }, [step, setStep, setPostcodeVerified]);
 
     return { step, canContinue, next, back, goTo };

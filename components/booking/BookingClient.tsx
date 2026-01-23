@@ -1,292 +1,132 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-
-import PostcodeCheck from "@/components/booking/PostcodeCheck";
-import ServiceSelection from "@/components/booking/ServiceSelection";
-import ApartmentDetails from "@/components/booking/ApartmentDetails";
-import ExtraServices from "@/components/booking/ExtraServices";
-import ContactSchedule from "@/components/booking/ContactSchedule";
-import BookingFooter from "@/components/booking/BookingFooter";
-import Header from "@/components/header/Header";
-
 import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
+import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
+import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
 
-type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
-type CreateOrderOk = { orderId: string; pendingToken: string };
-
-function isCreateOrderOk(v: unknown): v is CreateOrderOk {
-    if (!v || typeof v !== "object") return false;
-    const o = v as Record<string, unknown>;
-    return typeof o.orderId === "string" && typeof o.pendingToken === "string";
-}
-const r2 = (n: number) => Math.round(n * 100) / 100;
-
-function calculateTotals(
-    service: string,
-    size: string,
-    people: string,
-    hasPets: boolean,
-    extras: Record<string, number>
-) {
-    const basePrice = getBasePrice(service, size, people, hasPets);
-    let extrasPrice = 0;
-    let extrasHours = 0;
-    const extrasArray: OrderExtraLine[] = [];
-
-    for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
-        const qty = Number(qtyRaw) || 0;
-        if (qty <= 0) continue;
-        const extra = EXTRAS.find((e) => e.id === extraId);
-        if (!extra) continue;
-
-        const linePrice = extra.price * qty;
-        extrasPrice += linePrice;
-        extrasHours += extra.hours * qty;
-
-        extrasArray.push({
-            id: extraId,
-            quantity: qty,
-            price: r2(linePrice),
-            name: extra.name,
-        });
-    }
-
-    const estimatedHours = getEstimatedHours(service, size) + extrasHours;
-
-    return {
-        basePrice: r2(basePrice),
-        extrasPrice: r2(extrasPrice),
-        totalPrice: r2(basePrice + extrasPrice),
-        estimatedHours: r2(estimatedHours),
-        extras: extrasArray,
-    };
+interface Props {
+    onSubmit?: () => void;
+    isSubmitting?: boolean;
 }
 
-type ProfileRow = {
-    first_name: string | null;
-    last_name: string | null;
-    email: string | null;
-    phone: string | null;
-    address: string | null;
-    postal_code: string | null;
-    city: string | null;
-    country: string | null;
-    notes: string | null;
+const STEP_HINT: Record<number, string> = {
+    0: "Select a service",
+    1: "Enter your PLZ",
+    2: "Apartment details",
+    3: "Extras",
+    4: "Contact & schedule",
 };
 
-export default function BookingClient() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const supabase = useMemo(() => createClient(), []);
+export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
+    const { step, canContinue, next, back } = useBookingNavigation();
+    const { selectedService, apartmentSize, peopleCount, hasPets, extras } = useBookingStore();
 
-    const {
-        step,
-        setStep,
+    const serviceId = selectedService ?? "";
+    const sizeId = apartmentSize ?? "";
+    const peopleId = peopleCount ?? "";
 
-        selectedService,
-        setSelectedService,
+    const total = (() => {
+        if (!serviceId || !sizeId || !peopleId) return 0;
 
-        apartmentSize,
-        peopleCount,
-        hasPets,
-        hasKids,
-        hasAllergies,
-        allergyNote,
-        extras,
+        const base =
+            FINAL_PRICES[sizeId]?.[serviceId]?.[peopleId]?.[hasPets ? "pet" : "noPet"] ?? 0;
 
-        formData,
-        setFormData,
+        const ext = Object.entries(extras || {}).reduce((sum, [id, q]) => {
+            const e = EXTRAS.find((x) => x.id === id);
+            return sum + (e ? e.price * (Number(q) || 0) : 0);
+        }, 0);
 
-        selectedDate,
-        selectedTime,
+        return base + ext;
+    })();
 
-        setPendingToken,
-    } = useBookingStore();
+    const time = (() => {
+        if (!serviceId || !sizeId) return "";
 
-    // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
-    useEffect(() => {
-        const raw = (searchParams.get("service") || "").trim().toLowerCase();
-        if (!raw) return;
+        let h = getEstimatedHours(serviceId, sizeId);
 
-        const allowed = new Set(["maintenance", "reset", "initial", "handover"]);
-        if (!allowed.has(raw)) return;
+        Object.entries(extras || {}).forEach(([id, qRaw]) => {
+            const q = Number(qRaw) || 0;
+            const e = EXTRAS.find((x) => x.id === id);
+            if (e && q > 0) h += e.hours * q;
+        });
 
-        if (selectedService) return;
+        const wh = Math.floor(h);
+        const m = Math.round((h - wh) * 60);
 
-        const found = SERVICES.find((s) => s.id === raw);
-        if (!found) return;
+        if (m === 0) return `${wh}h`;
+        if (wh === 0) return `${m}min`;
+        return `${wh}h ${m}min`;
+    })();
 
-        setSelectedService(found.id);
+    const service = SERVICES.find((s) => s.id === selectedService);
+    const showPrice = Boolean(serviceId && sizeId && peopleId);
 
-        // если сейчас на выборе сервиса — сразу идём на PLZ
-        if (step === 0) setStep(1);
-    }, [searchParams, selectedService, setSelectedService, step, setStep]);
+    const hintLeft = STEP_HINT[step] ?? "Continue";
+    const isFinalStep = step === 4;
 
-    // ✅ ONE profile autofill for the whole wizard (НЕ дублируем в ContactSchedule)
-    useEffect(() => {
-        let cancelled = false;
-
-        const run = async () => {
-            const { data: u } = await supabase.auth.getUser();
-            const user = u?.user;
-            if (!user || cancelled) return;
-
-            const { data, error } = await supabase
-                .from("profiles")
-                .select("first_name,last_name,email,phone,address,postal_code,city,country,notes")
-                .eq("id", user.id)
-                .maybeSingle();
-
-            if (cancelled || error || !data) return;
-
-            const p = data as ProfileRow;
-            const patch: Partial<typeof formData> = {};
-
-            // не затираем то, что юзер уже ввёл
-            if (!formData.email?.trim()) {
-                const em = (p.email || user.email || "").trim();
-                if (em) patch.email = em;
-            }
-            if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
-            if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
-            if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
-            if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
-            if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
-            if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
-            if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
-            if (!formData.notes?.trim() && p.notes?.trim()) patch.notes = p.notes.trim();
-
-            if (Object.keys(patch).length) setFormData(patch);
-        };
-
-        void run();
-        return () => {
-            cancelled = true;
-        };
-    }, [
-        supabase,
-        setFormData,
-        formData.email,
-        formData.firstName,
-        formData.lastName,
-        formData.phone,
-        formData.address,
-        formData.postalCode,
-        formData.city,
-        formData.country,
-        formData.notes,
-    ]);
-
-    const submitBooking = async () => {
-        if (isSubmitting) return;
-
-        if (step !== 4) return;
-        if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
-
-        if (
-            !(formData.firstName || "").trim() ||
-            !(formData.email || "").trim() ||
-            !(formData.phone || "").trim() ||
-            !(formData.address || "").trim() ||
-            !(formData.postalCode || "").trim() ||
-            !(formData.country || "").trim()
-        ) {
-            alert("Please fill in all required contact details.");
-            return;
-        }
-
-        setIsSubmitting(true);
-
-        try {
-            const totals = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
-
-            const orderData = {
-                service_type: selectedService,
-                apartment_size: apartmentSize,
-                people_count: peopleCount,
-                has_pets: hasPets,
-                has_kids: hasKids,
-                has_allergies: hasAllergies,
-                allergy_note: hasAllergies ? (allergyNote || null) : null,
-
-                extras: totals.extras,
-                base_price: totals.basePrice,
-                extras_price: totals.extrasPrice,
-                total_price: totals.totalPrice,
-                estimated_hours: totals.estimatedHours,
-
-                customer_first_name: (formData.firstName || "").trim(),
-                customer_last_name: (formData.lastName || "").trim() || null,
-                customer_email: (formData.email || "").trim(),
-                customer_phone: (formData.phone || "").trim(),
-                customer_address: (formData.address || "").trim(),
-                customer_postal_code: (formData.postalCode || "").trim(),
-                customer_city: (formData.city || "").trim() || null,
-                customer_country: (formData.country || "").trim(),
-                customer_notes: (formData.notes || "").trim() || null,
-
-                scheduled_date: selectedDate,
-                scheduled_time: selectedTime,
-            };
-
-            const res = await fetch("/api/booking/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderData }),
-            });
-
-            const jsonUnknown = await res.json().catch(() => null);
-
-            if (!res.ok || !isCreateOrderOk(jsonUnknown)) {
-                console.error("create-order failed:", { status: res.status, jsonUnknown });
-                alert("We couldn’t create the booking. Please try again.");
-                return;
-            }
-
-            setPendingToken(jsonUnknown.pendingToken);
-            router.push(`/booking/success?pendingOrder=${encodeURIComponent(jsonUnknown.pendingToken)}`);
-        } catch (e) {
-            console.error(e);
-            alert("Something went wrong.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+    // Hint under button only when disabled
+    const buttonHint = isFinalStep ? "Complete required fields" : hintLeft;
+    const showButtonHint = !canContinue && !isSubmitting;
 
     return (
-        <>
-            <Header />
-
-            <div className="min-h-screen bg-white mt-[80px]">
-                <header className="sticky top-0 z-50 bg-white border-b border-gray-100 py-5">
-                    <div className="flex justify-center gap-2">
-                        {[0, 1, 2, 3, 4].map((s) => (
-                            <div
-                                key={s}
-                                className={`w-3 h-3 rounded-full transition-all
-                  ${s < step ? "bg-gray-900" : ""}
-                  ${s === step ? "bg-gray-900 scale-125" : ""}
-                  ${s > step ? "bg-gray-200" : ""}`}
-                            />
-                        ))}
+        <div
+            className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white"
+            style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
+        >
+            <div className="px-4 md:px-6 pt-4">
+                <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                    <div className="flex flex-col min-w-0">
+                        {showPrice ? (
+                            <>
+                                <div className="text-2xl font-bold whitespace-nowrap">€ {total.toFixed(2)}</div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
+                            </>
+                        ) : selectedService && !apartmentSize ? (
+                            <>
+                                <div className="text-xl font-semibold whitespace-nowrap">From € {service?.startingPrice}</div>
+                                <div className="text-sm text-gray-500">Select apartment size</div>
+                            </>
+                        ) : (
+                            <div className="text-sm text-gray-500">{hintLeft}</div>
+                        )}
                     </div>
-                </header>
 
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(160px+env(safe-area-inset-bottom))]">
-                    {step === 0 && <ServiceSelection />}
-                    {step === 1 && <PostcodeCheck />}
-                    {step === 2 && <ApartmentDetails />}
-                    {step === 3 && <ExtraServices />}
-                    {step === 4 && <ContactSchedule />}
-                </main>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                        <div className="flex gap-2 md:gap-3 shrink-0">
+                            {step > 0 && (
+                                <button
+                                    onClick={back}
+                                    className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                >
+                                    Back
+                                </button>
+                            )}
 
-                <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />
+                            {isFinalStep ? (
+                                <button
+                                    onClick={() => onSubmit?.()}
+                                    disabled={!canContinue || isSubmitting}
+                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                >
+                                    {isSubmitting ? "Booking..." : "Book now"}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={next}
+                                    disabled={!canContinue}
+                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                >
+                                    Continue
+                                </button>
+                            )}
+                        </div>
+
+                        {showButtonHint && (
+                            <div className="text-xs text-gray-500 pr-1">{buttonHint}</div>
+                        )}
+                    </div>
+                </div>
             </div>
-        </>
+        </div>
     );
 }
