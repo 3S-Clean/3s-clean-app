@@ -1,407 +1,189 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useBookingStore } from "@/lib/booking/store";
-import { TIME_SLOTS, HOLIDAYS, getEstimatedHours, EXTRAS, WORKING_HOURS_END } from "@/lib/booking/config";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
+import Link from "next/link";
+import { Info } from "lucide-react";
 
-type ExistingBookingRow = {
-    scheduled_date: string;
-    scheduled_time: string;
-    estimated_hours: number;
-};
-type ProfileRow = {
-    first_name: string | null;
-    last_name: string | null;
-    email: string | null;
-    phone: string | null;
-    address: string | null;
-    postal_code: string | null;
-    city: string | null;
-    country: string | null;
-};
+import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
+import { SERVICES } from "@/lib/booking/config";
 
-async function waitForSession(
-    supabase: ReturnType<typeof createClient>,
-    maxAttempts = 10,
-    delayMs = 250
-) {
-    for (let i = 0; i < maxAttempts; i++) {
-        const { data } = await supabase.auth.getSession();
-        if (data.session) return data.session;
-        await new Promise((r) => setTimeout(r, delayMs));
-    }
-    return null;
-}
+const optionalServices = [
+    { name: "Linen change - single bed", price: "€7,50 per bed", time: "add 10 minutes per bed", frequency: "recommended every cleaning session" },
+    { name: "Linen change - double bed", price: "€14 per bed", time: "add 15 minutes per bed", frequency: "recommended every cleaning session" },
+    { name: "Oven heavy duty clean", price: "€100 per unit", time: "add 2 hours", frequency: "recommended once in 4-6 months" },
+    { name: "Fridge heavy duty clean", price: "€50 per unit", time: "add 1 hour", frequency: "recommended once every 6 months" },
+    { name: "Freezer heavy duty clean", price: "€50 per unit", time: "add 1 hour", frequency: "recommended once a year" },
+    { name: "Window cleaning – inside", price: "€4,25 per m²", time: "add 15 minutes per standard window", frequency: "recommended every 4-6 months" },
+    { name: "Window cleaning – outside", price: "€4,40 per m²", time: "add minutes per standard window", frequency: "recommended every 4-6 months" },
+    { name: "Balcony/terrace high pressure water cleaning", price: "€5,25 per m²", time: "add 30 minutes per 5 m²", frequency: "recommended once every 6 months" },
+    { name: "Intensive limescale removal", price: "€27 per half-hour block", time: "", frequency: "recommended every 4-6 months" },
+    { name: "Cupboards/cabinets organization", price: "€50 per hour", time: "", frequency: "recommended once every 6 months" },
+    { name: "Wardrobe arranging", price: "€50 per hour", time: "", frequency: "recommended once a month" },
+    { name: "Upholstery intensive clean", price: "€6,50 per seat", time: "add 20 minutes per 3-seater sofa", frequency: "recommended every 2-3 months" },
+    { name: "Glasses/plates handwash", price: "€2 per item", time: "", frequency: "" },
+];
 
-export default function ContactSchedule() {
-    const {
-        selectedService,
-        apartmentSize,
-        extras,
-        formData,
-        setFormData,
-        selectedDate,
-        setSelectedDate,
-        selectedTime,
-        setSelectedTime,
-    } = useBookingStore();
+const exclusions = [
+    "Moving heavy furniture or cleaning behind fixed furniture.",
+    "Laundry and ironing.",
+    "Carpet shampooing.",
+    "Heavy renovation dirt, plaster, paint splashes.",
+    "Repairs, filling holes, patch-up painting.",
+    "Disposal of bulky waste.",
+];
 
-    const supabase = useMemo(() => createClient(), []);
-    const didAutofillRef = useRef(false); // ✅ чтобы не долбить запросами бесконечно
-    const [currentMonth, setCurrentMonth] = useState(() => new Date());
-    const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
-
-    // ✅ profile autofill (safe: never overwrite user input)
-    useEffect(() => {
-        let cancelled = false;
-        const run = async () => {
-            // ✅ не делаем повторно, если уже один раз успешно пробовали
-            if (didAutofillRef.current) return;
-            try {
-                // после логина/верифая сессия может появиться не сразу
-                await waitForSession(supabase);
-                const { data: u } = await supabase.auth.getUser();
-                const user = u?.user;
-                if (!user) return;
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("first_name,last_name,phone,address,postal_code,city,country,email")
-                    .eq("id", user.id)
-                    .maybeSingle();
-                if (cancelled || error || !data) return;
-                didAutofillRef.current = true;
-                const p = data as ProfileRow;
-                const patch: Partial<typeof formData> = {};
-                // email: prefer formData, else profile.email, else auth.user.email
-                if (!formData.email?.trim()) {
-                    const em = (p.email || user.email || "").trim();
-                    if (em) patch.email = em;
-                }
-                if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
-                if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
-                if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
-                if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
-                if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
-                if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
-                if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
-                const userStarted =
-                    formData.firstName.trim() ||
-                    formData.lastName.trim() ||
-                    formData.email.trim() ||
-                    formData.phone.trim() ||
-                    formData.address.trim() ||
-                    formData.postalCode.trim() ||
-                    formData.city.trim();
-                if (userStarted) return;
-                if (Object.keys(patch).length) setFormData(patch);
-            } catch {
-                // тихо
-            }
-        };
-
-        run();
-        return () => {
-            cancelled = true;
-        };
-    }, [supabase, setFormData]);
-
-    // ---------- hours -> minutes (точно) ----------
-    const estimatedMinutes = useMemo(() => {
-        const baseHours = getEstimatedHours(selectedService || "", apartmentSize || "");
-        const extrasHours = Object.entries(extras).reduce((sum, [id, qty]) => {
-            const e = EXTRAS.find((x) => x.id === id);
-            return sum + (e ? e.hours * qty : 0);
-        }, 0);
-
-        return Math.max(0, Math.round((baseHours + extrasHours) * 60));
-    }, [selectedService, apartmentSize, extras]);
-    // ---------- fetch existing bookings via API ----------
-    useEffect(() => {
-        const controller = new AbortController();
-        const run = async () => {
-            const y = currentMonth.getFullYear();
-            const m = currentMonth.getMonth();
-            const start = new Date(y, m, 1).toISOString().split("T")[0];
-            const end = new Date(y, m + 1, 0).toISOString().split("T")[0];
-            try {
-                const res = await fetch("/api/booking/existing-bookings", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ startDate: start, endDate: end }),
-                    signal: controller.signal,
-                });
-
-                const json = (await res.json()) as ExistingBookingRow[];
-                setExistingBookings(Array.isArray(json) ? json : []);
-            } catch {
-                setExistingBookings([]);
-            }
-        };
-
-        run();
-        return () => controller.abort();
-    }, [currentMonth]);
-
-    // ---------- slot availability (в минутах, финиш <= 18:00) ----------
-    const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
-        const startMin = hour * 60 + minutes;
-        const endMin = startMin + estimatedMinutes;
-        if (endMin > WORKING_HOURS_END * 60) return false;
-        for (const b of existingBookings) {
-            if (b.scheduled_date !== dateKey) continue;
-            const [bh, bm] = b.scheduled_time.split(":").map(Number);
-            const bStartMin = (bh || 0) * 60 + (bm || 0);
-            const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
-            if (startMin < bEndMin && endMin > bStartMin) return false;
-        }
-
-        return true;
-    };
-
-    const hasSlots = (dateKey: string) => TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
-    // ---------- calendar calc ----------
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const getEndTime = () => {
-        if (!selectedTime) return "";
-        const slot = TIME_SLOTS.find((s) => s.id === selectedTime);
-        if (!slot) return "";
-        const endMin = slot.hour * 60 + slot.minutes + estimatedMinutes;
-        const endH = Math.floor(endMin / 60);
-        const endM = endMin % 60;
-        return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
-    };
+function Tooltip({ text }: { text: string }) {
+    const [isVisible, setIsVisible] = useState(false);
 
     return (
-        <div className="animate-fadeIn">
-            <div className="mb-10">
-                <h1 className="text-3xl font-semibold mb-3">Contact & Schedule</h1>
-                <p className="text-gray-500">Enter your details and pick a time</p>
-            </div>
+        <div className="relative inline-block">
+            <button
+                type="button"
+                onMouseEnter={() => setIsVisible(true)}
+                onMouseLeave={() => setIsVisible(false)}
+                onClick={() => setIsVisible((v) => !v)}
+                className="ml-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="More info"
+            >
+                <Info className="w-4 h-4" />
+            </button>
 
-            {/* Contact Form */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label className="block text-sm font-medium mb-2">First Name *</label>
-                    <input
-                        type="text"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ firstName: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
+            {isVisible && (
+                <div className="absolute z-50 w-64 p-3 text-sm bg-white border border-gray-200 rounded-lg shadow-lg -top-2 left-6 text-gray-600">
+                    {text}
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-2">Last Name *</label>
-                    <input
-                        type="text"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ lastName: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
-                </div>
-            </div>
+            )}
+        </div>
+    );
+}
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Email *</label>
-                <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-            </div>
+function ServiceCardComponent({ service }: { service: (typeof SERVICES)[number] }) {
+    const baseClasses = service.isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900";
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Phone *</label>
-                <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-            </div>
+    return (
+        <div id={service.id} className={`rounded-3xl p-6 md:p-8 ${baseClasses}`}>
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">{service.name}</h3>
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Address *</label>
-                <input
-                    type="text"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ address: e.target.value })}
-                    placeholder="Street and house number"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                />
-            </div>
+            <p className={`text-sm mb-6 ${service.isDark ? "text-gray-300" : "text-gray-600"}`}>
+                {service.description}
+            </p>
 
-            {/* ✅ NEW: PLZ / City / Country */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-                <div>
-                    <label className="block text-sm font-medium mb-2">PLZ *</label>
-                    <input
-                        type="text"
-                        inputMode="numeric"
-                        value={formData.postalCode ?? ""}
-                        onChange={(e) => setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })}
-                        placeholder="70173"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
-                </div>
+            <p className="text-2xl font-bold mb-6">
+                From € {service.startingPrice} <span className="text-sm font-normal">inc.VAT</span>
+            </p>
 
-                <div>
-                    <label className="block text-sm font-medium mb-2">City *</label>
-                    <input
-                        type="text"
-                        value={formData.city ?? ""}
-                        onChange={(e) => setFormData({ city: e.target.value })}
-                        placeholder="Stuttgart"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
-                </div>
+            <Link
+                href="/booking"
+                className={`block w-full py-4 px-6 rounded-full text-center font-medium mb-8 transition-colors ${
+                    service.isDark ? "bg-white text-gray-900 hover:bg-gray-100" : "bg-gray-900 text-white hover:bg-gray-800"
+                }`}
+            >
+                Select Experience
+            </Link>
 
-                <div>
-                    <label className="block text-sm font-medium mb-2">Country *</label>
-                    <input
-                        type="text"
-                        value={formData.country ?? ""}
-                        onChange={(e) => setFormData({ country: e.target.value })}
-                        placeholder="Germany"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
-                </div>
-            </div>
-
-            {/* Calendar */}
-            <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Select Date & Time *</h3>
-                <p className="text-sm text-gray-500 mb-5">
-                    ~{Math.max(1, Math.ceil(estimatedMinutes / 60))}h cleaning. Must finish by 18:00.
+            {service.baseFeatures ? (
+                <p className={`text-sm font-medium mb-4 ${service.isDark ? "text-gray-300" : "text-gray-600"}`}>
+                    {service.baseFeatures}
                 </p>
+            ) : (
+                <p className={`text-sm font-medium mb-4 ${service.isDark ? "text-gray-300" : "text-gray-600"}`}>
+                    Includes:
+                </p>
+            )}
 
-                <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <button
-                            onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
-                            className="p-2 rounded-full hover:bg-gray-100"
-                        >
-                            <ChevronLeft className="w-5 h-5 text-gray-500" />
-                        </button>
+            <ul className="space-y-3">
+                {service.includes.map((feature, index) => (
+                    <li key={index} className="flex items-start">
+            <span
+                className={`w-1.5 h-1.5 rounded-full mt-2 mr-3 flex-shrink-0 ${
+                    service.isDark ? "bg-white" : "bg-gray-900"
+                }`}
+                aria-hidden="true"
+            />
+                        <span className="flex items-center flex-wrap">
+              {feature.name}
+                            {feature.description ? <Tooltip text={feature.description} /> : null}
+            </span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
 
-                        <div className="text-lg">
-                            <span className="font-bold">{currentMonth.toLocaleString("en", { month: "long" })}</span>{" "}
-                            <span className="text-gray-400">{year}</span>
-                        </div>
+export default function ExperiencePage() {
+    return (
+        <>
+            <Header />
 
-                        <button
-                            onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
-                            className="p-2 rounded-full hover:bg-gray-100"
-                        >
-                            <ChevronRight className="w-5 h-5 text-gray-500" />
-                        </button>
+            <main className="min-h-screen bg-white mt-[80px]">
+                {/* Hero */}
+                <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-12 max-w-4xl mx-auto text-center">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+                        3S-Clean Experiences –<br />
+                        choose yours!
+                    </h1>
+                    <p className="text-gray-600 text-lg">Choose the type of service that fits your home.</p>
+                </section>
+
+                {/* Service Cards Grid */}
+                <section className="px-6 py-8 max-w-6xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {SERVICES.map((service) => (
+                            <ServiceCardComponent key={service.id} service={service} />
+                        ))}
                     </div>
+                </section>
 
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
+                {/* Price Note */}
+                <section className="px-6 py-8 max-w-4xl mx-auto">
+                    <p className="text-gray-600 text-center">
+                        Final price and the expected time required are calculated based on the details you provide at time of booking and
+                        the additional services you may wish to choose.
+                    </p>
+                </section>
+
+                {/* Optional Services */}
+                <section className="px-6 py-12 md:py-16 max-w-4xl mx-auto">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2">Optional Services</h2>
+                    <p className="text-gray-600 mb-8">Available at time of booking to complement each 3S-Clean Experience:</p>
+
+                    <div className="space-y-4">
+                        {optionalServices.map((service, index) => (
                             <div
-                                key={d}
-                                className={`text-center text-xs font-semibold py-2 ${d === "SUN" ? "text-gray-300" : "text-gray-500"}`}
+                                key={index}
+                                className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-gray-100"
                             >
-                                {d}
+                                <div className="flex items-start mb-2 md:mb-0">
+                                    <span className="font-medium">{service.name}</span>
+                                    {service.frequency ? (
+                                        <Tooltip text={`${service.time ? service.time + ", " : ""}${service.frequency}`} />
+                                    ) : null}
+                                </div>
+
+                                <span className="text-gray-600 font-medium">{service.price}</span>
                             </div>
                         ))}
                     </div>
+                </section>
 
-                    <div className="grid grid-cols-7 gap-1">
-                        {Array.from({ length: firstDay }).map((_, i) => (
-                            <div key={`e${i}`} />
+                {/* Exclusions */}
+                <section className="px-6 py-12 md:py-16 max-w-4xl mx-auto">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-6">What we do not do:</h2>
+
+                    <ul className="space-y-3">
+                        {exclusions.map((item, index) => (
+                            <li key={index} className="flex items-start text-gray-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 mr-3 flex-shrink-0" aria-hidden="true" />
+                                {item}
+                            </li>
                         ))}
+                    </ul>
+                </section>
+            </main>
 
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1;
-                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                            const date = new Date(year, month, day);
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const isPast = date < today;
-                            const isSunday = date.getDay() === 0;
-                            const isHoliday = HOLIDAYS.includes(dateKey);
-                            const available = hasSlots(dateKey);
-                            const isSelected = selectedDate === dateKey;
-                            const disabled = isPast || isSunday || isHoliday || !available;
-
-                            return (
-                                <button
-                                    key={day}
-                                    disabled={disabled}
-                                    onClick={() => {
-                                        setSelectedDate(dateKey);
-                                        setSelectedTime(null);
-                                    }}
-                                    className={`aspect-square rounded-xl text-sm font-medium transition-all
-                    ${isSelected ? "bg-gray-900 text-white" : ""}
-                    ${disabled && !isSelected ? "text-gray-300 cursor-not-allowed" : ""}
-                    ${!disabled && !isSelected ? "hover:bg-gray-100 text-gray-700" : ""}`}
-                                >
-                                    {day}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-
-            {/* Time Slots */}
-            {selectedDate && (
-                <div className="mb-8 animate-fadeIn">
-                    <h3 className="text-base font-semibold mb-2">
-                        Available times for{" "}
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
-                        })}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">Cleaning must finish by 18:00</p>
-
-                    <div className="grid grid-cols-4 gap-2">
-                        {TIME_SLOTS.map((slot) => {
-                            const available = isSlotAvailable(selectedDate, slot.hour, slot.minutes);
-                            const isSelected = selectedTime === slot.id;
-
-                            return (
-                                <button
-                                    key={slot.id}
-                                    onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
-                                    disabled={!available}
-                                    className={`py-2.5 rounded-xl text-sm font-medium transition-all
-                    ${isSelected ? "bg-gray-900 text-white" : available ? "bg-gray-200 text-gray-900 hover:bg-gray-300" : "bg-gray-100 text-gray-300 cursor-not-allowed"}`}
-                                >
-                                    {slot.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {selectedTime && (
-                        <p className="mt-4 text-sm text-gray-900 font-medium">
-                            ✓ Cleaning scheduled: {selectedTime} - {getEndTime()}
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* Notes */}
-            <div>
-                <label className="block text-sm font-medium mb-2">Additional Notes</label>
-                <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ notes: e.target.value })}
-                    placeholder="Access instructions, parking info..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 resize-y min-h-[100px]"
-                />
-            </div>
-        </div>
+            <Footer />
+        </>
     );
 }
