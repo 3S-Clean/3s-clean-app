@@ -4,6 +4,7 @@ import { useBookingStore } from "@/lib/booking/store";
 import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
 import { AnimatePresence, motion } from "framer-motion";
+import type { PointerEvent, MouseEvent } from "react";
 
 interface Props {
     onSubmit?: () => void;
@@ -73,12 +74,11 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     const isFinalStep = step === 4;
 
-    // ✅ hint under primary button (only when disabled)
     const showButtonHint = !canContinue && !isSubmitting;
     const buttonHintText = isFinalStep ? "Complete required fields" : hint;
 
-    // ✅ iOS: prevent tap-through when disabled
-    const blockTap = (e: React.PointerEvent | React.MouseEvent) => {
+    // ✅ iOS: prevent tap-through when button is disabled
+    const blockTap = (e: PointerEvent | MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
     };
@@ -103,12 +103,12 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                 <div className="text-xl font-semibold whitespace-nowrap">
                                     From €&nbsp;{service?.startingPrice}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-500 whitespace-nowrap">
                                     Select apartment size • step {step + 1}/5
                                 </div>
                             </>
                         ) : (
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 whitespace-nowrap">
                                 {hint} • step {step + 1}/5
                             </div>
                         )}
@@ -137,7 +137,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                         {isSubmitting ? "Booking..." : "Book now"}
                                     </button>
 
-                                    {/* ✅ Overlay catches taps when disabled (prevents click-through on iOS) */}
                                     {(!canContinue || isSubmitting) && (
                                         <div
                                             className="absolute inset-0 rounded-full"
@@ -158,7 +157,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                         Continue
                                     </button>
 
-                                    {/* ✅ Overlay catches taps when disabled (prevents click-through on iOS) */}
                                     {!canContinue && (
                                         <div
                                             className="absolute inset-0 rounded-full"
