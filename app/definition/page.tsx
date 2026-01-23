@@ -9,19 +9,12 @@ export default function DefinitionPage() {
     return (
         <>
             <Header/>
-            <main className="min-h-screen bg-white">
+            <main className="min-h-screen bg-white mt-[80px] ">
                 {/* Hero */}
                 <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-12 max-w-4xl mx-auto text-center">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
                         3S-Clean Promise:
                     </h1>
-                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                        Every 3S-Clean visit follows the same standard.
-                        <br />
-                        Sauber, Sicher and Souverän are not features.
-                        <br />
-                        They define how premium cleaning should feel.
-                    </p>
                 </section>
 
                 {/* SAUBER Section */}

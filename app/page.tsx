@@ -9,7 +9,7 @@ export default function HomePage() {
     return (
         <>
         <Header/>
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-white mt-[80px]">
             {/* Hero + 3S Promise - Two columns on desktop */}
             <section className="px-6 pt-12 pb-16 md:pt-20 md:pb-24 max-w-7xl mx-auto">
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -103,7 +103,7 @@ export default function HomePage() {
                         playsInline
                         className="w-full h-full object-cover"
                     >
-                        <source src="/videos/live-video.mov" type="video/mov" />
+                        <source src="/videos/live-video.MP4" type="video/MP4" />
                     </video>
                     {/* Fallback gradient if no videos */}
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 -z-10" />

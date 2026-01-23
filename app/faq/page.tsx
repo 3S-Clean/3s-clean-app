@@ -196,7 +196,7 @@ export default function FAQPage() {
     return (
         <>
             <Header/>
-            <main className="min-h-screen bg-white">
+            <main className="min-h-screen bg-white mt-[80px]">
                 {/* Hero */}
                 <section className="px-6 pt-12 pb-4 md:pt-20 md:pb-8 max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">

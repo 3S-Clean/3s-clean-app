@@ -39,7 +39,7 @@ export default function AboutPage() {
     return (
         <>
             <Header />
-            <main className="min-h-screen bg-white">
+            <main className="min-h-screen bg-white mt-[80px]">
                 {/* Hero */}
                 <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-16 max-w-4xl mx-auto text-center">
                     <p className="text-sm font-medium text-gray-500 mb-4 tracking-wider uppercase">
