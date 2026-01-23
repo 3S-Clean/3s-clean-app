@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBookingStore } from "@/lib/booking/store";
-import { TIME_SLOTS, HOLIDAYS, getEstimatedHours, EXTRAS, WORKING_HOURS_END } from "@/lib/booking/config";
+import {
+    EXTRAS,
+    HOLIDAYS,
+    TIME_SLOTS,
+    WORKING_HOURS_END,
+    getEstimatedHours,
+} from "@/lib/booking/config";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type ExistingBookingRow = {
-    scheduled_date: string | null;
-    scheduled_time: string | null;
-    estimated_hours: number | null;
+    scheduled_date: string; // YYYY-MM-DD
+    scheduled_time: string; // HH:mm
+    estimated_hours: number;
 };
 
 export default function ContactSchedule() {
@@ -27,14 +33,10 @@ export default function ContactSchedule() {
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
-    const greeting = useMemo(() => {
-        const name = (formData.firstName || "").trim();
-        return name ? `Hi ${name} 👋` : "Almost done 👋";
-    }, [formData.firstName]);
-
+    // ---------- hours -> minutes (точно) ----------
     const estimatedMinutes = useMemo(() => {
         const baseHours = getEstimatedHours(selectedService || "", apartmentSize || "");
-        const extrasHours = Object.entries(extras).reduce((sum, [id, qty]) => {
+        const extrasHours = Object.entries(extras || {}).reduce((sum, [id, qty]) => {
             const e = EXTRAS.find((x) => x.id === id);
             return sum + (e ? e.hours * (Number(qty) || 0) : 0);
         }, 0);
@@ -42,7 +44,7 @@ export default function ContactSchedule() {
         return Math.max(0, Math.round((baseHours + extrasHours) * 60));
     }, [selectedService, apartmentSize, extras]);
 
-    // fetch existing bookings for current month
+    // ---------- fetch existing bookings via API ----------
     useEffect(() => {
         const controller = new AbortController();
 
@@ -60,7 +62,7 @@ export default function ContactSchedule() {
                     signal: controller.signal,
                 });
 
-                const json = await res.json().catch(() => []);
+                const json = (await res.json()) as ExistingBookingRow[];
                 setExistingBookings(Array.isArray(json) ? json : []);
             } catch {
                 setExistingBookings([]);
@@ -71,42 +73,36 @@ export default function ContactSchedule() {
         return () => controller.abort();
     }, [currentMonth]);
 
-    const isSlotAvailable = useCallback(
-        (dateKey: string, hour: number, minutes: number) => {
-            const startMin = hour * 60 + minutes;
-            const endMin = startMin + estimatedMinutes;
-            if (endMin > WORKING_HOURS_END * 60) return false;
+    // ---------- slot availability (в минутах, финиш <= 18:00) ----------
+    const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
+        const startMin = hour * 60 + minutes;
+        const endMin = startMin + estimatedMinutes;
 
-            for (const b of existingBookings) {
-                if (!b?.scheduled_date || !b?.scheduled_time) continue;
-                if (b.scheduled_date !== dateKey) continue;
+        if (endMin > WORKING_HOURS_END * 60) return false;
 
-                const parts = b.scheduled_time.split(":");
-                const bh = Number(parts[0] ?? 0);
-                const bm = Number(parts[1] ?? 0);
+        for (const b of existingBookings) {
+            if (b.scheduled_date !== dateKey) continue;
 
-                const bStartMin = bh * 60 + bm;
-                const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
+            const [bh, bm] = b.scheduled_time.split(":").map(Number);
+            const bStartMin = (bh || 0) * 60 + (bm || 0);
+            const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
 
-                if (startMin < bEndMin && endMin > bStartMin) return false;
-            }
+            if (startMin < bEndMin && endMin > bStartMin) return false; // overlap
+        }
 
-            return true;
-        },
-        [estimatedMinutes, existingBookings]
-    );
+        return true;
+    };
 
-    const hasSlots = useCallback(
-        (dateKey: string) => TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes)),
-        [isSlotAvailable]
-    );
+    const hasSlots = (dateKey: string) =>
+        TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
 
+    // ---------- calendar calc ----------
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const getEndTime = useCallback(() => {
+    const getEndTime = () => {
         if (!selectedTime) return "";
         const slot = TIME_SLOTS.find((s) => s.id === selectedTime);
         if (!slot) return "";
@@ -114,12 +110,14 @@ export default function ContactSchedule() {
         const endH = Math.floor(endMin / 60);
         const endM = endMin % 60;
         return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
-    }, [selectedTime, estimatedMinutes]);
+    };
 
     return (
         <div className="animate-fadeIn">
             <div className="mb-10">
-                <div className="text-sm text-gray-500 mb-2">{greeting}</div>
+                <div className="text-sm text-gray-500 mb-2">
+                    {formData.firstName?.trim() ? `Hi ${formData.firstName.trim()} 👋` : "Hi 👋"}
+                </div>
                 <h1 className="text-3xl font-semibold mb-3">Contact & Schedule</h1>
                 <p className="text-gray-500">Enter your details and pick a time</p>
             </div>
@@ -177,6 +175,7 @@ export default function ContactSchedule() {
                 />
             </div>
 
+            {/* PLZ / City / Country */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 <div>
                     <label className="block text-sm font-medium mb-2">PLZ *</label>
@@ -184,7 +183,9 @@ export default function ContactSchedule() {
                         type="text"
                         inputMode="numeric"
                         value={formData.postalCode ?? ""}
-                        onChange={(e) => setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })}
+                        onChange={(e) =>
+                            setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })
+                        }
                         placeholder="70173"
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
                     />
@@ -223,6 +224,7 @@ export default function ContactSchedule() {
                 <div className="bg-white rounded-2xl p-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-6">
                         <button
+                            type="button"
                             onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
                             className="p-2 rounded-full hover:bg-gray-100"
                         >
@@ -230,11 +232,14 @@ export default function ContactSchedule() {
                         </button>
 
                         <div className="text-lg">
-                            <span className="font-bold">{currentMonth.toLocaleString("en", { month: "long" })}</span>{" "}
+              <span className="font-bold">
+                {currentMonth.toLocaleString("en", { month: "long" })}
+              </span>{" "}
                             <span className="text-gray-400">{year}</span>
                         </div>
 
                         <button
+                            type="button"
                             onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
                             className="p-2 rounded-full hover:bg-gray-100"
                         >
@@ -246,7 +251,9 @@ export default function ContactSchedule() {
                         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
                             <div
                                 key={d}
-                                className={`text-center text-xs font-semibold py-2 ${d === "SUN" ? "text-gray-300" : "text-gray-500"}`}
+                                className={`text-center text-xs font-semibold py-2 ${
+                                    d === "SUN" ? "text-gray-300" : "text-gray-500"
+                                }`}
                             >
                                 {d}
                             </div>
@@ -260,7 +267,10 @@ export default function ContactSchedule() {
 
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                             const day = i + 1;
-                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(
+                                2,
+                                "0"
+                            )}`;
                             const date = new Date(year, month, day);
 
                             const today = new Date();
@@ -270,13 +280,14 @@ export default function ContactSchedule() {
                             const isSunday = date.getDay() === 0;
                             const isHoliday = HOLIDAYS.includes(dateKey);
                             const available = hasSlots(dateKey);
-                            const isSelected = selectedDate === dateKey;
 
+                            const isSelected = selectedDate === dateKey;
                             const disabled = isPast || isSunday || isHoliday || !available;
 
                             return (
                                 <button
                                     key={day}
+                                    type="button"
                                     disabled={disabled}
                                     onClick={() => {
                                         setSelectedDate(dateKey);
@@ -316,10 +327,17 @@ export default function ContactSchedule() {
                             return (
                                 <button
                                     key={slot.id}
+                                    type="button"
                                     onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
                                     disabled={!available}
                                     className={`py-2.5 rounded-xl text-sm font-medium transition-all
-                    ${isSelected ? "bg-gray-900 text-white" : available ? "bg-gray-200 text-gray-900 hover:bg-gray-300" : "bg-gray-100 text-gray-300 cursor-not-allowed"}`}
+                    ${
+                                        isSelected
+                                            ? "bg-gray-900 text-white"
+                                            : available
+                                                ? "bg-gray-200 text-gray-900 hover:bg-gray-300"
+                                                : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                    }`}
                                 >
                                     {slot.label}
                                 </button>
