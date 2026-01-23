@@ -15,8 +15,6 @@ import Header from "@/components/header/Header";
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 
-import { AnimatePresence, motion } from "framer-motion";
-
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
 
@@ -25,7 +23,6 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
     const o = v as Record<string, unknown>;
     return typeof o.orderId === "string" && typeof o.pendingToken === "string";
 }
-
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 function calculateTotals(
@@ -81,72 +78,6 @@ type ProfileRow = {
     notes: string | null;
 };
 
-function formatHours(h: number) {
-    const wh = Math.floor(h);
-    const m = Math.round((h - wh) * 60);
-    if (m === 0) return `${wh}h`;
-    if (wh === 0) return `${m}min`;
-    return `${wh}h ${m}min`;
-}
-
-/** UI-only: compact summary bar (no logic changes) */
-function BookingSummaryBar() {
-    const { step, selectedService, apartmentSize, peopleCount, hasPets, extras } = useBookingStore();
-
-    if (!selectedService) return null;
-
-    const service = SERVICES.find((s) => s.id === selectedService);
-    if (!service) return null;
-
-    const extrasCount = Object.values(extras || {}).reduce((s, q) => s + (Number(q) || 0), 0);
-    const canCalc = Boolean(selectedService && apartmentSize && peopleCount);
-
-    const totals = canCalc
-        ? calculateTotals(selectedService, apartmentSize!, peopleCount!, !!hasPets, extras || {})
-        : null;
-
-    return (
-        <div
-            className="fixed left-0 right-0 z-30 px-4"
-            style={{
-                bottom: `calc(92px + env(safe-area-inset-bottom))`, // sits above BookingFooter
-            }}
-        >
-            <div className="mx-auto max-w-2xl rounded-2xl border border-gray-200 bg-white/90 backdrop-blur px-4 py-3 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                        <div className="text-sm font-semibold text-gray-900 truncate">
-                            {service.name}
-                            {apartmentSize ? <span className="text-gray-400 font-medium"> · {apartmentSize}</span> : null}
-                            {peopleCount ? <span className="text-gray-400 font-medium"> · {peopleCount}</span> : null}
-                            {hasPets ? <span className="text-gray-400 font-medium"> · pets</span> : null}
-                        </div>
-
-                        <div className="text-xs text-gray-500 truncate">
-                            {extrasCount > 0 ? `${extrasCount} extras selected` : "No extras selected"}
-                            <span className="text-gray-400"> · step {step + 1}/5</span>
-                        </div>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                        {totals ? (
-                            <>
-                                <div className="text-base font-bold text-gray-900">€ {totals.totalPrice.toFixed(2)}</div>
-                                <div className="text-xs text-gray-500">~{formatHours(totals.estimatedHours)}</div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="text-base font-bold text-gray-900">From € {service.startingPrice}</div>
-                                <div className="text-xs text-gray-500">Select details to see total</div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function BookingClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -177,15 +108,14 @@ export default function BookingClient() {
         setPendingToken,
     } = useBookingStore();
 
-    // ✅ Deep-link: /booking?service=regular|deep|intensive|handover
+    // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
         if (!raw) return;
 
-        const allowed = new Set(["regular", "deep", "intensive", "handover"]);
+        const allowed = new Set(["maintenance", "reset", "initial", "handover"]);
         if (!allowed.has(raw)) return;
 
-        // если сервис уже выбран (пользователь кликал) — не мешаем
         if (selectedService) return;
 
         const found = SERVICES.find((s) => s.id === raw);
@@ -197,7 +127,7 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // ✅ Prefill profile data if user is logged in (ONLY contact fields, no PLZ auto-gate here)
+    // ✅ ONE profile autofill for the whole wizard (НЕ дублируем в ContactSchedule)
     useEffect(() => {
         let cancelled = false;
 
@@ -217,6 +147,7 @@ export default function BookingClient() {
             const p = data as ProfileRow;
             const patch: Partial<typeof formData> = {};
 
+            // не затираем то, что юзер уже ввёл
             if (!formData.email?.trim()) {
                 const em = (p.email || user.email || "").trim();
                 if (em) patch.email = em;
@@ -251,19 +182,12 @@ export default function BookingClient() {
         formData.notes,
     ]);
 
-    // UI-only: smooth focus to top on step change
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [step]);
-
     const submitBooking = async () => {
         if (isSubmitting) return;
 
-        // Must be on final step and have all required selections
         if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
-        // Required customer fields
         if (
             !(formData.firstName || "").trim() ||
             !(formData.email || "").trim() ||
@@ -353,26 +277,12 @@ export default function BookingClient() {
                     </div>
                 </header>
 
-                {/* ✅ UI-only Sticky Summary */}
-                <BookingSummaryBar />
-
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(170px+env(safe-area-inset-bottom))]">
-                    {/* ✅ UI-only Step transitions */}
-                    <AnimatePresence mode="wait" initial={false}>
-                        <motion.div
-                            key={step}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ type: "spring", stiffness: 420, damping: 38 }}
-                        >
-                            {step === 0 && <ServiceSelection />}
-                            {step === 1 && <PostcodeCheck />}
-                            {step === 2 && <ApartmentDetails />}
-                            {step === 3 && <ExtraServices />}
-                            {step === 4 && <ContactSchedule />}
-                        </motion.div>
-                    </AnimatePresence>
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(160px+env(safe-area-inset-bottom))]">
+                    {step === 0 && <ServiceSelection />}
+                    {step === 1 && <PostcodeCheck />}
+                    {step === 2 && <ApartmentDetails />}
+                    {step === 3 && <ExtraServices />}
+                    {step === 4 && <ContactSchedule />}
                 </main>
 
                 <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />

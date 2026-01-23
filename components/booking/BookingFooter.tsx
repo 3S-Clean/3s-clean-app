@@ -4,12 +4,19 @@ import { useMemo } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
-import { AnimatePresence, motion } from "framer-motion";
 
 interface Props {
     onSubmit?: () => void;
     isSubmitting?: boolean;
 }
+
+const STEP_HINT: Record<number, string> = {
+    0: "Select a service",
+    1: "Enter your PLZ",
+    2: "Apartment details",
+    3: "Extras (optional)",
+    4: "Contact & schedule",
+};
 
 export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const { step, canContinue, next, back } = useBookingNavigation();
@@ -56,39 +63,20 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const showPrice = Boolean(serviceId && sizeId && peopleId);
     const isFinalStep = step === 4;
 
-    // ✅ Текст по текущему шагу (а не "глобально чего не хватает")
-    const leftTitle = (() => {
-        if (showPrice) return `€ ${total.toFixed(2)}`;
-        if (step === 0 && service) return `From € ${service.startingPrice}`;
-        if (step === 2 && service) return `From € ${service.startingPrice}`;
-        return "";
-    })();
+    // ✅ Подсказка снизу кнопки — только когда disabled
+    const footerHint = isFinalStep ? "Complete required fields" : (STEP_HINT[step] ?? "Continue");
+    const showHint = !canContinue && !isSubmitting;
 
-    const leftSubtitle = (() => {
-        if (showPrice) return `inc.VAT • ~${time}`;
+    // ✅ Левый текст (не путать шаги!)
+    const leftTitle = showPrice
+        ? `€ ${total.toFixed(2)}`
+        : selectedService
+            ? `From € ${service?.startingPrice ?? ""}`
+            : "";
 
-        switch (step) {
-            case 0:
-                // service selection: если сервис выбран — ведём на PLZ, не на apartment
-                return selectedService ? "Continue to availability (PLZ)" : "Select a service";
-            case 1:
-                return "Enter your PLZ";
-            case 2:
-                // apartment step: реально просим размер/людей
-                if (!apartmentSize) return "Select apartment size";
-                if (!peopleCount) return "Select people living there";
-                return "Apartment details";
-            case 3:
-                return "Extras";
-            case 4:
-                return "Contact & schedule";
-            default:
-                return "Continue";
-        }
-    })();
-
-    // ✅ Hint под кнопкой (только когда disabled)
-    const buttonHintText = isFinalStep ? "Complete required fields" : leftSubtitle;
+    const leftSubtitle = showPrice
+        ? `inc. VAT • ~${time}`
+        : (STEP_HINT[step] ?? "");
 
     return (
         <div
@@ -97,7 +85,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
         >
             <div className="px-4 md:px-6 pt-4">
                 <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-                    {/* LEFT */}
                     <div className="flex flex-col min-w-0">
                         {leftTitle ? (
                             <>
@@ -105,13 +92,12 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                 <div className="text-sm text-gray-500 whitespace-nowrap">{leftSubtitle}</div>
                             </>
                         ) : (
-                            <div className="text-sm text-gray-500">{leftSubtitle}</div>
+                            <div className="text-sm text-gray-500">{STEP_HINT[step] ?? "Continue"}</div>
                         )}
                     </div>
 
-                    {/* RIGHT */}
                     <div className="flex flex-col items-end gap-1 shrink-0">
-                        <div className="flex gap-2 md:gap-3 shrink-0">
+                        <div className="flex gap-2 md:gap-3">
                             {step > 0 && (
                                 <button
                                     onClick={back}
@@ -140,20 +126,12 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                             )}
                         </div>
 
-                        <AnimatePresence initial={false}>
-                            {!canContinue && !isSubmitting && (
-                                <motion.div
-                                    key="footer-hint"
-                                    initial={{ opacity: 0, y: -2 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -2 }}
-                                    transition={{ duration: 0.18 }}
-                                    className="text-xs text-gray-500 pr-1"
-                                >
-                                    {buttonHintText}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        <div
+                            className={`text-xs text-gray-500 pr-1 transition-opacity ${showHint ? "opacity-100" : "opacity-0"}`}
+                            aria-live="polite"
+                        >
+                            {footerHint}
+                        </div>
                     </div>
                 </div>
             </div>
