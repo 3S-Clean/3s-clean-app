@@ -3,6 +3,7 @@
 import { useBookingStore } from "@/lib/booking/store";
 import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Props {
     onSubmit?: () => void;
@@ -72,6 +73,11 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     const isFinalStep = step === 4;
 
+    // ✅ Button-side hint logic (UI only)
+    const showButtonHint =
+        (!canContinue && !isSubmitting) || (!canContinue && !isFinalStep); // safe default
+    const buttonHintText = isFinalStep ? "Complete required fields" : hint;
+
     return (
         <div
             className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white"
@@ -82,12 +88,8 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                     <div className="flex flex-col min-w-0">
                         {showPrice ? (
                             <>
-                                <div className="text-2xl font-bold whitespace-nowrap">
-                                    €&nbsp;{total.toFixed(2)}
-                                </div>
-                                <div className="text-sm text-gray-500 whitespace-nowrap">
-                                    inc.VAT • ~{time}
-                                </div>
+                                <div className="text-2xl font-bold whitespace-nowrap">€&nbsp;{total.toFixed(2)}</div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
                             </>
                         ) : selectedService && !apartmentSize ? (
                             <>
@@ -101,33 +103,52 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                         )}
                     </div>
 
-                    <div className="flex gap-2 md:gap-3 shrink-0">
-                        {step > 0 && (
-                            <button
-                                onClick={back}
-                                className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
-                            >
-                                Back
-                            </button>
-                        )}
+                    {/* Right side: buttons + hint under primary button */}
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                        <div className="flex gap-2 md:gap-3 shrink-0">
+                            {step > 0 && (
+                                <button
+                                    onClick={back}
+                                    className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                >
+                                    Back
+                                </button>
+                            )}
 
-                        {isFinalStep ? (
-                            <button
-                                onClick={() => onSubmit?.()}
-                                disabled={!canContinue || isSubmitting}
-                                className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                            >
-                                {isSubmitting ? "Booking..." : "Book now"}
-                            </button>
-                        ) : (
-                            <button
-                                onClick={next}
-                                disabled={!canContinue}
-                                className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
-                            >
-                                Continue
-                            </button>
-                        )}
+                            {isFinalStep ? (
+                                <button
+                                    onClick={() => onSubmit?.()}
+                                    disabled={!canContinue || isSubmitting}
+                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                >
+                                    {isSubmitting ? "Booking..." : "Book now"}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={next}
+                                    disabled={!canContinue}
+                                    className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
+                                >
+                                    Continue
+                                </button>
+                            )}
+                        </div>
+
+                        {/* ✅ Button hint (appears only when disabled) */}
+                        <AnimatePresence initial={false}>
+                            {(!canContinue && !isSubmitting) && (
+                                <motion.div
+                                    key="footer-hint"
+                                    initial={{ opacity: 0, y: -2 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -2 }}
+                                    transition={{ duration: 0.18 }}
+                                    className="text-xs text-gray-500 pr-1"
+                                >
+                                    {buttonHintText}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
