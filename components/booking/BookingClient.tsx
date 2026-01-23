@@ -9,7 +9,7 @@ import ServiceSelection from "@/components/booking/ServiceSelection";
 import ApartmentDetails from "@/components/booking/ApartmentDetails";
 import ExtraServices from "@/components/booking/ExtraServices";
 import ContactSchedule from "@/components/booking/ContactSchedule";
-import BookingFooter from "@/components/booking/BookingFooter";
+import BookingFooter, { BOOKING_FOOTER_H } from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
 import { useBookingStore } from "@/lib/booking/store";
@@ -113,7 +113,7 @@ export default function BookingClient() {
         setPendingToken,
     } = useBookingStore();
 
-    // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
+    // Deep-link: /booking?service=maintenance|reset|initial|handover
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
         if (!raw) return;
@@ -130,7 +130,7 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // ✅ Prefill profile (ONE place for all steps; never overwrite user input)
+    // Prefill profile (ONE place for all steps; never overwrite user input)
     useEffect(() => {
         let cancelled = false;
 
@@ -186,7 +186,6 @@ export default function BookingClient() {
 
     const submitBooking = async () => {
         if (isSubmitting) return;
-
         if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
@@ -257,7 +256,7 @@ export default function BookingClient() {
         }
     };
 
-    // ---------- summary UI data ----------
+    // summary UI data
     const service = SERVICES.find((s) => s.id === selectedService);
     const sizeLabel = APARTMENT_SIZES.find((s) => s.id === apartmentSize)?.label ?? apartmentSize ?? "";
     const peopleLabel = PEOPLE_OPTIONS.find((p) => p.id === peopleCount)?.label ?? peopleCount ?? "";
@@ -273,9 +272,8 @@ export default function BookingClient() {
 
     const stepText = `${step + 1}/5`;
 
-    // ✅ These two numbers fix “bar is too high”
-    const FOOTER_STACK_PX = 112; // footer height-ish
-    const BAR_GAP_PX = 12;       // small breathing space
+    // Summary height (tight, premium)
+    const SUMMARY_H = 64;
 
     return (
         <>
@@ -297,27 +295,23 @@ export default function BookingClient() {
                     </div>
                 </header>
 
-                {/* ✅ floating summary (does NOT block clicks) */}
-                {selectedService && (
+                {/* pinned summary прямо над футером */}
+                {selectedService && step > 0 && (
                     <div
                         className="fixed left-0 right-0 z-30 px-4 pointer-events-none"
-                        style={{
-                            bottom: `calc(${FOOTER_STACK_PX + BAR_GAP_PX}px + env(safe-area-inset-bottom))`,
-                        }}
+                        style={{ bottom: `calc(${BOOKING_FOOTER_H}px + env(safe-area-inset-bottom))` }}
                     >
                         <div className="max-w-2xl mx-auto">
-                            <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-sm px-4 py-3">
+                            <div className="rounded-2xl border border-gray-200 bg-white/95 backdrop-blur-md shadow-sm px-4 py-2 pointer-events-auto">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
                                         <div className="font-semibold text-sm truncate">{service?.name}</div>
-
                                         <div className="text-xs text-gray-500 truncate">
-                                            {step === 1 ? "Check availability (PLZ)" : apartmentSize ? sizeLabel : "Select size"}
+                                            {apartmentSize ? sizeLabel : "Select size"}
                                             {peopleCount ? ` • ${peopleLabel}` : ""}
                                             {hasPets ? " • pets" : ""}
                                         </div>
-
-                                        <div className="text-xs text-gray-400 mt-1">
+                                        <div className="text-[11px] text-gray-400 mt-0.5">
                                             {extrasCount > 0 ? `${extrasCount} extras selected` : "No extras selected"} • step {stepText}
                                         </div>
                                     </div>
@@ -331,7 +325,7 @@ export default function BookingClient() {
                                         <div className="text-xs text-gray-500 whitespace-nowrap">
                                             {totals.estimatedHours > 0
                                                 ? `~${Math.round(totals.estimatedHours * 60)}min`
-                                                : "Select details to see total"}
+                                                : "Select details"}
                                         </div>
                                     </div>
                                 </div>
@@ -340,8 +334,12 @@ export default function BookingClient() {
                     </div>
                 )}
 
-                {/* ✅ more bottom padding: bar + footer */}
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(280px+env(safe-area-inset-bottom))]">
+                <main
+                    className="max-w-2xl mx-auto px-6 py-10"
+                    style={{
+                        paddingBottom: `calc(${BOOKING_FOOTER_H + SUMMARY_H + 24}px + env(safe-area-inset-bottom))`,
+                    }}
+                >
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
