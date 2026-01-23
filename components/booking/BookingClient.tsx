@@ -187,11 +187,9 @@ export default function BookingClient() {
     const submitBooking = async () => {
         if (isSubmitting) return;
 
-        // must be final step + required selections
         if (step !== 4) return;
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
-        // required customer fields
         if (
             !(formData.firstName || "").trim() ||
             !(formData.email || "").trim() ||
@@ -275,6 +273,10 @@ export default function BookingClient() {
 
     const stepText = `${step + 1}/5`;
 
+    // ✅ These two numbers fix “bar is too high”
+    const FOOTER_STACK_PX = 112; // footer height-ish
+    const BAR_GAP_PX = 12;       // small breathing space
+
     return (
         <>
             <Header />
@@ -295,22 +297,26 @@ export default function BookingClient() {
                     </div>
                 </header>
 
-                {/* ✅ floating summary (НЕ перехватывает клики) */}
+                {/* ✅ floating summary (does NOT block clicks) */}
                 {selectedService && (
                     <div
                         className="fixed left-0 right-0 z-30 px-4 pointer-events-none"
-                        style={{ bottom: `calc(140px + env(safe-area-inset-bottom))` }}
+                        style={{
+                            bottom: `calc(${FOOTER_STACK_PX + BAR_GAP_PX}px + env(safe-area-inset-bottom))`,
+                        }}
                     >
                         <div className="max-w-2xl mx-auto">
-                            <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-sm px-4 py-3 pointer-events-none">
+                            <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-sm px-4 py-3">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
                                         <div className="font-semibold text-sm truncate">{service?.name}</div>
+
                                         <div className="text-xs text-gray-500 truncate">
-                                            {apartmentSize ? sizeLabel : "Select size"}
+                                            {step === 1 ? "Check availability (PLZ)" : apartmentSize ? sizeLabel : "Select size"}
                                             {peopleCount ? ` • ${peopleLabel}` : ""}
                                             {hasPets ? " • pets" : ""}
                                         </div>
+
                                         <div className="text-xs text-gray-400 mt-1">
                                             {extrasCount > 0 ? `${extrasCount} extras selected` : "No extras selected"} • step {stepText}
                                         </div>
@@ -318,10 +324,14 @@ export default function BookingClient() {
 
                                     <div className="text-right shrink-0">
                                         <div className="font-semibold text-sm whitespace-nowrap">
-                                            {totals.totalPrice > 0 ? `€ ${totals.totalPrice.toFixed(2)}` : `From € ${service?.startingPrice ?? 0}`}
+                                            {totals.totalPrice > 0
+                                                ? `€ ${totals.totalPrice.toFixed(2)}`
+                                                : `From € ${service?.startingPrice ?? 0}`}
                                         </div>
                                         <div className="text-xs text-gray-500 whitespace-nowrap">
-                                            {totals.estimatedHours > 0 ? `~${Math.round(totals.estimatedHours * 60)}min` : "Select details to see total"}
+                                            {totals.estimatedHours > 0
+                                                ? `~${Math.round(totals.estimatedHours * 60)}min`
+                                                : "Select details to see total"}
                                         </div>
                                     </div>
                                 </div>
@@ -330,7 +340,8 @@ export default function BookingClient() {
                     </div>
                 )}
 
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(170px+env(safe-area-inset-bottom))]">
+                {/* ✅ more bottom padding: bar + footer */}
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(280px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
