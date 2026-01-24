@@ -23,7 +23,7 @@ function TextLines({ text }: { text: string }) {
 function Arrow() {
     return (
         <span
-            className="text-3xl md:text-4xl leading-none text-[var(--muted)]
+            className="text-4xl md:text-5xl lg:text-6xl leading-none text-[var(--muted)]
                  transition-all duration-300 ease-out
                  group-hover:text-[var(--text)] group-hover:translate-x-2"
             aria-hidden="true"
@@ -99,8 +99,8 @@ export default function HomePageClient() {
                     >
                         <h1
                             className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
-    text-[var(--text)] max-w-[14ch]
-    text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
+                                text-[var(--text)] max-w-[14ch]
+                                text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
                         >
                             <TextLines text={t("hero.title")} />
                         </h1>
@@ -175,9 +175,11 @@ export default function HomePageClient() {
 
                 {/* VIDEO - Full viewport on all devices */}
                 <section className="relative w-full h-screen overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 px-6 py-8 z-10">
-                        <p className="text-sm text-white/70 mb-2">{t("video.kicker")}</p>
-                        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-white">
+                    <div className="absolute top-0 left-0 right-0 px-6 py-8 md:py-12 z-10 max-w-7xl mx-auto">
+                        <p className="text-base sm:text-lg md:text-xl font-semibold text-white/90 mb-4">
+                            {t("video.kicker")}
+                        </p>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
                             {t("video.title")}
                         </h2>
                     </div>
@@ -191,37 +193,53 @@ export default function HomePageClient() {
                     >
                         <source src="/videos/live-video.mp4" type="video/mp4" />
                     </video>
-                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute inset-0 bg-black/30" />
                 </section>
 
                 {/* EXPERIENCE */}
-                <section className="px-6 py-14 md:py-20 max-w-6xl mx-auto">
-                    <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-10 md:mb-12 text-[var(--text)]">
+                <section className="px-6 py-14 md:py-20 max-w-7xl mx-auto">
+                    <p className="text-base sm:text-lg md:text-xl font-semibold mb-4 text-[var(--text)]">
                         {t("experience.title")}
+                    </p>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-10 md:mb-12 text-[var(--text)]">
+                        Choose yours!
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
                         {experience.map((it) => (
                             <Link
                                 key={it.id}
                                 href={`/experience#${it.id}`}
-                                className="
-                                    group block p-5 md:p-6
-                                    rounded-2xl
-                                    transition-all duration-300 ease-out
-                                    hover:bg-[var(--card)]
-                                    hover:shadow-[var(--shadow)]
-                                    hover:-translate-y-1
-                                "
+                                className="group block"
                             >
-                                <p className="text-sm text-[var(--muted)] mb-2">{it.kicker}</p>
-                                <h3 className="text-xl md:text-2xl font-bold mb-3 text-[var(--text)]">{it.title}</h3>
-                                <p className="text-[var(--muted)] text-sm md:text-base mb-4">{it.desc}</p>
+                                <div
+                                    className="
+                                        py-4 px-0
+                                        md:py-5 md:px-5
+                                        md:rounded-2xl
+                                        h-full
+                                        transition-all duration-300 ease-out
+                                        md:hover:bg-[var(--card)]
+                                        md:hover:shadow-[var(--shadow)]
+                                        md:hover:-translate-y-1
+                                        motion-reduce:transition-none motion-reduce:hover:transform-none
+                                    "
+                                >
+                                    <p className="text-sm text-[var(--muted)] mb-2">{it.kicker}</p>
 
-                                <p className="text-base md:text-lg font-semibold flex items-center gap-2 text-[var(--text)]">
-                                    {it.price}
-                                    <span className="transition-transform duration-300 group-hover:translate-x-1">›</span>
-                                </p>
+                                    <div className="flex items-center justify-between gap-4 mb-3">
+                                        <h3 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-none text-[var(--text)]">
+                                            {it.title}
+                                        </h3>
+                                        <Arrow />
+                                    </div>
+
+                                    <p className="text-[var(--muted)] text-sm md:text-base mb-4">{it.desc}</p>
+
+                                    <p className="text-base md:text-lg font-semibold text-[var(--text)]">
+                                        {it.price}
+                                    </p>
+                                </div>
                             </Link>
                         ))}
                     </div>
