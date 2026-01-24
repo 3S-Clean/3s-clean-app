@@ -20,6 +20,16 @@ export const viewport: Viewport = {
     ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-    return <div className={inter.variable}>{children}</div>;
+export default function RootLayout({
+                                       children,
+                                   }: {
+    children: React.ReactNode;
+}) {
+    return (
+        <html lang="en" className={inter.variable}>
+        <body className="antialiased">
+        {children}
+        </body>
+        </html>
+    );
 }

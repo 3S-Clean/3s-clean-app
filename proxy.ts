@@ -30,7 +30,7 @@ function getLocaleAndPathname(pathname: string): { locale: Locale | null; rest: 
     return { locale: null, rest: pathname };
 }
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
     const intlResponse = intlMiddleware(req);
 
     if (intlResponse.headers.get("location")) return intlResponse;
