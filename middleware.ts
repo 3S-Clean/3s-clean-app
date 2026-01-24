@@ -5,7 +5,6 @@ import type { CookieOptions } from "@supabase/ssr";
 
 const locales = ["en", "de"] as const;
 type Locale = (typeof locales)[number];
-
 const defaultLocale: Locale = "en";
 
 const intlMiddleware = createIntlMiddleware({
@@ -15,7 +14,6 @@ const intlMiddleware = createIntlMiddleware({
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-// type guard: string -> Locale
 function isLocale(value: string): value is Locale {
     return (locales as readonly string[]).includes(value);
 }
@@ -33,24 +31,19 @@ function getLocaleAndPathname(pathname: string): { locale: Locale | null; rest: 
 }
 
 export default async function middleware(req: NextRequest) {
-    // 1) next-intl
     const intlResponse = intlMiddleware(req);
 
-    // если есть редирект (например / -> /en), возвращаем сразу
     if (intlResponse.headers.get("location")) return intlResponse;
 
     const cookiesToSet: CookieToSet[] = [];
 
-    // 2) supabase
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
-                getAll() {
-                    return req.cookies.getAll();
-                },
-                setAll(newCookies) {
+                getAll: () => req.cookies.getAll(),
+                setAll: (newCookies) => {
                     cookiesToSet.push(
                         ...newCookies.map((c) => ({ name: c.name, value: c.value, options: c.options }))
                     );
@@ -76,7 +69,6 @@ export default async function middleware(req: NextRequest) {
 
     let response = intlResponse;
 
-    // 1) Не залогинен → нельзя на account
     if (!user && isProtected) {
         const url = req.nextUrl.clone();
         url.pathname = `/${activeLocale}/login`;
@@ -84,21 +76,18 @@ export default async function middleware(req: NextRequest) {
         response = NextResponse.redirect(url);
     }
 
-    // 2) Залогинен → нечего делать на login/signup/forgot-password
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
         url.pathname = `/${activeLocale}/account`;
         response = NextResponse.redirect(url);
     }
 
-    // 3) reset-password
     if (isReset && !isRecoveryReset) {
         const url = req.nextUrl.clone();
         url.pathname = `/${activeLocale}/forgot-password`;
         response = NextResponse.redirect(url);
     }
 
-    // apply cookies
     cookiesToSet.forEach(({ name, value, options }) => {
         response.cookies.set(name, value, options);
     });
