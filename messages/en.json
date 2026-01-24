@@ -1,0 +1,53 @@
+{
+  "home": {
+    "hero": {
+      "title": "Your\npremium\nhome\ncleaning\nservice\nin Stuttgart!"
+    },
+    "promise": {
+      "title": "The 3S-Clean promise:",
+      "sauber": {
+        "title": "SAUBER",
+        "desc": "Environmentally conscious home cleaning. Full product transparency. A first-class feel-good atmosphere every time."
+      },
+      "sicher": {
+        "title": "SICHER",
+        "desc": "Fixed and transparent prices. You are always in on the cleaning process thanks to secure live streaming."
+      },
+      "souveran": {
+        "title": "SOUVERÄN",
+        "desc": "No freelancers. We love what we do. You will see the difference."
+      }
+    },
+    "video": {
+      "kicker": "3S-Clean Stream",
+      "title": "BEHIND THE SCENES"
+    },
+    "experience": {
+      "title": "3S-Clean Experience",
+      "maintenance": {
+        "kicker": "Weekly or bi-weekly",
+        "title": "Maintenance",
+        "desc": "Cleaning to keep your home tidy and fresh.",
+        "price": "From €120"
+      },
+      "reset": {
+        "kicker": "Intensive cleaning for a “reset”",
+        "title": "Reset",
+        "desc": "A deeper clean when your home needs extra attention.",
+        "price": "From €200"
+      },
+      "initial": {
+        "kicker": "For new clients",
+        "title": "Initial",
+        "desc": "Bring your home to a level where it can be efficiently maintained thereafter.",
+        "price": "From €165"
+      },
+      "handover": {
+        "kicker": "Move-in / Move-out",
+        "title": "Handover",
+        "desc": "Specialized cleaning before handover to landlord or before moving in.",
+        "price": "From €220"
+      }
+    }
+  }
+}

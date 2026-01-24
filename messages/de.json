@@ -1,0 +1,53 @@
+{
+  "home": {
+    "hero": {
+      "title": "Dein\nPremium-\nReinigungsservice\nin Stuttgart!"
+    },
+    "promise": {
+      "title": "Das 3S-Clean Versprechen:",
+      "sauber": {
+        "title": "SAUBER",
+        "desc": "Umweltbewusste Reinigung. Volle Transparenz bei Produkten. Jedes Mal ein erstklassiges Wohlfühl-Ergebnis."
+      },
+      "sicher": {
+        "title": "SICHER",
+        "desc": "Feste, transparente Preise. Du behältst die Kontrolle – dank sicherem Live-Streaming während der Reinigung."
+      },
+      "souveran": {
+        "title": "SOUVERÄN",
+        "desc": "Keine Freelancer. Wir lieben, was wir tun – und du siehst den Unterschied."
+      }
+    },
+    "video": {
+      "kicker": "3S-Clean Stream",
+      "title": "BEHIND THE SCENES"
+    },
+    "experience": {
+      "title": "3S-Clean Erlebnis",
+      "maintenance": {
+        "kicker": "Wöchentlich oder alle zwei Wochen",
+        "title": "Maintenance",
+        "desc": "Regelmäßige Reinigung, damit dein Zuhause frisch und ordentlich bleibt.",
+        "price": "Ab 120 €"
+      },
+      "reset": {
+        "kicker": "Intensivreinigung für einen „Reset“",
+        "title": "Reset",
+        "desc": "Tiefere Reinigung, wenn dein Zuhause extra Aufmerksamkeit braucht.",
+        "price": "Ab 200 €"
+      },
+      "initial": {
+        "kicker": "Für neue Kund:innen",
+        "title": "Initial",
+        "desc": "Bringt dein Zuhause auf ein Niveau, das danach effizient gepflegt werden kann.",
+        "price": "Ab 165 €"
+      },
+      "handover": {
+        "kicker": "Einzug / Auszug",
+        "title": "Handover",
+        "desc": "Spezialreinigung vor der Übergabe an den Vermieter oder vor dem Einzug.",
+        "price": "Ab 220 €"
+      }
+    }
+  }
+}

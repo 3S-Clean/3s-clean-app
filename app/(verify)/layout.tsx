@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
+import Link from "next/link";
 
-const WEBFLOW_URL = "https://s3-final.webflow.io/";
 
 export default function VerifyLayout({ children }: { children: ReactNode }) {
     return (
@@ -11,14 +11,14 @@ export default function VerifyLayout({ children }: { children: ReactNode }) {
         >
             <div className="w-full max-w-md text-center">
                 <div className="mb-10 flex items-center justify-center">
-                    <a
-                        href={WEBFLOW_URL}
+                    <Link
+                        href="/#"
                         aria-label="Go to main website"
                         className="inline-flex items-center justify-center transition duration-200 ease-out
                        text-[color:var(--muted)] hover:opacity-70"
                     >
                         <Logo className="h-14 w-14" />
-                    </a>
+                    </Link>
                 </div>
 
                 <div className="text-[color:var(--text)] focus:outline-none">
