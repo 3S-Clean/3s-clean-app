@@ -109,9 +109,9 @@ export default function ForgotPasswordPage() {
 
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Back to{" "}
-                    <a className="text-[color:var(--text)] hover:underline" href="/login">
+                    <link className="text-[color:var(--text)] hover:underline" href="/login">
                         Log in
-                    </a>
+                    </link>
                 </p>
             </form>
         </div>

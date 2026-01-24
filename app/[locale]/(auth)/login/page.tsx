@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema, type LoginValues } from "@/lib/validators";
 import { createClient } from "@/lib/supabase/client";
 import { useBookingStore } from "@/lib/booking/store";
+import Link from "next/link";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 
@@ -144,9 +145,9 @@ export default function LoginClient() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <a href="/forgot-password" className="text-sm text-[color:var(--muted)] hover:opacity-80 transition">
+                    <Link href="/forgot-password" className="text-sm text-[color:var(--muted)] hover:opacity-80 transition">
                         Forgot password?
-                    </a>
+                    </Link>
                 </div>
 
                 <button
