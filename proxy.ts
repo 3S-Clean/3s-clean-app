@@ -1,13 +1,47 @@
-// proxy.ts
 import { NextResponse, type NextRequest } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
 
+const locales = ["en", "de"] as const;
+type Locale = (typeof locales)[number];
+
+const defaultLocale: Locale = "en";
+
+const intlMiddleware = createIntlMiddleware({
+    locales: [...locales],
+    defaultLocale,
+});
+
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
-export async function proxy(req: NextRequest) {
+// type guard: string -> Locale
+function isLocale(value: string): value is Locale {
+    return (locales as readonly string[]).includes(value);
+}
+
+function getLocaleAndPathname(pathname: string): { locale: Locale | null; rest: string } {
+    const segments = pathname.split("/").filter(Boolean);
+    const maybeLocale = segments[0];
+
+    if (maybeLocale && isLocale(maybeLocale)) {
+        const rest = "/" + segments.slice(1).join("/");
+        return { locale: maybeLocale, rest: rest === "/" ? "/" : rest };
+    }
+
+    return { locale: null, rest: pathname };
+}
+
+export default async function middleware(req: NextRequest) {
+    // 1) next-intl
+    const intlResponse = intlMiddleware(req);
+
+    // если есть редирект (например / -> /en), возвращаем сразу
+    if (intlResponse.headers.get("location")) return intlResponse;
+
     const cookiesToSet: CookieToSet[] = [];
 
+    // 2) supabase
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -29,40 +63,38 @@ export async function proxy(req: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    const pathname = req.nextUrl.pathname;
+    const { locale, rest } = getLocaleAndPathname(req.nextUrl.pathname);
+    const activeLocale: Locale = locale ?? defaultLocale;
 
-    const isProtected = pathname.startsWith("/account");
+    const isProtected = rest.startsWith("/account");
 
-    const isReset = pathname === "/reset-password";
+    const isReset = rest === "/reset-password";
     const flow = req.nextUrl.searchParams.get("flow");
     const isRecoveryReset = isReset && flow === "recovery";
 
-    const isAuthPage =
-        pathname === "/login" || pathname === "/signup" || pathname === "/forgot-password";
+    const isAuthPage = rest === "/login" || rest === "/signup" || rest === "/forgot-password";
 
-    let response = NextResponse.next();
+    let response = intlResponse;
 
     // 1) Не залогинен → нельзя на account
     if (!user && isProtected) {
         const url = req.nextUrl.clone();
-        url.pathname = "/login";
-        url.searchParams.set("next", pathname);
+        url.pathname = `/${activeLocale}/login`;
+        url.searchParams.set("next", `/${activeLocale}${rest}`);
         response = NextResponse.redirect(url);
     }
 
     // 2) Залогинен → нечего делать на login/signup/forgot-password
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
-        url.pathname = "/account";
+        url.pathname = `/${activeLocale}/account`;
         response = NextResponse.redirect(url);
     }
 
-    // 3) reset-password:
-    // - только /reset-password?flow=recovery разрешаем
-    // - иначе всегда уводим на /forgot-password (не важно, есть user или нет)
+    // 3) reset-password
     if (isReset && !isRecoveryReset) {
         const url = req.nextUrl.clone();
-        url.pathname = "/forgot-password";
+        url.pathname = `/${activeLocale}/forgot-password`;
         response = NextResponse.redirect(url);
     }
 
@@ -75,5 +107,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/account/:path*", "/login", "/signup", "/forgot-password", "/reset-password"],
+    matcher: ["/((?!api|_next|.*\\..*).*)"],
 };
