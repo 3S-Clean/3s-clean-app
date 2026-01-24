@@ -198,10 +198,10 @@ export default function HomePageClient() {
                                     className="
                     m-0 p-0
                     font-sans font-bold tracking-[-0.03em]
-                    leading-[1.02]
                     text-left text-[var(--text)]
                     max-w-[14ch]
-                    text-[80px] sm:text-[88px] md:text-[96px] lg:text-[104px]
+                    text-[86px] sm:text-[94px] md:text-[102px] lg:text-[104px]
+                    leading-[1.02]
                   "
                                 >
                                     {line}
@@ -244,7 +244,6 @@ export default function HomePageClient() {
             - cards: more padding on phone/tablet
            ========================= */}
                 <section className="px-6 pb-14 lg:pb-20 max-w-7xl mx-auto xl:pt-12">
-                    {/* xl:pt-12 = примерно 3rem */}
                     <div
                         className={`
               transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)]
@@ -271,11 +270,11 @@ export default function HomePageClient() {
                                     className={`
                     ${cardBase}
 
-                    /* ✅ больше воздуха на phone/tablet */
+                    /* ✅ одинаковые отступы на phone/tablet */
                     py-8 sm:py-9 md:py-10
-                    px-5 sm:px-6 md:px-8
+                    px-6 sm:px-7 md:px-8
 
-                    /* desktop как было аккуратно */
+                    /* desktop */
                     xl:py-6 xl:px-6
 
                     w-full
@@ -338,9 +337,9 @@ export default function HomePageClient() {
                                     className={`
                     ${cardBase}
 
-                    /* ✅ больше воздуха на phone/tablet */
+                    /* ✅ одинаковые отступы на phone/tablet */
                     py-8 sm:py-9 md:py-10
-                    px-5 sm:px-6 md:px-8
+                    px-6 sm:px-7 md:px-8
 
                     /* desktop */
                     xl:py-6 xl:px-6
