@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useBookingStore } from "@/lib/booking/store";
 import { useBookingNavigation } from "@/lib/booking/useBookingNavigation";
 import { SERVICES, FINAL_PRICES, EXTRAS, getEstimatedHours } from "@/lib/booking/config";
@@ -18,7 +19,9 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
     const sizeId = apartmentSize ?? "";
     const peopleId = peopleCount ?? "";
 
-    const total = (() => {
+    const service = SERVICES.find((s) => s.id === selectedService);
+
+    const total = useMemo(() => {
         if (!serviceId || !sizeId || !peopleId) return 0;
 
         const base =
@@ -30,9 +33,9 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
         }, 0);
 
         return base + ext;
-    })();
+    }, [serviceId, sizeId, peopleId, hasPets, extras]);
 
-    const time = (() => {
+    const time = useMemo(() => {
         if (!serviceId || !sizeId) return "";
 
         let h = getEstimatedHours(serviceId, sizeId);
@@ -49,12 +52,12 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
         if (m === 0) return `${wh}h`;
         if (wh === 0) return `${m}min`;
         return `${wh}h ${m}min`;
-    })();
+    }, [serviceId, sizeId, extras]);
 
-    const service = SERVICES.find((s) => s.id === selectedService);
     const showPrice = Boolean(serviceId && sizeId && peopleId);
+    const isFinalStep = step === 4;
 
-    const hint = (() => {
+    const hint = useMemo(() => {
         switch (step) {
             case 0:
                 return "Select a service";
@@ -69,9 +72,8 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
             default:
                 return "Continue";
         }
-    })();
+    }, [step]);
 
-    const isFinalStep = step === 4;
     const buttonHintText = isFinalStep ? "Complete required fields" : hint;
 
     return (
@@ -84,19 +86,17 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                     <div className="flex flex-col min-w-0">
                         {showPrice ? (
                             <>
-                                <div className="text-2xl font-bold whitespace-nowrap">
-                                    €&nbsp;{total.toFixed(2)}
-                                </div>
-                                <div className="text-sm text-gray-500 whitespace-nowrap">
-                                    inc.VAT • ~{time}
-                                </div>
+                                <div className="text-2xl font-bold whitespace-nowrap">€&nbsp;{total.toFixed(2)}</div>
+                                <div className="text-sm text-gray-500 whitespace-nowrap">inc.VAT • ~{time}</div>
                             </>
-                        ) : selectedService && !apartmentSize ? (
+                        ) : selectedService ? (
                             <>
                                 <div className="text-xl font-semibold whitespace-nowrap">
-                                    From €&nbsp;{service?.startingPrice}
+                                    From €&nbsp;{service?.startingPrice ?? 0}
                                 </div>
-                                <div className="text-sm text-gray-500">Select apartment size</div>
+                                <div className="text-sm text-gray-500">
+                                    {step === 0 ? "Select apartment size" : hint}
+                                </div>
                             </>
                         ) : (
                             <div className="text-sm text-gray-500">{hint}</div>
@@ -116,7 +116,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
                             {isFinalStep ? (
                                 <button
-                                    type="button"
                                     onClick={() => onSubmit?.()}
                                     disabled={!canContinue || isSubmitting}
                                     className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"
@@ -125,7 +124,6 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                 </button>
                             ) : (
                                 <button
-                                    type="button"
                                     onClick={next}
                                     disabled={!canContinue}
                                     className="px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all"

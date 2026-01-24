@@ -33,9 +33,6 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
-// высота самого футера (без safe-area), под неё "прижимаем" summary
-const BOOKING_FOOTER_H = 96;
-
 function calculateTotals(
     service: string,
     size: string,
@@ -267,7 +264,9 @@ export default function BookingClient() {
     const extrasCount = Object.values(extras || {}).reduce((a, b) => a + (Number(b) || 0), 0);
 
     const totals = useMemo(() => {
-        if (!selectedService || !apartmentSize || !peopleCount) return { totalPrice: 0, estimatedHours: 0 };
+        if (!selectedService || !apartmentSize || !peopleCount) {
+            return { totalPrice: 0, estimatedHours: 0 };
+        }
         const t = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
         return { totalPrice: t.totalPrice, estimatedHours: t.estimatedHours };
     }, [selectedService, apartmentSize, peopleCount, hasPets, extras]);
@@ -294,14 +293,14 @@ export default function BookingClient() {
                     </div>
                 </header>
 
-                {/* ✅ floating summary (прижато к футеру) */}
-                {selectedService && (
+                {/* ✅ floating summary: НЕ на шаге 0 + прижато к футеру */}
+                {selectedService && step > 0 && (
                     <div
                         className="fixed left-0 right-0 z-30 px-4 pointer-events-none"
-                        style={{ bottom: `${BOOKING_FOOTER_H}px` }}
+                        style={{ bottom: `calc(92px + env(safe-area-inset-bottom))` }} // <-- ПРИЖАЛИ К ФУТЕРУ
                     >
                         <div className="max-w-2xl mx-auto">
-                            <div className="rounded-2xl border border-gray-200 bg-white/95 backdrop-blur-md shadow-sm px-4 py-2 pointer-events-auto">
+                            <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-sm px-4 py-3 pointer-events-none">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
                                         <div className="font-semibold text-sm truncate">{service?.name}</div>
@@ -310,7 +309,7 @@ export default function BookingClient() {
                                             {peopleCount ? ` • ${peopleLabel}` : ""}
                                             {hasPets ? " • pets" : ""}
                                         </div>
-                                        <div className="text-[11px] text-gray-400 mt-0.5">
+                                        <div className="text-xs text-gray-400 mt-1">
                                             {extrasCount > 0 ? `${extrasCount} extras selected` : "No extras selected"} • step {stepText}
                                         </div>
                                     </div>
@@ -333,7 +332,7 @@ export default function BookingClient() {
                     </div>
                 )}
 
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(160px+env(safe-area-inset-bottom))]">
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(190px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
