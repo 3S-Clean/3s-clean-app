@@ -84,86 +84,86 @@ export default function HomePageClient() {
             <main className="min-h-screen bg-[var(--background)] pt-[80px]">
                 {/* HERO + 3S PROMISE */}
                 <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20 max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                        {/* HERO TITLE - Linear-style entrance animation */}
-                        <div
+                    {/* HERO TITLE - Linear-style entrance animation */}
+                    <div
+                        className={`
+                            mb-12 md:mb-16
+                            transition-all duration-700 ease-out
+                            ${isLoaded
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-8"
+                        }
+                        `}
+                    >
+                        <h1
+                            className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
+                                text-[var(--text)]
+                                text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
+                        >
+                            <TextLines text={t("hero.title")} />
+                        </h1>
+                    </div>
+
+                    {/* 3S PROMISE SECTION */}
+                    <div>
+                        <h2
                             className={`
-                                transition-all duration-700 ease-out
+                                text-base sm:text-lg md:text-xl font-semibold mb-8 md:mb-10
+                                text-[var(--text)]
+                                transition-all duration-700 ease-out delay-100
                                 ${isLoaded
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 translate-y-8"
                             }
                             `}
                         >
-                            <h1
-                                className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
-                                    text-[var(--text)]
-                                    text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
-                            >
-                                <TextLines text={t("hero.title")} />
-                            </h1>
-                        </div>
+                            {t("promise.title")}
+                        </h2>
 
-                        {/* 3S PROMISE CARDS */}
-                        <div className="mt-4 lg:mt-0">
-                            <h2
-                                className={`
-                                    text-base sm:text-lg md:text-xl font-semibold mb-8 md:mb-10
-                                    text-[var(--text)]
-                                    transition-all duration-700 ease-out delay-100
-                                    ${isLoaded
-                                    ? "opacity-100 translate-y-0"
-                                    : "opacity-0 translate-y-8"
-                                }
-                                `}
-                            >
-                                {t("promise.title")}
-                            </h2>
-
-                            <div className="space-y-4">
-                                {promise.map((it, index) => (
-                                    <Link
-                                        key={it.id}
-                                        href={`/definition/#${it.id}`}
-                                        className={`
-                                            group block
-                                            transition-all duration-700 ease-out
-                                            ${isLoaded
-                                            ? "opacity-100 translate-y-0"
-                                            : "opacity-0 translate-y-8"
-                                        }
-                                        `}
-                                        style={{
-                                            transitionDelay: isLoaded ? `${200 + index * 100}ms` : "0ms",
-                                        }}
+                        {/* Cards: vertical on mobile, horizontal on tablet+ */}
+                        <div className="flex flex-col md:flex-row md:gap-6 lg:gap-8">
+                            {promise.map((it, index) => (
+                                <Link
+                                    key={it.id}
+                                    href={`/definition/#${it.id}`}
+                                    className={`
+                                        group block flex-1
+                                        transition-all duration-700 ease-out
+                                        ${isLoaded
+                                        ? "opacity-100 translate-y-0"
+                                        : "opacity-0 translate-y-8"
+                                    }
+                                    `}
+                                    style={{
+                                        transitionDelay: isLoaded ? `${200 + index * 100}ms` : "0ms",
+                                    }}
+                                >
+                                    <div
+                                        className="
+                                            py-4 px-0
+                                            md:py-5 md:px-5
+                                            md:rounded-2xl
+                                            h-full
+                                            transition-all duration-300 ease-out
+                                            md:hover:bg-[var(--card)]
+                                            md:hover:shadow-[var(--shadow)]
+                                            md:hover:-translate-y-1
+                                            motion-reduce:transition-none motion-reduce:hover:transform-none
+                                        "
                                     >
-                                        <div
-                                            className="
-                                                py-4 px-0
-                                                md:py-5 md:px-5
-                                                md:rounded-2xl
-                                                transition-all duration-300 ease-out
-                                                md:hover:bg-[var(--card)]
-                                                md:hover:shadow-[var(--shadow)]
-                                                md:hover:-translate-y-1
-                                                md:hover:px-6
-                                                motion-reduce:transition-none motion-reduce:hover:transform-none
-                                            "
-                                        >
-                                            <div className="flex items-center justify-between gap-4">
-                                                <h3 className="text-3xl sm:text-4xl md:text-[40px] font-bold tracking-tight leading-none text-[var(--text)]">
-                                                    {it.title}
-                                                </h3>
-                                                <Arrow />
-                                            </div>
-
-                                            <p className="mt-3 text-[var(--muted)] text-sm md:text-base leading-relaxed max-w-[48ch]">
-                                                {it.desc}
-                                            </p>
+                                        <div className="flex items-center justify-between gap-4">
+                                            <h3 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight leading-none text-[var(--text)]">
+                                                {it.title}
+                                            </h3>
+                                            <Arrow />
                                         </div>
-                                    </Link>
-                                ))}
-                            </div>
+
+                                        <p className="mt-3 text-[var(--muted)] text-sm md:text-base leading-relaxed">
+                                            {it.desc}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </section>
