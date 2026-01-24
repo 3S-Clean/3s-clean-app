@@ -30,8 +30,10 @@ function Arrow() {
 // Заголовок секции — крупнее (как на последнем фото)
 function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
-        <p className="font-sans font-bold tracking-[-0.02em] text-[var(--text)]
-      text-2xl sm:text-3xl md:text-4xl mb-6">
+        <p
+            className="font-sans font-bold tracking-[-0.02em] text-[var(--text)]
+      text-2xl sm:text-3xl md:text-4xl mb-6"
+        >
             {children}
         </p>
     );
@@ -160,7 +162,8 @@ export default function HomePageClient() {
                                 style={{ transitionDelay: `${240 + index * 140}ms` }}
                             >
                                 <div className={`${cardBase} py-6 px-0 xl:py-5 xl:px-5`}>
-                                    <div className="grid grid-cols-[1fr_70px] sm:grid-cols-[1fr_80px] lg:grid-cols-[1fr_90px] gap-4 items-start">
+                                    {/* ✅ стрелка + заголовок в одну линию */}
+                                    <div className="grid grid-cols-[1fr_70px] sm:grid-cols-[1fr_80px] lg:grid-cols-[1fr_90px] gap-4 items-center">
                                         <BigTitle>{it.title}</BigTitle>
                                         <Arrow />
                                     </div>
@@ -184,13 +187,7 @@ export default function HomePageClient() {
                     </div>
 
                     <div className="relative w-full h-[100svh] overflow-hidden">
-                        <video
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            className="absolute inset-0 w-full h-full object-cover"
-                        >
+                        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
@@ -198,10 +195,12 @@ export default function HomePageClient() {
 
                 {/* EXPERIENCE */}
                 <section className="px-6 py-14 lg:py-20 max-w-7xl mx-auto">
-                    <SectionKicker>{t("experience.title")}</SectionKicker>
+                    {/* ✅ 3S-Clean Experience берём из experience.kicker */}
+                    <SectionKicker>{t("experience.kicker")}</SectionKicker>
 
+                    {/* ✅ Choose yours берём из experience.title */}
                     <h2 className="mb-10 lg:mb-14">
-                        <BigTitle>Choose yours!</BigTitle>
+                        <BigTitle>{t("experience.title")}</BigTitle>
                     </h2>
 
                     {/* На планшете как на телефоне: сетка 2 колонки только на desktop (xl) */}
@@ -218,7 +217,8 @@ export default function HomePageClient() {
                                 style={{ transitionDelay: `${160 + index * 120}ms` }}
                             >
                                 <div className={`${cardBase} py-6 px-0 xl:py-5 xl:px-5`}>
-                                    <div className="grid grid-cols-[1fr_70px] sm:grid-cols-[1fr_80px] lg:grid-cols-[1fr_90px] gap-4 items-start mb-3">
+                                    {/* ✅ стрелка + заголовок в одну линию */}
+                                    <div className="grid grid-cols-[1fr_70px] sm:grid-cols-[1fr_80px] lg:grid-cols-[1fr_90px] gap-4 items-center mb-3">
                                         <BigTitle>{it.title}</BigTitle>
                                         <Arrow />
                                     </div>

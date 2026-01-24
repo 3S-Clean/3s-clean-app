@@ -23,24 +23,25 @@
       "title": "BEHIND THE SCENES"
     },
     "experience": {
-      "title": "3S-Clean Experience",
+      "kicker": "3S-Clean Experience",
+      "title": "CHOOSE YOURS!",
       "maintenance": {
-        "title": "Maintenance",
+        "title": "MAINTENANCE",
         "desc": "weekly or bi-weekly cleaning to keep your home tidy and fresh",
         "price": "From €120"
       },
       "reset": {
-        "title": "Reset",
+        "title": "RESET",
         "desc": "intensive cleaning for a “reset” of your home after a party or\nwhen it has not been cleaned properly for a longer period of time",
         "price": "From €200"
       },
       "initial": {
-        "title": "Initial",
+        "title": "INITIAL",
         "desc": "recommended for all first-jme clients (o bring your home to a\nlevel where it can be eﬃciently maintained thereafter",
         "price": "From €165"
       },
       "handover": {
-        "title": "Handover",
+        "title": "HANDOVER",
         "desc": "Specialized cleaning before handover to landlord or before moving in.",
         "price": "From €220"
       }

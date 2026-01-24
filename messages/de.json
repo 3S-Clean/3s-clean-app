@@ -23,24 +23,25 @@
       "title": "BEHIND THE SCENES"
     },
     "experience": {
-      "title": "3S-Clean Experience",
+      "kicker": "3S-Clean Experience",
+      "title": "CHOOSE YOURS!",
       "maintenance": {
-        "title": "Maintenance",
+        "title": "MAINTENANCE",
         "desc": "Regelmäßige Reinigung, wöchentlich oder alle zwei Wochen, damit dein Zuhause sauber und frisch bleibt.",
         "price": "Ab 120 €"
       },
       "reset": {
-        "title": "Reset",
+        "title": "RESET",
         "desc": "Intensive Reinigung für einen „Reset“ nach einer Feier oder wenn dein Zuhause längere Zeit nicht gründlich gereinigt wurde.",
         "price": "Ab 200 €"
       },
       "initial": {
-        "title": "Initial",
+        "title": "INITIAL",
         "desc": "Empfohlen für Neukund:innen, um dein Zuhause auf ein Niveau zu bringen, das danach effizient gepflegt werden kann.",
         "price": "Ab 165 €"
       },
       "handover": {
-        "title": "Handover",
+        "title": "HANDOVER",
         "desc": "Spezialisierte Reinigung vor der Übergabe an den Vermieter oder vor dem Einzug.",
         "price": "Ab 220 €"
       }
