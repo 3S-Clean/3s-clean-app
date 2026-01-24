@@ -13,12 +13,7 @@ import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
 import { useBookingStore } from "@/lib/booking/store";
-import {
-    SERVICES,
-    EXTRAS,
-    getBasePrice,
-    getEstimatedHours,
-} from "@/lib/booking/config";
+import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
@@ -39,6 +34,7 @@ function calculateTotals(
     extras: Record<string, number>
 ) {
     const basePrice = getBasePrice(service, size, people, hasPets);
+
     let extrasPrice = 0;
     let extrasHours = 0;
     const extrasArray: OrderExtraLine[] = [];
@@ -46,6 +42,7 @@ function calculateTotals(
     for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
         const qty = Number(qtyRaw) || 0;
         if (qty <= 0) continue;
+
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (!extra) continue;
 
@@ -111,6 +108,13 @@ export default function BookingClient() {
         setPendingToken,
     } = useBookingStore();
 
+    // ✅ HARD GUARD: fixes “blank step 0” when step becomes invalid
+    useEffect(() => {
+        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) {
+            setStep(0);
+        }
+    }, [step, setStep]);
+
     // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
@@ -128,7 +132,7 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // ✅ Prefill profile (ONE place for all steps; never overwrite user input)
+    // ✅ Prefill profile (one place; never overwrite user input)
     useEffect(() => {
         let cancelled = false;
 
@@ -266,15 +270,18 @@ export default function BookingClient() {
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
                                 key={s}
-                                className={`w-3 h-3 rounded-full transition-all
-                  ${s < step ? "bg-gray-900" : ""}
-                  ${s === step ? "bg-gray-900 scale-125" : ""}
-                  ${s > step ? "bg-gray-200" : ""}`}
+                                className={[
+                                    "w-3 h-3 rounded-full transition-all",
+                                    s < step ? "bg-gray-900" : "",
+                                    s === step ? "bg-gray-900 scale-125" : "",
+                                    s > step ? "bg-gray-200" : "",
+                                ].join(" ")}
                             />
                         ))}
                     </div>
                 </header>
-                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(190px+env(safe-area-inset-bottom))]">
+
+                <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(220px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}
                     {step === 2 && <ApartmentDetails />}
