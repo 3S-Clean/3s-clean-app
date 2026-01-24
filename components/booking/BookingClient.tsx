@@ -16,8 +16,6 @@ import { useBookingStore } from "@/lib/booking/store";
 import {
     SERVICES,
     EXTRAS,
-    APARTMENT_SIZES,
-    PEOPLE_OPTIONS,
     getBasePrice,
     getEstimatedHours,
 } from "@/lib/booking/config";
@@ -257,22 +255,6 @@ export default function BookingClient() {
         }
     };
 
-    // ---------- summary UI data ----------
-    const service = SERVICES.find((s) => s.id === selectedService);
-    const sizeLabel = APARTMENT_SIZES.find((s) => s.id === apartmentSize)?.label ?? apartmentSize ?? "";
-    const peopleLabel = PEOPLE_OPTIONS.find((p) => p.id === peopleCount)?.label ?? peopleCount ?? "";
-    const extrasCount = Object.values(extras || {}).reduce((a, b) => a + (Number(b) || 0), 0);
-
-    const totals = useMemo(() => {
-        if (!selectedService || !apartmentSize || !peopleCount) {
-            return { totalPrice: 0, estimatedHours: 0 };
-        }
-        const t = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
-        return { totalPrice: t.totalPrice, estimatedHours: t.estimatedHours };
-    }, [selectedService, apartmentSize, peopleCount, hasPets, extras]);
-
-    const stepText = `${step + 1}/5`;
-
     return (
         <>
             <Header />
@@ -292,46 +274,6 @@ export default function BookingClient() {
                         ))}
                     </div>
                 </header>
-
-                {/* ✅ floating summary: НЕ на шаге 0 + прижато к футеру */}
-                {selectedService && step > 0 && (
-                    <div
-                        className="fixed left-0 right-0 z-30 px-4 pointer-events-none"
-                        style={{ bottom: `calc(92px + env(safe-area-inset-bottom))` }} // <-- ПРИЖАЛИ К ФУТЕРУ
-                    >
-                        <div className="max-w-2xl mx-auto">
-                            <div className="rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-md shadow-sm px-4 py-3 pointer-events-none">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <div className="font-semibold text-sm truncate">{service?.name}</div>
-                                        <div className="text-xs text-gray-500 truncate">
-                                            {apartmentSize ? sizeLabel : "Select size"}
-                                            {peopleCount ? ` • ${peopleLabel}` : ""}
-                                            {hasPets ? " • pets" : ""}
-                                        </div>
-                                        <div className="text-xs text-gray-400 mt-1">
-                                            {extrasCount > 0 ? `${extrasCount} extras selected` : "No extras selected"} • step {stepText}
-                                        </div>
-                                    </div>
-
-                                    <div className="text-right shrink-0">
-                                        <div className="font-semibold text-sm whitespace-nowrap">
-                                            {totals.totalPrice > 0
-                                                ? `€ ${totals.totalPrice.toFixed(2)}`
-                                                : `From € ${service?.startingPrice ?? 0}`}
-                                        </div>
-                                        <div className="text-xs text-gray-500 whitespace-nowrap">
-                                            {totals.estimatedHours > 0
-                                                ? `~${Math.round(totals.estimatedHours * 60)}min`
-                                                : "Select details"}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(190px+env(safe-area-inset-bottom))]">
                     {step === 0 && <ServiceSelection />}
                     {step === 1 && <PostcodeCheck />}

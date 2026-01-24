@@ -116,7 +116,7 @@ export default function ContactSchedule() {
         <div className="animate-fadeIn">
             <div className="mb-10">
                 <div className="text-sm text-gray-500 mb-2">
-                    {formData.firstName?.trim() ? `Hi ${formData.firstName.trim()} 👋` : "Hi 👋"}
+                    {formData.firstName?.trim() ? `Hi ${formData.firstName.trim()} ` : "Hi"}
                 </div>
                 <h1 className="text-3xl font-semibold mb-3">Contact & Schedule</h1>
                 <p className="text-gray-500">Enter your details and pick a time</p>
