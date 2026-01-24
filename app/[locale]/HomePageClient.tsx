@@ -6,18 +6,17 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
-/* ---------- Arrow (soft spring feel, works on Android) ---------- */
+/* ================= Arrow (soft spring, no warnings) ================= */
 function Arrow() {
     return (
         <svg
             className="
         w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] lg:w-[90px] lg:h-[90px]
         flex-shrink-0 text-[var(--muted)]
-        transition-transform duration-500
+        transition-[transform,color] duration-500
         ease-[cubic-bezier(0.16,1,0.3,1)]
         group-hover:translate-x-2
         group-active:translate-x-1
-        transition-colors duration-300
         group-hover:text-[var(--text)]
       "
             viewBox="0 0 24 24"
@@ -33,13 +32,15 @@ function Arrow() {
     );
 }
 
-/* ---------- Section title ---------- */
+/* ================= Section title ================= */
 function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
         <p
             className="
-        font-sans font-bold tracking-[-0.02em] text-[var(--text)]
-        text-2xl sm:text-3xl md:text-4xl mb-6
+        font-sans font-bold tracking-[-0.02em]
+        text-[var(--text)]
+        text-2xl sm:text-3xl md:text-4xl
+        mb-6
       "
         >
             {children}
@@ -47,7 +48,7 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
     );
 }
 
-/* ---------- Big titles ---------- */
+/* ================= Big titles ================= */
 function BigTitle({ children }: { children: React.ReactNode }) {
     return (
         <span
@@ -63,12 +64,13 @@ function BigTitle({ children }: { children: React.ReactNode }) {
     );
 }
 
-/* ---------- Card base (padding + blur + micro scale on tap) ---------- */
+/* ================= Card base (padding + blur + micro scale) ================= */
 const cardBase = `
   rounded-2xl
   px-4 sm:px-5
   transition-all duration-250
   ease-[cubic-bezier(0.16,1,0.3,1)]
+
   xl:hover:bg-[var(--card)]
   xl:hover:shadow-[var(--shadow)]
   xl:hover:-translate-y-1
@@ -192,6 +194,38 @@ export default function HomePageClient() {
                                 </div>
                             </Link>
                         ))}
+                    </div>
+                </section>
+
+                {/* ================= VIDEO ================= */}
+                <section className="w-full">
+                    <div className="px-6 py-10 lg:py-14 max-w-7xl mx-auto">
+                        <SectionKicker>{t("video.kicker")}</SectionKicker>
+                        <h2 className="mt-2">
+                            <BigTitle>{t("video.title")}</BigTitle>
+                        </h2>
+                    </div>
+
+                    <div className="relative w-full h-[100svh] overflow-hidden">
+                        {/* optional subtle overlay for readability (remove if you don't want it) */}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/10" />
+
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="
+                absolute inset-0 w-full h-full
+                object-cover
+                object-center
+                sm:scale-[0.98] scale-[0.96]
+                lg:scale-100
+                will-change-transform
+              "
+                        >
+                            <source src="/videos/live-video.mp4" type="video/mp4" />
+                        </video>
                     </div>
                 </section>
 
