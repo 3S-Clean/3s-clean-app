@@ -123,15 +123,23 @@ export default function HomePageClient() {
                     >
                         <h1
                             className="
-                m-0 p-0
-                font-sans font-bold tracking-[-0.03em]
-                leading-none
-                text-left text-[var(--text)]
-                max-w-[14ch]
-                text-[80px] sm:text-[88px] md:text-[96px] lg:text-[104px] xl:text-[112px]
-              "
+    m-0 p-0
+    font-sans font-bold tracking-[-0.03em]
+    leading-none
+    text-left text-[var(--text)]
+    max-w-[14ch]
+    text-[80px] sm:text-[88px] md:text-[96px] lg:text-[112px] xl:text-[120px]
+  "
                         >
-                            {t("hero.title").replace(/\n/g, " ")}
+                            {/* Mobile / Tablet: как сейчас (из JSON) */}
+                            <span className="whitespace-pre-line lg:hidden">
+    {t("hero.title")}
+  </span>
+
+                            {/* Desktop: строго 3 строки */}
+                            <span className="hidden lg:block whitespace-pre-line">
+    {"Your premium\nhome cleaning service\nin Stuttgart!"}
+  </span>
                         </h1>
                     </div>
                 </section>
