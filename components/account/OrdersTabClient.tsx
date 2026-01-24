@@ -156,7 +156,7 @@ export default function OrdersTabClient() {
                 {orders.map((o) => (
                     <Link
                         key={o.id}
-                        href={`/account/orders/${o.id}`}
+                        href={`/app/%5Blocale%5D/account/orders/${o.id}`}
                         className="
                 block rounded-3xl bg-[#f6f7f8]
                 p-6 transition

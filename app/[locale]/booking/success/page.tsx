@@ -272,7 +272,7 @@ function Content() {
                     ) : (
                         <>
                             <Link
-                                href="/"
+                                href="/public"
                                 className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                             >
                                 Back to Home
