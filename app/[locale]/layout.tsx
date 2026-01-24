@@ -1,79 +1,30 @@
-// proxy.ts
-import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import type { CookieOptions } from "@supabase/ssr";
+import { NextIntlClientProvider } from "next-intl";
+import { notFound } from "next/navigation";
 
-type CookieToSet = { name: string; value: string; options?: CookieOptions };
+const locales = ["en", "de"] as const;
 
-export async function proxy(req: NextRequest) {
-    const cookiesToSet: CookieToSet[] = [];
+export default async function LocaleLayout({
+                                               children,
+                                               params,
+                                           }: {
+    children: React.ReactNode;
+    params: { locale: string };
+}) {
+    const { locale } = params;
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return req.cookies.getAll();
-                },
-                setAll(newCookies) {
-                    cookiesToSet.push(
-                        ...newCookies.map((c) => ({ name: c.name, value: c.value, options: c.options }))
-                    );
-                },
-            },
-        }
+    if (!locales.includes(locale as (typeof locales)[number])) {
+        notFound();
+    }
+
+    const messages = (await import(`../../messages/${locale}.json`)).default;
+
+    return (
+        <html lang={locale}>
+        <body className="antialiased">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+            {children}
+        </NextIntlClientProvider>
+        </body>
+        </html>
     );
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    const pathname = req.nextUrl.pathname;
-
-    const isProtected = pathname.startsWith("/account");
-
-    const isReset = pathname === "/reset-password";
-    const flow = req.nextUrl.searchParams.get("flow");
-    const isRecoveryReset = isReset && flow === "recovery";
-
-    const isAuthPage =
-        pathname === "/login" || pathname === "/signup" || pathname === "/forgot-password";
-
-    let response = NextResponse.next();
-
-    // 1) Не залогинен → нельзя на account
-    if (!user && isProtected) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/login";
-        url.searchParams.set("next", pathname);
-        response = NextResponse.redirect(url);
-    }
-
-    // 2) Залогинен → нечего делать на login/signup/forgot-password
-    if (user && isAuthPage) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/account";
-        response = NextResponse.redirect(url);
-    }
-
-    // 3) reset-password:
-    // - только /reset-password?flow=recovery разрешаем
-    // - иначе всегда уводим на /forgot-password (не важно, есть user или нет)
-    if (isReset && !isRecoveryReset) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/forgot-password";
-        response = NextResponse.redirect(url);
-    }
-
-    // apply cookies
-    cookiesToSet.forEach(({ name, value, options }) => {
-        response.cookies.set(name, value, options);
-    });
-
-    return response;
 }
-
-export const config = {
-    matcher: ["/account/:path*", "/login", "/signup", "/forgot-password", "/reset-password"],
-};
