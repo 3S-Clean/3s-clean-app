@@ -22,14 +22,20 @@ function TextLines({ text }: { text: string }) {
 
 function Arrow() {
     return (
-        <span
-            className="text-4xl md:text-5xl lg:text-6xl leading-none text-[var(--muted)]
-                 transition-all duration-300 ease-out
-                 group-hover:text-[var(--text)] group-hover:translate-x-2"
+        <svg
+            className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-[var(--muted)]
+                transition-all duration-300 ease-out
+                group-hover:text-[var(--text)] group-hover:translate-x-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             aria-hidden="true"
         >
-            ›
-        </span>
+            <path d="M9 6l6 6-6 6" />
+        </svg>
     );
 }
 
@@ -84,12 +90,12 @@ export default function HomePageClient() {
             <Header />
 
             <main className="min-h-screen bg-[var(--background)] pt-[80px]">
-                {/* HERO + 3S PROMISE */}
-                <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20 max-w-7xl mx-auto">
+                {/* HERO - Full viewport on mobile */}
+                <section className="px-6 min-h-[calc(100vh-80px)] md:min-h-0 md:h-auto flex flex-col justify-center md:block md:pt-16 md:pb-20 max-w-7xl mx-auto">
                     {/* HERO TITLE - Linear-style entrance animation */}
                     <div
                         className={`
-                            mb-12 md:mb-16
+                            mb-0 md:mb-16
                             transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]
                             ${isLoaded
                             ? "opacity-100 translate-y-0"
@@ -100,100 +106,103 @@ export default function HomePageClient() {
                         <h1
                             className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
                                 text-[var(--text)] max-w-[14ch]
-                                text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
+                                text-[70px] sm:text-[75px] md:text-[80px] lg:text-[92px] xl:text-[105px]"
                         >
                             <TextLines text={t("hero.title")} />
                         </h1>
                     </div>
+                </section>
 
-                    {/* 3S PROMISE SECTION */}
-                    <div>
-                        <h2
-                            className={`
+                {/* 3S PROMISE SECTION - Separate on mobile */}
+                <section className="px-6 pb-14 md:pb-20 max-w-7xl mx-auto">
+                    <h2
+                        className={`
                                 text-base sm:text-lg md:text-xl font-semibold mb-8 md:mb-10
                                 text-[var(--text)]
                                 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]
                                 ${isLoaded
-                                ? "opacity-100 translate-y-0"
-                                : "opacity-0 translate-y-12"
-                            }
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-12"
+                        }
                             `}
-                            style={{
-                                transitionDelay: isLoaded ? "150ms" : "0ms",
-                            }}
-                        >
-                            {t("promise.title")}
-                        </h2>
+                        style={{
+                            transitionDelay: isLoaded ? "150ms" : "0ms",
+                        }}
+                    >
+                        {t("promise.title")}
+                    </h2>
 
-                        {/* Cards: vertical on mobile, horizontal on tablet+ */}
-                        <div className="flex flex-col md:flex-row md:gap-6 lg:gap-8">
-                            {promise.map((it, index) => (
-                                <Link
-                                    key={it.id}
-                                    href={`/definition/#${it.id}`}
-                                    className={`
-                                        group block flex-1
+                    {/* Cards: vertical on mobile/tablet, horizontal on desktop (lg+) */}
+                    <div className="flex flex-col lg:flex-row lg:gap-8">
+                        {promise.map((it, index) => (
+                            <Link
+                                key={it.id}
+                                href={`/definition/#${it.id}`}
+                                className={`
+                                        group block lg:flex-1
                                         transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]
                                         ${isLoaded
-                                        ? "opacity-100 translate-y-0"
-                                        : "opacity-0 translate-y-12"
-                                    }
+                                    ? "opacity-100 translate-y-0"
+                                    : "opacity-0 translate-y-12"
+                                }
                                     `}
-                                    style={{
-                                        transitionDelay: isLoaded ? `${300 + index * 150}ms` : "0ms",
-                                    }}
-                                >
-                                    <div
-                                        className="
+                                style={{
+                                    transitionDelay: isLoaded ? `${300 + index * 150}ms` : "0ms",
+                                }}
+                            >
+                                <div
+                                    className="
                                             py-4 px-0
-                                            md:py-5 md:px-5
-                                            md:rounded-2xl
+                                            lg:py-5 lg:px-5
+                                            lg:rounded-2xl
                                             h-full
                                             transition-all duration-300 ease-out
-                                            md:hover:bg-[var(--card)]
-                                            md:hover:shadow-[var(--shadow)]
-                                            md:hover:-translate-y-1
+                                            lg:hover:bg-[var(--card)]
+                                            lg:hover:shadow-[var(--shadow)]
+                                            lg:hover:-translate-y-1
                                             motion-reduce:transition-none motion-reduce:hover:transform-none
                                         "
-                                    >
-                                        <div className="flex items-center justify-between gap-4">
-                                            <h3 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight leading-none text-[var(--text)]">
-                                                {it.title}
-                                            </h3>
-                                            <Arrow />
-                                        </div>
-
-                                        <p className="mt-3 text-[var(--muted)] text-sm md:text-base leading-relaxed">
-                                            {it.desc}
-                                        </p>
+                                >
+                                    <div className="flex items-center justify-between gap-4">
+                                        <h3 className="text-[50px] sm:text-[55px] lg:text-5xl xl:text-6xl font-bold tracking-tight leading-none text-[var(--text)]">
+                                            {it.title}
+                                        </h3>
+                                        <Arrow />
                                     </div>
-                                </Link>
-                            ))}
-                        </div>
+
+                                    <p className="mt-3 text-[var(--muted)] text-sm md:text-base leading-relaxed">
+                                        {it.desc}
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </section>
 
-                {/* VIDEO - Full viewport on all devices */}
-                <section className="relative w-full h-screen overflow-hidden">
-                    <div className="absolute top-0 left-0 right-0 px-6 py-8 md:py-12 z-10 max-w-7xl mx-auto">
-                        <p className="text-base sm:text-lg md:text-xl font-semibold text-white/90 mb-4">
+                {/* VIDEO - Text above, video below */}
+                <section className="w-full">
+                    {/* Text section above video */}
+                    <div className="px-6 py-8 md:py-12 max-w-7xl mx-auto">
+                        <p className="text-base sm:text-lg md:text-xl font-semibold text-[var(--text)] mb-4">
                             {t("video.kicker")}
                         </p>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text)]">
                             {t("video.title")}
                         </h2>
                     </div>
 
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                    >
-                        <source src="/videos/live-video.mp4" type="video/mp4" />
-                    </video>
-                    <div className="absolute inset-0 bg-black/30" />
+                    {/* Video - full viewport */}
+                    <div className="relative w-full h-screen overflow-hidden">
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                        >
+                            <source src="/videos/live-video.mp4" type="video/mp4" />
+                        </video>
+                    </div>
                 </section>
 
                 {/* EXPERIENCE */}
