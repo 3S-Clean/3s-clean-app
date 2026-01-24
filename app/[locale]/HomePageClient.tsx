@@ -11,8 +11,8 @@ function TextLines({ text }: { text: string }) {
         <>
             {text.split("\n").map((line, i) => (
                 <span key={i} className="block">
-                    {line}
-                </span>
+          {line}
+        </span>
             ))}
         </>
     );
@@ -21,13 +21,19 @@ function TextLines({ text }: { text: string }) {
 function Arrow() {
     return (
         <span
-            className="text-3xl md:text-4xl leading-none text-[var(--muted)]
-                 transition-all duration-300 ease-out
-                 group-hover:text-[var(--text)] group-hover:translate-x-2"
+            className="
+        inline-block align-baseline
+        ml-3
+        text-[28px] md:text-[30px]
+        leading-none
+        text-[var(--muted)]
+        transition-transform duration-500 ease-out
+        group-hover:translate-x-2 group-hover:text-[var(--text)]
+      "
             aria-hidden="true"
         >
-            ›
-        </span>
+      ›
+    </span>
     );
 }
 
@@ -36,14 +42,14 @@ export default function HomePageClient() {
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setIsLoaded(true), 100);
+        const timer = setTimeout(() => setIsLoaded(true), 180);
         return () => clearTimeout(timer);
     }, []);
 
     const promise = [
         { id: "sauber", title: t("promise.sauber.title"), desc: t("promise.sauber.desc") },
         { id: "sicher", title: t("promise.sicher.title"), desc: t("promise.sicher.desc") },
-        { id: "souveran", title: t("promise.souveran.title"), desc: t("promise.souveran.desc") },
+        { id: "souveran", title: t("promise.souveran.title"), desc: t("promise.souveran.desc") }
     ];
 
     const experience = [
@@ -52,29 +58,29 @@ export default function HomePageClient() {
             kicker: t("experience.maintenance.kicker"),
             title: t("experience.maintenance.title"),
             desc: t("experience.maintenance.desc"),
-            price: t("experience.maintenance.price"),
+            price: t("experience.maintenance.price")
         },
         {
             id: "reset",
             kicker: t("experience.reset.kicker"),
             title: t("experience.reset.title"),
             desc: t("experience.reset.desc"),
-            price: t("experience.reset.price"),
+            price: t("experience.reset.price")
         },
         {
             id: "initial",
             kicker: t("experience.initial.kicker"),
             title: t("experience.initial.title"),
             desc: t("experience.initial.desc"),
-            price: t("experience.initial.price"),
+            price: t("experience.initial.price")
         },
         {
             id: "handover",
             kicker: t("experience.handover.kicker"),
             title: t("experience.handover.title"),
             desc: t("experience.handover.desc"),
-            price: t("experience.handover.price"),
-        },
+            price: t("experience.handover.price")
+        }
     ];
 
     return (
@@ -82,81 +88,71 @@ export default function HomePageClient() {
             <Header />
 
             <main className="min-h-screen bg-[var(--background)] pt-[80px]">
-                {/* HERO + 3S PROMISE */}
+                {/* HERO + 3S PROMISE (как на PDF: заголовок сверху, 3 блока снизу) */}
                 <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20 max-w-7xl mx-auto">
-                    {/* HERO TITLE - Linear-style entrance animation */}
+                    {/* HERO */}
                     <div
                         className={`
-                            mb-12 md:mb-16
-                            transition-all duration-700 ease-out
-                            ${isLoaded
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-8"
-                        }
-                        `}
+              transition-all ease-out
+              duration-[1100ms]
+              ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+            `}
                     >
                         <h1
-                            className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
-                                text-[var(--text)]
-                                text-[48px] sm:text-[56px] md:text-[72px] lg:text-[88px] xl:text-[100px]"
+                            className="
+                m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.02] text-left
+                text-[var(--text)]
+                text-[52px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[110px]
+                max-w-[18ch]
+              "
                         >
                             <TextLines text={t("hero.title")} />
                         </h1>
                     </div>
 
-                    {/* 3S PROMISE SECTION */}
-                    <div>
-                        <h2
-                            className={`
-                                text-base sm:text-lg md:text-xl font-semibold mb-8 md:mb-10
-                                text-[var(--text)]
-                                transition-all duration-700 ease-out delay-100
-                                ${isLoaded
-                                ? "opacity-100 translate-y-0"
-                                : "opacity-0 translate-y-8"
-                            }
-                            `}
-                        >
+                    {/* PROMISE TITLE */}
+                    <div
+                        className={`
+              mt-10 md:mt-14
+              transition-all ease-out
+              duration-[1100ms]
+              delay-[200ms]
+              ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+            `}
+                    >
+                        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-[var(--text)]">
                             {t("promise.title")}
                         </h2>
+                    </div>
 
-                        {/* Cards: vertical on mobile, horizontal on tablet+ */}
-                        <div className="flex flex-col md:flex-row md:gap-6 lg:gap-8">
+                    {/* 3 PROMISE BLOCKS */}
+                    <div className="mt-8 md:mt-10">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
                             {promise.map((it, index) => (
                                 <Link
                                     key={it.id}
                                     href={`/definition/#${it.id}`}
                                     className={`
-                                        group block flex-1
-                                        transition-all duration-700 ease-out
-                                        ${isLoaded
-                                        ? "opacity-100 translate-y-0"
-                                        : "opacity-0 translate-y-8"
-                                    }
-                                    `}
+                    group block
+                    transition-all ease-out
+                    duration-[1100ms]
+                    ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+                  `}
                                     style={{
-                                        transitionDelay: isLoaded ? `${200 + index * 100}ms` : "0ms",
+                                        transitionDelay: isLoaded ? `${320 + index * 120}ms` : "0ms"
                                     }}
                                 >
-                                    <div
-                                        className="
-                                            py-4 px-0
-                                            md:py-5 md:px-5
-                                            md:rounded-2xl
-                                            h-full
-                                            transition-all duration-300 ease-out
-                                            md:hover:bg-[var(--card)]
-                                            md:hover:shadow-[var(--shadow)]
-                                            md:hover:-translate-y-1
-                                            motion-reduce:transition-none motion-reduce:hover:transform-none
-                                        "
-                                    >
-                                        <div className="flex items-center justify-between gap-4">
-                                            <h3 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight leading-none text-[var(--text)]">
-                                                {it.title}
-                                            </h3>
+                                    <div>
+                                        <h3
+                                            className="
+                        font-bold tracking-tight leading-none
+                        text-[var(--text)]
+                        text-[44px] md:text-[48px] lg:text-[52px]
+                      "
+                                        >
+                                            {it.title}
                                             <Arrow />
-                                        </div>
+                                        </h3>
 
                                         <p className="mt-3 text-[var(--muted)] text-sm md:text-base leading-relaxed">
                                             {it.desc}
@@ -168,7 +164,7 @@ export default function HomePageClient() {
                     </div>
                 </section>
 
-                {/* VIDEO - Full viewport on all devices */}
+                {/* VIDEO */}
                 <section className="relative w-full h-screen overflow-hidden">
                     <div className="absolute top-0 left-0 right-0 px-6 py-8 z-10">
                         <p className="text-sm text-white/70 mb-2">{t("video.kicker")}</p>
@@ -177,13 +173,7 @@ export default function HomePageClient() {
                         </h2>
                     </div>
 
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                    >
+                    <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
                         <source src="/videos/live-video.mp4" type="video/mp4" />
                     </video>
                     <div className="absolute inset-0 bg-black/20" />
@@ -201,13 +191,13 @@ export default function HomePageClient() {
                                 key={it.id}
                                 href={`/experience#${it.id}`}
                                 className="
-                                    group block p-5 md:p-6
-                                    rounded-2xl
-                                    transition-all duration-300 ease-out
-                                    hover:bg-[var(--card)]
-                                    hover:shadow-[var(--shadow)]
-                                    hover:-translate-y-1
-                                "
+                  group block p-5 md:p-6
+                  rounded-2xl
+                  transition-all duration-300 ease-out
+                  hover:bg-[var(--card)]
+                  hover:shadow-[var(--shadow)]
+                  hover:-translate-y-1
+                "
                             >
                                 <p className="text-sm text-[var(--muted)] mb-2">{it.kicker}</p>
                                 <h3 className="text-xl md:text-2xl font-bold mb-3 text-[var(--text)]">{it.title}</h3>
