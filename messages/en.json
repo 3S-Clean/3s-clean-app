@@ -26,25 +26,87 @@
       "kicker": "3S-Clean Experience",
       "title": "CHOOSE YOURS!",
       "maintenance": {
-        "title": "MAINTENANCE",
-        "desc": "weekly or bi-weekly cleaning to keep your home tidy and fresh",
+        "title": "CORE",
+        "desc": "The essential cleaning program to keep your home consistently clean and presentable — week after week.",
         "price": "From €120"
       },
       "reset": {
         "title": "RESET",
-        "desc": "intensive cleaning for a “reset” of your home after a party or\nwhen it has not been cleaned properly for a longer period of time",
+        "desc": "An intensive deep clean to reset your home — ideal after a party or when it hasn’t been cleaned thoroughly for a while.",
         "price": "From €200"
       },
       "initial": {
         "title": "INITIAL",
-        "desc": "recommended for all first-jme clients (o bring your home to a\nlevel where it can be eﬃciently maintained thereafter",
+        "desc": "Recommended for first-time clients to bring your home to a baseline that can be maintained efficiently afterward.",
         "price": "From €165"
       },
       "handover": {
         "title": "HANDOVER",
-        "desc": "Specialized cleaning before handover to landlord or before moving in.",
+        "desc": "Specialized cleaning before handover to a landlord or before moving in.",
         "price": "From €220"
       }
+    }
+  },
+  "definition": {
+    "hero": {
+      "title": "3S-Clean Promise:"
+    },
+    "links": {
+      "experience": "3S-Clean Experience",
+      "contact": "contact us"
+    },
+    "sauber": {
+      "title": "SAUBER",
+      "subtitle": "— a home that feels light, healthy, and ready for life.",
+      "p1": "Failure to regularly clean your home leads to built-up clutter, allergens, increased health risks, and a space that simply feels uncomfortable. Life in your own home becomes stressful — not to mention inviting family or friends. But most people don’t have the time, experience, or energy to manage this chore — we get it!",
+      "p2": "That’s where we come in.",
+      "p3": {
+        "before": "We have custom-tailored different",
+        "after": "to meet your specific needs and keep your home permanently clean. You decide how often and what you want cleaned. We use eco-friendly cleaning products and are properly equipped to deliver a spotless, refreshed result every time."
+      },
+      "footer": "3S-CLEAN — SAUBER. JEDES MAL."
+    },
+    "sicher": {
+      "title": "SICHER",
+      "subtitle": "— trust you can verify, not just hope for.",
+      "p1": {
+        "before": "It can be stressful to let a stranger into your home — trust is not something given but must be gained. To guarantee your peace of mind we use",
+        "strong": "GoPro cameras worn by our employees throughout every cleaning session",
+        "after": "— you can view a live-stream video via a secure link, or review a video report later within 7 days."
+      },
+      "p2": {
+        "before": "This way you are always in control and know exactly what is going on in your home even if you are not there at the time of cleaning. If anything ever feels unclear, simply review the footage and",
+        "after": "— we’re here to support you with complete transparency and professionalism."
+      },
+      "p3": {
+        "strong": "Your privacy is non-negotiable.",
+        "after": "No identifying information or details of your home are shared. Only authorized personnel have access to videos, and they are deleted from our secure servers after 7 days."
+      },
+      "p4": {
+        "before": "Our pricing is absolutely transparent — no ambiguous hourly rates or hidden fees. You don’t get estimates, but firm comprehensive offers based on your booking details. Just choose the",
+        "after": "that is right for you!"
+      },
+      "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
+    },
+    "souveran": {
+      "title": "SOUVERÄN",
+      "subtitle": "— calm execution, consistent results.",
+      "p1": "Every 3S-CLEAN specialist is trained, vetted, and employed directly by us — never a freelancer. That gives you reliability, accountability, and a consistent standard every time.",
+      "p2": "We hire people who genuinely enjoy cleaning and take pride in doing it right. We invest in training, checklists, and a culture of ownership.",
+      "p3": {
+        "strong": "Quality is actively managed.",
+        "after": "We regularly review video reports to keep performance sharp and service reliable. And if something ever goes wrong, you’re covered: liability insurance is provided."
+      },
+      "p4": {
+        "before": "There is also an economic upside for our clients: get up to",
+        "strong": "20% of your annual cleaning expenditure back",
+        "after": "through tax reduction according to §35a EStG: keep invoices and turn routine cleaning into measurable financial efficiency."
+      },
+      "footer": "3S-CLEAN — SOUVERÄN. BIS INS DETAIL."
+    },
+    "cta": {
+      "title": "Explore the 3S Experience",
+      "button": "Get Started"
     }
   }
 }

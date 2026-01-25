@@ -1,134 +1,206 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
+function SectionShell({ children }: { children: React.ReactNode }) {
+    return (
+        <div
+            className="
+        max-w-4xl mx-auto
+        rounded-3xl
+        bg-gray-50 text-gray-900
+        dark:bg-white/5 dark:text-white
+        p-8 md:p-12
+        ring-1 ring-black/5 dark:ring-white/10
+      "
+        >
+            {children}
+        </div>
+    );
+}
+
+function Muted({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+    return (
+        <p className={`text-gray-600 dark:text-white/70 ${className}`}>
+            {children}
+        </p>
+    );
+}
+
+function Body({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="space-y-6 leading-relaxed text-gray-700 dark:text-white/80">
+            {children}
+        </div>
+    );
+}
+
+function InlineLink({
+                        href,
+                        children,
+                    }: {
+    href: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <Link
+            href={href}
+            className="
+        font-semibold
+        text-gray-900 dark:text-white
+        underline underline-offset-4
+        decoration-black/20 dark:decoration-white/25
+        hover:decoration-black/50 dark:hover:decoration-white/60
+      "
+        >
+            {children}
+        </Link>
+    );
+}
+
 export default function DefinitionPage() {
+    const t = useTranslations("definition");
+
     return (
         <>
-            <Header/>
-            <main className="min-h-screen bg-white mt-[80px] ">
+            <Header />
+
+            <main className="min-h-screen mt-[80px] bg-white text-gray-900 dark:bg-black dark:text-white">
                 {/* Hero */}
                 <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-12 max-w-4xl mx-auto text-center">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-                        3S-Clean Promise:
+                        {t("hero.title")}
                     </h1>
                 </section>
 
-                {/* SAUBER Section */}
+                {/* SAUBER */}
                 <section id="sauber" className="px-6 py-12 md:py-20">
-                    <div className="max-w-4xl mx-auto bg-gray-50 rounded-3xl p-8 md:p-12">
+                    <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                SAUBER
+                                {t("sauber.title")}
                             </h2>
-                            <p className="text-gray-600 italic text-lg">
-                                — a home that feels light, healthy, and ready for life.
-                            </p>
+                            <Muted className="italic text-lg">{t("sauber.subtitle")}</Muted>
                         </div>
 
-                        <div className="space-y-6 text-gray-700 leading-relaxed">
+                        <Body>
+                            <p>{t("sauber.p1")}</p>
+                            <p>{t("sauber.p2")}</p>
                             <p>
-                                Failure to regularly clean your home leads to built-up clutter, allergens, increased health risks, and a space that simply feels uncomfortable. Life in your own home becomes stressful, not to mention inviting family or friends. But most people don&#39;t have the time, experience, or energy to manage this chore – we get it!
+                                {t("sauber.p3.before")}{" "}
+                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                {t("sauber.p3.after")}
                             </p>
-                            <p>
-                                That&#39;s where we come in.
-                            </p>
-                            <p>
-                                We have custom-tailored different <strong>3S-Clean Experiences</strong> to meet your specific needs and keep your home permanently clean. You decide how often and what you want cleaned. It goes without saying that we use eco-friendly cleaning products and are properly equipped to deliver a spotless, refreshed result every time.
-                            </p>
-                        </div>
+                        </Body>
 
-                        <p className="mt-8 text-sm font-medium text-gray-500 tracking-wider">
-                            3S-CLEAN — SAUBER. JEDES MAL.
+                        <p className="mt-8 text-sm font-medium tracking-wider text-gray-500 dark:text-white/50">
+                            {t("sauber.footer")}
                         </p>
-                    </div>
+                    </SectionShell>
                 </section>
 
-                {/* SICHER Section */}
+                {/* SICHER */}
                 <section id="sicher" className="px-6 py-12 md:py-20">
-                    <div className="max-w-4xl mx-auto bg-gray-900 text-white rounded-3xl p-8 md:p-12">
+                    <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                SICHER
+                                {t("sicher.title")}
                             </h2>
-                            <p className="text-gray-300 italic text-lg">
-                                — trust you can verify, not just hope for.
-                            </p>
+                            <Muted className="italic text-lg">{t("sicher.subtitle")}</Muted>
                         </div>
 
-                        <div className="space-y-6 text-gray-300 leading-relaxed">
+                        <Body>
                             <p>
-                                It can be stressful to let a stranger into your home – trust is not something given but must be gained. To guarantee your peace of mind we use <strong className="text-white">GoPro cameras worn by our employees throughout every cleaning session</strong> – you can view a live-stream video, transmitted via a secure link, or review a video report at a later time within 7 days.
+                                {t("sicher.p1.before")}{" "}
+                                <strong className="text-gray-900 dark:text-white">
+                                    {t("sicher.p1.strong")}
+                                </strong>{" "}
+                                {t("sicher.p1.after")}
                             </p>
-                            <p>
-                                This way you are always in control and know exactly what is going on in your home even if you are not there at time of cleaning. If anything ever feels unclear, simply review the footage and contact us — we&#39;re here to support you with complete transparency and professionalism.
-                            </p>
-                            <p>
-                                <strong className="text-white">Your privacy is non-negotiable.</strong> No information identifying you or location and details of your home will be shared with anyone. Only authorized personnel have access to videos that are deleted from our secure servers after 7 days.
-                            </p>
-                            <p>
-                                Our pricing is absolutely transparent — no ambiguous hourly-rates or hidden fees. You don&#39;t get estimates, but firm comprehensive offers based on the information you provide at time of booking. Just choose the <strong className="text-white">3S-Clean Experience</strong> that is right for you!
-                            </p>
-                        </div>
 
-                        <p className="mt-8 text-sm font-medium text-gray-500 tracking-wider">
-                            3S-CLEAN — SAUBER. JEDES MAL.
+                            <p>
+                                {t("sicher.p2.before")}{" "}
+                                <InlineLink href="/contact">{t("links.contact")}</InlineLink>{" "}
+                                {t("sicher.p2.after")}
+                            </p>
+
+                            <p>
+                                <strong className="text-gray-900 dark:text-white">{t("sicher.p3.strong")}</strong>{" "}
+                                {t("sicher.p3.after")}
+                            </p>
+
+                            <p>
+                                {t("sicher.p4.before")}{" "}
+                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                {t("sicher.p4.after")}
+                            </p>
+                        </Body>
+
+                        <p className="mt-8 text-sm font-medium tracking-wider text-gray-500 dark:text-white/50">
+                            {t("sicher.footer")}
                         </p>
-                    </div>
+                    </SectionShell>
                 </section>
 
-                {/* SOUVERÄN Section */}
+                {/* SOUVERÄN */}
                 <section id="souveran" className="px-6 py-12 md:py-20">
-                    <div className="max-w-4xl mx-auto bg-gray-50 rounded-3xl p-8 md:p-12">
+                    <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                SOUVERÄN
+                                {t("souveran.title")}
                             </h2>
-                            <p className="text-gray-600 italic text-lg">
-                                — calm execution, consistent results.
-                            </p>
+                            <Muted className="italic text-lg">{t("souveran.subtitle")}</Muted>
                         </div>
 
-                        <div className="space-y-6 text-gray-700 leading-relaxed">
+                        <Body>
+                            <p>{t("souveran.p1")}</p>
+                            <p>{t("souveran.p2")}</p>
                             <p>
-                                Every 3S-CLEAN specialist is trained, vetted, and employed directly by us — never a freelancer. That gives you reliability, accountability, and a consistent standard every time.
+                                <strong className="text-gray-900 dark:text-white">
+                                    {t("souveran.p3.strong")}
+                                </strong>{" "}
+                                {t("souveran.p3.after")}
                             </p>
                             <p>
-                                We hire people who genuinely enjoy cleaning and take pride in doing it right. We invest not only in equipment and proven cleaning products — but, more importantly, in our people: training, checklists, and a culture of ownership.
+                                {t("souveran.p4.before")}{" "}
+                                <strong className="text-gray-900 dark:text-white">{t("souveran.p4.strong")}</strong>{" "}
+                                {t("souveran.p4.after")}
                             </p>
-                            <p>
-                                <strong>Quality is actively managed.</strong> We regularly review video reports to keep performance sharp and service reliable. And if something ever goes wrong, you&#39;re covered: liability insurance is provided.
-                            </p>
-                            <p>
-                                There is also an economic upside for our clients: get up to <strong>20% of your annual cleaning expenditure back</strong> through tax reduction according to §35a EStG: simply retain the invoices and convert routine cleaning into measurable financial efficiency.
-                            </p>
-                        </div>
+                        </Body>
 
-                        <p className="mt-8 text-sm font-medium text-gray-500 tracking-wider">
-                            3S-CLEAN — SAUBER. JEDES MAL.
+                        <p className="mt-8 text-sm font-medium tracking-wider text-gray-500 dark:text-white/50">
+                            {t("souveran.footer")}
                         </p>
-                    </div>
+                    </SectionShell>
                 </section>
 
-                {/* CTA Section */}
+                {/* CTA */}
                 <section className="px-6 py-16 md:py-24 max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                        Explore the 3S Experience
+                        {t("cta.title")}
                     </h2>
+
                     <Link
                         href="/experience"
-                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-colors"
+                        className="
+              inline-flex items-center gap-2
+              rounded-full px-8 py-4 font-medium
+              bg-gray-900 text-white hover:bg-gray-800
+              dark:bg-white dark:text-black dark:hover:bg-white/90
+              transition-colors
+            "
                     >
-                        Get Started
+                        {t("cta.button")}
                         <ArrowRight className="w-5 h-5" />
                     </Link>
                 </section>
             </main>
-            <Footer/>
-        </>
 
+            <Footer />
+        </>
     );
 }

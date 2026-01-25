@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
 /* -----------------------------
-   Arrow (soft spring feel)
+   Arrow
 ------------------------------ */
 function Arrow() {
     return (
@@ -16,10 +16,7 @@ function Arrow() {
         w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] lg:w-[90px] lg:h-[90px]
         flex-shrink-0 text-[var(--muted)]
         transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
-        group-hover:translate-x-2
-        group-active:translate-x-1
-        group-hover:text-[var(--text)]
-        group-active:text-[var(--text)]
+        group-hover:translate-x-2 group-active:translate-x-1
       "
             viewBox="0 0 24 24"
             fill="none"
@@ -35,7 +32,7 @@ function Arrow() {
 }
 
 /* -----------------------------
-   Section title (bigger)
+   Section kicker
 ------------------------------ */
 function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
@@ -52,7 +49,7 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
 }
 
 /* -----------------------------
-   Big titles (SAUBER etc.)
+   Big titles (cards)
 ------------------------------ */
 function BigTitle({
                       children,
@@ -75,10 +72,10 @@ function BigTitle({
 }
 
 /* -----------------------------
-   Card interaction (hover + touch)
+   Card base (interaction only)
 ------------------------------ */
 const cardBase =
-    "rounded-2xl transition-all duration-220 ease-out " +
+    "rounded-2xl transition-transform duration-200 ease-out " +
     "xl:hover:bg-[var(--card)] xl:hover:shadow-[var(--shadow)] xl:hover:-translate-y-1 " +
     "active:bg-[var(--card)]/80 active:backdrop-blur-lg active:shadow-[var(--shadow)] active:-translate-y-[2px] active:scale-[0.995] " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)]/20 " +
@@ -93,7 +90,6 @@ function formatDesktopHero(raw: string) {
         .map((s) => s.trim())
         .filter(Boolean);
 
-    // EN expected: ["Your","premium","home","cleaning","service","in Stuttgart!"]
     if (parts.length >= 6) {
         const line1 = `${parts[0]} ${parts[1]}`.trim();
         const line2 = `${parts[2]} ${parts[3]} ${parts[4]}`.trim();
@@ -115,12 +111,6 @@ function formatDesktopHero(raw: string) {
 
 export default function HomePageClient() {
     const t = useTranslations("home");
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoaded(true), 260);
-        return () => clearTimeout(timer);
-    }, []);
 
     const heroRaw = t("hero.title");
     const desktopHeroLines = useMemo(() => formatDesktopHero(heroRaw), [heroRaw]);
@@ -158,7 +148,7 @@ export default function HomePageClient() {
                 id: "handover",
                 title: t("experience.handover.title"),
                 desc: t("experience.handover.desc"),
-                price: t("experience.handover.price"),
+                price: t("experience.handover.desc"),
             },
         ],
         [t]
@@ -171,33 +161,27 @@ export default function HomePageClient() {
             <main className="min-h-screen bg-[var(--background)] pt-[80px] overflow-x-hidden">
                 {/* =========================
             HERO
-            ✅ FIX: iOS Safari — делаем 100dvh и добавляем spacer,
-            чтобы PROMISE никогда не выглядывал снизу.
+            - full screen on mobile/tablet so Promise never shows
            ========================= */}
                 <section
                     className="
             px-6 pt-6
             max-w-7xl mx-auto
             flex flex-col justify-start
-
-            /* mobile/tablet: строго на весь экран */
-            min-h-[calc(100dvh-80px)]
-            overflow-hidden
-
-            /* desktop: как было */
+            min-h-[calc(100dvh-80px)] overflow-hidden
             xl:min-h-0 xl:overflow-visible xl:pb-10
           "
                 >
-                    {/* Mobile/Tablet hero (keep original line breaks) */}
+                    {/* Mobile/Tablet hero (original breaks) */}
                     <div className="xl:hidden">
                         {heroRaw.split("\n").map((line, i) => (
                             <div
                                 key={`m-${i}`}
-                                className={`
-                  transition-all duration-[1700ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"}
-                `}
-                                style={{ transitionDelay: `${i * 340}ms` }}
+                                className="
+                  opacity-0 translate-y-6
+                  animate-[heroIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                "
+                                style={{ animationDelay: `${i * 180}ms` }}
                             >
                                 <h1
                                     className="
@@ -206,7 +190,7 @@ export default function HomePageClient() {
                     text-left text-[var(--text)]
                     max-w-[14ch]
                     text-[86px] sm:text-[94px] md:text-[102px] lg:text-[104px]
-                    leading-[0.985]
+                    leading-[1.02] sm:leading-[1.01] md:leading-[1.01]
                   "
                                 >
                                     {line}
@@ -215,16 +199,16 @@ export default function HomePageClient() {
                         ))}
                     </div>
 
-                    {/* Desktop hero (3 lines, controlled) */}
+                    {/* Desktop hero (3 lines) */}
                     <div className="hidden xl:block">
                         {desktopHeroLines.map((line, i) => (
                             <div
                                 key={`d-${i}`}
-                                className={`
-                  transition-all duration-[1800ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
-                `}
-                                style={{ transitionDelay: `${i * 360}ms` }}
+                                className="
+                  opacity-0 translate-y-8
+                  animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                "
+                                style={{ animationDelay: `${i * 200}ms` }}
                             >
                                 <h1
                                     className="
@@ -242,48 +226,38 @@ export default function HomePageClient() {
                         ))}
                     </div>
 
-                    {/* ✅ spacer: на мобиле “добивает” до низа экрана */}
+                    {/* spacer to keep Promise hidden on mobile/tablet */}
                     <div className="flex-1 xl:hidden" />
-
-                    {/* маленький запас снизу (на всякий) */}
-                    <div className="h-6 xl:hidden" />
+                    <div className="h-10 xl:hidden" />
                 </section>
 
                 {/* =========================
             PROMISE
+            - cards animation ONLY on desktop
            ========================= */}
                 <section className="px-6 pb-14 lg:pb-20 max-w-7xl mx-auto xl:pt-12">
-                    <div
-                        className={`
-              transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-              ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
-            `}
-                        style={{ transitionDelay: "1500ms" }}
-                    >
-                        <SectionKicker>{t("promise.title")}</SectionKicker>
-                    </div>
+                    <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
                         {promise.map((it, index) => (
                             <Link
                                 key={it.id}
                                 href={`/definition/#${it.id}`}
-                                className={`
+                                className="
                   group block xl:flex-1 min-w-0
-                  transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-12"}
-                `}
-                                style={{ transitionDelay: `${1750 + index * 260}ms` }}
+                  opacity-100 translate-y-0
+                  xl:opacity-0 xl:translate-y-6
+                  xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                  motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
+                "
+                                style={{ animationDelay: `${650 + index * 160}ms` }}
                             >
                                 <div
                                     className={`
                     ${cardBase}
-
                     py-8 sm:py-9 md:py-10
                     px-5 sm:px-6 md:px-8
-
                     xl:py-6 xl:px-6
-
                     w-full
                     md:max-w-[720px] md:mx-auto
                     xl:max-w-none xl:mx-0
@@ -302,10 +276,34 @@ export default function HomePageClient() {
                             </Link>
                         ))}
                     </div>
+
+                    {/* keyframes inline (no global css needed) */}
+                    <style jsx global>{`
+            @keyframes heroIn {
+              from {
+                opacity: 0;
+                transform: translate3d(0, 24px, 0);
+              }
+              to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+              }
+            }
+            @keyframes promiseIn {
+              from {
+                opacity: 0;
+                transform: translate3d(0, 24px, 0);
+              }
+              to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+              }
+            }
+          `}</style>
                 </section>
 
                 {/* =========================
-            VIDEO
+            VIDEO (no animations)
            ========================= */}
                 <section className="w-full">
                     <div className="px-6 py-10 lg:py-14 max-w-7xl mx-auto">
@@ -329,7 +327,7 @@ export default function HomePageClient() {
                 </section>
 
                 {/* =========================
-            EXPERIENCE
+            EXPERIENCE (no animations)
            ========================= */}
                 <section className="px-6 py-14 lg:py-20 max-w-7xl mx-auto">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
@@ -344,12 +342,9 @@ export default function HomePageClient() {
                                 <div
                                     className={`
                     ${cardBase}
-
                     py-8 sm:py-9 md:py-10
                     px-5 sm:px-6 md:px-8
-
                     xl:py-6 xl:px-6
-
                     w-full
                     md:max-w-[760px] md:mx-auto
                     xl:max-w-none xl:mx-0
@@ -361,9 +356,7 @@ export default function HomePageClient() {
                                         <Arrow />
                                     </div>
 
-                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 max-w-prose">
-                                        {it.desc}
-                                    </p>
+                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 max-w-prose">{it.desc}</p>
 
                                     <p className="text-lg md:text-xl font-semibold text-[var(--text)]">{it.price}</p>
                                 </div>

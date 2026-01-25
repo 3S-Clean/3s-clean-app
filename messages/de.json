@@ -26,7 +26,7 @@
       "kicker": "3S-Clean Experience",
       "title": "CHOOSE YOURS!",
       "maintenance": {
-        "title": "MAINTENANCE",
+        "title": "CORE",
         "desc": "Regelmäßige Reinigung, wöchentlich oder alle zwei Wochen, damit dein Zuhause sauber und frisch bleibt.",
         "price": "Ab 120 €"
       },
@@ -45,6 +45,68 @@
         "desc": "Spezialisierte Reinigung vor der Übergabe an den Vermieter oder vor dem Einzug.",
         "price": "Ab 220 €"
       }
+    }
+  },
+  "definition": {
+    "hero": {
+      "title": "3S-Clean Versprechen:"
+    },
+    "links": {
+      "experience": "3S-Clean Experience",
+      "contact": "kontaktiere uns"
+    },
+    "sauber": {
+      "title": "SAUBER",
+      "subtitle": "— ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
+      "p1": "Wenn man das Zuhause nicht regelmäßig reinigt, entstehen Ablagerungen, Staub und Allergene — das erhöht Gesundheitsrisiken und macht den Raum spürbar ungemütlich. Das eigene Zuhause wird stressig — ganz zu schweigen davon, Gäste einzuladen. Und die meisten Menschen haben nicht die Zeit, Erfahrung oder Energie dafür — wir verstehen das!",
+      "p2": "Genau hier kommen wir ins Spiel.",
+      "p3": {
+        "before": "Wir haben unterschiedliche, individuell zugeschnittene",
+        "after": ", um deine konkreten Bedürfnisse zu erfüllen und dein Zuhause dauerhaft sauber zu halten. Du entscheidest, wie oft und was gereinigt werden soll. Natürlich nutzen wir umweltfreundliche Reinigungsmittel und sind bestens ausgestattet, um jedes Mal ein makelloses, frisches Ergebnis zu liefern."
+      },
+      "footer": "3S-CLEAN — SAUBER. JEDES MAL."
+    },
+    "sicher": {
+      "title": "SICHER",
+      "subtitle": "— Vertrauen, das du prüfen kannst — nicht nur hoffen musst.",
+      "p1": {
+        "before": "Es kann sich unangenehm anfühlen, einer fremden Person Zugang zur eigenen Wohnung zu geben — Vertrauen muss verdient werden. Für maximale Sicherheit nutzen wir",
+        "strong": "GoPro-Kameras, die unsere Mitarbeitenden während jeder Reinigung tragen",
+        "after": "— du kannst einen Live-Stream über einen sicheren Link ansehen oder das Video-Protokoll später innerhalb von 7 Tagen abrufen."
+      },
+      "p2": {
+        "before": "So behältst du jederzeit die Kontrolle und weißt genau, was in deinem Zuhause passiert — auch wenn du während der Reinigung nicht vor Ort bist. Wenn etwas unklar ist, sieh dir einfach das Material an und",
+        "after": "— wir unterstützen dich mit voller Transparenz und Professionalität."
+      },
+      "p3": {
+        "strong": "Deine Privatsphäre ist nicht verhandelbar.",
+        "after": "Es werden keine identifizierenden Informationen oder Details zu deinem Zuhause weitergegeben. Zugriff haben nur autorisierte Personen; die Videos werden nach 7 Tagen von unseren sicheren Servern gelöscht."
+      },
+      "p4": {
+        "before": "Unsere Preise sind komplett transparent — keine unklaren Stundensätze, keine versteckten Gebühren. Du bekommst keine Schätzungen, sondern feste, nachvollziehbare Angebote anhand deiner Buchungsangaben. Wähle einfach die passende",
+        "after": "für dich!"
+      },
+      "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
+    },
+    "souveran": {
+      "title": "SOUVERÄN",
+      "subtitle": "— ruhig in der Ausführung, konstant im Ergebnis.",
+      "p1": "Jede*r 3S-CLEAN Specialist ist geschult, geprüft und direkt bei uns angestellt — niemals Freelancer. Das bedeutet Verlässlichkeit, Verantwortlichkeit und einen konstanten Standard — jedes Mal.",
+      "p2": "Wir stellen Menschen ein, die Reinigung wirklich mögen und stolz auf saubere Arbeit sind. Wir investieren in Training, Checklisten und eine Kultur der Verantwortung.",
+      "p3": {
+        "strong": "Qualität wird aktiv gesteuert.",
+        "after": "Wir prüfen regelmäßig Video-Protokolle, um Leistung und Zuverlässigkeit hochzuhalten. Und falls doch einmal etwas passiert: Eine Haftpflichtversicherung ist inklusive."
+      },
+      "p4": {
+        "before": "Dazu gibt es einen finanziellen Vorteil: bis zu",
+        "strong": "20% deiner jährlichen Reinigungskosten zurück",
+        "after": "durch Steuerermäßigung nach §35a EStG — Rechnungen aufbewahren und Routine-Reinigung wird zu messbarer finanzieller Effizienz."
+      },
+      "footer": "3S-CLEAN — SOUVERÄN. BIS INS DETAIL."
+    },
+    "cta": {
+      "title": "Entdecke die 3S Experience",
+      "button": "Jetzt starten"
     }
   }
 }
