@@ -163,7 +163,7 @@ export default function HomePageClient() {
             HERO
             full screen on mobile/tablet so Promise never shows
            ========================= */}
-                <section className="px-6 pt-16 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
+                <section className="px-6 pt-14 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
                     {/* Mobile/Tablet hero (original breaks) */}
                     <div className="xl:hidden">
                         {heroRaw.split("\n").map((line, i) => (
