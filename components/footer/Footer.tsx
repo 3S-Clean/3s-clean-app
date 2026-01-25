@@ -3,11 +3,7 @@
 import "./footer.css";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import {
-    Youtube,
-    Instagram,
-    MessageCircle, // WhatsApp replacement
-} from "lucide-react";
+import { SiYoutube, SiWhatsapp, SiTiktok, SiInstagram } from "react-icons/si";
 import { footerColumns, legalLinks } from "@/lib/navigation/navigation";
 
 interface SocialLink {
@@ -16,66 +12,27 @@ interface SocialLink {
     label: string;
 }
 
-/* -----------------------------
-   Unified Stroke Icons
------------------------------- */
-
-// TikTok (stroke version, unified style)
-const TikTokIcon = ({ className = "" }: { className?: string }) => (
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden
-    >
-        <path d="M9 3v10.5a3.5 3.5 0 1 1-2.5-3.36" />
-        <path d="M9 3c1.5 2.5 4 4 6.5 4v3.2c-2.7 0-5-1.2-6.5-3" />
-    </svg>
-);
-
-// WhatsApp (stroke version)
-const WhatsAppIcon = ({ className = "" }: { className?: string }) => (
-    <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-        aria-hidden
-    >
-        <path d="M20 11.5a8.5 8.5 0 1 1-3.5-6.9" />
-        <path d="M8.5 8.5c.5 2 4 5 6 6" />
-        <path d="M14.5 14.5l2-2" />
-    </svg>
-);
-
 export default function AccountFooter() {
     const currentYear = new Date().getFullYear();
 
     const socialLinks: SocialLink[] = [
         {
-            icon: <Youtube className="social-icon" strokeWidth={1.5} />,
+            icon: <SiYoutube className="social-icon" />,
             href: "https://youtube.com/@3sclean",
             label: "YouTube",
         },
         {
-            icon: <WhatsAppIcon className="social-icon" />,
+            icon: <SiWhatsapp className="social-icon" />,
             href: "https://wa.me/your-number",
             label: "WhatsApp",
         },
         {
-            icon: <TikTokIcon className="social-icon" />,
+            icon: <SiTiktok className="social-icon" />,
             href: "https://tiktok.com/@3sclean",
             label: "TikTok",
         },
         {
-            icon: <Instagram className="social-icon" strokeWidth={1.5} />,
+            icon: <SiInstagram className="social-icon" />,
             href: "https://instagram.com/3sclean",
             label: "Instagram",
         },

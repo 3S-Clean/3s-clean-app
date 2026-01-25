@@ -5,8 +5,8 @@
     --header-bg-mobile: rgba(255, 255, 255, 0.2);
     --text-color: rgb(26, 26, 26);
     --border-color: rgba(0, 0, 0, 0.32);
-    --menu-bg: rgba(255, 255, 255, 0.06);
-    --panel-bg: rgba(255, 255, 255, 0.7);
+    --menu-bg: rgba(255, 255, 255, 0.85);
+    --panel-bg: rgba(255, 255, 255, 0.95);
     --transition-duration: 0.35s;
     --transition-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -28,7 +28,7 @@
 .header-desktop {
     display: flex;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1280px;
     justify-content: space-between;
     align-items: center;
 }
@@ -59,8 +59,8 @@
 }
 
 .logo {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     color: var(--text-color);
 }
 
@@ -143,8 +143,9 @@
 }
 
 .menu-icon {
-    width: 24px;
-    height: 24px;
+    width: 25px;
+    stroke-width: 1px;
+    height: 25px;
     color: var(--text-color);
 }
 
@@ -155,13 +156,13 @@
 }
 
 .logo-mobile {
-    width: 48px;
-    height: 48px;
+    width: 70px;
+    height: 70px;
     color: var(--text-color);
 }
 
 .book-button-mobile {
-    padding: 6px 12px;
+    padding: 5px 12px;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background-color: transparent;
@@ -187,8 +188,8 @@
     flex-direction: column;
     align-items: center;
     background-color: var(--menu-bg);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -334,16 +335,14 @@
 }
 
 /* =========================================================
-   1) Fallback для устройств/браузеров где backdrop-filter глючит
-   (часто Android Chrome). Если blur не поддерживается — делаем
-   фон плотнее и выключаем blur.
+   Fallback для устройств/браузеров где backdrop-filter глючит
 ========================================================= */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     :root {
-        --header-bg: rgba(255, 255, 255, 0.92);
-        --header-bg-mobile: rgba(255, 255, 255, 0.92);
-        --menu-bg: rgba(255, 255, 255, 0.92);
-        --panel-bg: rgba(255, 255, 255, 0.96);
+        --header-bg: rgba(255, 255, 255, 0.96);
+        --header-bg-mobile: rgba(255, 255, 255, 0.96);
+        --menu-bg: rgba(255, 255, 255, 0.98);
+        --panel-bg: rgba(255, 255, 255, 0.99);
     }
 
     .header-left,
@@ -360,37 +359,17 @@
 }
 
 /* =========================================================
-   2) Android/Chrome дополнительная подстраховка:
-   даже если blur "есть", делаем overlay чуть плотнее,
-   чтобы контент страницы не просвечивал.
-========================================================= */
-.mob-menu {
-    /* было 0.06 — на Android слишком прозрачно */
-    background-color: rgba(255, 255, 255, 0.16);
-}
-
-.mob-menu.open {
-    /* чтобы точно перекрывал клики/видимость */
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/* =========================================================
-   3) Dark Mode (как на остальных страницах)
-   - автоматически по системной теме
-   - меняем только CSS variables и цвета элементов
+   Dark Mode
 ========================================================= */
 @media (prefers-color-scheme: dark) {
     :root {
+        --header-blur: 34px;
         --header-bg: rgba(0, 0, 0, 0.28);
         --header-bg-mobile: rgba(0, 0, 0, 0.28);
-
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
-
-        --menu-bg: rgba(0, 0, 0, 0.35);
-        --panel-bg: rgba(0, 0, 0, 0.72);
+        --menu-bg: rgba(0, 0, 0, 0.88);
+        --panel-bg: rgba(0, 0, 0, 0.95);
     }
 
     .nav-link,
@@ -420,27 +399,12 @@
         border-color: transparent;
     }
 
-    .mob-menu-panel {
-        background-color: var(--panel-bg);
-    }
-
     .mob-menu-auth {
         border-top: 1px solid rgba(255, 255, 255, 0.10);
     }
-}
 
-/* =========================================================
-   4) Если blur включён, но Android рендерит "дыряво",
-   можно чуть поднять непрозрачность панельки.
-   (Безопасно и для iOS)
-========================================================= */
-.mob-menu-panel {
-    /* было 0.7 — сделаем каплю плотнее */
-    background-color: rgba(255, 255, 255, 0.78);
-}
-
-@media (prefers-color-scheme: dark) {
-    .mob-menu-panel {
-        background-color: rgba(0, 0, 0, 0.78);
+    .mob-menu {
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
     }
 }
