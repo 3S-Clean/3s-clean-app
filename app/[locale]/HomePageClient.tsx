@@ -196,7 +196,7 @@ export default function HomePageClient() {
 
                     {/* spacer to keep Promise hidden on mobile/tablet */}
                     <div className="flex-1 xl:hidden" />
-                    <div className="h-10 xl:hidden" />
+                    <div className="h-14 xl:hidden" />
                 </section>
 
                 {/* =========================
