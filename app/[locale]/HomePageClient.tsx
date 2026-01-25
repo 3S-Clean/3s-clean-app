@@ -60,7 +60,7 @@ function BigTitle({
     return (
         <span
             className={`
-        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[65px] xl:text-[68px]
+        text-[50px] sm:text-[50px] md:text-[65px] lg:text-[65px] xl:text-[68px]
         font-bold tracking-tight leading-[1.05] text-[var(--text)]
         ${className}
       `}
@@ -187,7 +187,7 @@ export default function HomePageClient() {
                                 className="opacity-0 translate-y-8 animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
                                 style={{ animationDelay: `${i * 200}ms` }}
                             >
-                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.05] text-left text-[var(--text)] max-w-[18ch] text-[96px] 2xl:text-[110px]">
+                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.05] text-left text-[var(--text)] max-w-[17ch] text-[9px] 2xl:text-[100px]">
                                     {line}
                                 </h1>
                             </div>
