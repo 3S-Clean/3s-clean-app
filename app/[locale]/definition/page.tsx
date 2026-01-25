@@ -7,13 +7,35 @@ import { ArrowRight } from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
+/* ---------- Typography (match Home) ---------- */
+
+function BigTitle({
+                      children,
+                      className = "",
+                  }: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <span
+            className={`
+        text-[55px] sm:text-[60px] md:text-[65px] lg:text-[70px] xl:text-[75px]
+        font-bold tracking-tight leading-[1.05] text-[var(--text)]
+        ${className}
+      `}
+        >
+      {children}
+    </span>
+    );
+}
+
 /* ---------- UI helpers ---------- */
 
 function SectionShell({ children }: { children: React.ReactNode }) {
     return (
         <div
             className="
-        max-w-4xl mx-auto
+        max-w-4xl mr-auto
         rounded-3xl
         bg-[var(--card)]/70 backdrop-blur-sm
         text-[var(--text)]
@@ -37,7 +59,12 @@ function Muted({
 }
 
 function Body({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-6 leading-relaxed text-[var(--muted)]">{children}</div>;
+    // match Home cards description sizing
+    return (
+        <div className="space-y-6 text-base md:text-lg leading-relaxed text-[var(--muted)]">
+            {children}
+        </div>
+    );
 }
 
 function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -70,7 +97,6 @@ function HashScrollFix() {
             el.scrollIntoView({ behavior, block: "start" });
         };
 
-        // На первом маунте делаем пару попыток (layout/шрифты/хедер могут сдвинуть высоту)
         requestAnimationFrame(() => scrollToHash("auto"));
         requestAnimationFrame(() => scrollToHash("auto"));
 
@@ -92,8 +118,8 @@ export default function DefinitionPage() {
             <HashScrollFix />
 
             <main className="min-h-screen mt-[80px] bg-[var(--background)] text-[var(--text)] overflow-x-hidden">
-                {/* Hero */}
-                <section className="px-6 pt-10 pb-6 md:pt-16 md:pb-10 max-w-4xl mx-auto text-center">
+                {/* Hero (left aligned) */}
+                <section className="px-6 pt-10 pb-6 md:pt-16 md:pb-10 max-w-4xl mr-auto">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                         {t("hero.title")}
                     </h1>
@@ -103,9 +129,7 @@ export default function DefinitionPage() {
                 <section id="sauber" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
                     <SectionShell>
                         <div className="mb-8">
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                {t("sauber.title")}
-                            </h2>
+                            <BigTitle className="block mb-2 leading-none">{t("sauber.title")}</BigTitle>
                             <Muted className="italic text-lg">{t("sauber.subtitle")}</Muted>
                         </div>
 
@@ -113,12 +137,15 @@ export default function DefinitionPage() {
                             <p>{t("sauber.p1")}</p>
                             <p>{t("sauber.p2")}</p>
                             <p>
-                                {t("sauber.p3.before")} <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                {t("sauber.p3.before")}{" "}
+                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
                                 {t("sauber.p3.after")}
                             </p>
                         </Body>
 
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">{t("sauber.footer")}</Muted>
+                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
+                            {t("sauber.footer")}
+                        </Muted>
                     </SectionShell>
                 </section>
 
@@ -126,9 +153,7 @@ export default function DefinitionPage() {
                 <section id="sicher" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
                     <SectionShell>
                         <div className="mb-8">
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                {t("sicher.title")}
-                            </h2>
+                            <BigTitle className="block mb-2 leading-none">{t("sicher.title")}</BigTitle>
                             <Muted className="italic text-lg">{t("sicher.subtitle")}</Muted>
                         </div>
 
@@ -140,7 +165,8 @@ export default function DefinitionPage() {
                             </p>
 
                             <p>
-                                {t("sicher.p2.before")} <InlineLink href="/contact">{t("links.contact")}</InlineLink>{" "}
+                                {t("sicher.p2.before")}{" "}
+                                <InlineLink href="/contact">{t("links.contact")}</InlineLink>{" "}
                                 {t("sicher.p2.after")}
                             </p>
 
@@ -150,12 +176,15 @@ export default function DefinitionPage() {
                             </p>
 
                             <p>
-                                {t("sicher.p4.before")} <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                {t("sicher.p4.before")}{" "}
+                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
                                 {t("sicher.p4.after")}
                             </p>
                         </Body>
 
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">{t("sicher.footer")}</Muted>
+                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
+                            {t("sicher.footer")}
+                        </Muted>
                     </SectionShell>
                 </section>
 
@@ -163,9 +192,7 @@ export default function DefinitionPage() {
                 <section id="souveran" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
                     <SectionShell>
                         <div className="mb-8">
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                                {t("souveran.title")}
-                            </h2>
+                            <BigTitle className="block mb-2 leading-none">{t("souveran.title")}</BigTitle>
                             <Muted className="italic text-lg">{t("souveran.subtitle")}</Muted>
                         </div>
 
@@ -185,12 +212,14 @@ export default function DefinitionPage() {
                             </p>
                         </Body>
 
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">{t("souveran.footer")}</Muted>
+                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
+                            {t("souveran.footer")}
+                        </Muted>
                     </SectionShell>
                 </section>
 
                 {/* CTA */}
-                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-4xl mx-auto text-center">
+                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-4xl mr-auto">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("cta.title")}</h2>
 
                     <Link

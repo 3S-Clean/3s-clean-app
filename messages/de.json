@@ -58,7 +58,7 @@
     },
     "sauber": {
       "title": "SAUBER",
-      "subtitle": "— ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
+      "subtitle": "- ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
       "p1": "Wenn man das Zuhause nicht regelmäßig reinigt, entstehen Ablagerungen, Staub und Allergene — das erhöht Gesundheitsrisiken und macht den Raum spürbar ungemütlich. Das eigene Zuhause wird stressig — ganz zu schweigen davon, Gäste einzuladen. Und die meisten Menschen haben nicht die Zeit, Erfahrung oder Energie dafür — wir verstehen das!",
       "p2": "Genau hier kommen wir ins Spiel.",
       "p3": {
@@ -69,30 +69,30 @@
     },
     "sicher": {
       "title": "SICHER",
-      "subtitle": "— Vertrauen, das du prüfen kannst — nicht nur hoffen musst.",
+      "subtitle": "Vertrauen, das du prüfen kannst nicht nur hoffen musst.",
       "p1": {
         "before": "Es kann sich unangenehm anfühlen, einer fremden Person Zugang zur eigenen Wohnung zu geben — Vertrauen muss verdient werden. Für maximale Sicherheit nutzen wir",
         "strong": "GoPro-Kameras, die unsere Mitarbeitenden während jeder Reinigung tragen",
-        "after": "— du kannst einen Live-Stream über einen sicheren Link ansehen oder das Video-Protokoll später innerhalb von 7 Tagen abrufen."
+        "after": "- du kannst einen Live-Stream über einen sicheren Link ansehen oder das Video-Protokoll später innerhalb von 7 Tagen abrufen."
       },
       "p2": {
         "before": "So behältst du jederzeit die Kontrolle und weißt genau, was in deinem Zuhause passiert — auch wenn du während der Reinigung nicht vor Ort bist. Wenn etwas unklar ist, sieh dir einfach das Material an und",
-        "after": "— wir unterstützen dich mit voller Transparenz und Professionalität."
+        "after": "- wir unterstützen dich mit voller Transparenz und Professionalität."
       },
       "p3": {
         "strong": "Deine Privatsphäre ist nicht verhandelbar.",
         "after": "Es werden keine identifizierenden Informationen oder Details zu deinem Zuhause weitergegeben. Zugriff haben nur autorisierte Personen; die Videos werden nach 7 Tagen von unseren sicheren Servern gelöscht."
       },
       "p4": {
-        "before": "Unsere Preise sind komplett transparent — keine unklaren Stundensätze, keine versteckten Gebühren. Du bekommst keine Schätzungen, sondern feste, nachvollziehbare Angebote anhand deiner Buchungsangaben. Wähle einfach die passende",
+        "before": "Unsere Preise sind komplett transparent - keine unklaren Stundensätze, keine versteckten Gebühren. Du bekommst keine Schätzungen, sondern feste, nachvollziehbare Angebote anhand deiner Buchungsangaben. Wähle einfach die passende",
         "after": "für dich!"
       },
       "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
     },
     "souveran": {
       "title": "SOUVERÄN",
-      "subtitle": "— ruhig in der Ausführung, konstant im Ergebnis.",
-      "p1": "Jede*r 3S-CLEAN Specialist ist geschult, geprüft und direkt bei uns angestellt — niemals Freelancer. Das bedeutet Verlässlichkeit, Verantwortlichkeit und einen konstanten Standard — jedes Mal.",
+      "subtitle": "- ruhig in der Ausführung, konstant im Ergebnis.",
+      "p1": "Jede*r 3S-CLEAN Specialist ist geschult, geprüft und direkt bei uns angestellt - niemals Freelancer. Das bedeutet Verlässlichkeit, Verantwortlichkeit und einen konstanten Standard - jedes Mal.",
       "p2": "Wir stellen Menschen ein, die Reinigung wirklich mögen und stolz auf saubere Arbeit sind. Wir investieren in Training, Checklisten und eine Kultur der Verantwortung.",
       "p3": {
         "strong": "Qualität wird aktiv gesteuert.",

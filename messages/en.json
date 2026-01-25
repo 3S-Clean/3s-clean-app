@@ -58,8 +58,8 @@
     },
     "sauber": {
       "title": "SAUBER",
-      "subtitle": "— a home that feels light, healthy, and ready for life.",
-      "p1": "Failure to regularly clean your home leads to built-up clutter, allergens, increased health risks, and a space that simply feels uncomfortable. Life in your own home becomes stressful — not to mention inviting family or friends. But most people don’t have the time, experience, or energy to manage this chore — we get it!",
+      "subtitle": "- a home that feels light, healthy, and ready for life.",
+      "p1": "Failure to regularly clean your home leads to built-up clutter, allergens, increased health risks, and a space that simply feels uncomfortable. Life in your own home becomes stressful - not to mention inviting family or friends. But most people don’t have the time, experience, or energy to manage this chore - we get it!",
       "p2": "That’s where we come in.",
       "p3": {
         "before": "We have custom-tailored different",
@@ -69,30 +69,30 @@
     },
     "sicher": {
       "title": "SICHER",
-      "subtitle": "— trust you can verify, not just hope for.",
+      "subtitle": "- trust you can verify, not just hope for.",
       "p1": {
-        "before": "It can be stressful to let a stranger into your home — trust is not something given but must be gained. To guarantee your peace of mind we use",
+        "before": "It can be stressful to let a stranger into your home - trust is not something given but must be gained. To guarantee your peace of mind we use",
         "strong": "GoPro cameras worn by our employees throughout every cleaning session",
-        "after": "— you can view a live-stream video via a secure link, or review a video report later within 7 days."
+        "after": "- you can view a live-stream video via a secure link, or review a video report later within 7 days."
       },
       "p2": {
         "before": "This way you are always in control and know exactly what is going on in your home even if you are not there at the time of cleaning. If anything ever feels unclear, simply review the footage and",
-        "after": "— we’re here to support you with complete transparency and professionalism."
+        "after": "- we’re here to support you with complete transparency and professionalism."
       },
       "p3": {
         "strong": "Your privacy is non-negotiable.",
         "after": "No identifying information or details of your home are shared. Only authorized personnel have access to videos, and they are deleted from our secure servers after 7 days."
       },
       "p4": {
-        "before": "Our pricing is absolutely transparent — no ambiguous hourly rates or hidden fees. You don’t get estimates, but firm comprehensive offers based on your booking details. Just choose the",
+        "before": "Our pricing is absolutely transparent - no ambiguous hourly rates or hidden fees. You don’t get estimates, but firm comprehensive offers based on your booking details. Just choose the",
         "after": "that is right for you!"
       },
       "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
     },
     "souveran": {
       "title": "SOUVERÄN",
-      "subtitle": "— calm execution, consistent results.",
-      "p1": "Every 3S-CLEAN specialist is trained, vetted, and employed directly by us — never a freelancer. That gives you reliability, accountability, and a consistent standard every time.",
+      "subtitle": "- calm execution, consistent results.",
+      "p1": "Every 3S-CLEAN specialist is trained, vetted, and employed directly by us - never a freelancer. That gives you reliability, accountability, and a consistent standard every time.",
       "p2": "We hire people who genuinely enjoy cleaning and take pride in doing it right. We invest in training, checklists, and a culture of ownership.",
       "p3": {
         "strong": "Quality is actively managed.",
