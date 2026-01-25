@@ -364,8 +364,8 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --header-blur: 25px;
-        --header-bg: rgba(0, 0, 0, 0.28);
-        --header-bg-mobile: rgba(0, 0, 0, 0.28);
+        --header-bg: #070A0D;
+        --header-bg-mobile: #070A0D;
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
         --menu-bg: rgba(0, 0, 0, 0.88);
@@ -395,7 +395,7 @@
 
     .book-button:active,
     .book-button-mobile:active {
-        background-color: rgba(255, 255, 255, 0.10);
+        background-color: rgba(15, 18, 23, 0.6);
         border-color: transparent;
     }
 
@@ -404,7 +404,7 @@
     }
 
     .mob-menu {
-        backdrop-filter: blur(40px);
-        -webkit-backdrop-filter: blur(40px);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
     }
 }

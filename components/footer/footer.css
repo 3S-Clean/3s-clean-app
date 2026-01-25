@@ -10,7 +10,7 @@
 /* Dark mode (Android / iOS / Desktop) */
 @media (prefers-color-scheme: dark) {
     :root {
-        --footer-bg: #0b0b0b;
+        --footer-bg: #070A0D;
         --footer-text: rgba(255, 255, 255, 0.92);
         --footer-muted: rgba(255, 255, 255, 0.45);
         --footer-border: rgba(255, 255, 255, 0.12);
