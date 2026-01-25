@@ -221,11 +221,11 @@ export default function HomePageClient() {
                                     className={`
     ${cardBase}
     w-full min-w-0
-    max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+    max-w-none sm:max-w-[560px] md:max-w-[720px]
     mr-auto
     xl:max-w-none
     py-8 sm:py-9 md:py-10 xl:py-6
-    px-8 sm:px-9 md:px-10 xl:px-6
+    px-4 sm:px-8 md:px-10 xl:px-6
   `}
                                 >
                                     <div className="flex items-center justify-between gap-4 min-w-0">
