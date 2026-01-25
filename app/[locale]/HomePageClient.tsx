@@ -163,7 +163,7 @@ export default function HomePageClient() {
             HERO
             full screen on mobile/tablet so Promise never shows
            ========================= */}
-                <section className="px-6 pt-14 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
+                <section className="px-6 pt-12 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
                     {/* Mobile/Tablet hero (original breaks) */}
                     <div className="xl:hidden">
                         {heroRaw.split("\n").map((line, i) => (
@@ -199,7 +199,7 @@ export default function HomePageClient() {
             PROMISE
             cards animation ONLY on desktop (xl)
            ========================= */}
-                <section className="px-6 pt-12 sm:pt-16 pb-14 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
+                <section className="px-6 pt-18 sm:pt-16 pb-14 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
