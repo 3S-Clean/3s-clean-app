@@ -13,10 +13,15 @@ function Arrow() {
     return (
         <svg
             className="
-        w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] lg:w-[90px] lg:h-[90px]
-        flex-shrink-0 text-[var(--muted)]
-        transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
-        group-hover:translate-x-2 group-active:translate-x-1
+        ml-auto
+        w-[64px] h-[64px]
+        sm:w-[72px] sm:h-[72px]
+        lg:w-[80px] lg:h-[80px]
+        flex-shrink-0
+        text-[var(--muted)]
+        transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+        group-hover:translate-x-1
+        group-active:translate-x-[2px]
       "
             viewBox="0 0 24 24"
             fill="none"
@@ -55,7 +60,7 @@ function BigTitle({
     return (
         <span
             className={`
-        text-[55px] sm:text-[60px] md:text-[65px] lg:text-[70px] xl:text-[75px]
+        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[70px] xl:text-[75px]
         font-bold tracking-tight leading-[1.05] text-[var(--text)]
         ${className}
       `}
@@ -223,11 +228,10 @@ export default function HomePageClient() {
                     max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
                     mr-auto
                     xl:max-w-none
-                    py-8 sm:py-9 md:py-10 xl:py-6
-                    px-5 sm:px-6 md:px-8 xl:px-6
+                   py-8 sm:py-9 md:py-10 xl:py-6т x-0
                   `}
                                 >
-                                    <div className="flex items-center justify-between gap-4 min-w-0">
+                                    <div className="flex items-center justify-between gap-0 min-w-0">
                                         {/* на десктопе держим заголовок в одну строку */}
                                         <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
                                             {it.title}
