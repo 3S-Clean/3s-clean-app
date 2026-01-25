@@ -127,7 +127,7 @@ export default function HomePageClient() {
     const experience = useMemo(
         () => [
             {
-                id: "maintenance",
+                id: "core",
                 title: t("experience.maintenance.title"),
                 desc: t("experience.maintenance.desc"),
                 price: t("experience.maintenance.price"),
@@ -306,13 +306,15 @@ export default function HomePageClient() {
             VIDEO (no animations)
            ========================= */}
                 <section className="w-full">
-                    <div className="px-6 py-10 lg:py-14 max-w-7xl mx-auto">
+                    <div className="px-6 pt-10 pb-6 lg:pt-14 lg:pb-8 max-w-7xl mx-auto">
                         <SectionKicker>{t("video.kicker")}</SectionKicker>
                         <h2 className="mt-2">
                             <BigTitle>{t("video.title")}</BigTitle>
                         </h2>
+                        <p className="mt-5 text-[var(--muted)] text-base md:text-lg leading-relaxed">
+                            {t("video.desc")}
+                        </p>
                     </div>
-
                     <div className="relative w-full h-[100svh] overflow-hidden">
                         <video
                             autoPlay

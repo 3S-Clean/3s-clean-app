@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
@@ -64,6 +65,21 @@ function InlineLink({
 
 export default function DefinitionPage() {
     const t = useTranslations("definition");
+    useEffect(() => {
+        const hash = window.location.hash;
+        if (!hash) return;
+
+        const id = hash.replace("#", "");
+
+        // даём странице отрендериться
+        requestAnimationFrame(() => {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            // если есть sticky header 80px — добавь scroll-margin-top (ниже)
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }, []);
 
     return (
         <>
@@ -78,7 +94,7 @@ export default function DefinitionPage() {
                 </section>
 
                 {/* SAUBER */}
-                <section id="sauber" className="px-6 py-12 md:py-20">
+                <section id="sauber" className="scroll-mt-[90px] px-6 py-12 md:py-20">
                     <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
@@ -104,7 +120,7 @@ export default function DefinitionPage() {
                 </section>
 
                 {/* SICHER */}
-                <section id="sicher" className="px-6 py-12 md:py-20">
+                <section id="sicher" className="scroll-mt-[90px] px-6 py-12 md:py-20">
                     <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
@@ -147,7 +163,7 @@ export default function DefinitionPage() {
                 </section>
 
                 {/* SOUVERÄN */}
-                <section id="souveran" className="px-6 py-12 md:py-20">
+                <section id="souveran" className="scroll-mt-[90px] px-6 py-12 md:py-20">
                     <SectionShell>
                         <div className="mb-8">
                             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
