@@ -380,7 +380,7 @@
     .book-button,
     .book-button-mobile,
     .mob-menu-panel {
-        border: 1px solid var(--border-color #ffffff);
+        border: 1px solid var(--border-color, #ffffff);
     }
     .mob-menu-link,
     .mob-menu-auth-link {
