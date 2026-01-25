@@ -216,8 +216,8 @@
     gap: 16px;
     border-radius: 12px;
     background-color: var(--panel-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .mob-menu-link {
