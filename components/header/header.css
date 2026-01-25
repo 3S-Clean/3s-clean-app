@@ -369,7 +369,7 @@
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
         --menu-bg: #070A0D;
-        --panel-bg: #070A0D;
+        --panel-bg: rgba(255,255,255,.05);
     }
 
     .nav-link,
