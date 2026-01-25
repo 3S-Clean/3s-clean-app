@@ -3,7 +3,9 @@
 import "./footer.css";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { SiYoutube, SiWhatsapp, SiTiktok, SiInstagram } from "react-icons/si";
+import { FiYoutube, FiInstagram } from "react-icons/fi";
+import { LuMessageCircle } from "react-icons/lu";
+import { RiTiktokLine } from "react-icons/ri";
 import { footerColumns, legalLinks } from "@/lib/navigation/navigation";
 
 interface SocialLink {
@@ -17,22 +19,22 @@ export default function AccountFooter() {
 
     const socialLinks: SocialLink[] = [
         {
-            icon: <SiYoutube className="social-icon" />,
+            icon: <FiYoutube className="social-icon" />,
             href: "https://youtube.com/@3sclean",
             label: "YouTube",
         },
         {
-            icon: <SiWhatsapp className="social-icon" />,
+            icon: <LuMessageCircle className="social-icon" />,
             href: "https://wa.me/your-number",
             label: "WhatsApp",
         },
         {
-            icon: <SiTiktok className="social-icon" />,
+            icon: <RiTiktokLine className="social-icon" />,
             href: "https://tiktok.com/@3sclean",
             label: "TikTok",
         },
         {
-            icon: <SiInstagram className="social-icon" />,
+            icon: <FiInstagram className="social-icon" />,
             href: "https://instagram.com/3sclean",
             label: "Instagram",
         },
@@ -96,3 +98,4 @@ export default function AccountFooter() {
         </footer>
     );
 }
+

@@ -279,7 +279,7 @@
 }
 
 /* ==================== Responsive: Mobile ==================== */
-@media screen and (max-width: 568px) {
+@media screen and (max-width: 760px) {
     .header {
         padding: 0;
         background-color: var(--header-bg-mobile);
@@ -363,13 +363,13 @@
 ========================================================= */
 @media (prefers-color-scheme: dark) {
     :root {
-        --header-blur: 34px;
+        --header-blur: 25px;
         --header-bg: rgba(0, 0, 0, 0.28);
         --header-bg-mobile: rgba(0, 0, 0, 0.28);
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
         --menu-bg: rgba(0, 0, 0, 0.88);
-        --panel-bg: rgba(0, 0, 0, 0.95);
+        --panel-bg: rgba(0, 0, 0, 0.8);
     }
 
     .nav-link,
@@ -379,6 +379,9 @@
     .user-icon,
     .book-button,
     .book-button-mobile,
+    .mob-menu-panel {
+        border: 1px solid var(--border-color #ffffff);
+    }
     .mob-menu-link,
     .mob-menu-auth-link {
         color: var(--text-color);
