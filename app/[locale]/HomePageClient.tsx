@@ -163,7 +163,7 @@ export default function HomePageClient() {
             HERO
             full screen on mobile/tablet so Promise never shows
            ========================= */}
-                <section className="px-6 pt-6 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
+                <section className="px-6 pt-10 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
                     {/* Mobile/Tablet hero (original breaks) */}
                     <div className="xl:hidden">
                         {heroRaw.split("\n").map((line, i) => (
@@ -196,7 +196,7 @@ export default function HomePageClient() {
 
                     {/* spacer to keep Promise hidden on mobile/tablet */}
                     <div className="flex-1 xl:hidden" />
-                    <div className="h-14 xl:hidden" />
+                    <div className="h-17 xl:hidden" />
                 </section>
 
                 {/* =========================
