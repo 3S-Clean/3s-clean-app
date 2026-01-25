@@ -368,8 +368,8 @@
         --header-bg-mobile: #070A0D;
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
-        --menu-bg: rgba(0, 0, 0, 0.88);
-        --panel-bg: rgba(0, 0, 0, 0.8);
+        --menu-bg: #070A0D;
+        --panel-bg: #070A0D;
     }
 
     .nav-link,
