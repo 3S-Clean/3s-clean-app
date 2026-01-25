@@ -1,12 +1,12 @@
 /* ==================== Header Variables ==================== */
 :root {
-    --header-blur: 16px;
-    --header-bg: rgba(255, 255, 255, 0.2);
-    --header-bg-mobile: rgba(255, 255, 255, 0.2);
+    --header-blur: 20px;
+    --header-bg: rgba(255, 255, 255, 0.25);
+    --header-bg-mobile: rgba(255, 255, 255, 0.25);
     --text-color: rgb(26, 26, 26);
     --border-color: rgba(0, 0, 0, 0.32);
-    --menu-bg: rgba(255, 255, 255, 0.85);
-    --panel-bg: rgba(255, 255, 255, 0.95);
+    --menu-bg: rgba(255, 255, 255, 0.15);
+    --panel-bg: rgba(255, 255, 255, 0.5);
     --transition-duration: 0.35s;
     --transition-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -28,7 +28,7 @@
 .header-desktop {
     display: flex;
     width: 100%;
-    max-width: 1280px;
+    max-width: 1200px;
     justify-content: space-between;
     align-items: center;
 }
@@ -41,8 +41,8 @@
     gap: 24px;
     border-radius: 10px;
     background-color: var(--header-bg);
-    backdrop-filter: blur(var(--header-blur));
-    -webkit-backdrop-filter: blur(var(--header-blur));
+    backdrop-filter: blur(var(--header-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--header-blur)) saturate(180%);
 }
 
 .header-left {
@@ -59,8 +59,8 @@
 }
 
 .logo {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     color: var(--text-color);
 }
 
@@ -143,9 +143,8 @@
 }
 
 .menu-icon {
-    width: 25px;
-    stroke-width: 1px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     color: var(--text-color);
 }
 
@@ -156,13 +155,13 @@
 }
 
 .logo-mobile {
-    width: 70px;
-    height: 70px;
+    width: 48px;
+    height: 48px;
     color: var(--text-color);
 }
 
 .book-button-mobile {
-    padding: 5px 12px;
+    padding: 6px 12px;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background-color: transparent;
@@ -179,7 +178,7 @@
     background-color: rgba(189, 175, 162, 0.18);
 }
 
-/* ==================== Mobile Menu ==================== */
+/* ==================== Mobile Menu — Maximum Glass ==================== */
 .mob-menu {
     position: fixed;
     inset: 0;
@@ -188,23 +187,20 @@
     flex-direction: column;
     align-items: center;
     background-color: var(--menu-bg);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(50px) saturate(180%);
+    -webkit-backdrop-filter: blur(50px) saturate(180%);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateX(-100%);
     transition:
             opacity var(--transition-duration) var(--transition-easing),
-            visibility var(--transition-duration) var(--transition-easing),
-            transform var(--transition-duration) var(--transition-easing);
+            visibility var(--transition-duration) var(--transition-easing);
 }
 
 .mob-menu.open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: translateX(0);
 }
 
 .mob-menu-panel {
@@ -220,6 +216,8 @@
     gap: 16px;
     border-radius: 12px;
     background-color: var(--panel-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .mob-menu-link {
@@ -248,7 +246,7 @@
     gap: 0.5rem;
     margin-top: 24px;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .mob-menu-auth-link {
@@ -279,12 +277,12 @@
 }
 
 /* ==================== Responsive: Mobile ==================== */
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 568px) {
     .header {
         padding: 0;
         background-color: var(--header-bg-mobile);
-        backdrop-filter: blur(var(--header-blur));
-        -webkit-backdrop-filter: blur(var(--header-blur));
+        backdrop-filter: blur(var(--header-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--header-blur)) saturate(180%);
     }
 
     .header-desktop {
@@ -301,17 +299,14 @@
         padding: 12px 16px;
     }
 
-    /* Бургер — слева */
     .menu-toggle {
         justify-self: start;
     }
 
-    /* Логотип — по центру */
     .logo-link-mobile {
         justify-self: center;
     }
 
-    /* Кнопка Book Now — справа */
     .book-button-mobile {
         justify-self: end;
     }
@@ -330,63 +325,35 @@
 /* ==================== Responsive: Small Mobile ==================== */
 @media screen and (max-width: 479px) {
     .mob-menu-panel {
-        margin-top: 220px;
+        margin-top: 180px;
     }
 }
 
 /* =========================================================
-   Fallback для устройств/браузеров где backdrop-filter глючит
-========================================================= */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root {
-        --header-bg: rgba(255, 255, 255, 0.96);
-        --header-bg-mobile: rgba(255, 255, 255, 0.96);
-        --menu-bg: rgba(255, 255, 255, 0.98);
-        --panel-bg: rgba(255, 255, 255, 0.99);
-    }
-
-    .header-left,
-    .header-right,
-    .header {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-
-    .mob-menu {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-}
-
-/* =========================================================
-   Dark Mode
+   Dark Mode — Maximum Glass
 ========================================================= */
 @media (prefers-color-scheme: dark) {
     :root {
         --header-blur: 25px;
-        --header-bg: #070A0D;
-        --header-bg-mobile: #070A0D;
+        --header-bg: rgba(0, 0, 0, 0.3);
+        --header-bg-mobile: rgba(0, 0, 0, 0.3);
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
-        --menu-bg: #070A0D;
-        --panel-bg: rgba(255,255,255,.05);
+        --menu-bg: rgba(0, 0, 0, 0.2);
+        --panel-bg: rgba(255, 255, 255, 0.08);
     }
 
-    .nav-link,
-    .logo,
-    .logo-mobile,
-    .menu-icon,
-    .user-icon,
-    .book-button,
-    .book-button-mobile,
-    .mob-menu-link,
-    .mob-menu-auth-link {
-        color: var(--text-color);
+    .mob-menu {
+        backdrop-filter: blur(50px) saturate(180%);
+        -webkit-backdrop-filter: blur(50px) saturate(180%);
     }
 
-    .book-button,
-    .book-button-mobile {
-        border-color: var(--border-color);
+    .mob-menu-panel {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mob-menu-auth {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .book-button:hover {
@@ -395,16 +362,72 @@
 
     .book-button:active,
     .book-button-mobile:active {
-        background-color: rgba(15, 18, 23, 0.6);
+        background-color: rgba(255, 255, 255, 0.1);
         border-color: transparent;
     }
+}
 
-    .mob-menu-auth {
-        border-top: 1px solid rgba(255, 255, 255, 0.10);
+/* =========================================================
+   Android Fallback — плотнее фон, слабее blur
+========================================================= */
+.is-android .mob-menu {
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+}
+
+.is-android .mob-menu-panel {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.is-android .header {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+@media (prefers-color-scheme: dark) {
+    .is-android .mob-menu {
+        background-color: rgba(0, 0, 0, 0.8);
     }
 
-    .mob-menu {
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
+    .is-android .mob-menu-panel {
+        background-color: rgba(20, 20, 20, 0.92);
+    }
+
+    .is-android .header {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* =========================================================
+   Полный Fallback — если blur не поддерживается вообще
+========================================================= */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root {
+        --header-bg: rgba(255, 255, 255, 0.95);
+        --header-bg-mobile: rgba(255, 255, 255, 0.95);
+        --menu-bg: rgba(255, 255, 255, 0.95);
+        --panel-bg: rgba(255, 255, 255, 0.98);
+    }
+
+    .header-left,
+    .header-right,
+    .header,
+    .mob-menu,
+    .mob-menu-panel {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --header-bg: rgba(7, 10, 13, 0.95);
+            --header-bg-mobile: rgba(7, 10, 13, 0.95);
+            --menu-bg: rgba(7, 10, 13, 0.95);
+            --panel-bg: rgba(20, 20, 20, 0.98);
+        }
     }
 }
