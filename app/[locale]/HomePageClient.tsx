@@ -60,7 +60,7 @@ function BigTitle({
     return (
         <span
             className={`
-        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[70px] xl:text-[75px]
+        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[65px] xl:text-[68px]
         font-bold tracking-tight leading-[1.05] text-[var(--text)]
         ${className}
       `}
@@ -231,7 +231,7 @@ export default function HomePageClient() {
                    py-8 sm:py-9 md:py-10 xl:py-6т x-0
                   `}
                                 >
-                                    <div className="flex items-center justify-between gap-0 min-w-0">
+                                    <div className="flex items-center justify-between gap-4 min-w-0">
                                         {/* на десктопе держим заголовок в одну строку */}
                                         <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
                                             {it.title}
@@ -239,7 +239,7 @@ export default function HomePageClient() {
                                         <Arrow />
                                     </div>
 
-                                    <p className="mt-5 text-[var(--muted)] text-base md:text-lg leading-relaxed">
+                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 leading-relaxed max-w-[38ch]">
                                         {it.desc}
                                     </p>
                                 </div>
@@ -290,8 +290,7 @@ export default function HomePageClient() {
                     max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
                     mr-auto
                     xl:max-w-none
-                    py-8 sm:py-9 md:py-10 xl:py-6
-                    px-5 sm:px-6 md:px-8 xl:px-6
+                   py-8 sm:py-9 md:py-10 xl:py-6т x-0
                   `}
                                 >
                                     <div className="flex items-center justify-between gap-4 mb-4 min-w-0">
@@ -301,7 +300,7 @@ export default function HomePageClient() {
                                         <Arrow />
                                     </div>
 
-                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 leading-relaxed">
+                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 leading-relaxed max-w-[38ch]">
                                         {it.desc}
                                     </p>
 
