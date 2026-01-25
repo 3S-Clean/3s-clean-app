@@ -7,7 +7,15 @@ import { ArrowRight } from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
-/* ---------- Typography (match Home) ---------- */
+/* ---------- Typography helpers (match Home) ---------- */
+
+function SectionKicker({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="font-sans font-bold tracking-[-0.02em] text-[var(--text)] text-2xl sm:text-3xl md:text-4xl mb-6">
+            {children}
+        </p>
+    );
+}
 
 function BigTitle({
                       children,
@@ -19,7 +27,7 @@ function BigTitle({
     return (
         <span
             className={`
-        text-[55px] sm:text-[60px] md:text-[65px] lg:text-[70px] xl:text-[75px]
+        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[65px] xl:text-[68px]
         font-bold tracking-tight leading-[1.05] text-[var(--text)]
         ${className}
       `}
@@ -35,12 +43,12 @@ function SectionShell({ children }: { children: React.ReactNode }) {
     return (
         <div
             className="
-        max-w-4xl mr-auto
+        w-full
         rounded-3xl
         bg-[var(--card)]/70 backdrop-blur-sm
         text-[var(--text)]
-        p-8 md:p-12
         ring-1 ring-black/5 dark:ring-white/10
+        p-8 md:p-12
       "
         >
             {children}
@@ -55,16 +63,15 @@ function Muted({
     children: React.ReactNode;
     className?: string;
 }) {
-    return <p className={`text-[var(--muted)] ${className}`}>{children}</p>;
+    return (
+        <p className={`text-[var(--muted)] text-base md:text-lg leading-relaxed ${className}`}>
+            {children}
+        </p>
+    );
 }
 
 function Body({ children }: { children: React.ReactNode }) {
-    // match Home cards description sizing
-    return (
-        <div className="space-y-6 text-base md:text-lg leading-relaxed text-[var(--muted)]">
-            {children}
-        </div>
-    );
+    return <div className="space-y-6 text-[var(--muted)] text-base md:text-lg leading-relaxed">{children}</div>;
 }
 
 function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -117,109 +124,113 @@ export default function DefinitionPage() {
             <Header />
             <HashScrollFix />
 
-            <main className="min-h-screen mt-[80px] bg-[var(--background)] text-[var(--text)] overflow-x-hidden">
-                {/* Hero (left aligned) */}
-                <section className="px-6 pt-10 pb-6 md:pt-16 md:pb-10 max-w-4xl mr-auto">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                        {t("hero.title")}
-                    </h1>
+            <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)] overflow-x-hidden">
+                {/* Hero (LEFT, same container widths as Home) */}
+                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl xl:max-w-[1400px] mx-auto">
+                    <SectionKicker>{t("hero.title")}</SectionKicker>
                 </section>
 
                 {/* SAUBER */}
-                <section id="sauber" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
-                    <SectionShell>
-                        <div className="mb-8">
-                            <BigTitle className="block mb-2 leading-none">{t("sauber.title")}</BigTitle>
-                            <Muted className="italic text-lg">{t("sauber.subtitle")}</Muted>
-                        </div>
+                <section id="sauber" className="py-10 md:py-14 scroll-mt-[96px]">
+                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                        <SectionShell>
+                            <div className="mb-8">
+                                <BigTitle className="block">{t("sauber.title")}</BigTitle>
+                                <Muted className="italic mt-2">{t("sauber.subtitle")}</Muted>
+                            </div>
 
-                        <Body>
-                            <p>{t("sauber.p1")}</p>
-                            <p>{t("sauber.p2")}</p>
-                            <p>
-                                {t("sauber.p3.before")}{" "}
-                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
-                                {t("sauber.p3.after")}
+                            <Body>
+                                <p>{t("sauber.p1")}</p>
+                                <p>{t("sauber.p2")}</p>
+                                <p>
+                                    {t("sauber.p3.before")}{" "}
+                                    <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                    {t("sauber.p3.after")}
+                                </p>
+                            </Body>
+
+                            <p className="mt-10 text-sm font-medium tracking-wider uppercase text-[var(--muted)]">
+                                {t("sauber.footer")}
                             </p>
-                        </Body>
-
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
-                            {t("sauber.footer")}
-                        </Muted>
-                    </SectionShell>
+                        </SectionShell>
+                    </div>
                 </section>
 
                 {/* SICHER */}
-                <section id="sicher" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
-                    <SectionShell>
-                        <div className="mb-8">
-                            <BigTitle className="block mb-2 leading-none">{t("sicher.title")}</BigTitle>
-                            <Muted className="italic text-lg">{t("sicher.subtitle")}</Muted>
-                        </div>
+                <section id="sicher" className="py-10 md:py-14 scroll-mt-[96px]">
+                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                        <SectionShell>
+                            <div className="mb-8">
+                                <BigTitle className="block">{t("sicher.title")}</BigTitle>
+                                <Muted className="italic mt-2">{t("sicher.subtitle")}</Muted>
+                            </div>
 
-                        <Body>
-                            <p>
-                                {t("sicher.p1.before")}{" "}
-                                <strong className="text-[var(--text)]">{t("sicher.p1.strong")}</strong>{" "}
-                                {t("sicher.p1.after")}
+                            <Body>
+                                <p>
+                                    {t("sicher.p1.before")}{" "}
+                                    <strong className="text-[var(--text)]">{t("sicher.p1.strong")}</strong>{" "}
+                                    {t("sicher.p1.after")}
+                                </p>
+
+                                <p>
+                                    {t("sicher.p2.before")}{" "}
+                                    <InlineLink href="/contact">{t("links.contact")}</InlineLink>{" "}
+                                    {t("sicher.p2.after")}
+                                </p>
+
+                                <p>
+                                    <strong className="text-[var(--text)]">{t("sicher.p3.strong")}</strong>{" "}
+                                    {t("sicher.p3.after")}
+                                </p>
+
+                                <p>
+                                    {t("sicher.p4.before")}{" "}
+                                    <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
+                                    {t("sicher.p4.after")}
+                                </p>
+                            </Body>
+
+                            <p className="mt-10 text-sm font-medium tracking-wider uppercase text-[var(--muted)]">
+                                {t("sicher.footer")}
                             </p>
-
-                            <p>
-                                {t("sicher.p2.before")}{" "}
-                                <InlineLink href="/contact">{t("links.contact")}</InlineLink>{" "}
-                                {t("sicher.p2.after")}
-                            </p>
-
-                            <p>
-                                <strong className="text-[var(--text)]">{t("sicher.p3.strong")}</strong>{" "}
-                                {t("sicher.p3.after")}
-                            </p>
-
-                            <p>
-                                {t("sicher.p4.before")}{" "}
-                                <InlineLink href="/experience">{t("links.experience")}</InlineLink>{" "}
-                                {t("sicher.p4.after")}
-                            </p>
-                        </Body>
-
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
-                            {t("sicher.footer")}
-                        </Muted>
-                    </SectionShell>
+                        </SectionShell>
+                    </div>
                 </section>
 
                 {/* SOUVERÄN */}
-                <section id="souveran" className="px-6 py-10 md:py-14 scroll-mt-[96px]">
-                    <SectionShell>
-                        <div className="mb-8">
-                            <BigTitle className="block mb-2 leading-none">{t("souveran.title")}</BigTitle>
-                            <Muted className="italic text-lg">{t("souveran.subtitle")}</Muted>
-                        </div>
+                <section id="souveran" className="py-10 md:py-14 scroll-mt-[96px]">
+                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                        <SectionShell>
+                            <div className="mb-8">
+                                <BigTitle className="block">{t("souveran.title")}</BigTitle>
+                                <Muted className="italic mt-2">{t("souveran.subtitle")}</Muted>
+                            </div>
 
-                        <Body>
-                            <p>{t("souveran.p1")}</p>
-                            <p>{t("souveran.p2")}</p>
+                            <Body>
+                                <p>{t("souveran.p1")}</p>
+                                <p>{t("souveran.p2")}</p>
 
-                            <p>
-                                <strong className="text-[var(--text)]">{t("souveran.p3.strong")}</strong>{" "}
-                                {t("souveran.p3.after")}
+                                <p>
+                                    <strong className="text-[var(--text)]">{t("souveran.p3.strong")}</strong>{" "}
+                                    {t("souveran.p3.after")}
+                                </p>
+
+                                <p>
+                                    {t("souveran.p4.before")}{" "}
+                                    <strong className="text-[var(--text)]">{t("souveran.p4.strong")}</strong>{" "}
+                                    {t("souveran.p4.after")}
+                                </p>
+                            </Body>
+
+                            <p className="mt-10 text-sm font-medium tracking-wider uppercase text-[var(--muted)]">
+                                {t("souveran.footer")}
                             </p>
-
-                            <p>
-                                {t("souveran.p4.before")}{" "}
-                                <strong className="text-[var(--text)]">{t("souveran.p4.strong")}</strong>{" "}
-                                {t("souveran.p4.after")}
-                            </p>
-                        </Body>
-
-                        <Muted className="mt-8 text-sm font-medium tracking-wider uppercase">
-                            {t("souveran.footer")}
-                        </Muted>
-                    </SectionShell>
+                        </SectionShell>
+                    </div>
                 </section>
 
-                {/* CTA */}
-                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-4xl mr-auto">
+                {/* CTA (можешь оставить по центру — если хочешь тоже слева скажи) */}
+                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-7xl xl:max-w-[1400px] mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("cta.title")}</h2>
 
                     <Link
@@ -228,7 +239,8 @@ export default function DefinitionPage() {
               inline-flex items-center gap-2
               bg-[var(--text)] text-[var(--background)]
               px-8 py-4 rounded-full font-medium
-              hover:opacity-90 transition-opacity
+              hover:opacity-90 active:opacity-90
+              transition-opacity
             "
                     >
                         {t("cta.button")}

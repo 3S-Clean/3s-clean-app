@@ -1,3 +1,23 @@
+/* ==================== Footer Theme Tokens ==================== */
+:root {
+    --footer-bg: #fcfcfd;
+    --footer-text: rgb(26, 26, 26);
+    --footer-muted: rgb(154, 154, 154);
+    --footer-border: rgba(0, 0, 0, 0.06);
+    --footer-icon: rgb(26, 26, 26);
+}
+
+/* Dark mode (Android / iOS / Desktop) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --footer-bg: #0b0b0b;
+        --footer-text: rgba(255, 255, 255, 0.92);
+        --footer-muted: rgba(255, 255, 255, 0.45);
+        --footer-border: rgba(255, 255, 255, 0.12);
+        --footer-icon: rgba(255, 255, 255, 0.9);
+    }
+}
+
 /* ==================== Footer Base ==================== */
 .footer {
     display: flex;
@@ -7,7 +27,7 @@
     justify-content: center;
     align-items: flex-start;
     gap: 32px;
-    background: linear-gradient(90deg, rgb(250, 251, 252), rgb(242, 244, 247));
+    background: var(--footer-bg);
 }
 
 /* ==================== Footer Columns ==================== */
@@ -30,7 +50,7 @@
     font-size: 18px;
     font-weight: 600;
     line-height: 150%;
-    color: rgb(26, 26, 26);
+    color: var(--footer-text);
 }
 
 .footer-column-links {
@@ -48,7 +68,7 @@
 }
 
 .footer-column-link {
-    color: rgb(26, 26, 26);
+    color: var(--footer-text);
     font-size: 16px;
     line-height: 140%;
     text-decoration: none;
@@ -67,7 +87,7 @@
     gap: 8px;
     width: 100%;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid var(--footer-border);
 }
 
 .footer-legal-title {
@@ -75,7 +95,7 @@
     font-size: 18px;
     font-weight: 500;
     line-height: 150%;
-    color: rgb(26, 26, 26);
+    color: var(--footer-text);
 }
 
 .footer-legal-links {
@@ -86,7 +106,7 @@
 }
 
 .footer-legal-link {
-    color: rgb(26, 26, 26);
+    color: var(--footer-text);
     font-size: 15px;
     line-height: 140%;
     text-decoration: none;
@@ -103,7 +123,7 @@
 
 .footer-copyright {
     margin: 8px 0 0;
-    color: rgb(154, 154, 154);
+    color: var(--footer-muted);
     font-size: 15px;
     line-height: 130%;
 }
@@ -122,17 +142,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgb(26, 26, 26);
-    transition: opacity 0.2s ease;
+    color: var(--footer-icon);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .footer-social-link:hover {
     opacity: 0.7;
+    transform: translateY(-1px);
 }
 
 .social-icon {
     width: 28px;
     height: 28px;
+    stroke: currentColor;
 }
 
 /* ==================== Responsive: Tablet ==================== */
@@ -205,7 +227,7 @@
     }
 
     .footer-social {
-        border-top: 1px solid rgb(234, 234, 234);
+        border-top: 1px solid var(--footer-border);
         padding-top: 20px;
     }
 }

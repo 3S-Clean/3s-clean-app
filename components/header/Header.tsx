@@ -38,7 +38,7 @@ export default function Header() {
     const closeMenu = useCallback(() => setIsMenuOpen(false), []);
     const toggleMenu = useCallback(() => setIsMenuOpen((v) => !v), []);
 
-    // ✅ scroll lock
+    // ✅ scroll lock (fixed body)
     useEffect(() => {
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
@@ -65,11 +65,16 @@ export default function Header() {
 
     // ✅ close menu on route change
     useEffect(() => {
-        if (prevPathnameRef.current !== pathname) {
-            prevPathnameRef.current = pathname;
-            queueMicrotask(closeMenu);
-        }
-    }, [pathname, closeMenu]);
+        if (prevPathnameRef.current === pathname) return;
+
+        prevPathnameRef.current = pathname;
+
+        if (!isMenuOpen) return;
+
+        queueMicrotask(() => {
+            setIsMenuOpen(false);
+        });
+    }, [pathname, isMenuOpen]);
 
     // ✅ close menu on resize above breakpoint
     useEffect(() => {
@@ -82,7 +87,7 @@ export default function Header() {
 
     const accountHref = isAuthenticated ? "/account" : "/signup";
 
-    // ✅ helper: highlight active for nested routes too (e.g. /account/settings)
+    // ✅ helper: highlight active for nested routes too
     const isActive = (href: string) => {
         if (href === "/") return pathname === "/";
         return pathname === href || pathname.startsWith(href + "/");
@@ -94,12 +99,10 @@ export default function Header() {
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        {/* ✅ HOME = "/" (no "/#") */}
                         <Link href="/" aria-label="Go to home" className="logo-link">
                             <Logo className="logo" />
                         </Link>
 
-                        {/* ✅ ONLY internal app routes */}
                         <nav className="nav-desktop" aria-label="Main navigation">
                             {mainNav.map((item) => (
                                 <Link
@@ -134,11 +137,11 @@ export default function Header() {
                         className="menu-toggle"
                         onClick={toggleMenu}
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={isMenuOpen}
                     >
                         <MenuIcon className="menu-icon" />
                     </button>
 
-                    {/* ✅ HOME = "/" */}
                     <Link href="/" className="logo-link-mobile" aria-label="Go to home">
                         <Logo className="logo-mobile" />
                     </Link>
