@@ -235,7 +235,11 @@ export default function HomePageClient() {
             PROMISE
             - cards animation ONLY on desktop
            ========================= */}
-                <section className="px-6 pb-14 lg:pb-20 max-w-7xl mx-auto xl:pt-20">
+                <section className="px-6 pt-12 sm:pt-16
+                                      pb-14 lg:pb-20
+                                      max-w-7xl mx-auto
+                                      xl:pt-20
+                                    ">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
