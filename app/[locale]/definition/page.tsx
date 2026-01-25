@@ -47,7 +47,6 @@ function SectionShell({ children }: { children: React.ReactNode }) {
         rounded-3xl
         bg-[var(--card)]/70 backdrop-blur-sm
         text-[var(--text)]
-        ring-1 ring-black/5 dark:ring-white/10
         p-8 md:p-12
       "
         >
