@@ -265,5 +265,124 @@
       "name": "Fenster (innen)",
       "desc": "Innenreinigung erreichbarer Fenster."
     }
+  },
+  "faqPage": {
+    "hero": {
+      "title": "FAQs",
+      "subtitle": "Alles, was du wissen musst"
+    },
+    "search": {
+      "placeholder": "Suchen..."
+    },
+    "filters": {
+      "all": "Alle"
+    },
+    "empty": "Keine Ergebnisse gefunden",
+    "categories": [
+      {
+        "id": "video",
+        "title": "Videoaufzeichnung & Privatsphäre",
+        "shortTitle": "Video & Privacy",
+        "items": [
+          {
+            "question": "Wer sieht die Aufnahmen?",
+            "answer": "Nur du über einen sicheren Link und autorisiertes QA-Personal — niemals Dritte."
+          },
+          {
+            "question": "Warum zeichnet ihr die Reinigung auf?",
+            "answer": "Wir bieten volle Transparenz darüber, was in deinem Zuhause passiert. Die Aufnahmen dienen als Nachweis der erbrachten Leistung und helfen, die Qualität konstant hochzuhalten."
+          },
+          {
+            "question": "Wie kann ich den Live-Stream oder die Videos ansehen?",
+            "answer": "Ein sicherer Link ist in deinem Account bis zu 7 Tage verfügbar. Auf Wunsch kann er auch an dein Handy oder per E-Mail gesendet werden — du entscheidest, ob du diese Benachrichtigungen erhalten möchtest."
+          },
+          {
+            "question": "Kann ich eine frühere Löschung als 7 Tage anfordern?",
+            "answer": "Ja — fülle einfach das Formular in deinem Account aus. Nach dem Löschen der Videos können keine Qualitätsansprüche mehr geltend gemacht werden."
+          },
+          {
+            "question": "Ich habe Sorge, dass mein Zuhause während der Reinigung gefilmt wird. Sind meine privaten Informationen sicher?",
+            "answer": "Bei uns weißt du immer, dass aufgezeichnet wird. Heimlich zu filmen ist leicht — wir machen es bewusst transparent, damit du weißt, was wirklich passiert, auch wenn du nicht vor Ort bist. Wir teilen keine privaten Informationen über dich oder dein Zuhause. Die Videos liegen auf einem sicheren Server, Zugriff haben nur autorisierte Personen, und nach 7 Tagen werden sie gelöscht."
+          }
+        ]
+      },
+      {
+        "id": "pricing",
+        "title": "Preise, Steuern & Rechtliche Sicherheit",
+        "shortTitle": "Preise",
+        "items": [
+          {
+            "question": "Warum sollte ich eine Firma buchen statt privat günstiger bar zu zahlen?",
+            "answer": "Weil du geschützt bist. Unsere Leistungen sind versichert, wir sind jederzeit verantwortlich. Wenn etwas beschädigt wird, ist es unser Risiko — nicht deins. Private Kräfte sind günstiger, bis etwas schiefgeht. Und bei uns kannst du bis zu 20% deiner Reinigungskosten steuerlich absetzen (§35a EStG)."
+          },
+          {
+            "question": "Warum sind eure Preise höher als bei privaten Reinigungskräften?",
+            "answer": "Private Kräfte zahlen oft keine Steuern und haben in der Regel keine Haftpflicht/Versicherung. Wir bieten geschultes, geprüftes Personal, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfall. Du bezahlst für Stabilität und Ruhe — nicht für Glück. Außerdem kannst du bis zu 20% der Kosten steuerlich absetzen (§35a EStG)."
+          },
+          {
+            "question": "Bekomme ich eine Rechnung für die Steuerermäßigung (§35a EStG)?",
+            "answer": "Natürlich. Du erhältst innerhalb von 48 Stunden nach jeder Reinigung eine Rechnung — damit kannst du bis zu 20% der haushaltsnahen Dienstleistungen steuerlich geltend machen (§35a EStG)."
+          }
+        ]
+      },
+      {
+        "id": "cleaners",
+        "title": "Mitarbeitende, Zuverlässigkeit & Qualität",
+        "shortTitle": "Qualität",
+        "items": [
+          {
+            "question": "Was passiert, wenn meine Reinigungskraft krank ist oder nicht kommen kann?",
+            "answer": "Wir schicken sofort Ersatz. Keine Absagen, kein Warten, keine verlorene Zeit. Kontinuität ist garantiert."
+          },
+          {
+            "question": "Kommt jedes Mal dieselbe Person?",
+            "answer": "Bei wiederkehrenden Terminen planen wir in der Regel eine feste Person ein. Du baust Vertrauen auf, wir liefern Konstanz. Wenn du wechseln möchtest, melde dich einfach mindestens 48 Stunden vorher."
+          },
+          {
+            "question": "Wir hatten schon Reinigungskräfte, aber die Qualität war wechselhaft — was macht ihr anders?",
+            "answer": "Wir steuern Qualität aktiv: Training, Standards, Ersatz bei Bedarf und ein direkter Ansprechpartner, falls etwas nicht passt. Du bist nicht von einer Person abhängig — du hast ein Team im Hintergrund."
+          },
+          {
+            "question": "Sind eure Mitarbeitenden geprüft (Background-Check)?",
+            "answer": "Ja — Identität, Referenzen und Zuverlässigkeit werden vor dem Einsatz geprüft."
+          }
+        ]
+      },
+      {
+        "id": "booking",
+        "title": "Buchung, Verträge & Stornierung",
+        "shortTitle": "Buchung",
+        "items": [
+          {
+            "question": "Muss ich einen langfristigen Vertrag abschließen?",
+            "answer": "Nein — wir bieten flexible Bedingungen. Wir empfehlen regelmäßige Reinigungen (alle 7–10 Tage), weil es langfristig günstiger ist."
+          },
+          {
+            "question": "Kann ich meinen Termin jederzeit stornieren?",
+            "answer": "Ja — Flexibilität gehört dazu. Kostenfrei bis spätestens 48 Stunden vorher. Spätere Stornierungen (außer nachweislicher Notfall) berechnen wir mit 50 € — wir schätzen Vertrauen und Zeit und erwarten das auch von unseren Kund:innen."
+          }
+        ]
+      },
+      {
+        "id": "process",
+        "title": "Ablauf & Leistungsumfang",
+        "shortTitle": "Ablauf",
+        "items": [
+          {
+            "question": "Bringt ihr Reinigungsmittel mit oder muss ich etwas bereitstellen?",
+            "answer": "Wir bringen alles mit — Reiniger, Tücher, Tools. Du genießt einfach ein sauberes Zuhause."
+          },
+          {
+            "question": "Wie lange dauert eine 80 m² Wohnung normalerweise?",
+            "answer": "Im Schnitt 3–4 Stunden — abhängig von Zustand, Haustieren und Reinigungsfrequenz. Bei regelmäßigen Kund:innen geht es oft schneller. Bei größeren Objekten kommen ggf. mehrere Personen gleichzeitig."
+          },
+          {
+            "question": "Welchen Reinigungsplan soll ich wählen?",
+            "answer": "Wenn dein Zuhause länger als 1 Monat nicht professionell gereinigt wurde, empfehlen wir einen Heavy-Duty-Clean zum Start. Danach Standard-Cleaning alle 7–10 Tage, um es dauerhaft top zu halten. Alle 2–3 Monate empfehlen wir Add-ons wie Fenster oder Ofen. Buche einfach eine Consultation."
+          }
+        ]
+      }
+    ]
   }
 }
+

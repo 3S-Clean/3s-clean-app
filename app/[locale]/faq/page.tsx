@@ -1,267 +1,268 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { Search, Plus, Minus } from 'lucide-react';
+import { useMemo, useState } from "react";
+import { Search, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
-interface FAQItem {
+/* -------------------------------- types -------------------------------- */
+
+type FAQItem = {
     question: string;
     answer: string;
-}
+};
 
-interface FAQCategory {
+type FAQCategory = {
     id: string;
     title: string;
     shortTitle: string;
     items: FAQItem[];
+};
+
+function cx(...classes: Array<string | false | null | undefined>) {
+    return classes.filter(Boolean).join(" ");
 }
 
-const faqData: FAQCategory[] = [
-    {
-        id: 'video',
-        title: 'Video Recording & Privacy',
-        shortTitle: 'Video & Privacy',
-        items: [
-            {
-                question: 'Who sees the footage?',
-                answer: 'Only you via a secure link and authorized QA staff — never third parties.',
-            },
-            {
-                question: 'Why do you videos record cleaning?',
-                answer: 'We offer full transparency of what happens in your home. Video recordings serve as proof of service delivered and help ensure quality.',
-            },
-            {
-                question: 'How can I watch the live stream or videos?',
-                answer: 'A secure access link to the videos is available in your personal account for up to 7 days. It can also be sent to your designated phone or via e-mail – you can decide if you do not wish to receive these notifications.',
-            },
-            {
-                question: 'Can I request deletion of videos recording sooner than 7 days?',
-                answer: 'Yes, just fill out the form in your personal account. Once the videos is deleted no claims as to quality of cleaning can be made.',
-            },
-            {
-                question: 'I feel worried that my home will be filmed during cleaning. Is my private information safe?',
-                answer: 'With us you always know that a videos is being made. It is so easy to take pictures or film someone\'s home without the person ever knowing. We make videos of the cleaning so that you know what is actually going on in your home, even when you are not there. We do not share any private information about you or your home with anyone. Videos are stored on a secure server with no access to unauthorized persons for up to 7 days and then deleted.',
-            },
-        ],
-    },
-    {
-        id: 'pricing',
-        title: 'Pricing, Taxes & Legal Protection',
-        shortTitle: 'Pricing',
-        items: [
-            {
-                question: 'Why should I hire a company instead of paying privately cheaper in cash?',
-                answer: 'Because you are protected. Our services are insured. We are always accountable. We don\'t disappear if anything gets damaged — it is our cost, never yours. Individual cleaners are cheaper until something goes wrong. And with us you can deduct up to 20% of your cleaning expenses from your taxes according to §35a EstG.',
-            },
-            {
-                question: 'Why are your prices higher than what private cleaners charge?',
-                answer: 'Private cleaners pay no taxes, have no insurance or liability. We provide trained, vetted staff, insurance coverage, guaranteed appointments and replacements. You are paying for stability and peace of mind — not for luck. You can also save up to 20% of your cleaning services expenses with us according to §35a EstG.',
-            },
-            {
-                question: 'Can I get an invoice for Steuerermäßigung (household tax deduction)?',
-                answer: 'Of course. You receive invoice within 48 hours after every cleaning — you can deduct up to 20% of household service costs legally under §35a EStG.',
-            },
-        ],
-    },
-    {
-        id: 'cleaners',
-        title: 'Cleaners, Reliability & Quality',
-        shortTitle: 'Quality',
-        items: [
-            {
-                question: 'What happens if my cleaner is sick or can\'t come?',
-                answer: 'We immediately dispatch a replacement. No cancellations, no waiting, no lost time. Continuity is guaranteed.',
-            },
-            {
-                question: 'Do I get the same cleaner every time?',
-                answer: 'We generally assign a dedicated cleaner for recurring appointments. You build trust, we deliver consistency. If at any time you want to change the cleaner – just contact us at least 48 hours in advance.',
-            },
-            {
-                question: 'We\'ve had cleaners before and quality was inconsistent — how are you different?',
-                answer: 'We monitor quality, provide training, perform replacements when needed, and you have a direct contact if standards slip. You\'re not relying on one person — you have an entire dedicated team at your service.',
-            },
-            {
-                question: 'Are your cleaners background-checked?',
-                answer: 'Yes — identity, reference, and reliability screening is mandatory before assignment.',
-            },
-        ],
-    },
-    {
-        id: 'booking',
-        title: 'Booking, Contracts & Cancellation',
-        shortTitle: 'Booking',
-        items: [
-            {
-                question: 'Do I have to sign a long-term contract?',
-                answer: 'No — we offer flexible terms. We recommend clients to choose regular recurring cleanings (every 7-10 days) because it\'s cheaper in the long run.',
-            },
-            {
-                question: 'Can I cancel my appointment anytime?',
-                answer: 'Yes — flexibility is part of the service. You can cancel an appointment free of charge no later than 48 hours prior. Cancellations at a later time (unless a proven emergency) will be charged at 50 Euros – we value your trust and time and expect the same in return.',
-            },
-        ],
-    },
-    {
-        id: 'process',
-        title: 'Cleaning Process & Scope',
-        shortTitle: 'Process',
-        items: [
-            {
-                question: 'Do you bring cleaning supplies or do I need to provide them?',
-                answer: 'We bring everything required — detergents, cloths, tools. You just enjoy a clean home.',
-            },
-            {
-                question: 'How long does an 80 m² apartment normally take to clean?',
-                answer: 'On average 3–4 hours depending on condition, pets, and cleaning frequency. Regular clients often require less time each visit. For larger homes we may engage more than one cleaner at the same time.',
-            },
-            {
-                question: 'What cleaning plan should I choose?',
-                answer: 'If your home has not been professionally cleaned for more than 1 month we suggest to start with the Heavy-duty clean. After that we recommend to do the Standard cleaning every 7-10 days to maintain your home pristine. Every 2-3 months we suggest additional window, oven cleaning. Simply book a Consultation now.',
-            },
-        ],
-    },
-];
+/* ------------------------------ Accordion ------------------------------ */
 
-function AccordionItem({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean; onToggle: () => void }) {
+function AccordionItem({
+                           item,
+                           isOpen,
+                           onToggle,
+                       }: {
+    item: FAQItem;
+    isOpen: boolean;
+    onToggle: () => void;
+}) {
     return (
-        <div className="border-b border-gray-100 last:border-0">
+        <div className="border-b border-black/5 dark:border-white/10 last:border-0">
             <button
+                type="button"
                 onClick={onToggle}
-                className="w-full flex items-center justify-between py-5 text-left hover:bg-gray-50 -mx-4 px-4 rounded-lg transition-colors"
-            >
-                <span className="font-medium text-gray-900 pr-4">{item.question}</span>
-                {isOpen ? (
-                    <Minus className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                ) : (
-                    <Plus className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                className={cx(
+                    "w-full flex items-center gap-4 py-5 text-left rounded-xl px-4",
+                    "transition-opacity duration-200",
+                    "hover:opacity-80",
+                    "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15"
                 )}
+            >
+                <span className="font-medium text-[var(--text)] pr-2">{item.question}</span>
+
+                {/* Icon pinned to the far right */}
+                <span className="ml-auto flex-shrink-0">
+          <Plus
+              className={cx(
+                  "w-5 h-5 text-[var(--muted)]",
+                  "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  isOpen && "rotate-45" // plus -> x
+              )}
+              aria-hidden="true"
+          />
+        </span>
             </button>
-            {isOpen && (
-                <div className="pb-5 -mx-4 px-4 animate-fadeIn">
-                    <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+
+            {/* Smooth “press in / compress” close animation */}
+            <div
+                className={cx(
+                    "overflow-hidden will-change-[height]",
+                    "transition-[height] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                )}
+                style={{ height: isOpen ? "auto" : 0 }}
+            >
+                {/* We need real height measurement? Nope: we do a CSS trick below */}
+                <div className={cx("px-4 pb-5")}>
+                    <div
+                        className={cx(
+                            "relative rounded-xl p-4",
+                            "backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10",
+                            "bg-[var(--card)]/75 dark:bg-[var(--card)]/40",
+                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]",
+                            "transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                            isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
+                        )}
+                    >
+                        {/* Liquid Glass grain */}
+                        <div
+                            className="pointer-events-none absolute inset-0 rounded-xl opacity-[0.10] dark:opacity-[0.14]"
+                            style={{
+                                backgroundImage:
+                                    "radial-gradient(rgba(255,255,255,0.40) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)",
+                                backgroundSize: "18px 18px, 22px 22px",
+                                backgroundPosition: "0 0, 10px 12px",
+                            }}
+                        />
+                        <p className="relative text-[var(--muted)] leading-relaxed">{item.answer}</p>
+                    </div>
                 </div>
-            )}
+            </div>
+
+            {/* Height auto animation helper (keeps it smooth) */}
+            <style jsx>{`
+        div[style*="height: auto"] {
+          height: auto !important;
+        }
+      `}</style>
         </div>
     );
 }
 
+/* ------------------------------- Page ------------------------------- */
+
 export default function FAQPage() {
-    const [searchQuery, setSearchQuery] = useState('');
+    const t = useTranslations("faqPage");
+
+    // ✅ i18n data (EN/DE): faqPage.categories = array
+    const faqData = useMemo(() => (t.raw("categories") as FAQCategory[]) ?? [], [t]);
+
+    const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [openItems, setOpenItems] = useState<Set<string>>(new Set());
+
+    const categories = useMemo(
+        () => [{ id: null as string | null, label: t("filters.all") }, ...faqData.map((c) => ({ id: c.id, label: c.shortTitle }))],
+        [faqData, t]
+    );
 
     const filteredData = useMemo(() => {
         let data = faqData;
 
-        // Filter by category
         if (activeCategory) {
-            data = data.filter(cat => cat.id === activeCategory);
+            data = data.filter((cat) => cat.id === activeCategory);
         }
 
-        // Filter by search query
         if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            data = data.map(category => ({
-                ...category,
-                items: category.items.filter(
-                    item =>
-                        item.question.toLowerCase().includes(query) ||
-                        item.answer.toLowerCase().includes(query)
-                ),
-            })).filter(category => category.items.length > 0);
+            const q = searchQuery.toLowerCase();
+            data = data
+                .map((category) => ({
+                    ...category,
+                    items: category.items.filter(
+                        (item) => item.question.toLowerCase().includes(q) || item.answer.toLowerCase().includes(q)
+                    ),
+                }))
+                .filter((category) => category.items.length > 0);
         }
 
         return data;
-    }, [searchQuery, activeCategory]);
+    }, [faqData, searchQuery, activeCategory]);
 
     const toggleItem = (categoryId: string, questionIndex: number) => {
         const key = `${categoryId}-${questionIndex}`;
-        setOpenItems(prev => {
+        setOpenItems((prev) => {
             const next = new Set(prev);
-            if (next.has(key)) {
-                next.delete(key);
-            } else {
-                next.add(key);
-            }
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
             return next;
         });
     };
 
-    const categories = [
-        { id: null, label: 'Alle' },
-        ...faqData.map(cat => ({ id: cat.id, label: cat.shortTitle })),
-    ];
-
     return (
         <>
-            <Header/>
-            <main className="min-h-screen bg-white mt-[80px]">
-                {/* Hero */}
-                <section className="px-6 pt-12 pb-4 md:pt-20 md:pb-8 max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-2">
-                        FAQs
+            <Header />
+
+            <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
+                {/* HERO (like Experience) */}
+                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight whitespace-pre-line">
+                        {t("hero.title")}
                     </h1>
-                    <p className="text-gray-600 text-lg">
-                        Everything you need to know
-                    </p>
+                    <p className="mt-4 text-lg text-[var(--muted)] max-w-2xl">{t("hero.subtitle")}</p>
                 </section>
 
                 {/* Search */}
-                <section className="px-6 py-4 max-w-4xl mx-auto">
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <section className="px-6 pb-4 max-w-7xl mx-auto">
+                    <div className="relative max-w-3xl">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)]" />
                         <input
                             type="text"
-                            placeholder="Suchen..."
+                            placeholder={t("search.placeholder")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-shadow"
+                            className={cx(
+                                "w-full pl-12 pr-4 py-4 rounded-2xl",
+                                "bg-[var(--card)]/70 dark:bg-[var(--card)]/35",
+                                "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
+                                "text-[var(--text)] placeholder:text-[var(--muted)]",
+                                "focus:outline-none focus:ring-4 focus:ring-black/10 dark:focus:ring-white/10",
+                                "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]"
+                            )}
                         />
                     </div>
                 </section>
 
-                {/* Category Filters */}
-                <section className="px-6 py-4 max-w-4xl mx-auto">
-                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.id ?? 'all'}
-                                onClick={() => setActiveCategory(cat.id)}
-                                className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                                    activeCategory === cat.id
-                                        ? 'bg-gray-900 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                            >
-                                {cat.label}
-                            </button>
-                        ))}
+                {/* Category Filters (glassy in dark too) */}
+                <section className="px-6 py-4 max-w-7xl mx-auto">
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        {categories.map((cat) => {
+                            const active = activeCategory === cat.id;
+                            return (
+                                <button
+                                    key={cat.id ?? "all"}
+                                    type="button"
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className={cx(
+                                        "px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap",
+                                        "transition-all duration-200",
+                                        active
+                                            ? "bg-[var(--text)] text-[var(--background)]"
+                                            : cx(
+                                                "bg-[var(--card)]/70 dark:bg-[var(--card)]/35 text-[var(--text)]",
+                                                "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
+                                                "hover:opacity-85",
+                                                "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]"
+                                            )
+                                    )}
+                                >
+                                    {cat.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </section>
 
                 {/* FAQ Content */}
-                <section className="px-6 py-8 max-w-4xl mx-auto">
+                <section className="px-6 py-8 max-w-7xl mx-auto">
                     {filteredData.length === 0 ? (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500">Keine Ergebnisse gefunden</p>
+                        <div className="py-12">
+                            <p className="text-[var(--muted)]">{t("empty")}</p>
                         </div>
                     ) : (
-                        <div className="space-y-10">
+                        <div className="space-y-10 max-w-3xl">
                             {filteredData.map((category) => (
                                 <div key={category.id}>
-                                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                        <span>{category.title}</span>
-                                    </h2>
-                                    <div className="bg-gray-50 rounded-2xl p-4">
-                                        {category.items.map((item, index) => (
-                                            <AccordionItem
-                                                key={index}
-                                                item={item}
-                                                isOpen={openItems.has(`${category.id}-${index}`)}
-                                                onToggle={() => toggleItem(category.id, index)}
-                                            />
-                                        ))}
+                                    <h2 className="text-xl font-bold mb-4">{category.title}</h2>
+
+                                    {/* Glass container (consistent width, no weird highlights) */}
+                                    <div
+                                        className={cx(
+                                            "relative rounded-2xl p-4",
+                                            "backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10",
+                                            "bg-[var(--card)]/70 dark:bg-[var(--card)]/35",
+                                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_20px_60px_rgba(0,0,0,0.06)]",
+                                            "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_20px_60px_rgba(0,0,0,0.45)]"
+                                        )}
+                                    >
+                                        {/* Liquid Glass grain */}
+                                        <div
+                                            className="pointer-events-none absolute inset-0 rounded-2xl opacity-[0.10] dark:opacity-[0.14]"
+                                            style={{
+                                                backgroundImage:
+                                                    "radial-gradient(rgba(255,255,255,0.40) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)",
+                                                backgroundSize: "18px 18px, 22px 22px",
+                                                backgroundPosition: "0 0, 10px 12px",
+                                            }}
+                                        />
+
+                                        <div className="relative">
+                                            {category.items.map((item, index) => (
+                                                <AccordionItem
+                                                    key={index}
+                                                    item={item}
+                                                    isOpen={openItems.has(`${category.id}-${index}`)}
+                                                    onToggle={() => toggleItem(category.id, index)}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -269,8 +270,8 @@ export default function FAQPage() {
                     )}
                 </section>
             </main>
+
             <Footer />
         </>
-
     );
 }

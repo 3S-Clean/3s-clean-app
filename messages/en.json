@@ -267,5 +267,123 @@
       "name": "Windows (inside)",
       "desc": "Interior window cleaning where accessible."
     }
+  },
+  "faqPage": {
+    "hero": {
+      "title": "FAQs",
+      "subtitle": "Everything you need to know"
+    },
+    "search": {
+      "placeholder": "Search..."
+    },
+    "filters": {
+      "all": "All"
+    },
+    "empty": "No results found",
+    "categories": [
+      {
+        "id": "video",
+        "title": "Video Recording & Privacy",
+        "shortTitle": "Video & Privacy",
+        "items": [
+          {
+            "question": "Who sees the footage?",
+            "answer": "Only you via a secure link and authorized QA staff — never third parties."
+          },
+          {
+            "question": "Why do you record cleaning sessions?",
+            "answer": "We offer full transparency of what happens in your home. Video recordings serve as proof of service delivered and help ensure quality."
+          },
+          {
+            "question": "How can I watch the live stream or videos?",
+            "answer": "A secure access link to the videos is available in your personal account for up to 7 days. It can also be sent to your designated phone or via e-mail — you can decide if you do not wish to receive these notifications."
+          },
+          {
+            "question": "Can I request deletion of recordings sooner than 7 days?",
+            "answer": "Yes — just fill out the form in your personal account. Once the videos are deleted, no quality claims can be made."
+          },
+          {
+            "question": "I feel worried that my home will be filmed during cleaning. Is my private information safe?",
+            "answer": "With us you always know that a recording is being made. It’s easy to film someone’s home without them ever knowing — we do it openly so you know what is actually going on, even when you’re not there. We do not share any private information about you or your home. Videos are stored on a secure server with access restricted to authorized personnel for up to 7 days and then deleted."
+          }
+        ]
+      },
+      {
+        "id": "pricing",
+        "title": "Pricing, Taxes & Legal Protection",
+        "shortTitle": "Pricing",
+        "items": [
+          {
+            "question": "Why should I hire a company instead of paying privately cheaper in cash?",
+            "answer": "Because you are protected. Our services are insured. We are always accountable. We don’t disappear if anything gets damaged — it’s our cost, never yours. Individual cleaners are cheaper until something goes wrong. And with us you can deduct up to 20% of your cleaning expenses from your taxes according to §35a EStG."
+          },
+          {
+            "question": "Why are your prices higher than what private cleaners charge?",
+            "answer": "Private cleaners pay no taxes and typically have no insurance or liability coverage. We provide trained, vetted staff, insurance coverage, guaranteed appointments and replacements. You’re paying for stability and peace of mind — not for luck. You can also save up to 20% of your cleaning expenses with us according to §35a EStG."
+          },
+          {
+            "question": "Can I get an invoice for Steuerermäßigung (household tax deduction)?",
+            "answer": "Of course. You receive an invoice within 48 hours after every cleaning — you can deduct up to 20% of household service costs legally under §35a EStG."
+          }
+        ]
+      },
+      {
+        "id": "cleaners",
+        "title": "Cleaners, Reliability & Quality",
+        "shortTitle": "Quality",
+        "items": [
+          {
+            "question": "What happens if my cleaner is sick or can’t come?",
+            "answer": "We immediately dispatch a replacement. No cancellations, no waiting, no lost time. Continuity is guaranteed."
+          },
+          {
+            "question": "Do I get the same cleaner every time?",
+            "answer": "We generally assign a dedicated cleaner for recurring appointments. You build trust, we deliver consistency. If at any time you want to change the cleaner — just contact us at least 48 hours in advance."
+          },
+          {
+            "question": "We’ve had cleaners before and quality was inconsistent — how are you different?",
+            "answer": "We monitor quality, provide training, perform replacements when needed, and you have a direct contact if standards slip. You’re not relying on one person — you have an entire dedicated team at your service."
+          },
+          {
+            "question": "Are your cleaners background-checked?",
+            "answer": "Yes — identity, references, and reliability screening is mandatory before assignment."
+          }
+        ]
+      },
+      {
+        "id": "booking",
+        "title": "Booking, Contracts & Cancellation",
+        "shortTitle": "Booking",
+        "items": [
+          {
+            "question": "Do I have to sign a long-term contract?",
+            "answer": "No — we offer flexible terms. We recommend regular recurring cleanings (every 7–10 days) because it’s cheaper in the long run."
+          },
+          {
+            "question": "Can I cancel my appointment anytime?",
+            "answer": "Yes — flexibility is part of the service. You can cancel free of charge no later than 48 hours prior. Cancellations later than that (unless a proven emergency) will be charged €50 — we value your trust and time and expect the same in return."
+          }
+        ]
+      },
+      {
+        "id": "process",
+        "title": "Cleaning Process & Scope",
+        "shortTitle": "Process",
+        "items": [
+          {
+            "question": "Do you bring cleaning supplies or do I need to provide them?",
+            "answer": "We bring everything required — detergents, cloths, tools. You just enjoy a clean home."
+          },
+          {
+            "question": "How long does an 80 m² apartment normally take to clean?",
+            "answer": "On average 3–4 hours depending on condition, pets, and cleaning frequency. Regular clients often require less time each visit. For larger homes we may send more than one cleaner at the same time."
+          },
+          {
+            "question": "What cleaning plan should I choose?",
+            "answer": "If your home hasn’t been professionally cleaned for more than 1 month, we suggest starting with a heavy-duty clean. After that, we recommend standard cleaning every 7–10 days to keep your home pristine. Every 2–3 months we suggest add-ons like window or oven cleaning. Simply book a consultation."
+          }
+        ]
+      }
+    ]
   }
 }
