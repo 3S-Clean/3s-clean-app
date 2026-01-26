@@ -1,29 +1,10 @@
 // lib/booking/config.ts
 
 /* =========================
-   SERVICES (config only)
-   ✅ no texts here (100% i18n)
+   SERVICES (NO TEXTS)
 ========================= */
 
-export type ServiceIncludeKey =
-    | "floors"
-    | "surfaces"
-    | "bathroom"
-    | "kitchen"
-    | "limescale"
-    | "insideCupboards"
-    | "windowsInside";
-
-export type ServiceId = "core" | "reset" | "initial" | "handover";
-
-export type ServiceConfig = {
-    id: ServiceId;
-    isDark: boolean;
-    startingPrice: number;
-    includesKeys: readonly ServiceIncludeKey[];
-};
-
-export const SERVICES: readonly ServiceConfig[] = [
+export const SERVICES = [
     {
         id: "core",
         isDark: false,
@@ -50,6 +31,17 @@ export const SERVICES: readonly ServiceConfig[] = [
     },
 ] as const;
 
+export type ServiceId = (typeof SERVICES)[number]["id"];
+
+export type ServiceIncludeKey =
+    | "floors"
+    | "surfaces"
+    | "bathroom"
+    | "kitchen"
+    | "limescale"
+    | "insideCupboards"
+    | "windowsInside";
+
 /* =========================
    APARTMENT / PEOPLE
 ========================= */
@@ -67,23 +59,27 @@ export const PEOPLE_OPTIONS = [
     { id: "5+", label: "5+" },
 ] as const;
 
+export type ApartmentSizeId = (typeof APARTMENT_SIZES)[number]["id"];
+export type PeopleCountId = (typeof PEOPLE_OPTIONS)[number]["id"];
+
+/* =========================
+   PRICES (TYPES)
+========================= */
+
 type PetKey = "noPet" | "pet";
 
 export type FinalPrices = Record<
-    string, // size
+    ApartmentSizeId,
     Record<
-        ServiceId, // service
+        ServiceId,
         Record<
-            string, // people
+            PeopleCountId,
             Record<PetKey, number>
         >
     >
 >;
 
-export type HoursMatrix = Record<
-    ServiceId,
-    Record<string, number> // size -> hours
->;
+export type HoursMatrix = Record<ServiceId, Record<ApartmentSizeId, number>>;
 
 /* =========================
    PRICES
@@ -128,7 +124,7 @@ export const HOURS_MATRIX: HoursMatrix = {
 };
 
 /* =========================
-   EXTRAS (можем позже тоже i18n)
+   EXTRAS
 ========================= */
 
 export const EXTRAS = [
@@ -147,13 +143,48 @@ export const EXTRAS = [
 ] as const;
 
 /* =========================
-   HELPERS (typed)
+   TIME
 ========================= */
 
-export const getBasePrice = (service: ServiceId, size: string, people: string, hasPets: boolean) => {
+export const TIME_SLOTS = Array.from({ length: 40 }, (_, i) => {
+    const total = 8 * 60 + i * 15;
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    return {
+        id: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`,
+        label: `${h}:${String(m).padStart(2, "0")}`,
+        hour: h,
+        minutes: m,
+    };
+});
+
+export const WORKING_HOURS_END = 18;
+
+export const HOLIDAYS = [
+    "2025-01-01","2025-01-06","2025-04-18","2025-04-21","2025-05-01","2025-05-29","2025-06-09","2025-06-19","2025-10-03","2025-11-01","2025-12-25","2025-12-26",
+    "2026-01-01","2026-01-06","2026-04-03","2026-04-06","2026-05-01","2026-05-14","2026-05-25","2026-06-04","2026-10-03","2026-11-01","2026-12-25","2026-12-26",
+] as const;
+
+export const SERVICE_AREAS = [
+    "70173","70174","70176","70178","70180","70182","70184","70186","70188","70190",
+    "70191","70192","70193","70195","70197","70199","70327","70329","70372","70374",
+    "70376","70378","70435","70437","70439","70469","70499","70563","70565","70567",
+    "70569","70597","70599",
+] as const;
+
+/* =========================
+   HELPERS (TYPED)
+========================= */
+
+export const getBasePrice = (
+    service: ServiceId,
+    size: ApartmentSizeId,
+    people: PeopleCountId,
+    hasPets: boolean
+) => {
     const p = FINAL_PRICES[size]?.[service]?.[people];
     return p ? (hasPets ? p.pet : p.noPet) : 0;
 };
 
-export const getEstimatedHours = (service: ServiceId, size: string) =>
-    HOURS_MATRIX[service]?.[size] || 0;
+export const getEstimatedHours = (service: ServiceId, size: ApartmentSizeId) =>
+    HOURS_MATRIX[service]?.[size] ?? 0;
