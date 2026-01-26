@@ -28,6 +28,9 @@ type OptionalServiceItem = {
     frequency?: string;
 };
 
+type IncludeUI = { name: string; desc?: string };
+type ServiceUI = (typeof SERVICES)[number] & { title: string; desc: string; includes: IncludeUI[] };
+
 /* --------------------------- Service Card --------------------------- */
 function ServiceCard({
                          service,
@@ -42,15 +45,16 @@ function ServiceCard({
     service: (typeof SERVICES)[number];
     title: string;
     desc: string;
-    includes: Array<{ name: string; desc?: string }>;
+    includes: IncludeUI[];
     ctaLabel: string;
     fromLabel: string;
     incVatLabel: string;
     includesFallback: string;
 }) {
+    // ✅ no ring/border highlights
     const base = service.isDark
         ? "bg-gray-900 text-white"
-        : "bg-[var(--card)] text-[var(--text)] ring-1 ring-black/5 dark:ring-white/10";
+        : "bg-[var(--card)] text-[var(--text)]";
 
     const muted = service.isDark ? "text-white/70" : "text-[var(--muted)]";
 
@@ -85,9 +89,7 @@ function ServiceCard({
                             <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 opacity-60" />
                             <span className="flex items-center flex-wrap">
                 {it.name}
-                                {it.desc ? (
-                                    <Tooltip text={it.desc} title={it.name} dark={service.isDark} />
-                                ) : null}
+                                {it.desc ? <Tooltip text={it.desc} title={it.name} dark={service.isDark} /> : null}
               </span>
                         </li>
                     ))}
@@ -103,7 +105,7 @@ export default function ExperiencePage() {
     const tServices = useTranslations("services");
     const tIncludes = useTranslations("servicesIncludes");
 
-    // ✅ optional services (как у тебя — через t.raw)
+    // optional services: keys -> raw object
     const optionalServices = useMemo(() => {
         const keys = [
             "linenSingle",
@@ -122,22 +124,30 @@ export default function ExperiencePage() {
         ] as const;
 
         return keys
-            .map((k) => t.raw(`optional.items.${k}`) as OptionalServiceItem)
-            .filter((x) => x && typeof x?.name === "string" && typeof x?.price === "string");
+            .map((k) => t.raw(`optional.items.${k}`) as unknown)
+            .filter((x): x is OptionalServiceItem => {
+                if (!x || typeof x !== "object") return false;
+                const obj = x as Record<string, unknown>;
+                return typeof obj.name === "string" && typeof obj.price === "string";
+            })
+            .map((x) => x as OptionalServiceItem);
     }, [t]);
 
     const exclusions = useMemo(() => t.raw("exclusions.items") as string[], [t]);
 
-    // ✅ собираем UI-данные для карточек из i18n + SERVICES
-    const servicesUi = useMemo(() => {
+    // services: config + i18n
+    const servicesUi = useMemo((): ServiceUI[] => {
         return SERVICES.map((s) => {
             const title = tServices(`${s.id}.title`);
             const desc = tServices(`${s.id}.desc`);
 
-            const includes = s.includesKeys.map((key) => ({
-                name: tIncludes(`${key}.name`),
-                desc: tIncludes(`${key}.desc`),
-            }));
+            const includes = s.includesKeys.map((key) => {
+                const name = tIncludes(`${key}.name`);
+                // desc может быть пустой строкой — это ок
+                const rawDesc = tIncludes(`${key}.desc`);
+                const desc = rawDesc?.trim() ? rawDesc : undefined;
+                return { name, desc };
+            });
 
             return { ...s, title, desc, includes };
         });
@@ -150,6 +160,7 @@ export default function ExperiencePage() {
             <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
                 {/* HERO */}
                 <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
+                    {/* ✅ переносы как на главной */}
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight whitespace-pre-line">
                         {t("hero.title")}
                     </h1>

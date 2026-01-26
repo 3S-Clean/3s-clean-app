@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ServiceId } from "@/lib/booking/config";
 
 export interface FormData {
     firstName: string;
@@ -28,8 +29,8 @@ export interface BookingState {
     resetPostcode: () => void;
     resetPostcodeGate: () => void;
 
-    selectedService: string | null;
-    setSelectedService: (service: string | null) => void;
+    selectedService: ServiceId | null;
+    setSelectedService: (v: ServiceId | null) => void;
 
     apartmentSize: string | null;
     setApartmentSize: (size: string | null) => void;
@@ -87,32 +88,57 @@ const initialFormData: FormData = {
     postalCode: "",
     city: "",
     country: "Germany",
-    notes: "",
+    notes: ""
 };
 
-const initialState = {
+// ✅ чистое состояние без методов (так TS не ломается)
+type BookingStateData = Omit<
+    BookingState,
+    | "setStep"
+    | "setPostcode"
+    | "setPostcodeVerified"
+    | "resetPostcode"
+    | "resetPostcodeGate"
+    | "setSelectedService"
+    | "setApartmentSize"
+    | "setPeopleCount"
+    | "setHasPets"
+    | "setHasKids"
+    | "setHasAllergies"
+    | "setAllergyNote"
+    | "setExtras"
+    | "updateExtra"
+    | "setFormData"
+    | "setSelectedDate"
+    | "setSelectedTime"
+    | "setPendingToken"
+    | "setPlzAutofillDisabled"
+    | "resetBooking"
+>;
+
+const initialState: BookingStateData = {
     step: 0,
     postcode: "",
     postcodeVerified: false,
     plzAutofillDisabled: false,
 
-    selectedService: null as string | null,
-    apartmentSize: null as string | null,
-    peopleCount: null as string | null,
+    selectedService: null,
+    apartmentSize: null,
+    peopleCount: null,
 
     hasPets: false,
     hasKids: false,
     hasAllergies: false,
     allergyNote: "",
 
-    extras: {} as Record<string, number>,
+    extras: {},
 
     formData: initialFormData,
 
-    selectedDate: null as string | null,
-    selectedTime: null as string | null,
+    selectedDate: null,
+    selectedTime: null,
 
-    pendingToken: null as string | null,
+    pendingToken: null
 };
 
 type PersistSlice = {
@@ -133,25 +159,30 @@ export const useBookingStore = create<BookingState>()(
                 set((state) => {
                     const next = clampStep(step);
 
-
+                    // gate: нельзя уходить дальше, пока PLZ не verified
                     if (next >= 2 && !state.postcodeVerified) return state;
 
                     return { step: next };
                 }),
 
             setPostcode: (postcode) => set({ postcode }),
-            // ✅ IMPORTANT: do NOT force step changes here
             setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
+
             setPlzAutofillDisabled: (plzAutofillDisabled) => set({ plzAutofillDisabled }),
+
             resetPostcode: () => set({ postcode: "" }),
             resetPostcodeGate: () => set({ postcode: "", postcodeVerified: false, step: 1 }),
+
             setSelectedService: (selectedService) => set({ selectedService }),
+
             setApartmentSize: (apartmentSize) => set({ apartmentSize }),
             setPeopleCount: (peopleCount) => set({ peopleCount }),
+
             setHasPets: (hasPets) => set({ hasPets }),
             setHasKids: (hasKids) => set({ hasKids }),
             setHasAllergies: (hasAllergies) => set({ hasAllergies }),
             setAllergyNote: (allergyNote) => set({ allergyNote }),
+
             setExtras: (extras) => set({ extras }),
             updateExtra: (extraId, delta) =>
                 set((state) => {
@@ -163,23 +194,29 @@ export const useBookingStore = create<BookingState>()(
                     return { extras };
                 }),
 
-            formData: initialFormData,
-            setFormData: (data) => set((state) => ({ formData: { ...state.formData, ...data } })),
+            setFormData: (data) =>
+                set((state) => ({
+                    formData: { ...state.formData, ...data }
+                })),
+
             setSelectedDate: (selectedDate) => set({ selectedDate }),
             setSelectedTime: (selectedTime) => set({ selectedTime }),
+
             setPendingToken: (pendingToken) => set({ pendingToken }),
-            resetBooking: () => set({ ...initialState, formData: initialFormData }),
+
+            resetBooking: () => set({ ...initialState, formData: initialFormData })
         }),
         {
             name: "3s-booking-storage",
 
             partialize: (state): Partial<PersistSlice> => {
+                // сохраняем только на последнем шаге
                 if (state.step !== 4) return {};
                 return {
                     formData: state.formData,
                     selectedDate: state.selectedDate,
                     selectedTime: state.selectedTime,
-                    _savedAt: Date.now(),
+                    _savedAt: Date.now()
                 };
             },
 
@@ -192,9 +229,9 @@ export const useBookingStore = create<BookingState>()(
                     ...current,
                     formData: p.formData ?? current.formData,
                     selectedDate: p.selectedDate ?? current.selectedDate,
-                    selectedTime: p.selectedTime ?? current.selectedTime,
+                    selectedTime: p.selectedTime ?? current.selectedTime
                 };
-            },
+            }
         }
     )
 );

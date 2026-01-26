@@ -1,22 +1,29 @@
-// lib/services/useServicesI18n.ts
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { ServiceConfig, ServiceIncludeKey, ServiceId } from "@/lib/booking/config";
+import type { ServiceIncludeKey, ServiceId } from "@/lib/booking/config";
+
+type IncludeRaw = {
+    desc?: string;
+};
 
 export function useServicesI18n() {
-    const t = useTranslations();
+    const tServices = useTranslations("services");
+    const tIncludes = useTranslations("servicesIncludes");
 
-    const serviceText = (service: ServiceConfig) => ({
-        title: t(service.titleKey),
-        desc: t(service.descKey),
-        includesLabel: service.baseFeaturesKey ? t(service.baseFeaturesKey) : t("experiencePage.cards.includesFallback"),
+    const getServiceText = (id: ServiceId) => ({
+        title: tServices(`${id}.title`),
+        desc: tServices(`${id}.desc`),
     });
 
-    const includeText = (key: ServiceIncludeKey) => ({
-        name: t(`services.includes.${key}.name`),
-        desc: t(`services.includes.${key}.desc`), // может быть пустой строкой
-    });
+    const getIncludeText = (key: ServiceIncludeKey) => {
+        const raw = tIncludes.raw(key) as IncludeRaw | undefined;
 
-    return { serviceText, includeText };
+        return {
+            name: tIncludes(`${key}.name`),
+            desc: typeof raw?.desc === "string" && raw.desc.trim() ? raw.desc : undefined,
+        };
+    };
+
+    return { getServiceText, getIncludeText };
 }

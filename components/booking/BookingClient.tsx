@@ -13,7 +13,7 @@ import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
 import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
+import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours, type ServiceId } from "@/lib/booking/config";
 
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
@@ -27,7 +27,7 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 function calculateTotals(
-    service: string,
+    service: ServiceId,
     size: string,
     people: string,
     hasPets: boolean,
@@ -110,20 +110,17 @@ export default function BookingClient() {
 
     // ✅ HARD GUARD: fixes “blank step 0” when step becomes invalid
     useEffect(() => {
-        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) {
-            setStep(0);
-        }
+        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) setStep(0);
     }, [step, setStep]);
 
-    // ✅ Deep-link: /booking?service=maintenance|reset|initial|handover
+    // ✅ Deep-link: /booking?service=core|reset|initial|handover
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
         if (!raw) return;
-
-        const allowed = new Set(["maintenance", "reset", "initial", "handover"]);
-        if (!allowed.has(raw)) return;
-
         if (selectedService) return;
+
+        const allowed = new Set<ServiceId>(["core", "reset", "initial", "handover"]);
+        if (!allowed.has(raw as ServiceId)) return;
 
         const found = SERVICES.find((s) => s.id === raw);
         if (!found) return;
@@ -188,8 +185,9 @@ export default function BookingClient() {
 
     const submitBooking = async () => {
         if (isSubmitting) return;
-
         if (step !== 4) return;
+
+        // ✅ strict guard (Variant A: selectedService is ServiceId | null)
         if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
 
         if (
@@ -263,18 +261,18 @@ export default function BookingClient() {
         <>
             <Header />
 
-            <div className="min-h-screen bg-white mt-[80px]">
+            <div className="min-h-screen bg-[var(--background)] mt-[80px] text-[var(--text)]">
                 {/* dots */}
-                <header className="sticky top-0 z-40 bg-white border-b border-gray-100 py-5">
+                <header className="sticky top-0 z-40 bg-[var(--background)] border-b border-black/5 dark:border-white/10 py-5">
                     <div className="flex justify-center gap-2">
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
                                 key={s}
                                 className={[
                                     "w-3 h-3 rounded-full transition-all",
-                                    s < step ? "bg-gray-900" : "",
-                                    s === step ? "bg-gray-900 scale-125" : "",
-                                    s > step ? "bg-gray-200" : "",
+                                    s < step ? "bg-[var(--text)]/80" : "",
+                                    s === step ? "bg-[var(--text)] scale-125" : "",
+                                    s > step ? "bg-black/10 dark:bg-white/15" : "",
                                 ].join(" ")}
                             />
                         ))}

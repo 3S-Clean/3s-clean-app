@@ -33,83 +33,32 @@
       },
       "reset": {
         "title": "RESET",
-        "desc": "Intensive Reinigung für einen „Reset“ nach einer Feier oder wenn dein Zuhause längere Zeit nicht gründlich gereinigt wurde.",
+        "desc": "Intensive Reinigung für einen Reset nach besonderen Ereignissen oder längeren Pausen.",
         "price": "Ab 200 €"
       },
       "initial": {
         "title": "INITIAL",
-        "desc": "Empfohlen für Neukund:innen, um dein Zuhause auf ein Niveau zu bringen, das danach effizient gepflegt werden kann.",
+        "desc": "Empfohlen für Neukund:innen, um einen optimalen Ausgangszustand zu schaffen.",
         "price": "Ab 165 €"
       },
       "handover": {
         "title": "HANDOVER",
-        "desc": "Spezialisierte Reinigung vor der Übergabe an den Vermieter oder vor dem Einzug.",
+        "desc": "Spezialisierte Reinigung vor Übergabe oder Einzug.",
         "price": "Ab 220 €"
       }
     }
   },
-  "definition": {
-    "hero": {
-      "title": "3S-Clean Versprechen:"
-    },
-    "links": {
-      "experience": "3S-Clean Experience",
-      "contact": "kontaktiere uns"
-    },
-    "sauber": {
-      "title": "SAUBER",
-      "subtitle": "- ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
-      "p1": "Wenn man das Zuhause nicht regelmäßig reinigt, entstehen Ablagerungen, Staub und Allergene — das erhöht Gesundheitsrisiken und macht den Raum spürbar ungemütlich. Das eigene Zuhause wird stressig — ganz zu schweigen davon, Gäste einzuladen. Und die meisten Menschen haben nicht die Zeit, Erfahrung oder Energie dafür — wir verstehen das!",
-      "p2": "Genau hier kommen wir ins Spiel.",
-      "p3": {
-        "before": "Wir haben unterschiedliche, individuell zugeschnittene",
-        "after": ", um deine konkreten Bedürfnisse zu erfüllen und dein Zuhause dauerhaft sauber zu halten. Du entscheidest, wie oft und was gereinigt werden soll. Natürlich nutzen wir umweltfreundliche Reinigungsmittel und sind bestens ausgestattet, um jedes Mal ein makelloses, frisches Ergebnis zu liefern."
-      },
-      "footer": "3S-CLEAN — SAUBER. JEDES MAL."
-    },
-    "sicher": {
-      "title": "SICHER",
-      "subtitle": "Vertrauen, das du prüfen kannst nicht nur hoffen musst.",
-      "p1": {
-        "before": "Es kann sich unangenehm anfühlen, einer fremden Person Zugang zur eigenen Wohnung zu geben — Vertrauen muss verdient werden. Für maximale Sicherheit nutzen wir",
-        "strong": "GoPro-Kameras, die unsere Mitarbeitenden während jeder Reinigung tragen",
-        "after": "- du kannst einen Live-Stream über einen sicheren Link ansehen oder das Video-Protokoll später innerhalb von 7 Tagen abrufen."
-      },
-      "p2": {
-        "before": "So behältst du jederzeit die Kontrolle und weißt genau, was in deinem Zuhause passiert — auch wenn du während der Reinigung nicht vor Ort bist. Wenn etwas unklar ist, sieh dir einfach das Material an und",
-        "after": "- wir unterstützen dich mit voller Transparenz und Professionalität."
-      },
-      "p3": {
-        "strong": "Deine Privatsphäre ist nicht verhandelbar.",
-        "after": "Es werden keine identifizierenden Informationen oder Details zu deinem Zuhause weitergegeben. Zugriff haben nur autorisierte Personen; die Videos werden nach 7 Tagen von unseren sicheren Servern gelöscht."
-      },
-      "p4": {
-        "before": "Unsere Preise sind komplett transparent - keine unklaren Stundensätze, keine versteckten Gebühren. Du bekommst keine Schätzungen, sondern feste, nachvollziehbare Angebote anhand deiner Buchungsangaben. Wähle einfach die passende",
-        "after": "für dich!"
-      },
-      "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
-    },
-    "souveran": {
-      "title": "SOUVERÄN",
-      "subtitle": "- ruhig in der Ausführung, konstant im Ergebnis.",
-      "p1": "Jede*r 3S-CLEAN Specialist ist geschult, geprüft und direkt bei uns angestellt - niemals Freelancer. Das bedeutet Verlässlichkeit, Verantwortlichkeit und einen konstanten Standard - jedes Mal.",
-      "p2": "Wir stellen Menschen ein, die Reinigung wirklich mögen und stolz auf saubere Arbeit sind. Wir investieren in Training, Checklisten und eine Kultur der Verantwortung.",
-      "p3": {
-        "strong": "Qualität wird aktiv gesteuert.",
-        "after": "Wir prüfen regelmäßig Video-Protokolle, um Leistung und Zuverlässigkeit hochzuhalten. Und falls doch einmal etwas passiert: Eine Haftpflichtversicherung ist inklusive."
-      },
-      "p4": {
-        "before": "Dazu gibt es einen finanziellen Vorteil: bis zu",
-        "strong": "20% deiner jährlichen Reinigungskosten zurück",
-        "after": "durch Steuerermäßigung nach §35a EStG — Rechnungen aufbewahren und Routine-Reinigung wird zu messbarer finanzieller Effizienz."
-      },
-      "footer": "3S-CLEAN — SOUVERÄN. BIS INS DETAIL."
-    },
-    "cta": {
-      "title": "Entdecke die 3S Experience",
-      "button": "Jetzt starten"
+
+  "booking": {
+    "serviceSelection": {
+      "title": "Wähle deine Experience",
+      "subtitle": "Wähle den Reinigungsservice, der am besten zu deinen Bedürfnissen passt.",
+      "from": "Ab",
+      "incVat": "inkl. MwSt.",
+      "includesTitle": "Enthalten:"
     }
   },
+
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
@@ -120,103 +69,9 @@
       "from": "Ab",
       "incVat": "inkl. MwSt.",
       "includesFallback": "Enthalten:"
-    },
-    "optional": {
-      "title": "Optionale Services",
-      "subtitle": "Bei der Buchung verfügbar – als Ergänzung zu jeder 3S-Clean Experience:",
-      "items": {
-        "linenSingle": {
-          "name": "Bettwäsche wechseln – Einzelbett",
-          "price": "7,50 € pro Bett",
-          "time": "+ 10 Minuten pro Bett",
-          "frequency": "empfohlen bei jeder Reinigung"
-        },
-        "linenDouble": {
-          "name": "Bettwäsche wechseln – Doppelbett",
-          "price": "14 € pro Bett",
-          "time": "+ 15 Minuten pro Bett",
-          "frequency": "empfohlen bei jeder Reinigung"
-        },
-        "oven": {
-          "name": "Backofen – Intensivreinigung",
-          "price": "100 € pro Gerät",
-          "time": "+ 2 Stunden",
-          "frequency": "empfohlen alle 4–6 Monate"
-        },
-        "fridge": {
-          "name": "Kühlschrank – Intensivreinigung",
-          "price": "50 € pro Gerät",
-          "time": "+ 1 Stunde",
-          "frequency": "empfohlen alle 6 Monate"
-        },
-        "freezer": {
-          "name": "Gefrierschrank – Intensivreinigung",
-          "price": "50 € pro Gerät",
-          "time": "+ 1 Stunde",
-          "frequency": "empfohlen 1× pro Jahr"
-        },
-        "windowsInside": {
-          "name": "Fensterreinigung – innen",
-          "price": "4,25 € pro m²",
-          "time": "+ 15 Minuten pro Standardfenster",
-          "frequency": "empfohlen alle 4–6 Monate"
-        },
-        "windowsOutside": {
-          "name": "Fensterreinigung – außen",
-          "price": "4,40 € pro m²",
-          "time": "+ Zeit pro Standardfenster",
-          "frequency": "empfohlen alle 4–6 Monate"
-        },
-        "balcony": {
-          "name": "Balkon/Terrasse – Hochdruckreinigung",
-          "price": "5,25 € pro m²",
-          "time": "+ 30 Minuten pro 5 m²",
-          "frequency": "empfohlen alle 6 Monate"
-        },
-        "limescale": {
-          "name": "Intensive Kalkentfernung",
-          "price": "27 € pro 30 Minuten",
-          "time": "",
-          "frequency": "empfohlen alle 4–6 Monate"
-        },
-        "cupboards": {
-          "name": "Schrank-/Küchenorganisation",
-          "price": "50 € pro Stunde",
-          "time": "",
-          "frequency": "empfohlen alle 6 Monate"
-        },
-        "wardrobe": {
-          "name": "Kleiderschrank ordnen",
-          "price": "50 € pro Stunde",
-          "time": "",
-          "frequency": "empfohlen 1× pro Monat"
-        },
-        "upholstery": {
-          "name": "Polster – Intensivreinigung",
-          "price": "6,50 € pro Sitzplatz",
-          "time": "+ 20 Minuten",
-          "frequency": "empfohlen alle 2–3 Monate"
-        },
-        "handwash": {
-          "name": "Gläser/Teller per Hand spülen",
-          "price": "2 € pro Stück",
-          "time": "",
-          "frequency": ""
-        }
-      }
-    },
-    "exclusions": {
-      "title": "Was wir nicht übernehmen:",
-      "items": [
-        "Schwere Möbel bewegen oder hinter festen Möbeln reinigen.",
-        "Wäsche und Bügeln.",
-        "Teppich-Shampoonierung.",
-        "Starke Renovierungsverschmutzungen, Putz oder Farbspritzer.",
-        "Reparaturen, Löcher füllen oder Ausbesserungsarbeiten (Malen).",
-        "Entsorgung von Sperrmüll."
-      ]
     }
   },
+
   "services": {
     "core": {
       "title": "CORE",
@@ -265,124 +120,5 @@
       "name": "Fenster (innen)",
       "desc": "Innenreinigung erreichbarer Fenster."
     }
-  },
-  "faqPage": {
-    "hero": {
-      "title": "FAQs",
-      "subtitle": "Alles, was du wissen musst"
-    },
-    "search": {
-      "placeholder": "Suchen..."
-    },
-    "filters": {
-      "all": "Alle"
-    },
-    "empty": "Keine Ergebnisse gefunden",
-    "categories": [
-      {
-        "id": "video",
-        "title": "Videoaufzeichnung & Privatsphäre",
-        "shortTitle": "Video & Privacy",
-        "items": [
-          {
-            "question": "Wer sieht die Aufnahmen?",
-            "answer": "Nur du über einen sicheren Link und autorisiertes QA-Personal — niemals Dritte."
-          },
-          {
-            "question": "Warum zeichnet ihr die Reinigung auf?",
-            "answer": "Wir bieten volle Transparenz darüber, was in deinem Zuhause passiert. Die Aufnahmen dienen als Nachweis der erbrachten Leistung und helfen, die Qualität konstant hochzuhalten."
-          },
-          {
-            "question": "Wie kann ich den Live-Stream oder die Videos ansehen?",
-            "answer": "Ein sicherer Link ist in deinem Account bis zu 7 Tage verfügbar. Auf Wunsch kann er auch an dein Handy oder per E-Mail gesendet werden — du entscheidest, ob du diese Benachrichtigungen erhalten möchtest."
-          },
-          {
-            "question": "Kann ich eine frühere Löschung als 7 Tage anfordern?",
-            "answer": "Ja — fülle einfach das Formular in deinem Account aus. Nach dem Löschen der Videos können keine Qualitätsansprüche mehr geltend gemacht werden."
-          },
-          {
-            "question": "Ich habe Sorge, dass mein Zuhause während der Reinigung gefilmt wird. Sind meine privaten Informationen sicher?",
-            "answer": "Bei uns weißt du immer, dass aufgezeichnet wird. Heimlich zu filmen ist leicht — wir machen es bewusst transparent, damit du weißt, was wirklich passiert, auch wenn du nicht vor Ort bist. Wir teilen keine privaten Informationen über dich oder dein Zuhause. Die Videos liegen auf einem sicheren Server, Zugriff haben nur autorisierte Personen, und nach 7 Tagen werden sie gelöscht."
-          }
-        ]
-      },
-      {
-        "id": "pricing",
-        "title": "Preise, Steuern & Rechtliche Sicherheit",
-        "shortTitle": "Preise",
-        "items": [
-          {
-            "question": "Warum sollte ich eine Firma buchen statt privat günstiger bar zu zahlen?",
-            "answer": "Weil du geschützt bist. Unsere Leistungen sind versichert, wir sind jederzeit verantwortlich. Wenn etwas beschädigt wird, ist es unser Risiko — nicht deins. Private Kräfte sind günstiger, bis etwas schiefgeht. Und bei uns kannst du bis zu 20% deiner Reinigungskosten steuerlich absetzen (§35a EStG)."
-          },
-          {
-            "question": "Warum sind eure Preise höher als bei privaten Reinigungskräften?",
-            "answer": "Private Kräfte zahlen oft keine Steuern und haben in der Regel keine Haftpflicht/Versicherung. Wir bieten geschultes, geprüftes Personal, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfall. Du bezahlst für Stabilität und Ruhe — nicht für Glück. Außerdem kannst du bis zu 20% der Kosten steuerlich absetzen (§35a EStG)."
-          },
-          {
-            "question": "Bekomme ich eine Rechnung für die Steuerermäßigung (§35a EStG)?",
-            "answer": "Natürlich. Du erhältst innerhalb von 48 Stunden nach jeder Reinigung eine Rechnung — damit kannst du bis zu 20% der haushaltsnahen Dienstleistungen steuerlich geltend machen (§35a EStG)."
-          }
-        ]
-      },
-      {
-        "id": "cleaners",
-        "title": "Mitarbeitende, Zuverlässigkeit & Qualität",
-        "shortTitle": "Qualität",
-        "items": [
-          {
-            "question": "Was passiert, wenn meine Reinigungskraft krank ist oder nicht kommen kann?",
-            "answer": "Wir schicken sofort Ersatz. Keine Absagen, kein Warten, keine verlorene Zeit. Kontinuität ist garantiert."
-          },
-          {
-            "question": "Kommt jedes Mal dieselbe Person?",
-            "answer": "Bei wiederkehrenden Terminen planen wir in der Regel eine feste Person ein. Du baust Vertrauen auf, wir liefern Konstanz. Wenn du wechseln möchtest, melde dich einfach mindestens 48 Stunden vorher."
-          },
-          {
-            "question": "Wir hatten schon Reinigungskräfte, aber die Qualität war wechselhaft — was macht ihr anders?",
-            "answer": "Wir steuern Qualität aktiv: Training, Standards, Ersatz bei Bedarf und ein direkter Ansprechpartner, falls etwas nicht passt. Du bist nicht von einer Person abhängig — du hast ein Team im Hintergrund."
-          },
-          {
-            "question": "Sind eure Mitarbeitenden geprüft (Background-Check)?",
-            "answer": "Ja — Identität, Referenzen und Zuverlässigkeit werden vor dem Einsatz geprüft."
-          }
-        ]
-      },
-      {
-        "id": "booking",
-        "title": "Buchung, Verträge & Stornierung",
-        "shortTitle": "Buchung",
-        "items": [
-          {
-            "question": "Muss ich einen langfristigen Vertrag abschließen?",
-            "answer": "Nein — wir bieten flexible Bedingungen. Wir empfehlen regelmäßige Reinigungen (alle 7–10 Tage), weil es langfristig günstiger ist."
-          },
-          {
-            "question": "Kann ich meinen Termin jederzeit stornieren?",
-            "answer": "Ja — Flexibilität gehört dazu. Kostenfrei bis spätestens 48 Stunden vorher. Spätere Stornierungen (außer nachweislicher Notfall) berechnen wir mit 50 € — wir schätzen Vertrauen und Zeit und erwarten das auch von unseren Kund:innen."
-          }
-        ]
-      },
-      {
-        "id": "process",
-        "title": "Ablauf & Leistungsumfang",
-        "shortTitle": "Ablauf",
-        "items": [
-          {
-            "question": "Bringt ihr Reinigungsmittel mit oder muss ich etwas bereitstellen?",
-            "answer": "Wir bringen alles mit — Reiniger, Tücher, Tools. Du genießt einfach ein sauberes Zuhause."
-          },
-          {
-            "question": "Wie lange dauert eine 80 m² Wohnung normalerweise?",
-            "answer": "Im Schnitt 3–4 Stunden — abhängig von Zustand, Haustieren und Reinigungsfrequenz. Bei regelmäßigen Kund:innen geht es oft schneller. Bei größeren Objekten kommen ggf. mehrere Personen gleichzeitig."
-          },
-          {
-            "question": "Welchen Reinigungsplan soll ich wählen?",
-            "answer": "Wenn dein Zuhause länger als 1 Monat nicht professionell gereinigt wurde, empfehlen wir einen Heavy-Duty-Clean zum Start. Danach Standard-Cleaning alle 7–10 Tage, um es dauerhaft top zu halten. Alle 2–3 Monate empfehlen wir Add-ons wie Fenster oder Ofen. Buche einfach eine Consultation."
-          }
-        ]
-      }
-    ]
   }
 }
-
