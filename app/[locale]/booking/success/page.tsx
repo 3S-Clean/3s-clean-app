@@ -7,6 +7,7 @@ import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES } from "@/lib/booking/config";
 import { Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 
 type Order = {
     id: string;
@@ -29,6 +30,8 @@ type Order = {
 };
 
 function Content() {
+    const t = useTranslations();
+
     const sp = useSearchParams();
     const router = useRouter();
 
@@ -120,6 +123,20 @@ function Content() {
 
     const service = order ? SERVICES.find((s) => s.id === order.service_type) : null;
 
+    // ✅ Service label (NO service.name in config)
+    const serviceLabel = useMemo(() => {
+        if (!order) return "—";
+
+        // если нашли сервис в конфиге — выводим локализованный title
+        if (service) {
+            // messages/en|de.json: "services": { "core": { "title": ... } ... }
+            return t(`services.${service.id}.title`);
+        }
+
+        // fallback: если прилетел неизвестный service_type
+        return order.service_type || "—";
+    }, [order, service, t]);
+
     const formatDate = (d: string) =>
         new Date(d).toLocaleDateString("en-GB", {
             weekday: "long",
@@ -184,9 +201,7 @@ function Content() {
                             {/* Service */}
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Service</span>
-                                <span className="font-medium text-right">
-                  {service?.name ?? order.service_type}
-                </span>
+                                <span className="font-medium text-right">{serviceLabel}</span>
                             </div>
 
                             {/* Date */}
@@ -218,16 +233,12 @@ function Content() {
 
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Email</span>
-                                <span className="font-medium text-right break-all">
-                  {order.customer_email?.trim() || "—"}
-                </span>
+                                <span className="font-medium text-right break-all">{order.customer_email?.trim() || "—"}</span>
                             </div>
 
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Phone</span>
-                                <span className="font-medium text-right">
-                  {order.customer_phone?.trim() || "—"}
-                </span>
+                                <span className="font-medium text-right">{order.customer_phone?.trim() || "—"}</span>
                             </div>
 
                             <div className="flex justify-between gap-4">
@@ -262,9 +273,7 @@ function Content() {
                     {showSignupToPay ? (
                         <button
                             type="button"
-                            onClick={() =>
-                                router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)
-                            }
+                            onClick={() => router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)}
                             className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                         >
                             Create account to pay
@@ -305,9 +314,7 @@ function Content() {
 
 export default function SuccessPage() {
     return (
-        <Suspense
-            fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}
-        >
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
             <Content />
         </Suspense>
     );
