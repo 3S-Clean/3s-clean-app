@@ -48,6 +48,7 @@
       }
     }
   },
+
   "definition": {
     "hero": {
       "title": "3S-Clean Promise:"
@@ -108,6 +109,163 @@
     "cta": {
       "title": "Explore the 3S Experience",
       "button": "Get Started"
+    }
+  },
+  "experiencePage": {
+    "hero": {
+      "title": "3S-Clean Experiences",
+      "subtitle": "Choose the type of service that fits your home."
+    },
+    "cards": {
+      "cta": "Select Experience",
+      "from": "From",
+      "incVat": "inc. VAT",
+      "includesFallback": "Includes:"
+    },
+    "optional": {
+      "title": "Optional Services",
+      "subtitle": "Available at time of booking to complement each 3S-Clean Experience:",
+      "items": {
+        "linenSingle": {
+          "name": "Linen change – single bed",
+          "price": "€7.50 per bed",
+          "time": "add 10 minutes per bed",
+          "frequency": "recommended every cleaning session"
+        },
+        "linenDouble": {
+          "name": "Linen change – double bed",
+          "price": "€14 per bed",
+          "time": "add 15 minutes per bed",
+          "frequency": "recommended every cleaning session"
+        },
+        "oven": {
+          "name": "Oven heavy duty clean",
+          "price": "€100 per unit",
+          "time": "add 2 hours",
+          "frequency": "recommended once in 4–6 months"
+        },
+        "fridge": {
+          "name": "Fridge heavy duty clean",
+          "price": "€50 per unit",
+          "time": "add 1 hour",
+          "frequency": "recommended every 6 months"
+        },
+        "freezer": {
+          "name": "Freezer heavy duty clean",
+          "price": "€50 per unit",
+          "time": "add 1 hour",
+          "frequency": "recommended once a year"
+        },
+        "windowsInside": {
+          "name": "Window cleaning – inside",
+          "price": "€4.25 per m²",
+          "time": "add 15 minutes per window",
+          "frequency": "recommended every 4–6 months"
+        },
+        "windowsOutside": {
+          "name": "Window cleaning – outside",
+          "price": "€4.40 per m²",
+          "time": "add time per window",
+          "frequency": "recommended every 4–6 months"
+        },
+        "balcony": {
+          "name": "Balcony / terrace pressure cleaning",
+          "price": "€5.25 per m²",
+          "time": "add 30 minutes per 5 m²",
+          "frequency": "recommended every 6 months"
+        },
+        "limescale": {
+          "name": "Intensive limescale removal",
+          "price": "€27 per 30 minutes",
+          "time": "",
+          "frequency": "recommended every 4–6 months"
+        },
+        "cupboards": {
+          "name": "Cupboards & cabinets organization",
+          "price": "€50 per hour",
+          "time": "",
+          "frequency": "recommended every 6 months"
+        },
+        "wardrobe": {
+          "name": "Wardrobe arranging",
+          "price": "€50 per hour",
+          "time": "",
+          "frequency": "recommended once a month"
+        },
+        "upholstery": {
+          "name": "Upholstery intensive clean",
+          "price": "€6.50 per seat",
+          "time": "add 20 minutes",
+          "frequency": "recommended every 2–3 months"
+        },
+        "handwash": {
+          "name": "Glasses / plates handwash",
+          "price": "€2 per item",
+          "time": "",
+          "frequency": ""
+        }
+      }
+    },
+    "exclusions": {
+      "title": "What we do not do:",
+      "items": [
+        "Moving heavy furniture or cleaning behind fixed furniture.",
+        "Laundry and ironing.",
+        "Carpet shampooing.",
+        "Heavy renovation dirt, plaster or paint splashes.",
+        "Repairs, filling holes or patch-up painting.",
+        "Disposal of bulky waste."
+      ]
+    }
+  },
+
+  "services": {
+    "core": {
+      "title": "CORE",
+      "desc": "The essential cleaning program to keep your home consistently clean and presentable."
+    },
+    "reset": {
+      "title": "RESET",
+      "desc": "An intensive deep clean to reset your home after events or long gaps."
+    },
+    "initial": {
+      "title": "INITIAL",
+      "desc": "Recommended for first-time clients to establish a clean baseline."
+    },
+    "handover": {
+      "title": "HANDOVER",
+      "desc": "Specialized cleaning before moving in or handing over a property."
+    }
+  },
+
+  "servicesIncludes": {
+    "floors": {
+      "name": "Floors",
+      "desc": "Vacuuming and wet cleaning of all accessible floors."
+    },
+    "surfaces": {
+      "name": "Visible surfaces",
+      "desc": "Dusting and wiping of all reachable surfaces."
+    },
+    "bathroom": {
+      "name": "Bathroom",
+      "desc": "Sink, toilet, shower, bathtub and tiles."
+    },
+    "kitchen": {
+      "name": "Kitchen",
+      "desc": "Countertops, sink, stovetop and exterior of appliances."
+    },
+    "limescale": {
+      "name": "Limescale removal",
+      "desc": "Targeted removal of visible limescale buildup."
+    },
+    "insideCupboards": {
+      "name": "Inside cupboards",
+      "desc": "Cleaning inside empty cupboards and cabinets."
+    },
+    "windowsInside": {
+      "name": "Windows (inside)",
+      "desc": "Interior window cleaning where accessible."
     }
   }
 }

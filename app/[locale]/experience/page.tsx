@@ -5,37 +5,10 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import { SERVICES } from "@/lib/booking/config";
 import { InfoHelp } from "@/components/ui/infohelp/InfoHelp";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
-/* -------------------------------- data -------------------------------- */
-
-const optionalServices = [
-    { name: "Linen change - single bed", price: "€7,50 per bed", time: "add 10 minutes per bed", frequency: "recommended every cleaning session" },
-    { name: "Linen change - double bed", price: "€14 per bed", time: "add 15 minutes per bed", frequency: "recommended every cleaning session" },
-    { name: "Oven heavy duty clean", price: "€100 per unit", time: "add 2 hours", frequency: "recommended once in 4-6 months" },
-    { name: "Fridge heavy duty clean", price: "€50 per unit", time: "add 1 hour", frequency: "recommended once every 6 months" },
-    { name: "Freezer heavy duty clean", price: "€50 per unit", time: "add 1 hour", frequency: "recommended once a year" },
-    { name: "Window cleaning – inside", price: "€4,25 per m²", time: "add 15 minutes per standard window", frequency: "recommended every 4-6 months" },
-    { name: "Window cleaning – outside", price: "€4,40 per m²", time: "add minutes per standard window", frequency: "recommended every 4-6 months" },
-    { name: "Balcony/terrace high pressure water cleaning", price: "€5,25 per m²", time: "add 30 minutes per 5 m²", frequency: "recommended once every 6 months" },
-    { name: "Intensive limescale removal", price: "€27 per half-hour block", time: "", frequency: "recommended every 4-6 months" },
-    { name: "Cupboards/cabinets organization", price: "€50 per hour", time: "", frequency: "recommended once every 6 months" },
-    { name: "Wardrobe arranging", price: "€50 per hour", time: "", frequency: "recommended once a month" },
-    { name: "Upholstery intensive clean", price: "€6,50 per seat", time: "add 20 minutes per 3-seater sofa", frequency: "recommended every 2-3 months" },
-    { name: "Glasses/plates handwash", price: "€2 per item", time: "", frequency: "" },
-];
-
-const exclusions = [
-    "Moving heavy furniture or cleaning behind fixed furniture.",
-    "Laundry and ironing.",
-    "Carpet shampooing.",
-    "Heavy renovation dirt, plaster, paint splashes.",
-    "Repairs, filling holes, patch-up painting.",
-    "Disposal of bulky waste.",
-];
-
-/* ----------------------------- Tooltip wrapper ----------------------------- */
-/* ИМЯ СОХРАНЕНО */
-
+/* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({
                      text,
                      title,
@@ -45,142 +18,199 @@ function Tooltip({
     title?: string;
     dark?: boolean;
 }) {
-    return (
-        <InfoHelp
-            text={text}
-            title={title}
-            dark={dark}
-        />
-    );
+    return <InfoHelp text={text} title={title} dark={dark} />;
 }
 
-/* --------------------------- Service Card --------------------------- */
+type OptionalServiceItem = {
+    name: string;
+    price: string;
+    time?: string;
+    frequency?: string;
+};
 
-function ServiceCardComponent({ service }: { service: (typeof SERVICES)[number] }) {
-    const baseClasses = service.isDark
+/* --------------------------- Service Card --------------------------- */
+function ServiceCard({
+                         service,
+                         title,
+                         desc,
+                         includes,
+                         ctaLabel,
+                         fromLabel,
+                         incVatLabel,
+                         includesFallback,
+                     }: {
+    service: (typeof SERVICES)[number];
+    title: string;
+    desc: string;
+    includes: Array<{ name: string; desc?: string }>;
+    ctaLabel: string;
+    fromLabel: string;
+    incVatLabel: string;
+    includesFallback: string;
+}) {
+    const base = service.isDark
         ? "bg-gray-900 text-white"
-        : "bg-gray-50 text-gray-900";
+        : "bg-[var(--card)] text-[var(--text)] ring-1 ring-black/5 dark:ring-white/10";
+
+    const muted = service.isDark ? "text-white/70" : "text-[var(--muted)]";
 
     return (
-        <div id={service.id} className={`rounded-3xl p-6 md:p-8 ${baseClasses}`}>
-            <h3 className="text-2xl md:text-3xl font-bold mb-2">{service.name}</h3>
+        <div id={service.id} className={`rounded-3xl ${base}`}>
+            <div className="px-6 md:px-8 py-8 md:py-10">
+                <h3 className="text-2xl md:text-3xl font-bold mb-2">{title}</h3>
 
-            <p className={`text-sm mb-6 ${service.isDark ? "text-gray-300" : "text-gray-600"}`}>
-                {service.description}
-            </p>
+                <p className={`text-sm mb-6 ${muted}`}>{desc}</p>
 
-            <p className="text-2xl font-bold mb-6">
-                From € {service.startingPrice}{" "}
-                <span className="text-sm font-normal">inc.VAT</span>
-            </p>
+                <p className="text-2xl font-bold mb-6">
+                    {fromLabel} € {service.startingPrice}{" "}
+                    <span className="text-sm font-normal opacity-70">{incVatLabel}</span>
+                </p>
 
-            <Link
-                href="/booking"
-                className={`block w-full py-4 px-6 rounded-full text-center font-medium mb-8 transition-colors ${
-                    service.isDark
-                        ? "bg-white text-gray-900 hover:bg-gray-100"
-                        : "bg-gray-900 text-white hover:bg-gray-800"
-                }`}
-            >
-                Select Experience
-            </Link>
+                <Link
+                    href="/booking"
+                    className={`block w-full py-4 rounded-full text-center font-medium mb-8 transition ${
+                        service.isDark
+                            ? "bg-white text-gray-900 hover:bg-gray-100"
+                            : "bg-[var(--text)] text-[var(--background)] hover:opacity-90"
+                    }`}
+                >
+                    {ctaLabel}
+                </Link>
 
-            <p className={`text-sm font-medium mb-4 ${service.isDark ? "text-gray-300" : "text-gray-600"}`}>
-                {service.baseFeatures ?? "Includes:"}
-            </p>
+                <p className={`text-sm font-medium mb-4 ${muted}`}>{includesFallback}</p>
 
-            <ul className="space-y-3">
-                {service.includes.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-            <span
-                className={`w-1.5 h-1.5 rounded-full mt-2 mr-3 flex-shrink-0 ${
-                    service.isDark ? "bg-white" : "bg-gray-900"
-                }`}
-            />
-
-                        <span className="flex items-center flex-wrap">
-              {feature.name}
-                            {feature.description && (
-                                <Tooltip
-                                    text={feature.description}
-                                    title={feature.name}
-                                    dark={service.isDark}
-                                />
-                            )}
-            </span>
-                    </li>
-                ))}
-            </ul>
+                <ul className="space-y-3">
+                    {includes.map((it, i) => (
+                        <li key={i} className="flex items-start">
+                            <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 mr-3 opacity-60" />
+                            <span className="flex items-center flex-wrap">
+                {it.name}
+                                {it.desc ? (
+                                    <Tooltip text={it.desc} title={it.name} dark={service.isDark} />
+                                ) : null}
+              </span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }
 
 /* ------------------------------ Page ------------------------------ */
-
 export default function ExperiencePage() {
+    const t = useTranslations("experiencePage");
+    const tServices = useTranslations("services");
+    const tIncludes = useTranslations("servicesIncludes");
+
+    // ✅ optional services (как у тебя — через t.raw)
+    const optionalServices = useMemo(() => {
+        const keys = [
+            "linenSingle",
+            "linenDouble",
+            "oven",
+            "fridge",
+            "freezer",
+            "windowsInside",
+            "windowsOutside",
+            "balcony",
+            "limescale",
+            "cupboards",
+            "wardrobe",
+            "upholstery",
+            "handwash",
+        ] as const;
+
+        return keys
+            .map((k) => t.raw(`optional.items.${k}`) as OptionalServiceItem)
+            .filter((x) => x && typeof x?.name === "string" && typeof x?.price === "string");
+    }, [t]);
+
+    const exclusions = useMemo(() => t.raw("exclusions.items") as string[], [t]);
+
+    // ✅ собираем UI-данные для карточек из i18n + SERVICES
+    const servicesUi = useMemo(() => {
+        return SERVICES.map((s) => {
+            const title = tServices(`${s.id}.title`);
+            const desc = tServices(`${s.id}.desc`);
+
+            const includes = s.includesKeys.map((key) => ({
+                name: tIncludes(`${key}.name`),
+                desc: tIncludes(`${key}.desc`),
+            }));
+
+            return { ...s, title, desc, includes };
+        });
+    }, [tServices, tIncludes]);
+
     return (
         <>
             <Header />
 
-            <main className="min-h-screen bg-white mt-[80px]">
-                {/* Hero */}
-                <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-12 max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-                        3S-Clean Experiences –<br />choose yours!
+            <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
+                {/* HERO */}
+                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight whitespace-pre-line">
+                        {t("hero.title")}
                     </h1>
-                    <p className="text-gray-600 text-lg">
-                        Choose the type of service that fits your home.
-                    </p>
+
+                    <p className="mt-4 text-lg text-[var(--muted)] max-w-2xl">{t("hero.subtitle")}</p>
                 </section>
 
-                {/* Cards */}
-                <section className="px-6 py-8 max-w-6xl mx-auto">
+                {/* CARDS */}
+                <section className="px-6 py-10 max-w-7xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-6">
-                        {SERVICES.map((service) => (
-                            <ServiceCardComponent key={service.id} service={service} />
+                        {servicesUi.map((service) => (
+                            <ServiceCard
+                                key={service.id}
+                                service={service}
+                                title={service.title}
+                                desc={service.desc}
+                                includes={service.includes}
+                                ctaLabel={t("cards.cta")}
+                                fromLabel={t("cards.from")}
+                                incVatLabel={t("cards.incVat")}
+                                includesFallback={t("cards.includesFallback")}
+                            />
                         ))}
                     </div>
                 </section>
 
-                {/* Optional Services */}
-                <section className="px-6 py-12 md:py-16 max-w-4xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-2">Optional Services</h2>
-                    <p className="text-gray-600 mb-8">
-                        Available at time of booking to complement each 3S-Clean Experience:
-                    </p>
+                {/* OPTIONAL */}
+                <section className="px-6 py-12 max-w-7xl mx-auto">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2">{t("optional.title")}</h2>
+                    <p className="text-[var(--muted)] mb-8">{t("optional.subtitle")}</p>
 
                     <div className="space-y-4">
-                        {optionalServices.map((service, index) => (
+                        {optionalServices.map((item, i) => (
                             <div
-                                key={index}
-                                className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-gray-100"
+                                key={i}
+                                className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-black/5 dark:border-white/10"
                             >
-                                <div className="flex items-start">
-                                    <span className="font-medium">{service.name}</span>
-                                    {service.frequency && (
+                                <div className="flex items-start gap-2">
+                                    <span className="font-medium">{item.name}</span>
+                                    {item.frequency ? (
                                         <Tooltip
-                                            title={service.name}
-                                            text={`${service.time ? service.time + ", " : ""}${service.frequency}`}
+                                            title={item.name}
+                                            text={`${item.time ? item.time + ", " : ""}${item.frequency}`}
                                         />
-                                    )}
+                                    ) : null}
                                 </div>
 
-                                <span className="text-gray-600 font-medium">
-                  {service.price}
-                </span>
+                                <span className="text-[var(--muted)] font-medium">{item.price}</span>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                {/* Exclusions */}
-                <section className="px-6 py-12 md:py-16 max-w-4xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-6">What we do not do:</h2>
+                {/* EXCLUSIONS */}
+                <section className="px-6 py-12 max-w-7xl mx-auto">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-6">{t("exclusions.title")}</h2>
 
                     <ul className="space-y-3">
-                        {exclusions.map((item, index) => (
-                            <li key={index} className="flex items-start text-gray-600">
-                                <span className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 mr-3" />
+                        {exclusions.map((item, i) => (
+                            <li key={i} className="flex items-start text-[var(--muted)]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 mt-2 mr-3" />
                                 {item}
                             </li>
                         ))}

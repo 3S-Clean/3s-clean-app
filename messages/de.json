@@ -1,7 +1,7 @@
 {
   "home": {
     "hero": {
-      "title":"Dein\nPremium\nHome Cleaning\nService\nin Stuttgart."
+      "title": "Dein\nPremium\nHome Cleaning\nService\nin Stuttgart."
     },
     "promise": {
       "title": "3S-Clean Versprechen:",
@@ -108,6 +108,162 @@
     "cta": {
       "title": "Entdecke die 3S Experience",
       "button": "Jetzt starten"
+    }
+  },
+  "experiencePage": {
+    "hero": {
+      "title": "3S-Clean Experiences",
+      "subtitle": "Wähle den Service, der zu deinem Zuhause passt."
+    },
+    "cards": {
+      "cta": "Experience auswählen",
+      "from": "Ab",
+      "incVat": "inkl. MwSt.",
+      "includesFallback": "Enthalten:"
+    },
+    "optional": {
+      "title": "Optionale Services",
+      "subtitle": "Bei der Buchung verfügbar – als Ergänzung zu jeder 3S-Clean Experience:",
+      "items": {
+        "linenSingle": {
+          "name": "Bettwäsche wechseln – Einzelbett",
+          "price": "7,50 € pro Bett",
+          "time": "+ 10 Minuten pro Bett",
+          "frequency": "empfohlen bei jeder Reinigung"
+        },
+        "linenDouble": {
+          "name": "Bettwäsche wechseln – Doppelbett",
+          "price": "14 € pro Bett",
+          "time": "+ 15 Minuten pro Bett",
+          "frequency": "empfohlen bei jeder Reinigung"
+        },
+        "oven": {
+          "name": "Backofen – Intensivreinigung",
+          "price": "100 € pro Gerät",
+          "time": "+ 2 Stunden",
+          "frequency": "empfohlen alle 4–6 Monate"
+        },
+        "fridge": {
+          "name": "Kühlschrank – Intensivreinigung",
+          "price": "50 € pro Gerät",
+          "time": "+ 1 Stunde",
+          "frequency": "empfohlen alle 6 Monate"
+        },
+        "freezer": {
+          "name": "Gefrierschrank – Intensivreinigung",
+          "price": "50 € pro Gerät",
+          "time": "+ 1 Stunde",
+          "frequency": "empfohlen 1× pro Jahr"
+        },
+        "windowsInside": {
+          "name": "Fensterreinigung – innen",
+          "price": "4,25 € pro m²",
+          "time": "+ 15 Minuten pro Standardfenster",
+          "frequency": "empfohlen alle 4–6 Monate"
+        },
+        "windowsOutside": {
+          "name": "Fensterreinigung – außen",
+          "price": "4,40 € pro m²",
+          "time": "+ Zeit pro Standardfenster",
+          "frequency": "empfohlen alle 4–6 Monate"
+        },
+        "balcony": {
+          "name": "Balkon/Terrasse – Hochdruckreinigung",
+          "price": "5,25 € pro m²",
+          "time": "+ 30 Minuten pro 5 m²",
+          "frequency": "empfohlen alle 6 Monate"
+        },
+        "limescale": {
+          "name": "Intensive Kalkentfernung",
+          "price": "27 € pro 30 Minuten",
+          "time": "",
+          "frequency": "empfohlen alle 4–6 Monate"
+        },
+        "cupboards": {
+          "name": "Schrank-/Küchenorganisation",
+          "price": "50 € pro Stunde",
+          "time": "",
+          "frequency": "empfohlen alle 6 Monate"
+        },
+        "wardrobe": {
+          "name": "Kleiderschrank ordnen",
+          "price": "50 € pro Stunde",
+          "time": "",
+          "frequency": "empfohlen 1× pro Monat"
+        },
+        "upholstery": {
+          "name": "Polster – Intensivreinigung",
+          "price": "6,50 € pro Sitzplatz",
+          "time": "+ 20 Minuten",
+          "frequency": "empfohlen alle 2–3 Monate"
+        },
+        "handwash": {
+          "name": "Gläser/Teller per Hand spülen",
+          "price": "2 € pro Stück",
+          "time": "",
+          "frequency": ""
+        }
+      }
+    },
+    "exclusions": {
+      "title": "Was wir nicht übernehmen:",
+      "items": [
+        "Schwere Möbel bewegen oder hinter festen Möbeln reinigen.",
+        "Wäsche und Bügeln.",
+        "Teppich-Shampoonierung.",
+        "Starke Renovierungsverschmutzungen, Putz oder Farbspritzer.",
+        "Reparaturen, Löcher füllen oder Ausbesserungsarbeiten (Malen).",
+        "Entsorgung von Sperrmüll."
+      ]
+    }
+  },
+  "services": {
+    "core": {
+      "title": "CORE",
+      "desc": "Das Basis-Reinigungsprogramm für ein dauerhaft sauberes Zuhause."
+    },
+    "reset": {
+      "title": "RESET",
+      "desc": "Intensive Grundreinigung für einen vollständigen Neustart."
+    },
+    "initial": {
+      "title": "INITIAL",
+      "desc": "Empfohlen für Neukund:innen zur Herstellung eines sauberen Ausgangszustands."
+    },
+    "handover": {
+      "title": "HANDOVER",
+      "desc": "Spezielle Reinigung vor Ein- oder Auszug."
+    }
+  },
+
+  "servicesIncludes": {
+    "floors": {
+      "name": "Böden",
+      "desc": "Saugen und feuchtes Wischen aller zugänglichen Böden."
+    },
+    "surfaces": {
+      "name": "Sichtbare Oberflächen",
+      "desc": "Abwischen und Entstauben aller erreichbaren Flächen."
+    },
+    "bathroom": {
+      "name": "Badezimmer",
+      "desc": "Waschbecken, WC, Dusche, Badewanne und Fliesen."
+    },
+    "kitchen": {
+      "name": "Küche",
+      "desc": "Arbeitsflächen, Spüle, Herd und Geräteaußenflächen."
+    },
+    "limescale": {
+      "name": "Kalkentfernung",
+      "desc": "Gezielte Entfernung sichtbarer Kalkablagerungen."
+    },
+    "insideCupboards": {
+      "name": "Innenschränke",
+      "desc": "Reinigung leerer Schränke und Fächer."
+    },
+    "windowsInside": {
+      "name": "Fenster (innen)",
+      "desc": "Innenreinigung erreichbarer Fenster."
     }
   }
 }

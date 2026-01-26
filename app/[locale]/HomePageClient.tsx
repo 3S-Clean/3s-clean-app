@@ -187,7 +187,7 @@ export default function HomePageClient() {
                                 className="opacity-0 translate-y-8 animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
                                 style={{ animationDelay: `${i * 200}ms` }}
                             >
-                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.05] text-left text-[var(--text)] max-w-[17ch] text-[9px] 2xl:text-[100px]">
+                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.05] text-left text-[var(--text)] max-w-[17ch] text-[96px] 2xl:text-[110px]">
                                     {line}
                                 </h1>
                             </div>
@@ -199,7 +199,7 @@ export default function HomePageClient() {
             PROMISE
             cards animation ONLY on desktop (xl)
            ========================= */}
-                <section className="mx-6 mt-22 sm:pt-16 pb-14 lg:pb-20 max-w-7xl xl:max-w-[1400px]  xl:pt-20">
+                <section className="px-6 pt-[88px] sm:pt-16 pb-14 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
@@ -208,28 +208,25 @@ export default function HomePageClient() {
                                 key={it.id}
                                 href={`/definition#${it.id}`}
                                 className="
-                  group block min-w-0
-                  opacity-100 translate-y-0
-                  xl:flex-1 xl:opacity-0 xl:translate-y-6
-                  xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-                  motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
-                "
+                                          group block min-w-0
+                                          opacity-100 translate-y-0
+                                          xl:flex-1 xl:opacity-0 xl:translate-y-6
+                                          xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                          motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
+                                        "
                                 style={{ animationDelay: `${650 + index * 160}ms` }}
                             >
-                                {/* Важно: на phone/tablet ограничиваем ширину, но ВСЕГДА слева (mr-auto) */}
                                 <div
                                     className={`
-    ${cardBase}
-    w-full min-w-0
-    max-w-none sm:max-w-[560px] md:max-w-[720px]
-    mr-auto
-    xl:max-w-none
-    py-8 sm:py-9 md:py-10 xl:py-6
-    px-4 sm:px-8 md:px-10 xl:px-6
-  `}
+                                                ${cardBase}
+                                                w-full min-w-0
+                                                max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+                                                mr-auto
+                                                xl:max-w-none
+                                                py-8 sm:py-9 md:py-10 xl:py-6 px-0
+                                              `}
                                 >
                                     <div className="flex items-center justify-between gap-4 min-w-0">
-                                        {/* на десктопе держим заголовок в одну строку */}
                                         <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
                                             {it.title}
                                         </BigTitle>
@@ -279,16 +276,15 @@ export default function HomePageClient() {
                     <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8">
                         {experience.map((it) => (
                             <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
-                                {/* Те же правила: ограничение ширины на phone/tablet, но слева */}
                                 <div
                                     className={`
-                    ${cardBase}
-                    w-full min-w-0
-                    max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
-                    mr-auto
-                    xl:max-w-none
-                   py-8 sm:py-9 md:py-10 xl:py-6т x-0
-                  `}
+                                                ${cardBase}
+                                                w-full min-w-0
+                                                max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+                                                mr-auto
+                                                xl:max-w-none
+                                                py-8 sm:py-9 md:py-10 xl:py-6 px-0
+                                              `}
                                 >
                                     <div className="flex items-center justify-between gap-4 mb-4 min-w-0">
                                         <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
