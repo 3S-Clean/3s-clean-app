@@ -434,6 +434,35 @@
       }
     }
   },
+  "bookingSuccess": {
+    "title": "Ihre Buchung ist reserviert",
+    "subtitle": "Ihre Reinigung wurde reserviert. Bitte schließen Sie die Zahlung ab, um sie zu bestätigen.",
+    "loading": "Buchungsdetails werden geladen…",
+    "errors": {
+      "missingRef": "Buchungsreferenz fehlt (orderId oder pendingToken).",
+      "loadFailed": "Buchung konnte nicht geladen werden.",
+      "notFound": "Buchung nicht gefunden."
+    },
+    "details": {
+      "title": "Reservierungsdetails",
+      "service": "Service",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "duration": "Dauer",
+      "name": "Name",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "notes": "Notizen",
+      "total": "Gesamt"
+    },
+    "actions": {
+      "pay": "Jetzt bezahlen",
+      "home": "Zur Startseite",
+      "bookAnother": "Erneut buchen",
+      "createAccountToPay": "Konto erstellen & bezahlen"
+    }
+  },
 
   "faqPage": {
     "hero": {

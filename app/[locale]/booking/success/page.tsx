@@ -30,19 +30,17 @@ type Order = {
 };
 
 function Content() {
+    const t = useTranslations("bookingSuccess");
     const sp = useSearchParams();
     const router = useRouter();
 
     const supabase = useMemo(() => createClient(), []);
 
-    // ✅ поддержим ОБА формата, чтобы ничего не ломалось:
-    // - orderId
-    // - pendingToken (старое)
-    // - pendingOrder (новое, как в booking/OrdersPage.tsx)
+    // ✅ support both formats
     const orderId = sp.get("orderId") || "";
     const pendingToken = sp.get("pendingToken") || sp.get("pendingOrder") || "";
 
-    // ✅ приоритет: orderId > pendingToken
+    // ✅ priority: orderId > pendingToken
     const query = useMemo(() => {
         if (orderId) return { orderId };
         if (pendingToken) return { pendingToken };
@@ -74,7 +72,7 @@ function Content() {
 
     useEffect(() => {
         if (!query) {
-            setError("Missing booking reference (orderId or pendingToken).");
+            setError(t("errors.missingRef"));
             setOrder(null);
             return;
         }
@@ -99,16 +97,16 @@ function Content() {
                 };
 
                 if (!res.ok) {
-                    setError(json?.error || "Failed to load booking.");
+                    setError(json?.error || t("errors.loadFailed"));
                     setOrder(null);
                     return;
                 }
 
                 setOrder(json?.order ?? null);
-                if (!json?.order) setError("Booking not found.");
+                if (!json?.order) setError(t("errors.notFound"));
             } catch (e: unknown) {
                 if (e instanceof DOMException && e.name === "AbortError") return;
-                setError("Failed to load booking.");
+                setError(t("errors.loadFailed"));
                 setOrder(null);
             } finally {
                 setLoading(false);
@@ -117,21 +115,17 @@ function Content() {
 
         void run();
         return () => controller.abort();
-    }, [query]);
+    }, [query, t]);
 
     const service = order ? SERVICES.find((s) => s.id === order.service_type) : null;
-
-    // ✅ use specific namespace (safer) + fallback to avoid MISSING_MESSAGE crash
     const tServices = useTranslations("services");
 
     const serviceLabel = useMemo(() => {
         if (!order) return "—";
-
         if (service) {
             const key = `${service.id}.title` as const;
             return tServices.has(key) ? tServices(key) : (order.service_type || "—");
         }
-
         return order.service_type || "—";
     }, [order, service, tServices]);
 
@@ -178,12 +172,13 @@ function Content() {
                     <Check className="w-10 h-10 text-white" />
                 </div>
 
-                <h1 className="text-3xl font-semibold mb-4">Booking Confirmed!</h1>
-                <p className="text-gray-500 mb-8">Thank you! We&apos;ve sent a confirmation email.</p>
+                {/* ✅ Reservation copy */}
+                <h1 className="text-3xl font-semibold mb-4">{t("title")}</h1>
+                <p className="text-gray-500 mb-8">{t("subtitle")}</p>
 
                 {loading && (
                     <div className="bg-gray-50 rounded-2xl p-4 mb-8 text-sm text-gray-700">
-                        Loading booking details…
+                        {t("loading")}
                     </div>
                 )}
 
@@ -193,56 +188,54 @@ function Content() {
 
                 {order && !loading && (
                     <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 className="font-semibold mb-4">Booking Details</h3>
+                        <h3 className="font-semibold mb-4">{t("details.title")}</h3>
 
                         <div className="space-y-3 text-sm">
-                            {/* Service */}
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Service</span>
+                                <span className="text-gray-500">{t("details.service")}</span>
                                 <span className="font-medium text-right">{serviceLabel}</span>
                             </div>
 
-                            {/* Date */}
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Date</span>
+                                <span className="text-gray-500">{t("details.date")}</span>
                                 <span className="font-medium text-right">{formatDate(order.scheduled_date)}</span>
                             </div>
 
-                            {/* Time */}
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Time</span>
+                                <span className="text-gray-500">{t("details.time")}</span>
                                 <span className="font-medium text-right">{order.scheduled_time}</span>
                             </div>
 
-                            {/* Duration */}
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Duration</span>
-                                <span className="font-medium text-right">~{order.estimated_hours}h</span>
+                                <span className="text-gray-500">{t("details.duration")}</span>
+                                <span className="font-medium text-right">
+                  ~{order.estimated_hours}h
+                </span>
                             </div>
 
-                            {/* Divider */}
                             <div className="border-t border-gray-200 pt-3 mt-3" />
 
-                            {/* Customer */}
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Name</span>
+                                <span className="text-gray-500">{t("details.name")}</span>
                                 <span className="font-medium text-right">{fullName}</span>
                             </div>
 
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Email</span>
+                                <span className="text-gray-500">{t("details.email")}</span>
                                 <span className="font-medium text-right break-all">
                   {order.customer_email?.trim() || "—"}
                 </span>
                             </div>
 
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Phone</span>
-                                <span className="font-medium text-right">{order.customer_phone?.trim() || "—"}</span>
+                                <span className="text-gray-500">{t("details.phone")}</span>
+                                <span className="font-medium text-right">
+                  {order.customer_phone?.trim() || "—"}
+                </span>
                             </div>
 
                             <div className="flex justify-between gap-4">
-                                <span className="text-gray-500">Address</span>
+                                <span className="text-gray-500">{t("details.address")}</span>
                                 <span className="font-medium text-right">
                   {addrLine.map((l, i) => (
                       <span key={i} className="block">
@@ -254,57 +247,64 @@ function Content() {
 
                             {order.customer_notes?.trim() ? (
                                 <div className="flex justify-between gap-4">
-                                    <span className="text-gray-500">Notes</span>
+                                    <span className="text-gray-500">{t("details.notes")}</span>
                                     <span className="font-medium text-right">{order.customer_notes.trim()}</span>
                                 </div>
                             ) : null}
 
-                            {/* Total */}
                             <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between">
-                                <span className="font-semibold">Total</span>
+                                <span className="font-semibold">{t("details.total")}</span>
                                 <span className="font-bold text-lg">{safeMoney(order.total_price)}</span>
                             </div>
                         </div>
                     </div>
                 )}
 
+                {/* ✅ BUTTONS: Pay first */}
                 <div className="space-y-3">
-                    {/* ✅ if NOT authed => route to signup (so you can link order and pay) */}
                     {showSignupToPay ? (
-                        <button
-                            type="button"
-                            onClick={() => router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)}
-                            className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
-                        >
-                            Create account to pay
-                        </button>
-                    ) : (
                         <>
-                            {/* ✅ safer than /public for locale routing */}
-                            <Link
-                                href="/"
+                            <button
+                                type="button"
+                                onClick={() => router.push(`/signup?pendingOrder=${encodeURIComponent(pendingToken)}`)}
                                 className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                             >
-                                Back to Home
-                            </Link>
+                                {t("actions.createAccountToPay")}
+                            </button>
 
-                            {/* ✅ logged-in user: pay now (temporary to orders until Stripe) */}
+                            <Link
+                                href="/"
+                                className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                            >
+                                {t("actions.home")}
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            {/* ✅ Pay first (only if authed) */}
                             {isAuthed ? (
                                 <button
                                     type="button"
                                     onClick={() => router.push("/account/orders")}
-                                    className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                    className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                                 >
-                                    Pay now
+                                    {t("actions.pay")}
                                 </button>
                             ) : (
                                 <Link
                                     href="/booking"
-                                    className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                    className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                                 >
-                                    Book Another
+                                    {t("actions.bookAnother")}
                                 </Link>
                             )}
+
+                            <Link
+                                href="/"
+                                className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                            >
+                                {t("actions.home")}
+                            </Link>
                         </>
                     )}
                 </div>
@@ -315,7 +315,7 @@ function Content() {
 
 export default function SuccessPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}>
             <Content />
         </Suspense>
     );

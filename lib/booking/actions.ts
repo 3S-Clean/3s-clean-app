@@ -1,17 +1,27 @@
-// lib/booking/actions.ts
 "use client";
 
-import { EXTRAS, getBasePrice, getEstimatedHours } from "@/lib/booking/config";
+import {
+    EXTRAS,
+    getBasePrice,
+    getEstimatedHours,
+    type ServiceId,
+    type ApartmentSizeId,
+    type PeopleCountId,
+    type ExtraId,
+} from "@/lib/booking/config";
+import { isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId } from "@/lib/booking/guards";
 
 /* ===========================
    Types
    =========================== */
 
 export type OrderExtraLine = {
-    id: string;
+    id: ExtraId;
     quantity: number;
     price: number; // line total
-    name: string;
+    // ✅ since EXTRAS has NO texts, we store i18n keys (UI translates)
+    nameKey: `extras.${ExtraId}.name`;
+    unitKey?: `extras.${ExtraId}.unit`;
 };
 
 export type OrderTotals = {
@@ -29,26 +39,38 @@ export type ExistingBookingRow = {
 };
 
 export type CreateOrderPayload = {
-    service_type: string;
-    apartment_size: string;
-    people_count: string;
+    service_type: ServiceId;
+    apartment_size: ApartmentSizeId;
+    people_count: PeopleCountId;
+
     has_pets: boolean;
     has_kids: boolean;
     has_allergies: boolean;
     allergy_note: string | null;
 
-    extras: OrderExtraLine[];
+    extras: Array<{
+        id: ExtraId;
+        quantity: number;
+        price: number; // line total
+        nameKey: `extras.${ExtraId}.name`;
+        unitKey?: `extras.${ExtraId}.unit`;
+    }>;
+
     base_price: number;
     extras_price: number;
     total_price: number;
     estimated_hours: number;
+
     customer_first_name: string;
     customer_last_name: string | null;
     customer_email: string;
     customer_phone: string;
     customer_address: string;
     customer_postal_code: string;
+    customer_city?: string | null;
+    customer_country?: string | null;
     customer_notes: string | null;
+
     scheduled_date: string; // YYYY-MM-DD
     scheduled_time: string; // HH:mm
 };
@@ -77,6 +99,26 @@ export type GetOrderPublicResponse =
     | { error: string };
 
 /* ===========================
+   Helpers
+   =========================== */
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+function normalizeIds(input: {
+    service: string;
+    size: string;
+    people: string;
+}): { serviceId: ServiceId; sizeId: ApartmentSizeId; peopleId: PeopleCountId } {
+    const { service, size, people } = input;
+
+    if (!isServiceId(service)) throw new Error(`Invalid service id: ${service}`);
+    if (!isApartmentSizeId(size)) throw new Error(`Invalid apartment size id: ${size}`);
+    if (!isPeopleCountId(people)) throw new Error(`Invalid people count id: ${people}`);
+
+    return { serviceId: service, sizeId: size, peopleId: people };
+}
+
+/* ===========================
    Pure calc (no API)
    =========================== */
 
@@ -87,16 +129,22 @@ export function calculateOrderTotals(
     hasPets: boolean,
     extras: Record<string, number>
 ): OrderTotals {
-    const basePrice = getBasePrice(service, size, people, hasPets);
+    // ✅ type-safe ids from strings (fixes build error)
+    const { serviceId, sizeId, peopleId } = normalizeIds({ service, size, people });
+
+    const basePrice = getBasePrice(serviceId, sizeId, peopleId, hasPets);
 
     let extrasPrice = 0;
     let extrasHours = 0;
 
     const extrasArray: OrderExtraLine[] = [];
 
-    for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
+    for (const [extraIdRaw, qtyRaw] of Object.entries(extras || {})) {
         const qty = Number(qtyRaw) || 0;
         if (qty <= 0) continue;
+
+        if (!isExtraId(extraIdRaw)) continue;
+        const extraId = extraIdRaw as ExtraId;
 
         const extra = EXTRAS.find((e) => e.id === extraId);
         if (!extra) continue;
@@ -108,14 +156,13 @@ export function calculateOrderTotals(
         extrasArray.push({
             id: extraId,
             quantity: qty,
-            price: Math.round(linePrice * 100) / 100,
-            name: extra.name,
+            price: r2(linePrice),
+            nameKey: `extras.${extraId}.name`,
+            unitKey: `extras.${extraId}.unit`,
         });
     }
 
-    const estimatedHours = getEstimatedHours(service, size) + extrasHours;
-
-    const r2 = (n: number) => Math.round(n * 100) / 100;
+    const estimatedHours = getEstimatedHours(serviceId, sizeId) + extrasHours;
 
     return {
         basePrice: r2(basePrice),
@@ -143,8 +190,7 @@ async function postJSON<TReq extends Record<string, unknown>, TRes>(
     const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
 
     if (!res.ok) {
-        const msg =
-            typeof json.error === "string" ? json.error : `Request failed: ${res.status}`;
+        const msg = typeof json.error === "string" ? json.error : `Request failed: ${res.status}`;
         throw new Error(msg);
     }
 
@@ -191,8 +237,8 @@ export function getOrder(orderId: string) {
 }
 
 export function getOrderPublic(orderId?: string, pendingToken?: string) {
-    return postJSON<
-        { orderId?: string; pendingToken?: string },
-        GetOrderPublicResponse
-    >("/api/booking/get-order-public", { orderId, pendingToken });
+    return postJSON<{ orderId?: string; pendingToken?: string }, GetOrderPublicResponse>(
+        "/api/booking/get-order-public",
+        { orderId, pendingToken }
+    );
 }

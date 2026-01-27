@@ -435,6 +435,35 @@
       }
     }
   },
+  "bookingSuccess": {
+    "title": "Your booking is reserved",
+    "subtitle": "Your cleaning has been reserved. Please complete the payment to confirm it.",
+    "loading": "Loading booking details…",
+    "errors": {
+      "missingRef": "Missing booking reference (orderId or pendingToken).",
+      "loadFailed": "Failed to load booking.",
+      "notFound": "Booking not found."
+    },
+    "details": {
+      "title": "Reservation details",
+      "service": "Service",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "notes": "Notes",
+      "total": "Total"
+    },
+    "actions": {
+      "pay": "Pay now",
+      "home": "Back to home",
+      "bookAnother": "Book another",
+      "createAccountToPay": "Create account to pay"
+    }
+  },
 
   "faqPage": {
     "hero": {

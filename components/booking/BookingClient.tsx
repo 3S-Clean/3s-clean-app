@@ -57,7 +57,6 @@ export default function BookingClient() {
     const supabase = useMemo(() => createClient(), []);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // ✅ centralized extras i18n
     const { getExtraText } = useExtrasI18n();
 
     const {
@@ -70,6 +69,11 @@ export default function BookingClient() {
         apartmentSize,
         peopleCount,
         hasPets,
+
+        hasKids,          // ✅ добавили
+        hasAllergies,     // ✅ добавили
+        allergyNote,      // ✅ добавили
+
         extras,
 
         formData,
@@ -132,7 +136,7 @@ export default function BookingClient() {
             if (Object.keys(patch).length) setFormData(patch);
         };
 
-        run();
+        void run();
         return () => {
             cancelled = true;
         };
@@ -166,7 +170,6 @@ export default function BookingClient() {
                 extrasPrice += linePrice;
                 extrasHours += extra.hours * qty;
 
-                // ✅ i18n text via hook (no casts)
                 const { name } = getExtraText(extraId);
 
                 extrasArray.push({
@@ -198,7 +201,14 @@ export default function BookingClient() {
 
         if (!isServiceId(selectedService) || !isApartmentSizeId(apartmentSize) || !isPeopleCountId(peopleCount)) return;
 
-        if (!formData.firstName || !formData.email || !formData.phone || !formData.address || !formData.postalCode || !formData.country) {
+        if (
+            !formData.firstName ||
+            !formData.email ||
+            !formData.phone ||
+            !formData.address ||
+            !formData.postalCode ||
+            !formData.country
+        ) {
             alert("Please fill in all required contact details.");
             return;
         }
@@ -217,6 +227,10 @@ export default function BookingClient() {
                         apartment_size: apartmentSize,
                         people_count: peopleCount,
                         has_pets: hasPets,
+
+                        has_kids: hasKids, // ✅ добавили
+                        has_allergies: hasAllergies, // ✅ добавили
+                        allergy_note: hasAllergies ? (allergyNote?.trim() || null) : null, // ✅ добавили
 
                         extras: totals.extras,
                         base_price: totals.basePrice,

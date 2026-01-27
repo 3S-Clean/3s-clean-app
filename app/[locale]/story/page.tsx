@@ -1,193 +1,243 @@
-'use client';
-
-import Link from 'next/link';
-import { ArrowRight, Shield, Video, Users, Leaf, Award, Heart } from 'lucide-react';
+import {  Video, DollarSign, Users, Shield, Check } from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
-const values = [
+const problems = [
     {
-        icon: Shield,
-        title: 'Vertrauen durch Transparenz',
-        description: 'Live-Video-Streaming jeder Reinigung. Sie sehen genau, was passiert – auch wenn Sie nicht zu Hause sind.',
+        icon: Video,
+        title: "The visibility and accountability gap",
+        description:
+            "Most clients have no idea what happens during a cleaning unless they sit there and watch. That's not trust — it's blind faith. We introduced video documentation to solve the biggest trust problem in this industry. You can watch a live stream or review afterward. No guessing. No awkward questions and conversations.",
+    },
+    {
+        icon: DollarSign,
+        title: "The pricing mess",
+        description:
+            "Most cleaning service providers charge per hour, which sounds simple—until it isn't. Clients often feel like they end up paying for time, not value. We're moving away from vague time-based logic toward clearly defined work scopes, backed by proof and consistency—so pricing becomes understandable. And clients can also save on cleaning expenses: up to 20% through tax reduction according to §35a EStG.",
     },
     {
         icon: Users,
-        title: 'Festangestellte Mitarbeiter',
-        description: 'Keine Freelancer. Alle unsere Reinigungskräfte sind bei uns angestellt, geschult und versichert.',
+        title: "Unfair working conditions",
+        description:
+            'A lot of cleaning happens in gray zones. Cleaners have no security, cash jobs mean no pensions, no proper medical coverage, no stability. That\'s not "efficient"—that is broken. Our model is built to support real employment, training, and long-term working dignity—because quality and fairness scale together.',
+    },
+];
+
+const approach = [
+    { title: "Sauber", description: "Clearly defined standards and consistent results" },
+    { title: "Sicher", description: "Safety and liability, with transparent pricing" },
+    { title: "Souverän", description: "Predictable delivery by people who feel secure in their job" },
+];
+
+const clientBenefits = [
+    {
+        icon: Video,
+        title: "Video documentation",
+        description: "You can watch a live stream or review later. No uncertainty and measurable quality.",
     },
     {
-        icon: Leaf,
-        title: 'Umweltfreundlich',
-        description: 'Wir verwenden ausschließlich ökologische Reinigungsprodukte, die gut für Ihr Zuhause und die Umwelt sind.',
+        icon: Check,
+        title: "Scope-based service",
+        description:
+            "We focus on what gets done—not just how long someone was present—so pricing becomes understandable and fair.",
     },
     {
-        icon: Award,
-        title: 'Qualitätsgarantie',
-        description: 'Regelmäßige Video-Reviews und Schulungen sorgen für konstant hohe Qualität bei jeder Reinigung.',
+        icon: Shield,
+        title: "Secure employment",
+        description:
+            "Our cleaners are officially employed, trained, and insured. We want people to do this work with dignity so that our clients can rely on consistency.",
     },
 ];
 
 const stats = [
-    { value: '7', label: 'Tage Video-Zugriff' },
-    { value: '20%', label: 'Steuerersparnis möglich' },
-    { value: '48h', label: 'Rechnung nach Reinigung' },
-    { value: '100%', label: 'Haftpflichtversichert' },
+    { value: "20%", label: "Tax deduction", sublabel: "up to" },
+    { value: "100%", label: "Liability insurance", sublabel: "" },
+    { value: "7", label: "Days video access", sublabel: "up to" },
+    { value: "24h", label: "Free cancellation", sublabel: "before appointment" },
 ];
 
-export default function AboutPage() {
+export default function InsidePage() {
     return (
         <>
             <Header />
-            <main className="min-h-screen bg-white mt-[80px]">
+            <main className="min-h-screen bg-[var(--background)] pt-[80px]">
                 {/* Hero */}
-                <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-16 max-w-4xl mx-auto text-center">
-                    <p className="text-sm font-medium text-gray-500 mb-4 tracking-wider uppercase">
+                <section className="mx-auto max-w-4xl px-6 pt-12 pb-8 md:pt-20 md:pb-16">
+                    <p className="mb-4 text-sm font-medium tracking-wider uppercase text-[var(--muted)]">
                         Inside 3S
                     </p>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                        Reinigung neu gedacht
+                    <h1 className="mb-6 text-4xl font-bold tracking-tight text-[var(--text)] md:text-5xl lg:text-6xl">
+                        Home cleaning redefined
                     </h1>
-                    <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-                        Wir haben 3S-Clean gegründet, weil wir glauben, dass professionelle Reinigung transparent, zuverlässig und fair sein sollte.
+                    <p className="max-w-3xl text-lg leading-relaxed text-[var(--muted)] md:text-xl">
+                        The home-cleaning market seems to be stuck in the past: clients fear something can go
+                        horribly wrong with their home without supervision, pricing is often a mystery, and
+                        cleaners too often get treated like disposable labor.
                     </p>
                 </section>
 
                 {/* Mission Statement */}
-                <section className="px-6 py-12 md:py-20">
-                    <div className="max-w-4xl mx-auto bg-gray-900 text-white rounded-3xl p-8 md:p-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6">Unsere Mission</h2>
-                        <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
-                            <p>
-                                Einen Fremden in Ihr Zuhause zu lassen erfordert Vertrauen. Dieses Vertrauen muss verdient werden – durch <strong className="text-white">Transparenz, Professionalität und konstante Qualität</strong>.
-                            </p>
-                            <p>
-                                Deshalb haben wir das Konzept der Video-Dokumentation eingeführt: Sie können jeden Reinigungsvorgang live verfolgen oder nachträglich anschauen. Keine versteckten Überraschungen, keine Unsicherheiten.
-                            </p>
-                            <p>
-                                <strong className="text-white">3S steht für: Sauber. Sicher. Souverän.</strong>
-                            </p>
-                        </div>
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <div className="rounded-2xl bg-[var(--primary)] p-8 text-[var(--primary-text)] md:p-12">
+                        <p className="mb-6 text-2xl font-bold leading-snug md:text-3xl">
+                            That is why 3S-Clean is designed not to &#34;compete.&#34; We&#39;re here to reset the standard.
+                        </p>
+                        <p className="text-lg leading-relaxed opacity-80">
+                            3S-Clean is a premium cleaning service built on one simple belief: if you&#39;re letting
+                            someone into your home, you deserve clarity—on quality, on safety, and on fairness.
+                            And the person performing the service deserves respect and security.
+                        </p>
                     </div>
                 </section>
 
-                {/* Values Grid */}
-                <section className="px-6 py-12 md:py-20 max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-                        Was uns ausmacht
+                {/* The Story */}
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <h2 className="mb-8 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                        The story behind 3S
                     </h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {values.map((value, index) => (
+                    <div className="space-y-6 text-lg leading-relaxed text-[var(--muted)]">
+                        <p>
+                            When one of the people behind the 3S-Clean concept moved to Germany in 2022, like many
+                            newcomers, he had to fight for stability: changing his life-long habits, building
+                            trust, making new connections, and becoming an active, contributing member in a new
+                            society.
+                        </p>
+                        <p>
+                            What helped him stay grounded was something surprisingly simple: cleaning his own
+                            home. He enjoys the process—because it&#39;s honest work, it shows results, and it
+                            restores control when everything else may feel uncertain. But to most people home
+                            cleaning is a black box: they do not have the time, do not know where to start, and
+                            are reluctant to hire help.
+                        </p>
+                        <p className="font-medium text-[var(--text)]">
+                            Home cleaning still remains a black box for most. But what if one could incorporate
+                            technology into the process and open it up? That is how the idea of 3S-Clean was
+                            conceived.
+                        </p>
+                    </div>
+                </section>
+
+                {/* What We Fix */}
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <h2 className="mb-4 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                        What we want to fix
+                    </h2>
+                    <p className="mb-10 text-lg text-[var(--muted)]">(that others ignore)</p>
+
+                    <div className="space-y-4">
+                        {problems.map((problem, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-50 rounded-2xl p-6 md:p-8"
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8"
                             >
-                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center mb-4">
-                                    <value.icon className="w-6 h-6 text-white" />
+                                <div className="mb-4 flex items-center gap-3">
+                                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--primary)]">
+                                        <problem.icon className="h-5 w-5 text-[var(--primary-text)]" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-[var(--text)]">{problem.title}</h3>
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">{value.title}</h3>
-                                <p className="text-gray-600">{value.description}</p>
+                                <p className="leading-relaxed text-[var(--muted)]">{problem.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Our Approach - 3S */}
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <h2 className="mb-4 text-3xl font-bold text-[var(--text)] md:text-4xl">Our approach</h2>
+                    <p className="mb-10 text-lg text-[var(--muted)]">
+                        We designed 3S-Clean to fix all three problems—using modern processes and modern tools.
+                    </p>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {approach.map((item, index) => (
+                            <div
+                                key={index}
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6"
+                            >
+                                <h3 className="mb-3 text-2xl font-bold text-[var(--text)] md:text-3xl">
+                                    {item.title}
+                                </h3>
+                                <p className="text-[var(--muted)]">{item.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* What Clients Can Expect */}
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <h2 className="mb-10 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                        What our clients can expect
+                    </h2>
+
+                    <div className="space-y-4">
+                        {clientBenefits.map((benefit, index) => (
+                            <div
+                                key={index}
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 md:p-8"
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--primary)]">
+                                        <benefit.icon className="h-5 w-5 text-[var(--primary-text)]" />
+                                    </div>
+                                    <div>
+                                        <h3 className="mb-2 text-xl font-bold text-[var(--text)]">{benefit.title}</h3>
+                                        <p className="text-[var(--muted)]">{benefit.description}</p>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 {/* Stats */}
-                <section className="px-6 py-12 md:py-20 bg-gray-50">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                            {stats.map((stat, index) => (
-                                <div key={index} className="text-center">
-                                    <p className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-                                        {stat.value}
-                                    </p>
-                                    <p className="text-gray-600 text-sm">{stat.label}</p>
-                                </div>
-                            ))}
-                        </div>
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <h2 className="mb-10 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                        Numbers that matter
+                    </h2>
+
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {stats.map((stat, index) => (
+                            <div
+                                key={index}
+                                className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 text-center"
+                            >
+                                {stat.sublabel && (
+                                    <p className="mb-1 text-sm text-[var(--muted)]">{stat.sublabel}</p>
+                                )}
+                                <p className="mb-2 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                                    {stat.value}
+                                </p>
+                                <p className="text-sm text-[var(--muted)]">{stat.label}</p>
+                            </div>
+                        ))}
                     </div>
                 </section>
 
-                {/* Team Section */}
-                <section className="px-6 py-12 md:py-20 max-w-4xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Unser Team</h2>
-                        <p className="text-gray-600 text-lg">
-                            Hinter 3S-Clean stehen Menschen, die Reinigung als Handwerk verstehen.
-                        </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-3xl p-8 md:p-12">
-                        <div className="flex items-start gap-4 mb-6">
-                            <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Heart className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Mitarbeiter, die ihren Job lieben</h3>
-                                <p className="text-gray-600">
-                                    Wir stellen nur Menschen ein, die Freude am Reinigen haben und Stolz auf ihre Arbeit sind. Jeder Mitarbeiter durchläuft ein intensives Training und wird kontinuierlich geschult.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-4 mb-6">
-                            <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Video className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Qualität wird überwacht</h3>
-                                <p className="text-gray-600">
-                                    Wir reviewen regelmäßig Video-Aufnahmen, um sicherzustellen, dass unsere Standards eingehalten werden. Feedback fließt direkt in Schulungen ein.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
-                                <Shield className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Vollständig versichert</h3>
-                                <p className="text-gray-600">
-                                    Alle Mitarbeiter sind haftpflichtversichert. Falls jemals etwas schief geht, sind Sie abgesichert – ohne Diskussion.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Stuttgart Section */}
-                <section className="px-6 py-12 md:py-20 max-w-4xl mx-auto">
-                    <div className="bg-gray-900 text-white rounded-3xl p-8 md:p-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6">Stuttgarts Premium-Reinigung</h2>
-                        <p className="text-gray-300 text-lg mb-6">
-                            Wir sind stolz darauf, Haushalte im Großraum Stuttgart zu betreuen. Von der Innenstadt bis zu den Vororten – wir bringen Premium-Reinigung zu Ihnen nach Hause.
-                        </p>
-                        <p className="text-gray-300">
-                            Unser Servicegebiet umfasst Stuttgart und die umliegenden Gemeinden. Nicht sicher, ob wir zu Ihnen kommen? Geben Sie Ihre Postleitzahl bei der Buchung ein.
+                {/* Stuttgart Coverage */}
+                <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+                    <div className="rounded-2xl bg-[var(--primary)] p-8 text-center text-[var(--primary-text)] md:p-12">
+                        <h2 className="mb-4 text-2xl font-bold md:text-3xl">
+                            We currently serve households across Stuttgart
+                        </h2>
+                        <p className="text-lg opacity-80">
+                            Enter your postal code during booking to confirm coverage instantly.
                         </p>
                     </div>
                 </section>
 
                 {/* CTA */}
-                <section className="px-6 py-16 md:py-24 max-w-4xl mx-auto text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                        Bereit für echte Transparenz?
+                <section className="mx-auto max-w-4xl px-6 py-16 text-center md:py-24">
+                    <h2 className="mb-4 text-3xl font-bold text-[var(--text)] md:text-4xl">
+                        Ready for real transparency?
                     </h2>
-                    <p className="text-gray-600 text-lg mb-8">
-                        Erleben Sie, wie professionelle Reinigung sein sollte.
+                    <p className="mb-8 text-lg text-[var(--muted)]">
+                        Experience what professional cleaning should be.
                     </p>
-                    <Link
-                        href="/booking"
-                        className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-colors"
-                    >
-                        Jetzt buchen
-                        <ArrowRight className="w-5 h-5" />
-                    </Link>
+
                 </section>
             </main>
             <Footer />
         </>
-
     );
 }
