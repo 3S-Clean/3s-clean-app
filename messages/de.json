@@ -26,7 +26,7 @@
     "experience": {
       "kicker": "3S-Clean Experience",
       "title": "CHOOSE YOURS!",
-      "maintenance": {
+      "core": {
         "title": "CORE",
         "desc": "Regelmäßige Reinigung, wöchentlich oder alle zwei Wochen, damit dein Zuhause sauber und frisch bleibt.",
         "price": "Ab 120 €"
@@ -48,15 +48,22 @@
       }
     }
   },
+
   "booking": {
     "serviceSelection": {
       "title": "Wähle deine Experience",
       "subtitle": "Wähle den Reinigungsservice, der am besten zu deinem Zuhause passt.",
       "from": "Ab",
       "incVat": "inkl. MwSt.",
-      "includesTitle": "Enthalten:"
+      "includesHeading": {
+        "core": "Enthalten:",
+        "initial": "Enthält alle CORE-Leistungen, plus:",
+        "reset": "Enthält alle Initial-Leistungen, plus:",
+        "handover": "Enthält alle Reset-Leistungen, plus:"
+      }
     }
   },
+
   "definition": {
     "hero": {
       "title": "3S-Clean Versprechen:"
@@ -119,16 +126,22 @@
       "button": "Jetzt starten"
     }
   },
+
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
       "subtitle": "Wähle den Service, der zu deinem Zuhause passt."
     },
     "cards": {
-      "cta": "Experience auswählen",
+      "cta": "Select",
       "from": "Ab",
       "incVat": "inkl. MwSt.",
-      "includesFallback": "Enthalten:"
+      "includesHeading": {
+        "core": "Enthalten:",
+        "initial": "Enthält alle CORE-Leistungen, plus:",
+        "reset": "Enthält alle Initial-Leistungen, plus:",
+        "handover": "Enthält alle Reset-Leistungen, plus:"
+      }
     },
     "optional": {
       "title": "Optionale Services",
@@ -226,6 +239,7 @@
       ]
     }
   },
+
   "services": {
     "core": {
       "title": "CORE",
@@ -244,6 +258,7 @@
       "desc": "Spezielle Reinigung vor Ein- oder Auszug."
     }
   },
+
   "servicesIncludes": {
     "floors": {
       "name": "Böden",
@@ -274,6 +289,152 @@
       "desc": "Innenreinigung erreichbarer Fenster."
     }
   },
+
+  "extras": {
+    "linen-single": { "name": "Bettwäsche wechseln", "unit": "Einzelbett" },
+    "linen-double": { "name": "Bettwäsche wechseln", "unit": "Doppelbett" },
+    "oven": { "name": "Backofen – Intensivreinigung", "unit": "Gerät" },
+    "fridge": { "name": "Kühlschrank – Intensivreinigung", "unit": "Gerät" },
+    "freezer": { "name": "Gefrierschrank – Intensivreinigung", "unit": "Gerät" },
+    "windows-inside": { "name": "Fensterreinigung", "unit": "m² Glas (innen)" },
+    "windows-outside": { "name": "Fensterreinigung", "unit": "m² Glas (außen)" },
+    "balcony": { "name": "Balkon/Terrasse – Reinigung", "unit": "10 m²" },
+    "limescale": { "name": "Intensive Kalkentfernung", "unit": "30 Min." },
+    "cupboards": { "name": "Schrank-/Küchenorganisation", "unit": "Stunde" },
+    "wardrobe": { "name": "Kleiderschrank ordnen", "unit": "Stunde" },
+    "sofa": { "name": "Polster – Staubsaugen", "unit": "Sitzplatz" }
+  },
+
+  "bookingExtras": {
+    "title": "Zusatzleistungen",
+    "subtitle": "Füge optionale Services zu deiner Reinigung hinzu.",
+    "adds": "zusätzlich",
+    "hint": "Du kannst Extras später jederzeit anpassen — ganz entspannt.",
+    "badges": {
+      "recommended": "Empfohlen"
+    },
+    "aria": {
+      "increase": "{name} erhöhen",
+      "decrease": "{name} verringern"
+    },
+    "summary": {
+      "selectedExtras": "Gewählte Zusatzleistungen",
+      "howto": "Tippen Sie auf + zum Hinzufügen",
+      "total": "Zusatzkosten",
+      "empty": "Keine Zusatzleistungen ausgewählt"
+    }
+  },
+  "bookingDetails": {
+    "title": "Wohnungsdetails",
+    "subtitle": "Hilf uns, deine Wohnung für eine genaue Preisberechnung einzuschätzen",
+
+    "size": {
+      "title": "Wohnungsgröße *",
+      "tip": "Tipp: Wähle die Größe, die deiner nutzbaren Wohnfläche am besten entspricht."
+    },
+
+    "people": {
+      "title": "Personen im Haushalt *",
+      "pricesInclPets": "Preise inkl. Haustiere",
+      "pricesExclPets": "Preise exkl. Haustiere",
+      "pickSizeFirst": "Bitte zuerst die Wohnungsgröße auswählen.",
+      "base": "Basis"
+    },
+
+    "additional": {
+      "title": "Zusätzliche Informationen",
+      "pets": "Haustiere im Haushalt",
+      "petsAdds": "Erhöht den Basispreis um +€{price}",
+      "kids": "Kinder im Haushalt",
+      "allergies": "Allergien / Empfindlichkeiten",
+      "allergiesPlaceholder": "Bitte Allergien beschreiben…"
+    }
+  },
+  "bookingFooter": {
+    "footer": {
+      "back": "Zurück",
+      "continue": "Weiter",
+      "bookNow": "Jetzt buchen",
+      "booking": "Buchung...",
+      "price": "€ {value}",
+      "fromPrice": "Ab € {value}",
+
+      "hint": {
+        "service": "Service auswählen",
+        "postcode": "PLZ eingeben",
+        "details": "Wohnungsdetails",
+        "extras": "Extras",
+        "contact": "Kontakt & Termin",
+        "continue": "Weiter"
+      },
+
+      "sub": {
+        "incVatTime": "inkl. MwSt. • ~{time}",
+        "pickSize": "Wohnungsgröße auswählen",
+        "pickPeople": "Personen auswählen"
+      },
+
+      "summary": {
+        "pets": "Haustiere",
+        "noExtras": "Keine Extras ausgewählt",
+        "extrasSelected": "{count} Extras ausgewählt",
+        "meta": "{extras} • Schritt {step}",
+        "fallbackService": "Service",
+        "selectDetails": "Details auswählen",
+        "total": "€ {value}",
+        "from": "Ab € {value}",
+        "time": "~{time}"
+      },
+
+      "buttonHint": {
+        "final": "Pflichtfelder ausfüllen"
+      }
+    }
+  },
+  "bookingSchedule": {
+    "contactSchedule": {
+      "hi": "Hi",
+      "hiName": "Hi {name}",
+      "title": "Kontakt & Termin",
+      "subtitle": "Gib deine Daten ein und wähle einen Termin",
+      "form": {
+        "firstName": "Vorname *",
+        "lastName": "Nachname *",
+        "email": "E-Mail *",
+        "phone": "Telefon *",
+        "address": "Adresse *",
+        "addressPlaceholder": "Straße und Hausnummer",
+        "postalCode": "PLZ *",
+        "city": "Stadt *",
+        "country": "Land *"
+      },
+      "calendar": {
+        "title": "Datum & Uhrzeit auswählen *",
+        "subtitle": "ca. {hours}h Reinigung. Muss bis {end}:00 Uhr beendet sein.",
+        "weekdays": ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
+      },
+      "slots": {
+        "title": "Verfügbare Zeiten für {date}",
+        "subtitle": "Reinigung muss bis {end}:00 Uhr beendet sein",
+        "scheduled": "Reinigung geplant: {start} – {end}"
+      },
+      "notes": {
+        "label": "Zusätzliche Hinweise",
+        "placeholder": "Zugang, Parkplatz-Info…"
+      },
+      "terms": {
+        "prefix": "Ich habe die",
+        "link": "AGB",
+        "hint": "Die Zustimmung speichern wir später im Booking (DB-Integration kommt als Nächstes).",
+        "modalTitle": "Allgemeine Geschäftsbedingungen (AGB)",
+        "close": "Schließen",
+        "accept": "Akzeptieren",
+        "placeholder1": "Hier wird später der AGB-Text stehen.",
+        "placeholder2": "Aktuell ist das nur ein Platzhalter — als nächstes verknüpfen wir ein echtes Dokument und speichern die Zustimmung in der Datenbank."
+      }
+    }
+  },
+
   "faqPage": {
     "hero": {
       "title": "FAQs",
@@ -391,5 +552,32 @@
         ]
       }
     ]
+  },
+  "errors": {
+    "requiredFields": "Bitte füllen Sie alle erforderlichen Kontaktdaten aus.",
+    "createOrderFailed": "Die Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "generic": "Etwas ist schiefgelaufen."
+  },
+
+  "postcode": {
+    "postcodeCheck": {
+      "title": "Verfügbarkeit prüfen",
+      "subtitle": "Geben Sie Ihre Postleitzahl ein, um zu prüfen, ob wir in Ihrer Region verfügbar sind.",
+      "postcodePlaceholder": "Postleitzahl",
+      "checking": "Wird geprüft…",
+
+      "availableTitle": "Verfügbar",
+      "availableBody": "Super — wir sind in der PLZ {postcode} verfügbar. Sie können fortfahren.",
+
+      "unavailableTitle": "Nicht verfügbar",
+      "unavailableBody": "Leider sind wir in der PLZ {postcode} noch nicht verfügbar.",
+
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "notifyCta": "Benachrichtigen",
+      "notifyLoading": "Wird gesendet…",
+
+      "notifiedTitle": "Sie werden benachrichtigt",
+      "notifiedBody": "Wir informieren Sie per E-Mail, sobald wir in der PLZ {postcode} verfügbar sind."
+    }
   }
 }

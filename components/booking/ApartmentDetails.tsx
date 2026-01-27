@@ -1,10 +1,17 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useBookingStore } from "@/lib/booking/store";
 import { APARTMENT_SIZES, PEOPLE_OPTIONS, FINAL_PRICES } from "@/lib/booking/config";
+import type { ApartmentSizeId, PeopleCountId, ServiceId } from "@/lib/booking/config";
+import { isApartmentSizeId, isPeopleCountId, isServiceId } from "@/lib/booking/guards";
+
+const PRIMARY_SOLID = "bg-gray-900 text-white";
 
 export default function ApartmentDetails() {
+    const t = useTranslations("bookingDetails");
+
     const {
         selectedService,
         apartmentSize,
@@ -21,53 +28,62 @@ export default function ApartmentDetails() {
         setAllergyNote,
     } = useBookingStore();
 
-    const getPeoplePriceDiff = (peopleId: string) => {
-        if (!selectedService || !apartmentSize) return null;
+    /** ✅ normalize store values -> strong ids (fixes TS7053 indexing) */
+    const serviceId: ServiceId | null = isServiceId(String(selectedService ?? ""))
+        ? (selectedService as ServiceId)
+        : null;
+    const sizeId: ApartmentSizeId | null = isApartmentSizeId(String(apartmentSize ?? ""))
+        ? (apartmentSize as ApartmentSizeId)
+        : null;
+    const peopleId: PeopleCountId | null = isPeopleCountId(String(peopleCount ?? ""))
+        ? (peopleCount as PeopleCountId)
+        : null;
+
+    const getPeoplePriceDiff = (pid: PeopleCountId) => {
+        if (!serviceId || !sizeId) return null;
 
         const petKey = hasPets ? "pet" : "noPet";
 
-        const base =
-            FINAL_PRICES?.[apartmentSize]?.[selectedService]?.["1-2"]?.[petKey] ?? 0;
-
-        const current =
-            FINAL_PRICES?.[apartmentSize]?.[selectedService]?.[peopleId]?.[petKey] ?? 0;
+        const base = FINAL_PRICES?.[sizeId]?.[serviceId]?.["1-2"]?.[petKey] ?? 0;
+        const current = FINAL_PRICES?.[sizeId]?.[serviceId]?.[pid]?.[petKey] ?? 0;
 
         const diff = Number(current) - Number(base);
         if (!Number.isFinite(diff)) return null;
 
-        if (diff <= 0) return "Base";
+        if (diff <= 0) return t("people.base");
         return `+€${diff.toFixed(2)}`;
     };
 
     const petSurcharge = useMemo(() => {
-        if (!selectedService || !apartmentSize || !peopleCount) return 0;
+        if (!serviceId || !sizeId || !peopleId) return 0;
 
-        const noPet =
-            FINAL_PRICES?.[apartmentSize]?.[selectedService]?.[peopleCount]?.noPet ?? 0;
-
-        const pet =
-            FINAL_PRICES?.[apartmentSize]?.[selectedService]?.[peopleCount]?.pet ?? 0;
+        const noPet = FINAL_PRICES?.[sizeId]?.[serviceId]?.[peopleId]?.noPet ?? 0;
+        const pet = FINAL_PRICES?.[sizeId]?.[serviceId]?.[peopleId]?.pet ?? 0;
 
         const diff = Number(pet) - Number(noPet);
         return Number.isFinite(diff) ? diff : 0;
-    }, [selectedService, apartmentSize, peopleCount]);
+    }, [serviceId, sizeId, peopleId]);
 
     return (
         <div className="animate-fadeIn">
             <div className="mb-10">
-                <h1 className="text-2xl font-semibold mb-2">Apartment Details</h1>
-                <p className="text-sm text-gray-500">
-                    Help us understand your space for accurate pricing
+                <h1 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
+                    {t("title")}
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-white/60">
+                    {t("subtitle")}
                 </p>
             </div>
 
             {/* Apartment Size */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3">Apartment Size *</h3>
+                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">
+                    {t("size.title")}
+                </h3>
 
                 <div className="grid grid-cols-2 gap-3">
                     {APARTMENT_SIZES.map((size) => {
-                        const isSelected = apartmentSize === size.id;
+                        const isSelected = sizeId === size.id;
 
                         return (
                             <button
@@ -76,25 +92,29 @@ export default function ApartmentDetails() {
                                 onClick={() => {
                                     const nextSize = size.id;
 
-                                    // ✅ если реально поменяли size — сбрасываем people
-                                    if (apartmentSize && apartmentSize !== nextSize) {
+                                    // ✅ if size changed -> reset people
+                                    if (sizeId && sizeId !== nextSize) {
                                         setApartmentSize(nextSize);
                                         setPeopleCount(null);
                                         return;
                                     }
 
-                                    // ✅ первый выбор size
+                                    // ✅ first selection
                                     setApartmentSize(nextSize);
 
-                                    // ✅ если people ещё не выбран — поставим дефолт "1-2"
+                                    // ✅ default people if not selected
                                     if (!peopleCount) setPeopleCount("1-2");
                                 }}
                                 className={[
                                     "p-3.5 rounded-2xl text-center transition-all",
-                                    "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10",
-                                    isSelected
-                                        ? "bg-gray-900 text-white"
-                                        : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+                                    "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
+                                    // ✅ light
+                                    "bg-white text-gray-900 border border-black/10",
+                                    "hover:bg-black/[0.03]",
+                                    // ✅ dark (как на Extras: не белое, читаемое)
+                                    "dark:bg-white/[0.06] dark:text-white dark:border-white/10",
+                                    "dark:hover:bg-white/[0.10]",
+                                    isSelected ? PRIMARY_SOLID : "",
                                     "active:scale-[0.99]",
                                 ].join(" ")}
                             >
@@ -104,9 +124,9 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!apartmentSize && (
-                    <div className="mt-3 text-xs text-gray-400">
-                        Tip: choose the size that best matches your usable living area.
+                {!sizeId && (
+                    <div className="mt-3 text-xs text-gray-500 dark:text-white/50">
+                        {t("size.tip")}
                     </div>
                 )}
             </div>
@@ -114,17 +134,21 @@ export default function ApartmentDetails() {
             {/* People */}
             <div className="mb-8">
                 <div className="flex items-end justify-between gap-4 mb-3">
-                    <h3 className="text-base font-semibold">People Living There *</h3>
-                    <div className="text-xs text-gray-400">
-                        {hasPets ? "Prices shown incl. pets" : "Prices shown excl. pets"}
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                        {t("people.title")}
+                    </h3>
+                    <div className="text-xs text-gray-600 dark:text-white/55">
+                        {hasPets ? t("people.pricesInclPets") : t("people.pricesExclPets")}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                     {PEOPLE_OPTIONS.map((opt) => {
-                        const diff = getPeoplePriceDiff(opt.id);
-                        const isSelected = peopleCount === opt.id;
-                        const isDisabled = !apartmentSize;
+                        const optId = isPeopleCountId(opt.id) ? (opt.id as PeopleCountId) : null;
+
+                        const diff = optId ? getPeoplePriceDiff(optId) : null;
+                        const isSelected = peopleId === opt.id;
+                        const isDisabled = !sizeId;
 
                         return (
                             <button
@@ -134,12 +158,15 @@ export default function ApartmentDetails() {
                                 onClick={() => setPeopleCount(opt.id)}
                                 className={[
                                     "p-3.5 rounded-2xl text-center transition-all",
-                                    "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10",
-                                    isSelected
-                                        ? "bg-gray-900 text-white"
-                                        : isDisabled
-                                            ? "bg-gray-50 text-gray-300 cursor-not-allowed"
-                                            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+                                    "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
+                                    // ✅ light
+                                    "bg-white text-gray-900 border border-black/10",
+                                    "hover:bg-black/[0.03]",
+                                    // ✅ dark
+                                    "dark:bg-white/[0.06] dark:text-white dark:border-white/10",
+                                    "dark:hover:bg-white/[0.10]",
+                                    isDisabled ? "opacity-40 cursor-not-allowed" : "",
+                                    isSelected ? PRIMARY_SOLID : "",
                                     !isDisabled ? "active:scale-[0.99]" : "",
                                 ].join(" ")}
                             >
@@ -150,10 +177,10 @@ export default function ApartmentDetails() {
                                         className={[
                                             "text-[11px] mt-1",
                                             isSelected
-                                                ? "text-white/70"
-                                                : diff === "Base"
-                                                    ? "text-gray-400"
-                                                    : "text-gray-900 font-medium",
+                                                ? "text-white/75"
+                                                : diff === t("people.base")
+                                                    ? "text-gray-600 dark:text-white/55"
+                                                    : "text-gray-900 dark:text-white font-medium",
                                         ].join(" ")}
                                     >
                                         {diff}
@@ -164,24 +191,45 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!apartmentSize && (
-                    <div className="mt-3 text-xs text-gray-400">
-                        Select an apartment size first.
+                {!sizeId && (
+                    <div className="mt-3 text-xs text-gray-500 dark:text-white/50">
+                        {t("people.pickSizeFirst")}
                     </div>
                 )}
             </div>
 
             {/* Additional Info */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3">Additional Information</h3>
+                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">
+                    {t("additional.title")}
+                </h3>
 
-                <label className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl mb-3 cursor-pointer border border-gray-100 hover:border-gray-200 transition-colors">
+                {/* Pets */}
+                <label
+                    className={[
+                        "flex items-center justify-between p-4 rounded-2xl mb-3 cursor-pointer transition-colors",
+                        // ✅ light
+                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
+                        // ✅ dark
+                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
+                    ].join(" ")}
+                >
                     <div>
-                        <div className="font-medium text-sm">Pets at home</div>
+                        <div className="font-medium text-sm text-gray-900 dark:text-white">
+                            {t("additional.pets")}
+                        </div>
 
                         {petSurcharge > 0 && (
-                            <div className={hasPets ? "text-sm font-semibold text-gray-900" : "text-xs text-gray-400"}>
-                                {hasPets ? `+€${petSurcharge.toFixed(2)}` : `Adds +€${petSurcharge.toFixed(2)} to the base price`}
+                            <div
+                                className={
+                                    hasPets
+                                        ? "text-sm font-semibold text-gray-900 dark:text-white"
+                                        : "text-xs text-gray-600 dark:text-white/55"
+                                }
+                            >
+                                {hasPets
+                                    ? `+€${petSurcharge.toFixed(2)}`
+                                    : t("additional.petsAdds", { price: petSurcharge.toFixed(2) })}
                             </div>
                         )}
                     </div>
@@ -190,27 +238,45 @@ export default function ApartmentDetails() {
                         type="checkbox"
                         checked={hasPets}
                         onChange={(e) => setHasPets(e.target.checked)}
-                        className="w-6 h-6 accent-gray-900"
+                        className="w-6 h-6 accent-[color:var(--text)]"
                     />
                 </label>
 
-                <label className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl mb-3 cursor-pointer border border-gray-100 hover:border-gray-200 transition-colors">
-                    <div className="font-medium text-sm">Children at home</div>
+                {/* Kids */}
+                <label
+                    className={[
+                        "flex items-center justify-between p-4 rounded-2xl mb-3 cursor-pointer transition-colors",
+                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
+                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
+                    ].join(" ")}
+                >
+                    <div className="font-medium text-sm text-gray-900 dark:text-white">
+                        {t("additional.kids")}
+                    </div>
                     <input
                         type="checkbox"
                         checked={hasKids}
                         onChange={(e) => setHasKids(e.target.checked)}
-                        className="w-6 h-6 accent-gray-900"
+                        className="w-6 h-6 accent-[color:var(--text)]"
                     />
                 </label>
 
-                <label className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer border border-gray-100 hover:border-gray-200 transition-colors">
-                    <div className="font-medium text-sm">Allergies / sensitivities</div>
+                {/* Allergies */}
+                <label
+                    className={[
+                        "flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-colors",
+                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
+                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
+                    ].join(" ")}
+                >
+                    <div className="font-medium text-sm text-gray-900 dark:text-white">
+                        {t("additional.allergies")}
+                    </div>
                     <input
                         type="checkbox"
                         checked={hasAllergies}
                         onChange={(e) => setHasAllergies(e.target.checked)}
-                        className="w-6 h-6 accent-gray-900"
+                        className="w-6 h-6 accent-[color:var(--text)]"
                     />
                 </label>
 
@@ -218,8 +284,15 @@ export default function ApartmentDetails() {
                     <textarea
                         value={allergyNote}
                         onChange={(e) => setAllergyNote(e.target.value)}
-                        placeholder="Please describe any allergies..."
-                        className="w-full mt-3 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none text-sm"
+                        placeholder={t("additional.allergiesPlaceholder")}
+                        className={[
+                            "w-full mt-3 px-4 py-3 rounded-xl resize-none text-sm outline-none transition",
+                            // light
+                            "bg-white border border-black/10 text-gray-900 placeholder:text-gray-500/70",
+                            // dark
+                            "dark:bg-white/[0.06] dark:border-white/10 dark:text-white dark:placeholder:text-white/40",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                         rows={3}
                     />
                 )}

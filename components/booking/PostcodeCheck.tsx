@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useBookingStore } from "@/lib/booking/store";
-import { SERVICE_AREAS } from "@/lib/booking/config";
 import { createClient } from "@/lib/supabase/client";
+import { isServiceAreaPostcode } from "@/lib/booking/guards";
 import { Check, X } from "lucide-react";
 import { z } from "zod";
 
@@ -23,6 +24,8 @@ function isValidEmail(v: string) {
 }
 
 export default function PostcodeCheck() {
+    const t = useTranslations("postcode.postcodeCheck");
+
     const {
         postcode,
         setPostcode,
@@ -90,10 +93,10 @@ export default function PostcodeCheck() {
         let cancelled = false;
         setStatus("checking");
 
-        const t = window.setTimeout(async () => {
+        const tt = window.setTimeout(async () => {
             if (cancelled) return;
 
-            if (SERVICE_AREAS.includes(postcode)) {
+            if (isServiceAreaPostcode(postcode)) {
                 setStatus("available");
                 setPostcodeVerified(true);
                 return;
@@ -129,7 +132,7 @@ export default function PostcodeCheck() {
 
         return () => {
             cancelled = true;
-            window.clearTimeout(t);
+            window.clearTimeout(tt);
         };
     }, [postcode, setPostcodeVerified]);
 
@@ -158,18 +161,44 @@ export default function PostcodeCheck() {
         }
     };
 
+    // -------- UI tokens (glass) --------
+    const glassCard =
+        "w-full max-w-md mt-6 rounded-3xl " +
+        "bg-white/80 dark:bg-white/5 " +
+        "backdrop-blur-xl " +
+        "shadow-[0_16px_40px_rgba(0,0,0,0.10)] " +
+        "p-6";
+
+    const iconBubble =
+        "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 " +
+        "bg-black/5 dark:bg-white/10";
+
+    const titleCls = "text-lg font-semibold mb-1 text-black dark:text-white";
+    const bodyCls = "text-black/60 dark:text-white/70";
+
+    const inputCls = [
+        "w-full rounded-2xl px-4 py-3.5 text-[16px] outline-none transition",
+        "bg-white/60 dark:bg-white/5 backdrop-blur-xl",
+        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+        "focus:ring-1 focus:ring-[var(--ring)]",
+    ].join(" ");
+
+    const buttonCls = [
+        "mt-4 w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
+        "bg-gray-900 text-white dark:bg-white dark:text-gray-900",
+    ].join(" ");
+
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fadeIn">
-            <h1 className="text-3xl font-semibold mb-3">Check Availability</h1>
-            <p className="text-gray-500 mb-8">
-                Enter your postal code to see if we currently serve your area.
-            </p>
+            <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
+            <p className="text-[var(--muted)] mb-8 max-w-md">{t("subtitle")}</p>
 
             <input
                 type="text"
                 inputMode="numeric"
                 maxLength={5}
-                placeholder="Postal code"
+                placeholder={t("postcodePlaceholder")}
                 value={postcode}
                 onChange={(e) => {
                     const v = clean5(e.target.value);
@@ -185,69 +214,57 @@ export default function PostcodeCheck() {
                         setPostcodeVerified(false);
                     }
                 }}
-                className={[
-                    "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
-                    "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                    "placeholder:text-[color:var(--muted)]/70",
-                    "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                ].join(" ")}
+                className={inputCls}
             />
 
-            {status === "checking" && <div className="mt-4 text-sm text-gray-400">Checking…</div>}
+            {status === "checking" && (
+                <div className="mt-4 text-sm text-[var(--muted)]">{t("checking")}</div>
+            )}
 
             {status === "available" && (
-                <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
-                    <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Check className="w-6 h-6 text-black/70" />
+                <div className={glassCard}>
+                    <div className={iconBubble}>
+                        <Check className="w-6 h-6 text-black/70 dark:text-white/80" />
                     </div>
-                    <div className="text-lg font-semibold mb-1 text-black">Available</div>
-                    <div className="text-black/60">Great — we serve PLZ {postcode}. You can continue.</div>
+                    <div className={titleCls}>{t("availableTitle")}</div>
+                    <div className={bodyCls}>{t("availableBody", { postcode })}</div>
                 </div>
             )}
 
             {status === "unavailable" && (
-                <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
-                    <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <X className="w-6 h-6 text-black/70" />
+                <div className={glassCard}>
+                    <div className={iconBubble}>
+                        <X className="w-6 h-6 text-black/70 dark:text-white/80" />
                     </div>
-                    <div className="text-lg font-semibold mb-1 text-black">Not available</div>
-                    <div className="text-black/60 mb-4">We don’t serve PLZ {postcode} yet.</div>
+                    <div className={titleCls}>{t("unavailableTitle")}</div>
+                    <div className={`${bodyCls} mb-4`}>{t("unavailableBody", { postcode })}</div>
 
                     <input
                         type="email"
                         value={notifyEmail}
                         onChange={(e) => setNotifyEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
-                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                            "placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                        ].join(" ")}
+                        placeholder={t("emailPlaceholder")}
+                        className={inputCls}
                     />
 
                     <button
                         type="button"
                         onClick={submitNotify}
                         disabled={!canNotify || notifyLoading}
-                        className={[
-                            "mt-4 w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                            "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
-                            "bg-black text-white",
-                        ].join(" ")}
+                        className={buttonCls}
                     >
-                        {notifyLoading ? "Sending…" : "Notify me"}
+                        {notifyLoading ? t("notifyLoading") : t("notifyCta")}
                     </button>
                 </div>
             )}
 
             {status === "notified" && (
-                <div className="w-full max-w-md mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5 animate-fadeIn">
-                    <div className="w-12 h-12 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Check className="w-6 h-6 text-black/70" />
+                <div className={glassCard}>
+                    <div className={iconBubble}>
+                        <Check className="w-6 h-6 text-black/70 dark:text-white/80" />
                     </div>
-                    <div className="text-lg font-semibold mb-1 text-black">You’ll be notified</div>
-                    <div className="text-black/60">We’ll email you when we expand to PLZ {postcode}.</div>
+                    <div className={titleCls}>{t("notifiedTitle")}</div>
+                    <div className={bodyCls}>{t("notifiedBody", { postcode })}</div>
                 </div>
             )}
         </div>

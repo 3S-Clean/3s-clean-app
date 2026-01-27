@@ -115,8 +115,8 @@ function HashScrollFix() {
     return null;
 }
 
-export default function DefinitionPage() {
-    const t = useTranslations("definition");
+export default function PromisePage() {
+    const t = useTranslations("promise");
 
     return (
         <>

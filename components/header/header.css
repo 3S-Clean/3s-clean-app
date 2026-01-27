@@ -1,7 +1,7 @@
 /* ==================== Header Variables ==================== */
 :root {
     --header-blur: 20px;
-    --header-bg: rgba(255, 255, 255, 0.25);
+    --header-bg: rgba(252, 252, 253, 0.75);
     --header-bg-mobile: rgba(255, 255, 255, 0.25);
     --text-color: rgb(26, 26, 26);
     --border-color: rgba(0, 0, 0, 0.32);
@@ -27,8 +27,8 @@
 /* ==================== Desktop Header ==================== */
 .header-desktop {
     display: flex;
-    width: 100%;
-    max-width: 1200px;
+    width: calc(100% + 90px);
+    max-width: 1370px;
     justify-content: space-between;
     align-items: center;
 }
@@ -40,6 +40,19 @@
     align-items: center;
     gap: 24px;
     border-radius: 10px;
+    /* По умолчанию — прозрачный */
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition:
+            background-color 0.3s ease,
+            backdrop-filter 0.3s ease,
+            -webkit-backdrop-filter 0.3s ease;
+}
+
+/* Glass эффект при скролле */
+.header.scrolled .header-left,
+.header.scrolled .header-right {
     background-color: var(--header-bg);
     backdrop-filter: blur(var(--header-blur)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--header-blur)) saturate(180%);
@@ -280,6 +293,17 @@
 @media screen and (max-width: 568px) {
     .header {
         padding: 0;
+        /* По умолчанию прозрачный */
+        background-color: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transition:
+                background-color 0.3s ease,
+                backdrop-filter 0.3s ease;
+    }
+
+    /* Glass при скролле на мобильном */
+    .header.scrolled {
         background-color: var(--header-bg-mobile);
         backdrop-filter: blur(var(--header-blur)) saturate(180%);
         -webkit-backdrop-filter: blur(var(--header-blur)) saturate(180%);
@@ -335,7 +359,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         --header-blur: 25px;
-        --header-bg: rgba(0, 0, 0, 0.3);
+        --header-bg: rgba(0, 0, 0, 0.5);
         --header-bg-mobile: rgba(0, 0, 0, 0.3);
         --text-color: rgba(255, 255, 255, 0.92);
         --border-color: rgba(255, 255, 255, 0.28);
@@ -382,7 +406,7 @@
     -webkit-backdrop-filter: blur(10px);
 }
 
-.is-android .header {
+.is-android .header.scrolled {
     background-color: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -397,7 +421,7 @@
         background-color: rgba(20, 20, 20, 0.92);
     }
 
-    .is-android .header {
+    .is-android .header.scrolled {
         background-color: rgba(0, 0, 0, 0.8);
     }
 }

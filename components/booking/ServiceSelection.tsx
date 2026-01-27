@@ -2,17 +2,25 @@
 
 import { useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Check } from "lucide-react";
+
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES, type ServiceId } from "@/lib/booking/config";
-import { Check } from "lucide-react";
+
+import ServiceCard from "@/components/booking/ServiceCard";
 import { InfoHelp } from "@/components/ui/infohelp/InfoHelp";
 
-function Tooltip({ text, title, dark = false }: { text: string; title?: string; dark?: boolean }) {
-    return <InfoHelp text={text} title={title} dark={dark} />;
+/* ----------------------------- Tooltip ----------------------------- */
+function Tooltip({ text, title }: { text: string; title?: string }) {
+    return <InfoHelp text={text} title={title} />;
 }
 
 type IncludeUI = { name: string; desc?: string };
-type ServiceUI = (typeof SERVICES)[number] & { name: string; description: string; includes: IncludeUI[] };
+type ServiceUI = (typeof SERVICES)[number] & {
+    title: string;
+    desc: string;
+    includes: IncludeUI[];
+};
 
 export default function ServiceSelection() {
     const { selectedService, setSelectedService } = useBookingStore();
@@ -21,34 +29,46 @@ export default function ServiceSelection() {
     const tServices = useTranslations("services");
     const tIncludes = useTranslations("servicesIncludes");
 
-    const servicesUi: ServiceUI[] = useMemo(() => {
+    // services UI (config + i18n)
+    const servicesUi = useMemo((): ServiceUI[] => {
         return SERVICES.map((s) => {
-            const name = tServices(`${s.id}.title`);
-            const description = tServices(`${s.id}.desc`);
+            const title = tServices(`${s.id}.title`);
+            const desc = tServices(`${s.id}.desc`);
 
             const includes = s.includesKeys.map((key) => {
-                const incName = tIncludes(`${key}.name`);
-                const incDesc = tIncludes(`${key}.desc`);
-                return { name: incName, desc: incDesc?.trim() ? incDesc : undefined };
+                const name = tIncludes(`${key}.name`);
+                const rawDesc = tIncludes(`${key}.desc`);
+                const desc = rawDesc?.trim() ? rawDesc : undefined;
+                return { name, desc };
             });
 
-            return { ...s, name, description, includes };
+            return { ...s, title, desc, includes };
         });
     }, [tServices, tIncludes]);
 
-    const toggle = useCallback(
+    // per-card includes heading (like Experience)
+    const includesHeadingById = useMemo(() => {
+        return {
+            core: t("includesHeading.core"),
+            initial: t("includesHeading.initial"),
+            reset: t("includesHeading.reset"),
+            handover: t("includesHeading.handover"),
+        } satisfies Record<ServiceId, string>;
+    }, [t]);
+
+    const onSelect = useCallback(
         (id: ServiceId) => setSelectedService(selectedService === id ? null : id),
         [selectedService, setSelectedService]
     );
 
-    const onKey = useCallback(
+    const onKeyDown = useCallback(
         (e: React.KeyboardEvent, id: ServiceId) => {
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                toggle(id);
+                onSelect(id);
             }
         },
-        [toggle]
+        [onSelect]
     );
 
     return (
@@ -59,21 +79,10 @@ export default function ServiceSelection() {
                 <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
-            {/* SERVICES */}
+            {/* CARDS (reused ServiceCard) */}
             <div className="flex flex-col gap-5">
                 {servicesUi.map((service) => {
                     const isSelected = selectedService === service.id;
-                    const isDarkCard = !!service.isDark;
-
-                    const baseCard = isDarkCard
-                        ? "bg-gray-900 text-white"
-                        : "bg-[var(--card)] text-[var(--text)] ring-1 ring-black/5 dark:ring-white/10";
-
-                    // ✅ no “ring border highlight” — only soft lift/shadow
-                    const interaction = isSelected ? "shadow-xl -translate-y-[1px]" : "hover:shadow-xl hover:-translate-y-1";
-
-                    const muted = isDarkCard ? "text-white/70" : "text-[var(--muted)]";
-                    const divider = isDarkCard ? "border-white/15" : "border-black/10 dark:border-white/10";
 
                     return (
                         <div
@@ -81,57 +90,40 @@ export default function ServiceSelection() {
                             role="button"
                             tabIndex={0}
                             aria-pressed={isSelected}
-                            onClick={() => toggle(service.id)}
-                            onKeyDown={(e) => onKey(e, service.id)}
+                            onClick={() => onSelect(service.id)}
+                            onKeyDown={(e) => onKeyDown(e, service.id)}
                             className={[
-                                "relative w-full text-left p-7 rounded-3xl transition-all duration-300 cursor-pointer select-none",
+                                "relative rounded-3xl transition-all duration-300 cursor-pointer select-none",
                                 "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/20 dark:focus-visible:ring-white/20",
-                                baseCard,
-                                interaction,
+                                isSelected ? "shadow-xl -translate-y-[1px]" : "hover:shadow-xl hover:-translate-y-1",
                                 "active:scale-[0.99]",
                             ].join(" ")}
                         >
-                            {/* CHECKMARK */}
+                            {/* CHECKMARK (same UX as before) */}
                             {isSelected && (
                                 <div
-                                    className={[
-                                        "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center",
-                                        isDarkCard ? "bg-white" : "bg-[var(--text)]",
-                                    ].join(" ")}
+                                    className="absolute top-5 right-5 z-10 w-8 h-8 rounded-full flex items-center justify-center bg-gray-900"
                                     aria-hidden="true"
                                 >
-                                    <Check className={["w-5 h-5", isDarkCard ? "text-gray-900" : "text-[var(--background)]"].join(" ")} />
+                                    <Check className="w-5 h-5 text-white" />
                                 </div>
                             )}
 
-                            <h3 className="text-2xl font-semibold mb-3">{service.name}</h3>
-
-                            <p className={["text-sm mb-5 leading-relaxed", muted].join(" ")}>{service.description}</p>
-
-                            <div className={["text-lg font-semibold pb-5 mb-5 border-b", divider].join(" ")}>
-                                {t("from")} € {service.startingPrice}{" "}
-                                <span className="text-sm font-normal opacity-70">{t("incVat")}</span>
-                            </div>
-
-                            <p className={["text-sm font-medium mb-4", muted].join(" ")}>{t("includesTitle")}</p>
-
-                            <div className="flex flex-col gap-2">
-                                {service.includes.map((item, i) => (
-                                    <div key={i} className="flex items-start gap-3 text-sm">
-                    <span
-                        className={[
-                            "w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0",
-                            isDarkCard ? "bg-white/60" : "bg-[var(--text)]/60",
-                        ].join(" ")}
-                        aria-hidden="true"
-                    />
-                                        <span className="flex items-center flex-wrap">
-                      {item.name}
-                                            {item.desc ? <Tooltip text={item.desc} title={item.name} dark={isDarkCard} /> : null}
-                    </span>
-                                    </div>
-                                ))}
-                            </div>
+                            <ServiceCard
+                                mode="select"
+                                selected={isSelected}
+                                onSelect={() => onSelect(service.id)}
+                                service={service}
+                                title={service.title}
+                                desc={service.desc}
+                                includes={service.includes}
+                                fromLabel={t("from")}
+                                incVatLabel={t("incVat")}
+                                includesHeading={includesHeadingById[service.id]}
+                                showCta={false} // ✅ booking step: card click selects
+                                ctaLabel="" // ignored when showCta=false
+                                Tooltip={Tooltip}
+                            />
                         </div>
                     );
                 })}

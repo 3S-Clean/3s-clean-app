@@ -1,9 +1,4 @@
 // lib/booking/config.ts
-
-/* =========================
-   SERVICES (NO TEXTS)
-========================= */
-
 export const SERVICES = [
     {
         id: "core",
@@ -32,15 +27,7 @@ export const SERVICES = [
 ] as const;
 
 export type ServiceId = (typeof SERVICES)[number]["id"];
-
-export type ServiceIncludeKey =
-    | "floors"
-    | "surfaces"
-    | "bathroom"
-    | "kitchen"
-    | "limescale"
-    | "insideCupboards"
-    | "windowsInside";
+export type ServiceIncludeKey = (typeof SERVICES)[number]["includesKeys"][number];
 
 /* =========================
    APARTMENT / PEOPLE
@@ -70,13 +57,7 @@ type PetKey = "noPet" | "pet";
 
 export type FinalPrices = Record<
     ApartmentSizeId,
-    Record<
-        ServiceId,
-        Record<
-            PeopleCountId,
-            Record<PetKey, number>
-        >
-    >
+    Record<ServiceId, Record<PeopleCountId, Record<PetKey, number>>>
 >;
 
 export type HoursMatrix = Record<ServiceId, Record<ApartmentSizeId, number>>;
@@ -124,23 +105,28 @@ export const HOURS_MATRIX: HoursMatrix = {
 };
 
 /* =========================
-   EXTRAS
+   EXTRAS (NO TEXTS)
+   i18n keys:
+   - extras.<id>.name
+   - extras.<id>.unit
 ========================= */
 
 export const EXTRAS = [
-    { id: "linen-single", name: "Linen change - single bed", price: 7.5, hours: 0.13, unit: "bed" },
-    { id: "linen-double", name: "Linen change - double bed", price: 14, hours: 0.25, unit: "bed" },
-    { id: "oven", name: "Oven deep clean (inside)", price: 100, hours: 2, unit: "unit" },
-    { id: "fridge", name: "Fridge deep clean (inside)", price: 50, hours: 1, unit: "unit" },
-    { id: "freezer", name: "Freezer deep clean", price: 50, hours: 1, unit: "unit" },
-    { id: "windows-inside", name: "Window cleaning - inside", price: 4.25, hours: 0.08, unit: "m² glass" },
-    { id: "windows-outside", name: "Window cleaning - outside", price: 4.5, hours: 0.08, unit: "m² glass" },
-    { id: "balcony", name: "Balcony / terrace cleaning", price: 52.5, hours: 1, unit: "10 m²" },
-    { id: "limescale", name: "Limescale removal - intensive", price: 27, hours: 0.5, unit: "30-min" },
-    { id: "cupboards", name: "Cupboards / cabinets - deep clean & organization", price: 50, hours: 1, unit: "hour" },
-    { id: "wardrobe", name: "Wardrobe arranging / folding / organization", price: 50, hours: 1, unit: "hour" },
-    { id: "sofa", name: "Sofa upholstery vacuuming", price: 6.5, hours: 0.08, unit: "seat" },
+    { id: "linen-single", price: 7.5, hours: 0.13 },
+    { id: "linen-double", price: 14, hours: 0.25 },
+    { id: "oven", price: 100, hours: 2 },
+    { id: "fridge", price: 50, hours: 1 },
+    { id: "freezer", price: 50, hours: 1 },
+    { id: "windows-inside", price: 4.25, hours: 0.08 },
+    { id: "windows-outside", price: 4.5, hours: 0.08 },
+    { id: "balcony", price: 52.5, hours: 1 },
+    { id: "limescale", price: 27, hours: 0.5 },
+    { id: "cupboards", price: 50, hours: 1 },
+    { id: "wardrobe", price: 50, hours: 1 },
+    { id: "sofa", price: 6.5, hours: 0.08 },
 ] as const;
+
+export type ExtraId = (typeof EXTRAS)[number]["id"];
 
 /* =========================
    TIME
@@ -150,6 +136,7 @@ export const TIME_SLOTS = Array.from({ length: 40 }, (_, i) => {
     const total = 8 * 60 + i * 15;
     const h = Math.floor(total / 60);
     const m = total % 60;
+
     return {
         id: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`,
         label: `${h}:${String(m).padStart(2, "0")}`,
@@ -160,10 +147,20 @@ export const TIME_SLOTS = Array.from({ length: 40 }, (_, i) => {
 
 export const WORKING_HOURS_END = 18;
 
-export const HOLIDAYS = [
+/* =========================
+   HOLIDAYS (blocking dates)
+========================= */
+
+export const HOLIDAYS = new Set<string>([
     "2025-01-01","2025-01-06","2025-04-18","2025-04-21","2025-05-01","2025-05-29","2025-06-09","2025-06-19","2025-10-03","2025-11-01","2025-12-25","2025-12-26",
     "2026-01-01","2026-01-06","2026-04-03","2026-04-06","2026-05-01","2026-05-14","2026-05-25","2026-06-04","2026-10-03","2026-11-01","2026-12-25","2026-12-26",
-] as const;
+]);
+
+export const isHoliday = (isoDate: string) => HOLIDAYS.has(isoDate);
+
+/* =========================
+   SERVICE AREAS
+========================= */
 
 export const SERVICE_AREAS = [
     "70173","70174","70176","70178","70180","70182","70184","70186","70188","70190",

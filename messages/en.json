@@ -7,15 +7,15 @@
       "title": "3S-Clean promise:",
       "sauber": {
         "title": "SAUBER",
-        "desc": "A first-class feel-good atmosphere in your home. Tailor-designed service packages to suit you. Eco-friendly cleaning products."
+        "desc": "A first-class feel-good atmosphere in your home. Eco-friendly products. Transparent service."
       },
       "sicher": {
         "title": "SICHER",
-        "desc": "You are always in control thanks to live video monitoring. Fixed and transparent prices."
+        "desc": "Fixed and transparent pricing. Full control thanks to secure live video monitoring."
       },
       "souveran": {
         "title": "SOUVERÄN",
-        "desc": "Employees who love what they do always deliver a great result. And you save up on taxes."
+        "desc": "No freelancers. Dedicated employees who care about quality and consistency."
       }
     },
     "video": {
@@ -26,38 +26,30 @@
     "experience": {
       "kicker": "3S-Clean Experience",
       "title": "CHOOSE YOURS!",
-      "maintenance": {
+      "core": {
         "title": "CORE",
-        "desc": "The essential cleaning program to keep your home consistently clean and presentable — week after week.",
+        "desc": "Regular cleaning on a weekly or bi-weekly basis to keep your home fresh and tidy.",
         "price": "From €120"
       },
       "reset": {
         "title": "RESET",
-        "desc": "An intensive deep clean to reset your home — ideal after a party or when it hasn’t been cleaned thoroughly for a while.",
+        "desc": "An intensive deep clean to reset your home after events or long gaps.",
         "price": "From €200"
       },
       "initial": {
         "title": "INITIAL",
-        "desc": "Recommended for first-time clients to bring your home to a baseline that can be maintained efficiently afterward.",
+        "desc": "Recommended for first-time clients to establish a clean baseline.",
         "price": "From €165"
       },
       "handover": {
         "title": "HANDOVER",
-        "desc": "Specialized cleaning before handover to a landlord or before moving in.",
+        "desc": "Specialized cleaning before moving in or handing over a property.",
         "price": "From €220"
       }
     }
   },
-  "booking": {
-    "serviceSelection": {
-      "title": "Choose Your Experience",
-      "subtitle": "Select the cleaning service that best fits your needs.",
-      "from": "From",
-      "incVat": "inc. VAT",
-      "includesTitle": "Includes:"
-    }
-  },
-  "definition": {
+
+  "promise": {
     "hero": {
       "title": "3S-Clean Promise:"
     },
@@ -119,16 +111,37 @@
       "button": "Get Started"
     }
   },
+
+  "booking": {
+    "serviceSelection": {
+      "title": "Choose Your Experience",
+      "subtitle": "Select the cleaning service that best fits your needs.",
+      "from": "From",
+      "incVat": "inc. VAT",
+      "includesHeading": {
+        "core": "Includes:",
+        "initial": "Includes all Core features, plus:",
+        "reset": "Includes all Initial features, plus:",
+        "handover": "Includes all Reset features, plus:"
+      }
+    }
+  },
+
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
       "subtitle": "Choose the type of service that fits your home."
     },
     "cards": {
-      "cta": "Select Experience",
+      "cta": "Select",
       "from": "From",
       "incVat": "inc. VAT",
-      "includesFallback": "Includes:"
+      "includesHeading": {
+        "core": "Includes:",
+        "initial": "Includes all Core features, plus:",
+        "reset": "Includes all Initial features, plus:",
+        "handover": "Includes all Reset features, plus:"
+      }
     },
     "optional": {
       "title": "Optional Services",
@@ -226,6 +239,7 @@
       ]
     }
   },
+
   "services": {
     "core": {
       "title": "CORE",
@@ -244,6 +258,7 @@
       "desc": "Specialized cleaning before moving in or handing over a property."
     }
   },
+
   "servicesIncludes": {
     "floors": {
       "name": "Floors",
@@ -274,6 +289,153 @@
       "desc": "Interior window cleaning where accessible."
     }
   },
+
+  "extras": {
+    "linen-single": { "name": "Linen change", "unit": "single bed" },
+    "linen-double": { "name": "Linen change", "unit": "double bed" },
+    "oven": { "name": "Oven deep clean", "unit": "unit" },
+    "fridge": { "name": "Fridge deep clean", "unit": "unit" },
+    "freezer": { "name": "Freezer deep clean", "unit": "unit" },
+    "windows-inside": { "name": "Window cleaning", "unit": "m² glass (inside)" },
+    "windows-outside": { "name": "Window cleaning", "unit": "m² glass (outside)" },
+    "balcony": { "name": "Balcony / terrace cleaning", "unit": "10 m²" },
+    "limescale": { "name": "Intensive limescale removal", "unit": "30 min" },
+    "cupboards": { "name": "Cupboards / cabinets organization", "unit": "hour" },
+    "wardrobe": { "name": "Wardrobe arranging", "unit": "hour" },
+    "sofa": { "name": "Sofa upholstery vacuuming", "unit": "seat" }
+  },
+
+  "bookingExtras": {
+    "title": "Extra Services",
+    "subtitle": "Add optional services to your cleaning.",
+    "adds": "adds",
+    "hint": "You can adjust extras later if needed — no stress.",
+    "badges": {
+      "recommended": "Recommended"
+    },
+    "aria": {
+      "increase": "Increase {name}",
+      "decrease": "Decrease {name}"
+    },
+    "summary": {
+      "selectedExtras": "Selected extras",
+      "howto": "Tap + to add",
+      "total": "Extras total",
+      "empty": "No extras selected"
+    }
+  },
+  "bookingDetails": {
+    "title": "Apartment Details",
+    "subtitle": "Help us understand your space for accurate pricing",
+
+    "size": {
+      "title": "Apartment Size *",
+      "tip": "Tip: choose the size that best matches your usable living area."
+    },
+
+    "people": {
+      "title": "People Living There *",
+      "pricesInclPets": "Prices shown incl. pets",
+      "pricesExclPets": "Prices shown excl. pets",
+      "pickSizeFirst": "Select an apartment size first.",
+      "base": "Base"
+    },
+
+    "additional": {
+      "title": "Additional Information",
+      "pets": "Pets at home",
+      "petsAdds": "Adds +€{price} to the base price",
+      "kids": "Children at home",
+      "allergies": "Allergies / sensitivities",
+      "allergiesPlaceholder": "Please describe any allergies..."
+    }
+  },
+
+  "bookingFooter": {
+    "footer": {
+      "back": "Back",
+      "continue": "Continue",
+      "bookNow": "Book now",
+      "booking": "Booking...",
+      "price": "€ {value}",
+      "fromPrice": "From € {value}",
+
+      "hint": {
+        "service": "Select a service",
+        "postcode": "Enter your PLZ",
+        "details": "Apartment details",
+        "extras": "Extras",
+        "contact": "Contact & schedule",
+        "continue": "Continue"
+      },
+      "sub": {
+        "incVatTime": "inc. VAT • ~{time}",
+        "pickSize": "Select apartment size",
+        "pickPeople": "Select people"
+      },
+
+      "summary": {
+        "pets": "pets",
+        "noExtras": "No extras selected",
+        "extrasSelected": "{count} extras selected",
+        "meta": "{extras} • step {step}",
+        "fallbackService": "Service",
+        "selectDetails": "Select details",
+        "total": "€ {value}",
+        "from": "From € {value}",
+        "time": "~{time}"
+      },
+
+      "buttonHint": {
+        "final": "Complete required fields"
+      }
+    }
+  },
+
+  "bookingSchedule": {
+    "contactSchedule": {
+      "hi": "Hi",
+      "hiName": "Hi {name}",
+      "title": "Contact & Schedule",
+      "subtitle": "Enter your details and pick a time",
+      "form": {
+        "firstName": "First Name *",
+        "lastName": "Last Name *",
+        "email": "Email *",
+        "phone": "Phone *",
+        "address": "Address *",
+        "addressPlaceholder": "Street and house number",
+        "postalCode": "PLZ *",
+        "city": "City *",
+        "country": "Country *"
+      },
+      "calendar": {
+        "title": "Select Date & Time *",
+        "subtitle": "~{hours}h cleaning. Must finish by {end}:00.",
+        "weekdays": ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+      },
+      "slots": {
+        "title": "Available times for {date}",
+        "subtitle": "Cleaning must finish by {end}:00",
+        "scheduled": "Cleaning scheduled: {start} - {end}"
+      },
+      "notes": {
+        "label": "Additional Notes",
+        "placeholder": "Access instructions, parking info..."
+      },
+      "terms": {
+        "prefix": "I have read and accept the",
+        "link": "Terms & Conditions",
+        "hint": "We’ll save your acceptance to the booking later (DB integration comes next).",
+        "modalTitle": "Terms & Conditions",
+        "close": "Close",
+        "accept": "Accept",
+        "placeholder1": "Terms content will be placed here.",
+        "placeholder2": "For now this is a placeholder modal — we’ll connect a real document and store acceptance in the database."
+      }
+    }
+  },
+
   "faqPage": {
     "hero": {
       "title": "FAQs",
@@ -328,7 +490,7 @@
             "answer": "Private cleaners pay no taxes and typically have no insurance or liability coverage. We provide trained, vetted staff, insurance coverage, guaranteed appointments and replacements. You’re paying for stability and peace of mind — not for luck. You can also save up to 20% of your cleaning expenses with us according to §35a EStG."
           },
           {
-            "question": "Can I get an invoice for household tax deduction (§35a EStG)?",
+            "question": "Can I get an invoice for Steuerermäßigung (household tax deduction)?",
             "answer": "Of course. You receive an invoice within 48 hours after every cleaning — you can deduct up to 20% of household service costs legally under §35a EStG."
           }
         ]
@@ -391,5 +553,33 @@
         ]
       }
     ]
+  },
+
+  "errors": {
+    "requiredFields": "Please fill in all required contact details.",
+    "createOrderFailed": "We couldn’t create the booking. Please try again.",
+    "generic": "Something went wrong."
+  },
+
+  "postcode": {
+    "postcodeCheck": {
+      "title": "Check availability",
+      "subtitle": "Enter your postal code to see if we currently serve your area.",
+      "postcodePlaceholder": "Postal code",
+      "checking": "Checking…",
+
+      "availableTitle": "Available",
+      "availableBody": "Great — we serve PLZ {postcode}. You can continue.",
+
+      "unavailableTitle": "Not available",
+      "unavailableBody": "We don’t serve PLZ {postcode} yet.",
+
+      "emailPlaceholder": "Enter your email",
+      "notifyCta": "Notify me",
+      "notifyLoading": "Sending…",
+
+      "notifiedTitle": "You’ll be notified",
+      "notifiedBody": "We’ll email you when we expand to PLZ {postcode}."
+    }
   }
 }

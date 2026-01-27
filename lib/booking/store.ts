@@ -2,7 +2,12 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ServiceId } from "@/lib/booking/config";
+import type {
+    ServiceId,
+    ApartmentSizeId,
+    PeopleCountId,
+    ExtraId,
+} from "@/lib/booking/config";
 
 export interface FormData {
     firstName: string;
@@ -32,11 +37,11 @@ export interface BookingState {
     selectedService: ServiceId | null;
     setSelectedService: (v: ServiceId | null) => void;
 
-    apartmentSize: string | null;
-    setApartmentSize: (size: string | null) => void;
+    apartmentSize: ApartmentSizeId | null;
+    setApartmentSize: (size: ApartmentSizeId | null) => void;
 
-    peopleCount: string | null;
-    setPeopleCount: (count: string | null) => void;
+    peopleCount: PeopleCountId | null;
+    setPeopleCount: (count: PeopleCountId | null) => void;
 
     hasPets: boolean;
     setHasPets: (hasPets: boolean) => void;
@@ -50,9 +55,9 @@ export interface BookingState {
     allergyNote: string;
     setAllergyNote: (note: string) => void;
 
-    extras: Record<string, number>;
-    setExtras: (extras: Record<string, number>) => void;
-    updateExtra: (extraId: string, delta: number) => void;
+    extras: Partial<Record<ExtraId, number>>;
+    setExtras: (extras: Partial<Record<ExtraId, number>>) => void;
+    updateExtra: (extraId: ExtraId, delta: number) => void;
 
     formData: FormData;
     setFormData: (data: Partial<FormData>) => void;
@@ -88,10 +93,10 @@ const initialFormData: FormData = {
     postalCode: "",
     city: "",
     country: "Germany",
-    notes: ""
+    notes: "",
 };
 
-// ✅ чистое состояние без методов (так TS не ломается)
+// ✅ чистое состояние без методов
 type BookingStateData = Omit<
     BookingState,
     | "setStep"
@@ -133,12 +138,12 @@ const initialState: BookingStateData = {
 
     extras: {},
 
-    formData: initialFormData,
+    formData: { ...initialFormData },
 
     selectedDate: null,
     selectedTime: null,
 
-    pendingToken: null
+    pendingToken: null,
 };
 
 type PersistSlice = {
@@ -165,7 +170,14 @@ export const useBookingStore = create<BookingState>()(
                     return { step: next };
                 }),
 
-            setPostcode: (postcode) => set({ postcode }),
+            // ✅ нормализуем PLZ (5 цифр)
+            setPostcode: (postcode) =>
+                set({
+                    postcode: String(postcode ?? "")
+                        .replace(/\D/g, "")
+                        .slice(0, 5),
+                }),
+
             setPostcodeVerified: (postcodeVerified) => set({ postcodeVerified }),
 
             setPlzAutofillDisabled: (plzAutofillDisabled) => set({ plzAutofillDisabled }),
@@ -184,19 +196,22 @@ export const useBookingStore = create<BookingState>()(
             setAllergyNote: (allergyNote) => set({ allergyNote }),
 
             setExtras: (extras) => set({ extras }),
+
             updateExtra: (extraId, delta) =>
                 set((state) => {
-                    const current = state.extras[extraId] || 0;
+                    const current = state.extras[extraId] ?? 0;
                     const next = Math.max(0, current + delta);
-                    const extras = { ...state.extras };
+
+                    const extras: Partial<Record<ExtraId, number>> = { ...state.extras };
                     if (next === 0) delete extras[extraId];
                     else extras[extraId] = next;
+
                     return { extras };
                 }),
 
             setFormData: (data) =>
                 set((state) => ({
-                    formData: { ...state.formData, ...data }
+                    formData: { ...state.formData, ...data },
                 })),
 
             setSelectedDate: (selectedDate) => set({ selectedDate }),
@@ -204,7 +219,11 @@ export const useBookingStore = create<BookingState>()(
 
             setPendingToken: (pendingToken) => set({ pendingToken }),
 
-            resetBooking: () => set({ ...initialState, formData: initialFormData })
+            resetBooking: () =>
+                set({
+                    ...initialState,
+                    formData: { ...initialFormData },
+                }),
         }),
         {
             name: "3s-booking-storage",
@@ -216,7 +235,7 @@ export const useBookingStore = create<BookingState>()(
                     formData: state.formData,
                     selectedDate: state.selectedDate,
                     selectedTime: state.selectedTime,
-                    _savedAt: Date.now()
+                    _savedAt: Date.now(),
                 };
             },
 
@@ -229,9 +248,9 @@ export const useBookingStore = create<BookingState>()(
                     ...current,
                     formData: p.formData ?? current.formData,
                     selectedDate: p.selectedDate ?? current.selectedDate,
-                    selectedTime: p.selectedTime ?? current.selectedTime
+                    selectedTime: p.selectedTime ?? current.selectedTime,
                 };
-            }
+            },
         }
     )
 );

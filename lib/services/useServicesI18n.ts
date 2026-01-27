@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { ServiceIncludeKey, ServiceId } from "@/lib/booking/config";
 
 type IncludeRaw = {
+    name: string;
     desc?: string;
 };
 
@@ -20,8 +21,11 @@ export function useServicesI18n() {
         const raw = tIncludes.raw(key) as IncludeRaw | undefined;
 
         return {
-            name: tIncludes(`${key}.name`),
-            desc: typeof raw?.desc === "string" && raw.desc.trim() ? raw.desc : undefined,
+            name: raw?.name ?? "",
+            desc:
+                typeof raw?.desc === "string" && raw.desc.trim()
+                    ? raw.desc
+                    : undefined,
         };
     };
 

@@ -1,7 +1,7 @@
 export const mainNav = [
-    { label: "Inside", href: "/inside" },
+    { label: "Promise", href: "/promise" },
     { label: "Experience", href: "/experience" },
-    { label: "Definition", href: "/definition" },
+    { label: "Story", href: "/story" },
     { label: "FAQ", href: "/faq" },
     { label: "Contact", href: "/contact" },
 ];
@@ -21,6 +21,7 @@ export type LegalLink = {
     label: string;
     href: string;
 };
+
 export const footerColumns: FooterColumn[] = [
     {
         title: "Get Started",
@@ -32,9 +33,7 @@ export const footerColumns: FooterColumn[] = [
     {
         title: "Explore",
         links: [
-            { label: "Inside 3S", href: "/inside" },
-            // если Careers пока нет в app — лучше убрать, чем вести наружу
-            // { label: "Careers", href: "/careers" },
+            { label: "story", href: "/story" },
         ],
     },
     {

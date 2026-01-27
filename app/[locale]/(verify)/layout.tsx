@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Logo } from "@/components/ui/Logo";
+import { Logo } from "@/components/ui/logo/Logo";
 import Link from "next/link";
 
 

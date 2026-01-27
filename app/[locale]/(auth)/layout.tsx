@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
 import { Suspense } from "react";
-import { Logo } from "@/components/ui/Logo";
+import { Logo } from "@/components/ui/logo/Logo";
 import Link from "next/link";
 export const viewport: Viewport = {
     themeColor: "#ffffff",

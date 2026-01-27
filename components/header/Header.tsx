@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Logo } from "@/components/ui/Logo";
+import { Logo } from "@/components/ui/logo/Logo";
 import { mainNav } from "@/lib/navigation/navigation";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
 import { UserCheckIcon } from "@/components/ui/icons/UserCheckIcon";
@@ -16,9 +16,23 @@ export default function Header() {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
+
+    // ✅ Scroll detection for glass effect
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+
+        // Check initial scroll position
+        handleScroll();
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     // ✅ Auth state (Supabase)
     useEffect(() => {
@@ -95,7 +109,7 @@ export default function Header() {
 
     return (
         <>
-            <header className="header">
+            <header className={`header ${isScrolled ? "scrolled" : ""}`}>
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">

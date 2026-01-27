@@ -30,8 +30,6 @@ type Order = {
 };
 
 function Content() {
-    const t = useTranslations();
-
     const sp = useSearchParams();
     const router = useRouter();
 
@@ -123,19 +121,19 @@ function Content() {
 
     const service = order ? SERVICES.find((s) => s.id === order.service_type) : null;
 
-    // ✅ Service label (NO service.name in config)
+    // ✅ use specific namespace (safer) + fallback to avoid MISSING_MESSAGE crash
+    const tServices = useTranslations("services");
+
     const serviceLabel = useMemo(() => {
         if (!order) return "—";
 
-        // если нашли сервис в конфиге — выводим локализованный title
         if (service) {
-            // messages/en|de.json: "services": { "core": { "title": ... } ... }
-            return t(`services.${service.id}.title`);
+            const key = `${service.id}.title` as const;
+            return tServices.has(key) ? tServices(key) : (order.service_type || "—");
         }
 
-        // fallback: если прилетел неизвестный service_type
         return order.service_type || "—";
-    }, [order, service, t]);
+    }, [order, service, tServices]);
 
     const formatDate = (d: string) =>
         new Date(d).toLocaleDateString("en-GB", {
@@ -233,7 +231,9 @@ function Content() {
 
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">Email</span>
-                                <span className="font-medium text-right break-all">{order.customer_email?.trim() || "—"}</span>
+                                <span className="font-medium text-right break-all">
+                  {order.customer_email?.trim() || "—"}
+                </span>
                             </div>
 
                             <div className="flex justify-between gap-4">
@@ -280,8 +280,9 @@ function Content() {
                         </button>
                     ) : (
                         <>
+                            {/* ✅ safer than /public for locale routing */}
                             <Link
-                                href="/public"
+                                href="/"
                                 className="block w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all"
                             >
                                 Back to Home

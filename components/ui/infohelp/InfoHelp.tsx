@@ -1,4 +1,4 @@
-// components/ui/InfoHelp.tsx
+// components/ui/infohelp/InfoHelp.tsx
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -6,11 +6,8 @@ import { createPortal } from "react-dom";
 import { Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-/**
- * Touch UI detection:
- * - Tablets + phones: pointer: coarse  ✅
- * - Also fallback by width <= 1024px (covers iPad edge cases) ✅
- */
+/* ---------------- Touch UI detection ---------------- */
+
 function useIsTouchUI() {
     const [isTouchUI, setIsTouchUI] = useState(false);
 
@@ -38,6 +35,8 @@ function lockBodyScroll(locked: boolean) {
     }
 }
 
+/* ---------------- Component ---------------- */
+
 export function InfoHelp({
                              text,
                              title = "Details",
@@ -47,22 +46,41 @@ export function InfoHelp({
     title?: string;
     dark?: boolean;
 }) {
-    const isTouchUI = useIsTouchUI(); // ✅ phone + tablet
+    const isTouchUI = useIsTouchUI();
     const [open, setOpen] = useState(false);
     const btnRef = useRef<HTMLButtonElement | null>(null);
+
+    // ✅ hover close delay (desktop only)
+    const closeTimerRef = useRef<number | null>(null);
+
+    const clearCloseTimer = () => {
+        if (closeTimerRef.current) {
+            window.clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+    };
+
+    const scheduleClose = (ms = 180) => {
+        clearCloseTimer();
+        closeTimerRef.current = window.setTimeout(() => setOpen(false), ms);
+    };
+
+    useEffect(() => {
+        return () => clearCloseTimer();
+    }, []);
 
     const stop = (e: React.SyntheticEvent) => {
         e.preventDefault();
         e.stopPropagation();
     };
 
-    // lock scroll for sheet (touch UI only)
+    /* lock scroll for mobile sheet */
     useEffect(() => {
         if (isTouchUI) lockBodyScroll(open);
         return () => lockBodyScroll(false);
     }, [open, isTouchUI]);
 
-    // close on ESC
+    /* ESC closes */
     useEffect(() => {
         if (!open) return;
         const onKey = (e: KeyboardEvent) => {
@@ -72,11 +90,10 @@ export function InfoHelp({
         return () => window.removeEventListener("keydown", onKey);
     }, [open]);
 
-    // outside click closes (desktop tooltip)
+    /* outside click (desktop) */
     useEffect(() => {
         if (!open || isTouchUI) return;
 
-        const capture = true;
         const onDown = (e: PointerEvent) => {
             const target = e.target as Node | null;
             if (!target) return;
@@ -85,31 +102,39 @@ export function InfoHelp({
             setOpen(false);
         };
 
-        window.addEventListener("pointerdown", onDown, capture);
-        return () => window.removeEventListener("pointerdown", onDown, capture);
+        window.addEventListener("pointerdown", onDown, true);
+        return () => window.removeEventListener("pointerdown", onDown, true);
     }, [open, isTouchUI]);
 
+    /* icon colors */
     const iconClass = useMemo(
-        () =>
-            dark
-                ? "text-white/60 hover:text-white/85"
-                : "text-gray-400 hover:text-gray-600",
+        () => (dark ? "text-white/60 hover:text-white" : "text-gray-400 hover:text-gray-600"),
         [dark]
     );
 
     return (
         <span
             data-infohelp-root
-            className="relative inline-block"
+            className="relative inline-flex"
+            // ✅ desktop hover: keep open when moving between icon and tooltip
+            onMouseEnter={
+                !isTouchUI
+                    ? () => {
+                        clearCloseTimer();
+                        setOpen(true);
+                    }
+                    : undefined
+            }
+            onMouseLeave={!isTouchUI ? () => scheduleClose(180) : undefined}
             onPointerDown={stop}
             onClick={stop}
         >
-      {/* ⓘ icon (click/tap only everywhere) */}
+      {/* ⓘ icon */}
             <button
                 ref={btnRef}
                 type="button"
                 aria-label="More info"
-                className={`ml-1.5 inline-flex items-center justify-center transition-colors p-2 -m-2 ${iconClass}`}
+                className={`ml-1 inline-flex items-center justify-center rounded-full transition-colors p-1.5 ${iconClass}`}
                 onClick={(e) => {
                     stop(e);
                     setOpen((v) => !v);
@@ -118,27 +143,33 @@ export function InfoHelp({
         <Info className="w-4 h-4" />
       </button>
 
-            {/* DESKTOP: tooltip (click-only) — stays inside viewport + closes on text click */}
+            {/* ---------- DESKTOP TOOLTIP ---------- */}
             {!isTouchUI && open && (
                 <div
                     role="tooltip"
-                    onClick={() => setOpen(false)} // ✅ close on text click
+                    // ✅ keep open while hovering tooltip
+                    onMouseEnter={() => {
+                        clearCloseTimer();
+                        setOpen(true);
+                    }}
+                    onMouseLeave={() => scheduleClose(180)}
+                    onClick={() => setOpen(false)}
                     className={[
                         "absolute z-50",
-                        "top-0 mt-[-4px]",
-                        "left-1/2 -translate-x-1/2",
-                        "w-max max-w-[min(18rem,calc(100vw-2rem))]", // ✅ never off-screen
-                        "p-3 text-sm rounded-lg shadow-lg",
-                        dark
-                            ? "bg-gray-900 text-white border border-white/10"
-                            : "bg-white text-gray-700 border border-gray-200",
+                        "top-full mt-2",
+                        "left-0", // starts at icon edge
+                        // ✅ wider, less tall feeling (better wrap)
+                        "w-[min(22rem,calc(100vw-2rem))]",
+                        "px-3 py-2 text-sm leading-snug",
+                        "rounded-lg shadow-lg",
+                        dark ? "bg-gray-900 text-white border border-white/10" : "bg-white text-gray-700 border border-gray-200",
                     ].join(" ")}
                 >
                     {text}
                 </div>
             )}
 
-            {/* TOUCH UI (phone + tablet): bottom-sheet (portal + swipe + spring) */}
+            {/* ---------- TOUCH UI (BOTTOM SHEET) ---------- */}
             {isTouchUI &&
                 open &&
                 createPortal(
@@ -146,8 +177,8 @@ export function InfoHelp({
                         <motion.div
                             key="overlay"
                             className="fixed inset-0 z-[2147483647]"
-                            aria-modal="true"
                             role="dialog"
+                            aria-modal="true"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -159,7 +190,7 @@ export function InfoHelp({
                         >
                             {/* backdrop */}
                             <motion.div
-                                className="absolute inset-0 bg-black/40"
+                                className={dark ? "absolute inset-0 bg-black/60" : "absolute inset-0 bg-black/40"}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
@@ -168,7 +199,11 @@ export function InfoHelp({
                             {/* sheet */}
                             <motion.div
                                 data-sheet="true"
-                                className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-white px-5 pt-4 pb-6 shadow-2xl"
+                                className={[
+                                    "absolute bottom-0 left-0 right-0",
+                                    "rounded-t-3xl px-5 pt-4 pb-6 shadow-2xl",
+                                    dark ? "bg-gray-900 text-white" : "bg-white text-gray-900",
+                                ].join(" ")}
                                 initial={{ y: 24 }}
                                 animate={{ y: 0 }}
                                 exit={{ y: 220 }}
@@ -182,18 +217,21 @@ export function InfoHelp({
                                 onPointerDown={stop}
                                 onClick={stop}
                             >
-                                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/10" />
+                                <div
+                                    className={
+                                        dark
+                                            ? "mx-auto mb-3 h-1 w-10 rounded-full bg-white/20"
+                                            : "mx-auto mb-3 h-1 w-10 rounded-full bg-black/10"
+                                    }
+                                />
 
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="min-w-0">
-                                        <div className="text-base font-semibold text-gray-900">
-                                            {title}
-                                        </div>
+                                        <div className="text-base font-semibold">{title}</div>
 
-                                        {/* tap on text closes */}
                                         <button
                                             type="button"
-                                            className="mt-2 text-left text-sm leading-relaxed text-gray-600"
+                                            className={dark ? "mt-2 text-left text-sm text-white/80" : "mt-2 text-left text-sm text-gray-600"}
                                             onClick={(e) => {
                                                 stop(e);
                                                 setOpen(false);
@@ -205,7 +243,11 @@ export function InfoHelp({
 
                                     <button
                                         type="button"
-                                        className="text-sm font-semibold text-gray-900/70 px-3 py-2 -mr-2"
+                                        className={
+                                            dark
+                                                ? "text-sm font-semibold text-white/70 px-3 py-2 -mr-2"
+                                                : "text-sm font-semibold text-gray-700 px-3 py-2 -mr-2"
+                                        }
                                         onClick={(e) => {
                                             stop(e);
                                             setOpen(false);

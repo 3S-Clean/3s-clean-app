@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useBookingStore } from "@/lib/booking/store";
 import {
     EXTRAS,
@@ -9,7 +10,8 @@ import {
     WORKING_HOURS_END,
     getEstimatedHours,
 } from "@/lib/booking/config";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { isExtraId, isServiceId, isApartmentSizeId } from "@/lib/booking/guards";
 
 type ExistingBookingRow = {
     scheduled_date: string; // YYYY-MM-DD
@@ -18,6 +20,9 @@ type ExistingBookingRow = {
 };
 
 export default function ContactSchedule() {
+    const t = useTranslations("bookingSchedule.contactSchedule");
+    const locale = useLocale();
+
     const {
         selectedService,
         apartmentSize,
@@ -33,10 +38,19 @@ export default function ContactSchedule() {
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
 
-    // ---------- hours -> minutes (точно) ----------
+    // ✅ Terms UI only (wire to DB later)
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
+
+    // ---------- hours -> minutes (точно, типобезопасно) ----------
     const estimatedMinutes = useMemo(() => {
-        const baseHours = getEstimatedHours(selectedService || "", apartmentSize || "");
+        const baseHours =
+            isServiceId(selectedService) && isApartmentSizeId(apartmentSize)
+                ? getEstimatedHours(selectedService, apartmentSize)
+                : 0;
+
         const extrasHours = Object.entries(extras || {}).reduce((sum, [id, qty]) => {
+            if (!isExtraId(id)) return sum;
             const e = EXTRAS.find((x) => x.id === id);
             return sum + (e ? e.hours * (Number(qty) || 0) : 0);
         }, 0);
@@ -69,11 +83,11 @@ export default function ContactSchedule() {
             }
         };
 
-        run();
+        void run();
         return () => controller.abort();
     }, [currentMonth]);
 
-    // ---------- slot availability (в минутах, финиш <= 18:00) ----------
+    // ---------- slot availability ----------
     const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
         const startMin = hour * 60 + minutes;
         const endMin = startMin + estimatedMinutes;
@@ -112,149 +126,200 @@ export default function ContactSchedule() {
         return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
     };
 
+    const monthLabel = currentMonth.toLocaleString(locale, { month: "long" });
+    const weekdays = t.raw("calendar.weekdays") as unknown as string[];
+
+    // ✅ цвет как раньше (твой booking footer)
+    const primarySelected = "bg-gray-900 text-white";
+    const primaryBtn = "bg-gray-900 text-white hover:bg-gray-800";
+    const disabledBtn = "opacity-35 cursor-not-allowed";
+
     return (
         <div className="animate-fadeIn">
+            {/* Header */}
             <div className="mb-10">
-                <div className="text-sm text-gray-500 mb-2">
-                    {formData.firstName?.trim() ? `Hi ${formData.firstName.trim()} ` : "Hi"}
+                <div className="text-sm text-[var(--muted)] mb-2">
+                    {formData.firstName?.trim()
+                        ? t("hiName", { name: formData.firstName.trim() })
+                        : t("hi")}
                 </div>
-                <h1 className="text-3xl font-semibold mb-3">Contact & Schedule</h1>
-                <p className="text-gray-500">Enter your details and pick a time</p>
+
+                <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
+                <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
             {/* Contact Form */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label className="block text-sm font-medium mb-2">First Name *</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">
+                        {t("form.firstName")}
+                    </label>
                     <input
                         type="text"
                         value={formData.firstName}
                         onChange={(e) => setFormData({ firstName: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        className={[
+                            "w-full px-4 py-3 rounded-xl outline-none transition",
+                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                     />
                 </div>
+
                 <div>
-                    <label className="block text-sm font-medium mb-2">Last Name *</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">
+                        {t("form.lastName")}
+                    </label>
                     <input
                         type="text"
                         value={formData.lastName}
                         onChange={(e) => setFormData({ lastName: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        className={[
+                            "w-full px-4 py-3 rounded-xl outline-none transition",
+                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                     />
                 </div>
             </div>
 
             <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Email *</label>
+                <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.email")}</label>
                 <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ email: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    className={[
+                        "w-full px-4 py-3 rounded-xl outline-none transition",
+                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)]",
+                    ].join(" ")}
                 />
             </div>
 
             <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Phone *</label>
+                <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.phone")}</label>
                 <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    className={[
+                        "w-full px-4 py-3 rounded-xl outline-none transition",
+                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)]",
+                    ].join(" ")}
                 />
             </div>
 
             <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Address *</label>
+                <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.address")}</label>
                 <input
                     type="text"
                     value={formData.address}
                     onChange={(e) => setFormData({ address: e.target.value })}
-                    placeholder="Street and house number"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    placeholder={t("form.addressPlaceholder")}
+                    className={[
+                        "w-full px-4 py-3 rounded-xl outline-none transition",
+                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)]",
+                    ].join(" ")}
                 />
             </div>
 
             {/* PLZ / City / Country */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 <div>
-                    <label className="block text-sm font-medium mb-2">PLZ *</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.postalCode")}</label>
                     <input
                         type="text"
                         inputMode="numeric"
                         value={formData.postalCode ?? ""}
-                        onChange={(e) =>
-                            setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })
-                        }
+                        onChange={(e) => setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })}
                         placeholder="70173"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        className={[
+                            "w-full px-4 py-3 rounded-xl outline-none transition",
+                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-2">City *</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.city")}</label>
                     <input
                         type="text"
                         value={formData.city ?? ""}
                         onChange={(e) => setFormData({ city: e.target.value })}
                         placeholder="Stuttgart"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        className={[
+                            "w-full px-4 py-3 rounded-xl outline-none transition",
+                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-2">Country *</label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.country")}</label>
                     <input
                         type="text"
                         value={formData.country ?? ""}
                         onChange={(e) => setFormData({ country: e.target.value })}
                         placeholder="Germany"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
+                        className={[
+                            "w-full px-4 py-3 rounded-xl outline-none transition",
+                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "focus:ring-2 focus:ring-[var(--ring)]",
+                        ].join(" ")}
                     />
                 </div>
             </div>
 
             {/* Calendar */}
             <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Select Date & Time *</h3>
-                <p className="text-sm text-gray-500 mb-5">
-                    ~{Math.max(1, Math.ceil(estimatedMinutes / 60))}h cleaning. Must finish by 18:00.
+                <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">{t("calendar.title")}</h3>
+                <p className="text-sm text-[var(--muted)] mb-5">
+                    {t("calendar.subtitle", {
+                        hours: String(Math.max(1, Math.ceil(estimatedMinutes / 60))),
+                        end: String(WORKING_HOURS_END),
+                    })}
                 </p>
 
-                <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                <div className={["rounded-2xl p-6", "bg-[var(--card)]/70 backdrop-blur-md", "border border-black/10 dark:border-white/10"].join(" ")}>
                     <div className="flex justify-between items-center mb-6">
                         <button
                             type="button"
                             onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
-                            className="p-2 rounded-full hover:bg-gray-100"
+                            className="p-2 rounded-full transition hover:bg-[var(--card)]/60"
                         >
-                            <ChevronLeft className="w-5 h-5 text-gray-500" />
+                            <ChevronLeft className="w-5 h-5 text-[var(--muted)]" />
                         </button>
 
-                        <div className="text-lg">
-              <span className="font-bold">
-                {currentMonth.toLocaleString("en", { month: "long" })}
-              </span>{" "}
-                            <span className="text-gray-400">{year}</span>
+                        <div className="text-lg text-[var(--text)]">
+                            <span className="font-bold">{monthLabel}</span>{" "}
+                            <span className="text-[var(--muted)]">{year}</span>
                         </div>
 
                         <button
                             type="button"
                             onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
-                            className="p-2 rounded-full hover:bg-gray-100"
+                            className="p-2 rounded-full transition hover:bg-[var(--card)]/60"
                         >
-                            <ChevronRight className="w-5 h-5 text-gray-500" />
+                            <ChevronRight className="w-5 h-5 text-[var(--muted)]" />
                         </button>
                     </div>
 
                     <div className="grid grid-cols-7 gap-1 mb-2">
-                        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((d) => (
-                            <div
-                                key={d}
-                                className={`text-center text-xs font-semibold py-2 ${
-                                    d === "SUN" ? "text-gray-300" : "text-gray-500"
-                                }`}
-                            >
+                        {weekdays.map((d) => (
+                            <div key={d} className="text-center text-xs font-semibold py-2 text-[var(--muted)]">
                                 {d}
                             </div>
                         ))}
@@ -267,10 +332,7 @@ export default function ContactSchedule() {
 
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                             const day = i + 1;
-                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(
-                                2,
-                                "0"
-                            )}`;
+                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                             const date = new Date(year, month, day);
 
                             const today = new Date();
@@ -278,7 +340,7 @@ export default function ContactSchedule() {
 
                             const isPast = date < today;
                             const isSunday = date.getDay() === 0;
-                            const isHoliday = HOLIDAYS.includes(dateKey);
+                            const isHoliday = HOLIDAYS.has(dateKey);
                             const available = hasSlots(dateKey);
 
                             const isSelected = selectedDate === dateKey;
@@ -293,10 +355,15 @@ export default function ContactSchedule() {
                                         setSelectedDate(dateKey);
                                         setSelectedTime(null);
                                     }}
-                                    className={`aspect-square rounded-xl text-sm font-medium transition-all
-                    ${isSelected ? "bg-gray-900 text-white" : ""}
-                    ${disabled && !isSelected ? "text-gray-300 cursor-not-allowed" : ""}
-                    ${!disabled && !isSelected ? "hover:bg-gray-100 text-gray-700" : ""}`}
+                                    className={[
+                                        "aspect-square rounded-xl text-sm font-medium transition-all",
+                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                                        isSelected
+                                            ? primarySelected
+                                            : disabled
+                                                ? `${disabledBtn} text-[var(--muted)]`
+                                                : "text-[var(--text)] hover:bg-[var(--card)]/60",
+                                    ].join(" ")}
                                 >
                                     {day}
                                 </button>
@@ -309,15 +376,19 @@ export default function ContactSchedule() {
             {/* Time Slots */}
             {selectedDate && (
                 <div className="mb-8 animate-fadeIn">
-                    <h3 className="text-base font-semibold mb-2">
-                        Available times for{" "}
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString("en", {
-                            weekday: "long",
-                            month: "long",
-                            day: "numeric",
+                    <h3 className="text-base font-semibold mb-2 text-[var(--text)]">
+                        {t("slots.title", {
+                            date: new Date(selectedDate + "T00:00:00").toLocaleDateString(locale, {
+                                weekday: "long",
+                                month: "long",
+                                day: "numeric",
+                            }),
                         })}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-4">Cleaning must finish by 18:00</p>
+
+                    <p className="text-sm text-[var(--muted)] mb-4">
+                        {t("slots.subtitle", { end: String(WORKING_HOURS_END) })}
+                    </p>
 
                     <div className="grid grid-cols-4 gap-2">
                         {TIME_SLOTS.map((slot) => {
@@ -330,14 +401,15 @@ export default function ContactSchedule() {
                                     type="button"
                                     onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
                                     disabled={!available}
-                                    className={`py-2.5 rounded-xl text-sm font-medium transition-all
-                    ${
+                                    className={[
+                                        "py-2.5 rounded-xl text-sm font-medium transition-all",
+                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
                                         isSelected
-                                            ? "bg-gray-900 text-white"
+                                            ? primarySelected
                                             : available
-                                                ? "bg-gray-200 text-gray-900 hover:bg-gray-300"
-                                                : "bg-gray-100 text-gray-300 cursor-not-allowed"
-                                    }`}
+                                                ? "bg-[var(--card)]/70 backdrop-blur text-[var(--text)] hover:bg-[var(--card)]"
+                                                : `${disabledBtn} bg-[var(--card)]/40 text-[var(--muted)]`,
+                                    ].join(" ")}
                                 >
                                     {slot.label}
                                 </button>
@@ -346,23 +418,121 @@ export default function ContactSchedule() {
                     </div>
 
                     {selectedTime && (
-                        <p className="mt-4 text-sm text-gray-900 font-medium">
-                            ✓ Cleaning scheduled: {selectedTime} - {getEndTime()}
+                        <p className="mt-4 text-sm font-medium text-[var(--text)]">
+                            ✓ {t("slots.scheduled", { start: selectedTime, end: getEndTime() })}
                         </p>
                     )}
                 </div>
             )}
 
             {/* Notes */}
-            <div>
-                <label className="block text-sm font-medium mb-2">Additional Notes</label>
+            <div className="mb-5">
+                <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("notes.label")}</label>
                 <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ notes: e.target.value })}
-                    placeholder="Access instructions, parking info..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 resize-y min-h-[100px]"
+                    placeholder={t("notes.placeholder")}
+                    className={[
+                        "w-full px-4 py-3 rounded-xl resize-y min-h-[100px] outline-none transition",
+                        "bg-[var(--input-bg)] border border-[var(--input-border)] text-[color:var(--text)]",
+                        "placeholder:text-[color:var(--muted)]/70",
+                        "focus:ring-2 focus:ring-[var(--ring)]",
+                    ].join(" ")}
                 />
             </div>
+
+            {/* ✅ Terms & Conditions */}
+            <div className={["rounded-2xl p-4", "bg-[var(--card)]/70 backdrop-blur-md", "border border-black/10 dark:border-white/10"].join(" ")}>
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={acceptedTerms}
+                        onChange={(e) => setAcceptedTerms(e.target.checked)}
+                        className="mt-1 w-5 h-5 accent-[color:var(--text)]"
+                    />
+                    <div className="text-sm text-[var(--text)] leading-snug">
+                        {t("terms.prefix")}{" "}
+                        <button
+                            type="button"
+                            onClick={() => setIsTermsOpen(true)}
+                            className="underline underline-offset-4 hover:opacity-80"
+                        >
+                            {t("terms.link")}
+                        </button>
+                        .
+                    </div>
+                </label>
+
+                <div className="mt-2 text-xs text-[var(--muted)]">{t("terms.hint")}</div>
+            </div>
+
+            {/* ✅ Terms modal */}
+            {isTermsOpen && (
+                <div
+                    className="fixed inset-0 z-[80] flex items-center justify-center px-6"
+                    role="dialog"
+                    aria-modal="true"
+                    onMouseDown={() => setIsTermsOpen(false)}
+                >
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+                    <div
+                        className={[
+                            "relative w-full max-w-xl rounded-2xl p-5",
+                            "bg-[var(--background)]",
+                            "border border-black/10 dark:border-white/10",
+                            "shadow-[var(--shadow)]",
+                        ].join(" ")}
+                        onMouseDown={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                            <div className="text-lg font-semibold text-[var(--text)]">{t("terms.modalTitle")}</div>
+                            <button
+                                type="button"
+                                onClick={() => setIsTermsOpen(false)}
+                                className="p-2 rounded-full hover:bg-[var(--card)]/60 transition"
+                                aria-label={t("terms.close")}
+                            >
+                                <X className="w-5 h-5 text-[var(--muted)]" />
+                            </button>
+                        </div>
+
+                        <div className="text-sm text-[var(--muted)] leading-relaxed space-y-3">
+                            <p>{t("terms.placeholder1")}</p>
+                            <p>{t("terms.placeholder2")}</p>
+                        </div>
+
+                        <div className="mt-5 flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setIsTermsOpen(false)}
+                                className={[
+                                    "px-5 py-2.5 rounded-full font-medium transition",
+                                    "border border-black/15 dark:border-white/15",
+                                    "text-[var(--text)]",
+                                    "hover:bg-[var(--card)]/60",
+                                ].join(" ")}
+                            >
+                                {t("terms.close")}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setAcceptedTerms(true);
+                                    setIsTermsOpen(false);
+                                }}
+                                className={[
+                                    "px-5 py-2.5 rounded-full font-semibold transition",
+                                    primaryBtn,
+                                ].join(" ")}
+                            >
+                                {t("terms.accept")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

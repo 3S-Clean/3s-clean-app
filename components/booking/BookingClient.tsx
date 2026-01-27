@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -13,8 +13,20 @@ import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
 import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, EXTRAS, getBasePrice, getEstimatedHours, type ServiceId } from "@/lib/booking/config";
+import {
+    SERVICES,
+    EXTRAS,
+    getBasePrice,
+    getEstimatedHours,
+    type ServiceId,
+    type ApartmentSizeId,
+    type PeopleCountId,
+} from "@/lib/booking/config";
 
+import { useExtrasI18n } from "@/lib/services/useExtrasI18n";
+import { isServiceId, isApartmentSizeId, isPeopleCountId, isExtraId } from "@/lib/booking/guards";
+
+/* ----------------------------- Types ----------------------------- */
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
 type CreateOrderOk = { orderId: string; pendingToken: string };
 
@@ -25,49 +37,6 @@ function isCreateOrderOk(v: unknown): v is CreateOrderOk {
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
-
-function calculateTotals(
-    service: ServiceId,
-    size: string,
-    people: string,
-    hasPets: boolean,
-    extras: Record<string, number>
-) {
-    const basePrice = getBasePrice(service, size, people, hasPets);
-
-    let extrasPrice = 0;
-    let extrasHours = 0;
-    const extrasArray: OrderExtraLine[] = [];
-
-    for (const [extraId, qtyRaw] of Object.entries(extras || {})) {
-        const qty = Number(qtyRaw) || 0;
-        if (qty <= 0) continue;
-
-        const extra = EXTRAS.find((e) => e.id === extraId);
-        if (!extra) continue;
-
-        const linePrice = extra.price * qty;
-        extrasPrice += linePrice;
-        extrasHours += extra.hours * qty;
-
-        extrasArray.push({
-            id: extraId,
-            quantity: qty,
-            price: r2(linePrice),
-            name: extra.name,
-        });
-    }
-
-    const estimatedHours = getEstimatedHours(service, size) + extrasHours;
-
-    return {
-        basePrice: r2(basePrice),
-        extrasPrice: r2(extrasPrice),
-        totalPrice: r2(basePrice + extrasPrice),
-        estimatedHours: r2(estimatedHours),
-        extras: extrasArray,
-    };
-}
 
 type ProfileRow = {
     first_name: string | null;
@@ -81,11 +50,15 @@ type ProfileRow = {
     notes: string | null;
 };
 
+/* ============================= Component ============================= */
 export default function BookingClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const supabase = useMemo(() => createClient(), []);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // ✅ centralized extras i18n
+    const { getExtraText } = useExtrasI18n();
 
     const {
         step,
@@ -108,19 +81,17 @@ export default function BookingClient() {
         setPendingToken,
     } = useBookingStore();
 
-    // ✅ HARD GUARD: fixes “blank step 0” when step becomes invalid
+    /* ---------------- Guard step ---------------- */
     useEffect(() => {
-        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) setStep(0);
+        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) {
+            setStep(0);
+        }
     }, [step, setStep]);
 
-    // ✅ Deep-link: /booking?service=core|reset|initial|handover
+    /* ---------------- Deep link ?service= ---------------- */
     useEffect(() => {
         const raw = (searchParams.get("service") || "").trim().toLowerCase();
-        if (!raw) return;
-        if (selectedService) return;
-
-        const allowed = new Set<ServiceId>(["core", "reset", "initial", "handover"]);
-        if (!allowed.has(raw as ServiceId)) return;
+        if (!raw || selectedService || !isServiceId(raw)) return;
 
         const found = SERVICES.find((s) => s.id === raw);
         if (!found) return;
@@ -129,75 +100,105 @@ export default function BookingClient() {
         if (step === 0) setStep(1);
     }, [searchParams, selectedService, setSelectedService, step, setStep]);
 
-    // ✅ Prefill profile (one place; never overwrite user input)
+    /* ---------------- Prefill profile ---------------- */
     useEffect(() => {
         let cancelled = false;
 
         const run = async () => {
             const { data: u } = await supabase.auth.getUser();
-            const user = u?.user;
-            if (!user || cancelled) return;
+            if (!u?.user || cancelled) return;
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from("profiles")
                 .select("first_name,last_name,email,phone,address,postal_code,city,country,notes")
-                .eq("id", user.id)
+                .eq("id", u.user.id)
                 .maybeSingle();
 
-            if (cancelled || error || !data) return;
+            if (!data || cancelled) return;
 
             const p = data as ProfileRow;
             const patch: Partial<typeof formData> = {};
 
-            if (!formData.email?.trim()) {
-                const em = (p.email || user.email || "").trim();
-                if (em) patch.email = em;
-            }
-            if (!formData.firstName?.trim() && p.first_name?.trim()) patch.firstName = p.first_name.trim();
-            if (!formData.lastName?.trim() && p.last_name?.trim()) patch.lastName = p.last_name.trim();
-            if (!formData.phone?.trim() && p.phone?.trim()) patch.phone = p.phone.trim();
-            if (!formData.address?.trim() && p.address?.trim()) patch.address = p.address.trim();
-            if (!formData.postalCode?.trim() && p.postal_code?.trim()) patch.postalCode = p.postal_code.trim();
-            if (!formData.city?.trim() && p.city?.trim()) patch.city = p.city.trim();
-            if (!formData.country?.trim() && p.country?.trim()) patch.country = p.country.trim();
-            if (!formData.notes?.trim() && p.notes?.trim()) patch.notes = p.notes.trim();
+            if (!formData.email && (p.email || u.user.email)) patch.email = p.email ?? u.user.email ?? "";
+            if (!formData.firstName && p.first_name) patch.firstName = p.first_name;
+            if (!formData.lastName && p.last_name) patch.lastName = p.last_name;
+            if (!formData.phone && p.phone) patch.phone = p.phone;
+            if (!formData.address && p.address) patch.address = p.address;
+            if (!formData.postalCode && p.postal_code) patch.postalCode = p.postal_code;
+            if (!formData.city && p.city) patch.city = p.city;
+            if (!formData.country && p.country) patch.country = p.country;
+            if (!formData.notes && p.notes) patch.notes = p.notes;
 
             if (Object.keys(patch).length) setFormData(patch);
         };
 
-        void run();
+        run();
         return () => {
             cancelled = true;
         };
-    }, [
-        supabase,
-        setFormData,
-        formData.email,
-        formData.firstName,
-        formData.lastName,
-        formData.phone,
-        formData.address,
-        formData.postalCode,
-        formData.city,
-        formData.country,
-        formData.notes,
-    ]);
+    }, [supabase, formData, setFormData]);
 
+    /* ---------------- Totals ---------------- */
+    const calculateTotals = useCallback(
+        (
+            service: ServiceId,
+            size: ApartmentSizeId,
+            people: PeopleCountId,
+            hasPetsLocal: boolean,
+            extrasLocal: Record<string, number>
+        ) => {
+            const basePrice = getBasePrice(service, size, people, hasPetsLocal);
+
+            let extrasPrice = 0;
+            let extrasHours = 0;
+            const extrasArray: OrderExtraLine[] = [];
+
+            for (const [extraId, qtyRaw] of Object.entries(extrasLocal || {})) {
+                if (!isExtraId(extraId)) continue;
+
+                const qty = Number(qtyRaw) || 0;
+                if (qty <= 0) continue;
+
+                const extra = EXTRAS.find((e) => e.id === extraId);
+                if (!extra) continue;
+
+                const linePrice = extra.price * qty;
+                extrasPrice += linePrice;
+                extrasHours += extra.hours * qty;
+
+                // ✅ i18n text via hook (no casts)
+                const { name } = getExtraText(extraId);
+
+                extrasArray.push({
+                    id: extraId,
+                    quantity: qty,
+                    price: r2(linePrice),
+                    name,
+                });
+            }
+
+            const estimatedHours = getEstimatedHours(service, size) + extrasHours;
+
+            return {
+                basePrice: r2(basePrice),
+                extrasPrice: r2(extrasPrice),
+                totalPrice: r2(basePrice + extrasPrice),
+                estimatedHours: r2(estimatedHours),
+                extras: extrasArray,
+            };
+        },
+        [getExtraText]
+    );
+
+    /* ---------------- Submit ---------------- */
     const submitBooking = async () => {
-        if (isSubmitting) return;
-        if (step !== 4) return;
+        if (isSubmitting || step !== 4) return;
+        if (!selectedService || !selectedDate || !selectedTime) return;
+        if (!apartmentSize || !peopleCount) return;
 
-        // ✅ strict guard (Variant A: selectedService is ServiceId | null)
-        if (!selectedService || !apartmentSize || !peopleCount || !selectedDate || !selectedTime) return;
+        if (!isServiceId(selectedService) || !isApartmentSizeId(apartmentSize) || !isPeopleCountId(peopleCount)) return;
 
-        if (
-            !(formData.firstName || "").trim() ||
-            !(formData.email || "").trim() ||
-            !(formData.phone || "").trim() ||
-            !(formData.address || "").trim() ||
-            !(formData.postalCode || "").trim() ||
-            !(formData.country || "").trim()
-        ) {
+        if (!formData.firstName || !formData.email || !formData.phone || !formData.address || !formData.postalCode || !formData.country) {
             alert("Please fill in all required contact details.");
             return;
         }
@@ -207,48 +208,43 @@ export default function BookingClient() {
         try {
             const totals = calculateTotals(selectedService, apartmentSize, peopleCount, hasPets, extras);
 
-            const orderData = {
-                service_type: selectedService,
-                apartment_size: apartmentSize,
-                people_count: peopleCount,
-                has_pets: hasPets,
-
-                extras: totals.extras,
-                base_price: totals.basePrice,
-                extras_price: totals.extrasPrice,
-                total_price: totals.totalPrice,
-                estimated_hours: totals.estimatedHours,
-
-                customer_first_name: (formData.firstName || "").trim(),
-                customer_last_name: (formData.lastName || "").trim() || null,
-                customer_email: (formData.email || "").trim(),
-                customer_phone: (formData.phone || "").trim(),
-                customer_address: (formData.address || "").trim(),
-                customer_postal_code: (formData.postalCode || "").trim(),
-                customer_city: (formData.city || "").trim() || null,
-                customer_country: (formData.country || "").trim(),
-                customer_notes: (formData.notes || "").trim() || null,
-
-                scheduled_date: selectedDate,
-                scheduled_time: selectedTime,
-            };
-
             const res = await fetch("/api/booking/create-order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderData }),
+                body: JSON.stringify({
+                    orderData: {
+                        service_type: selectedService,
+                        apartment_size: apartmentSize,
+                        people_count: peopleCount,
+                        has_pets: hasPets,
+
+                        extras: totals.extras,
+                        base_price: totals.basePrice,
+                        extras_price: totals.extrasPrice,
+                        total_price: totals.totalPrice,
+                        estimated_hours: totals.estimatedHours,
+
+                        customer_first_name: formData.firstName.trim(),
+                        customer_last_name: formData.lastName?.trim() || null,
+                        customer_email: formData.email.trim(),
+                        customer_phone: formData.phone.trim(),
+                        customer_address: formData.address.trim(),
+                        customer_postal_code: formData.postalCode.trim(),
+                        customer_city: formData.city?.trim() || null,
+                        customer_country: formData.country.trim(),
+                        customer_notes: formData.notes?.trim() || null,
+
+                        scheduled_date: selectedDate,
+                        scheduled_time: selectedTime,
+                    },
+                }),
             });
 
-            const jsonUnknown = await res.json().catch(() => null);
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !isCreateOrderOk(json)) throw new Error("create-order failed");
 
-            if (!res.ok || !isCreateOrderOk(jsonUnknown)) {
-                console.error("create-order failed:", { status: res.status, jsonUnknown });
-                alert("We couldn’t create the booking. Please try again.");
-                return;
-            }
-
-            setPendingToken(jsonUnknown.pendingToken);
-            router.push(`/booking/success?pendingOrder=${encodeURIComponent(jsonUnknown.pendingToken)}`);
+            setPendingToken(json.pendingToken);
+            router.push(`/booking/success?pendingOrder=${encodeURIComponent(json.pendingToken)}`);
         } catch (e) {
             console.error(e);
             alert("Something went wrong.");
@@ -257,13 +253,12 @@ export default function BookingClient() {
         }
     };
 
+    /* ---------------- UI ---------------- */
     return (
         <>
             <Header />
-
             <div className="min-h-screen bg-[var(--background)] mt-[80px] text-[var(--text)]">
-                {/* dots */}
-                <header className="sticky top-0 z-40 bg-[var(--background)] border-b border-black/5 dark:border-white/10 py-5">
+                <header className="sticky top-0 z-40 bg-[var(--background)] py-5 border-0 shadow-none ring-0 outline-none">
                     <div className="flex justify-center gap-2">
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
