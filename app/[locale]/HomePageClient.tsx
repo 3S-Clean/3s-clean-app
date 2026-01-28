@@ -188,8 +188,8 @@ export default function HomePageClient() {
             m-0 p-0 font-sans font-semibold
             text-left text-[var(--text)]
             tracking-[-0.01em]
-            text-[clamp(55px,10vw,74px)]
-            leading-[1.02]
+            text-[clamp(55px,calc(6vw+36px),84px)]
+leading-[1.02]
           `}
                                 >
                                     {line}
