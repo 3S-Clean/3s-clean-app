@@ -13,25 +13,24 @@ function Arrow() {
     return (
         <svg
             className="
-        ml-auto
-        w-[64px] h-[64px]
-        sm:w-[72px] sm:h-[72px]
-        lg:w-[80px] lg:h-[80px]
-        flex-shrink-0
-        text-[var(--muted)]
-        transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-        group-hover:translate-x-1
-        group-active:translate-x-[2px]
-      "
-            viewBox="0 0 24 24"
+      ml-auto
+      w-[18px] h-[37px]
+      sm:w-[20px] sm:h-[40px]
+      lg:w-[24px] lg:h-[48px]
+      flex-shrink-0
+      text-[var(--muted)]
+      transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+      group-hover:translate-x-1
+      group-active:translate-x-[2px]
+    "
+            viewBox="0 0 19.64 37.59"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
+            strokeMiterlimit="10"
+            strokeWidth="1.19"
+            xmlns="http://www.w3.org/2000/svg"
         >
-            <path d="M9 5l7 7-7 7" />
+            <polyline points=".42 .42 18.79 18.79 .42 37.17" />
         </svg>
     );
 }
@@ -43,13 +42,14 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
         <p
             className={`
-        inline-block whitespace-nowrap
-        font-sans font-bold text-left text-[var(--text)] mb-6
-        text-[22.66pt] leading-[27.2pt]
-        [@media(min-width:786px)]:text-[19.06pt]
-        [@media(min-width:786px)]:leading-[22.88pt]
-        [@media(min-width:1000px)]:text-[24.82pt]
-        [@media(min-width:1000px)]:leading-[29.79pt]
+                inline-block whitespace-nowrap
+                font-sans font-bold text-left text-[var(--text)] mb-6
+                tracking-[0.05em]
+                text-[23px] leading-[2.3rem] 
+                sm:text-[35px] sm:leading-[2rem]
+                md:text-[26px] md:leading-[2rem]
+                xl:text-[33.5] xl:leading-[3rem]
+        
       `}
         >
             {children}
@@ -70,13 +70,18 @@ function BigTitle({
     return (
         <span
             className={`
-        text-[50px] sm:text-[50px] md:text-[65px] lg:text-[65px] xl:text-[68px]
-        font-bold tracking-tight leading-[1.05] text-[var(--text)]
+            inline-block whitespace-nowrap
+            min-w-0
+            font-sans font-semibold tracking-[0em] text-[var(--text)]
+            text-[43px] leading-[36px]
+            sm:text-[45px] sm:leading-[4rem]
+            md:text-[35px] md:leading-[3rem]
+            xl:text-[53] xl:leading-[3.9575rem]
         ${className}
       `}
         >
-            {children}
-        </span>
+      {children}
+    </span>
     );
 }
 
@@ -158,7 +163,7 @@ export default function HomePageClient() {
                 {/* =========================
             HERO
            ========================= */}
-                <section className="px-6 pt-12 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
+                <section className="px-4 pt-12 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
 
                     {/* Mobile/Tablet hero (до 1000px) */}
                     <div className="[@media(min-width:1000px)]:hidden">
@@ -171,12 +176,11 @@ export default function HomePageClient() {
                                 <h1
                                     className={`
                                         m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-                                        max-w-[14ch]
+     
                                         tracking-[-0.01em]
-                                        text-[65.2px] leading-[70px]
-                                        md:text-[64.7px] md:leading-[70.6px]
-                                        [@media(min-width:1000px)]:text-[84.3px]
-                                        [@media(min-width:1000px)]:leading-[92px]
+                                        text-[49px] leading-[52px]
+                                        sm:text-[59.7px] sm:leading-[53px]
+                                     
                                     `}
                                 >
                                     {line}
@@ -196,12 +200,11 @@ export default function HomePageClient() {
                                 <h1
                                     className={`
                                         m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-                                        max-w-[17ch]
+                                        max-w-[14ch]
                                         tracking-[-0.01em]
-                                        text-[65.2px] leading-[70px]
-                                        md:text-[64.7px] md:leading-[70.6px]
-                                        [@media(min-width:1000px)]:text-[84.3px]
-                                        [@media(min-width:1000px)]:leading-[92px]
+                                        text-[49px] leading-[52.48px]
+                                        sm:text-[59.7px] md:leading-[52.52px]
+                                  
                                     `}
                                 >
                                     {line}
@@ -215,7 +218,7 @@ export default function HomePageClient() {
                 {/* =========================
             PROMISE
            ========================= */}
-                <section className="px-6 pt-[88px] sm:pt-16 pb-14 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
+                <section className="px-4 pt-[88px] sm:pt-16 pb-16 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
@@ -234,22 +237,21 @@ export default function HomePageClient() {
                             >
                                 <div
                                     className={`
-                    ${cardBase}
-                    w-full min-w-0
-                    max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
-                    mr-auto
-                    xl:max-w-none
-                    py-8 sm:py-9 md:py-10 xl:py-6 px-0
-                  `}
+                                            ${cardBase}
+                                            w-full min-w-0
+                                            max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+                                            mr-auto
+                                            xl:max-w-none
+                                            py-9 sm:py-9 md:py-10 xl:py-6 px-0
+                                    `}
                                 >
-                                    <div className="flex items-center justify-between gap-4 min-w-0">
-                                        <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
+                                    <div className="flex items-start justify-between gap-6 min-w-0">
+                                        <BigTitle className="flex-1 min-w-0 whitespace-nowrap mb-5">
                                             {it.title}
                                         </BigTitle>
-                                        <Arrow />
+                                        <Arrow/>
                                     </div>
-
-                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 leading-relaxed max-w-[38ch]">
+                                    <p className="text-[var(--text)] text-[13.12px] md:text-lg mb-5 max-w-[269px]">
                                         {it.desc}
                                     </p>
                                 </div>

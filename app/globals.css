@@ -1,11 +1,11 @@
 @import "tailwindcss";
-
+html { -webkit-text-size-adjust: 100%; }
 :root {
     --background: #fcfcfd;
     --foreground: #111111;
     --primary: #111111;
     --primary-text: #ffffff;
-    --text: #111111;
+    --text: #000;
     --card: rgba(255,255,255,.70);
     --border: rgba(0,0,0,.10);
     --shadow: 0 20px 60px rgba(0,0,0,.08);
