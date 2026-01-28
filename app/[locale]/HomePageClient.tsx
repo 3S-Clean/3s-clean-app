@@ -192,6 +192,9 @@ export default function HomePageClient() {
             tracking-[-0.01em]
             text-[clamp(55px,16vw,85px)]
             leading-[1.02]
+            sm:leading-[1.04]
+  md:leading-[1.06]
+
           `}
                                 >
                                     {line}
