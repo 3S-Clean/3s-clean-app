@@ -18,9 +18,14 @@
     --primary: #111111;
     --primary-text: #ffffff;
 
-    --font-ui: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    /* IMPORTANT:
+       --font-inter приходит из next/font через className={inter.variable}.
+       Не задаём его тут вручную, иначе перетрём next/font.
+    */
+    --font-ui: var(--font-inter),
+    -apple-system, BlinkMacSystemFont,
     "SF Pro Text", "SF Pro Display",
-    system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    system-ui, sans-serif;
 
     --autofill-bg: rgba(255,255,255,.70);
     --autofill-text: rgba(0,0,0,.92);
@@ -136,6 +141,7 @@ input:-webkit-autofill::first-line{
         transform: translateZ(0);
     }
 }
+
 /* hide scrollbar */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
