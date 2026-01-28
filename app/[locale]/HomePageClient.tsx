@@ -165,11 +165,13 @@ export default function HomePageClient() {
            ========================= */}
                 <section
                     className={`
-   px-3 sm:px-4
-    w-full h-dvh md:h-auto
-    flex flex-col justify-start md:justify-start
-    pt-14 sm:pt-8
-    md:pt-16 md:pb-10
+    px-3 sm:px-4
+    w-full h-auto
+    flex flex-col justify-start
+    mt-24 mb-24
+    sm:mt-24
+    sm:mb-24
+    md:pt-16 md:mb-28
     lg:pb-20 lg:max-w-7xl lg:mx-auto lg:pt-20
     xl:max-w-[1400px]
   `}
@@ -180,22 +182,22 @@ export default function HomePageClient() {
                             <div
                                 key={`m-${i}`}
                                 className={`
-          opacity-0 translate-y-6
-          animate-[heroIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-        `}
+                                      opacity-0 translate-y-6
+                                      animate-[heroIn_1100ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                    `}
                                 style={{ animationDelay: `${i * 180}ms` }}
                             >
                                 <h1
                                     className={`
-            m-0 p-0 font-sans font-semibold
-            text-left text-[var(--text)]
-            tracking-[-0.01em]
-            text-[clamp(55px,16vw,85px)]
-            leading-[1.02]
-            sm:leading-[1.04]
-  md:leading-[1.06]
-
-          `}
+                                        m-0 p-0 font-sans font-semibold
+                                        text-left text-[var(--text)]
+                                        tracking-[-0.01em]
+                                        text-[clamp(55px,16vw,85px)]
+                                        leading-[1.02]
+                                        sm:leading-[1.04]
+                                        md:leading-[1.06]
+                            
+                                      `}
                                 >
                                     {line}
                                 </h1>
@@ -216,12 +218,12 @@ export default function HomePageClient() {
                             >
                                 <h1
                                     className={`
-            m-0 p-0 font-sans font-semibold
-            text-left text-[var(--text)]
-            tracking-[-0.01em]
-            text-[clamp(55px,6vw,90px)]
-            leading-[1.02]
-          `}
+                                m-0 p-0 font-sans font-semibold
+                                text-left text-[var(--text)]
+                                tracking-[-0.01em]
+                                text-[clamp(55px,6vw,90px)]
+                                leading-[1.02]
+                              `}
                                 >
                                     {line}
                                 </h1>
@@ -232,7 +234,7 @@ export default function HomePageClient() {
                 {/* =========================
             PROMISE
            ========================= */}
-                <section className="px-4 pt-[88px] sm:pt-16 pb-16 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
+                <section className="px-4 pt-[88px] sm:pt-20 pb-16 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-8">
