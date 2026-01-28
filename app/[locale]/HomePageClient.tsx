@@ -172,8 +172,8 @@ export default function HomePageClient() {
     xl:max-w-[1400px]
   `}
                 >
-                    {/* 320–899px */}
-                    <div className={`desktop:hidden`}>
+                    {/* Mobile (< md): много строк, слева */}
+                    <div className={`md:hidden`}>
                         {heroRaw.split("\n").map((line, i) => (
                             <div
                                 key={`m-${i}`}
@@ -188,9 +188,8 @@ export default function HomePageClient() {
             m-0 p-0 font-sans font-semibold
             text-left text-[var(--text)]
             tracking-[-0.01em]
-            text-[49px] leading-[52px]
-            sm:text-[55px] sm:leading-[58px]
-            md:text-[60px] md:leading-[62px]
+            text-[clamp(55px,10vw,74px)]
+            leading-[1.02]
           `}
                                 >
                                     {line}
@@ -199,8 +198,8 @@ export default function HomePageClient() {
                         ))}
                     </div>
 
-                    {/* 900px+ (3 строки, тоже слева) */}
-                    <div className={`hidden desktop:block`}>
+                    {/* md+ (≥ 768px): 3 строки, тоже слева */}
+                    <div className={`hidden md:block`}>
                         {desktopHeroLines.map((line, i) => (
                             <div
                                 key={`d-${i}`}
@@ -215,8 +214,8 @@ export default function HomePageClient() {
             m-0 p-0 font-sans font-semibold
             text-left text-[var(--text)]
             tracking-[-0.01em]
-            text-[56px] leading-[60px]
-            lg:text-[65px] lg:leading-[69px]
+            text-[clamp(62px,6vw,84px)]
+            leading-[1.02]
           `}
                                 >
                                     {line}
