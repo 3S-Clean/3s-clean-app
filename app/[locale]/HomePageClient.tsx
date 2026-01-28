@@ -163,25 +163,35 @@ export default function HomePageClient() {
                 {/* =========================
             HERO
            ========================= */}
-                <section className="px-4 pt-12 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
-
-                    {/* Mobile/Tablet hero (до 1000px) */}
-                    <div className="[@media(min-width:1000px)]:hidden">
+                <section
+                    className={`
+    px-4 w-full h-dvh md:h-auto
+    flex flex-col justify-center md:justify-start
+    md:pt-16 md:pb-10
+    lg:pb-20 lg:max-w-7xl lg:mx-auto lg:pt-20
+    xl:max-w-[1400px]
+  `}
+                >
+                    {/* 320–899px */}
+                    <div className={`desktop:hidden`}>
                         {heroRaw.split("\n").map((line, i) => (
                             <div
                                 key={`m-${i}`}
-                                className="opacity-0 translate-y-6 animate-[heroIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
+                                className={`
+          opacity-0 translate-y-6
+          animate-[heroIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+        `}
                                 style={{ animationDelay: `${i * 180}ms` }}
                             >
                                 <h1
                                     className={`
-        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-        tracking-[-0.01em]
-        text-[49px] leading-[52px]
-        sm:text-[55px] sm:leading-[53px]
-        md:text-[60px] md:leading-[53px]
-        lg:text-[63px] lg:leading-[69px]
-    `}
+            m-0 p-0 font-sans font-semibold
+            text-left text-[var(--text)]
+            tracking-[-0.01em]
+            text-[49px] leading-[52px]
+            sm:text-[55px] sm:leading-[58px]
+            md:text-[60px] md:leading-[62px]
+          `}
                                 >
                                     {line}
                                 </h1>
@@ -189,31 +199,32 @@ export default function HomePageClient() {
                         ))}
                     </div>
 
-                    {/* Desktop hero (с 1000px) */}
-                    <div className="hidden [@media(min-width:1000px)]:block">
+                    {/* 900px+ (3 строки, тоже слева) */}
+                    <div className={`hidden desktop:block`}>
                         {desktopHeroLines.map((line, i) => (
                             <div
                                 key={`d-${i}`}
-                                className="opacity-0 translate-y-8 animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
+                                className={`
+          opacity-0 translate-y-8
+          animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+        `}
                                 style={{ animationDelay: `${i * 200}ms` }}
                             >
                                 <h1
                                     className={`
-        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-        tracking-[-0.01em]
-        text-[49px] leading-[52px]
-        md:text-[48px] md:leading-[53px]
-        lg:text-[63px] lg:leading-[69px]
-    `}
+            m-0 p-0 font-sans font-semibold
+            text-left text-[var(--text)]
+            tracking-[-0.01em]
+            text-[56px] leading-[60px]
+            lg:text-[65px] lg:leading-[69px]
+          `}
                                 >
                                     {line}
                                 </h1>
                             </div>
                         ))}
                     </div>
-
                 </section>
-
                 {/* =========================
             PROMISE
            ========================= */}
