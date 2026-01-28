@@ -165,8 +165,10 @@ export default function HomePageClient() {
            ========================= */}
                 <section
                     className={`
-    px-4 w-full h-dvh md:h-auto
-    flex flex-col justify-center md:justify-start
+   px-3 sm:px-4
+    w-full h-dvh md:h-auto
+    flex flex-col justify-start md:justify-start
+    pt-14 sm:pt-8
     md:pt-16 md:pb-10
     lg:pb-20 lg:max-w-7xl lg:mx-auto lg:pt-20
     xl:max-w-[1400px]
@@ -214,7 +216,7 @@ export default function HomePageClient() {
             m-0 p-0 font-sans font-semibold
             text-left text-[var(--text)]
             tracking-[-0.01em]
-            text-[clamp(62px,6vw,84px)]
+            text-[clamp(55px,6vw,90px)]
             leading-[1.02]
           `}
                                 >
