@@ -2,21 +2,17 @@
 
 :root {
     --background: #fcfcfd;
-    --foreground: rgba(0,0,0,.98);
-
+    --foreground: #111111;
+    --primary: #111111;
+    --primary-text: #ffffff;
+    --text: #111111;
     --card: rgba(255,255,255,.70);
     --border: rgba(0,0,0,.10);
     --shadow: 0 20px 60px rgba(0,0,0,.08);
-
-    --text: rgba(0,0,0,.92);
     --muted: rgba(0,0,0,.55);
-
     --input-bg: rgba(255,255,255,.70);
     --input-border: rgba(0,0,0,.10);
     --ring: rgba(0,0,0,.10);
-
-    --primary: #111111;
-    --primary-text: #ffffff;
 
     /* IMPORTANT:
        --font-inter приходит из next/font через className={inter.variable}.
@@ -56,15 +52,14 @@
         --border: rgba(255,255,255,.10);
         --shadow: 0 20px 70px rgba(0,0,0,.55);
 
-        --text: rgba(255,255,255,.92);
+        --text: #FFFFFF;
+        --primary: #FFFFFF;
+        --primary-text: #111111;
         --muted: rgba(255,255,255,.60);
 
         --input-bg: rgba(255,255,255,.05);
         --input-border: rgba(255,255,255,.12);
         --ring: rgba(255,255,255,.10);
-
-        --primary: #ffffff;
-        --primary-text: #111111;
 
         --autofill-bg: rgba(255,255,255,.06);
         --autofill-text: rgba(255,255,255,.92);
@@ -83,7 +78,6 @@ body{
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
 }
-
 /* ===============================
    SHAKE
 ================================ */

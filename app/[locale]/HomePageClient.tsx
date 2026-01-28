@@ -41,7 +41,17 @@ function Arrow() {
 ------------------------------ */
 function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
-        <p className="font-sans font-bold tracking-[-0.02em] text-[var(--text)] text-2xl sm:text-3xl md:text-4xl mb-6">
+        <p
+            className={`
+        inline-block whitespace-nowrap
+        font-sans font-bold text-left text-[var(--text)] mb-6
+        text-[22.66pt] leading-[27.2pt]
+        [@media(min-width:786px)]:text-[19.06pt]
+        [@media(min-width:786px)]:leading-[22.88pt]
+        [@media(min-width:1000px)]:text-[24.82pt]
+        [@media(min-width:1000px)]:leading-[29.79pt]
+      `}
+        >
             {children}
         </p>
     );
@@ -149,35 +159,57 @@ export default function HomePageClient() {
             HERO
            ========================= */}
                 <section className="px-6 pt-12 max-w-7xl mx-auto flex flex-col justify-start min-h-[calc(100dvh-80px)] overflow-hidden xl:min-h-0 xl:overflow-visible xl:pb-10">
-                    {/* Mobile/Tablet hero (original breaks) */}
-                    <div className="xl:hidden">
+
+                    {/* Mobile/Tablet hero (до 1000px) */}
+                    <div className="[@media(min-width:1000px)]:hidden">
                         {heroRaw.split("\n").map((line, i) => (
                             <div
                                 key={`m-${i}`}
                                 className="opacity-0 translate-y-6 animate-[heroIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
                                 style={{ animationDelay: `${i * 180}ms` }}
                             >
-                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] text-left text-[var(--text)] max-w-[14ch] text-[86px] sm:text-[94px] md:text-[102px] lg:text-[104px] leading-[1.02] sm:leading-[1.01] md:leading-[1.01]">
+                                <h1
+                                    className={`
+                                        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
+                                        max-w-[14ch]
+                                        tracking-[-0.01em]
+                                        text-[65.2px] leading-[70px]
+                                        md:text-[64.7px] md:leading-[70.6px]
+                                        [@media(min-width:1000px)]:text-[84.3px]
+                                        [@media(min-width:1000px)]:leading-[92px]
+                                    `}
+                                >
                                     {line}
                                 </h1>
                             </div>
                         ))}
                     </div>
 
-                    {/* Desktop hero (3 lines) */}
-                    <div className="hidden xl:block">
+                    {/* Desktop hero (с 1000px) */}
+                    <div className="hidden [@media(min-width:1000px)]:block">
                         {desktopHeroLines.map((line, i) => (
                             <div
                                 key={`d-${i}`}
                                 className="opacity-0 translate-y-8 animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
                                 style={{ animationDelay: `${i * 200}ms` }}
                             >
-                                <h1 className="m-0 p-0 font-sans font-bold tracking-[-0.03em] leading-[1.05] text-left text-[var(--text)] max-w-[17ch] text-[96px] 2xl:text-[110px]">
+                                <h1
+                                    className={`
+                                        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
+                                        max-w-[17ch]
+                                        tracking-[-0.01em]
+                                        text-[65.2px] leading-[70px]
+                                        md:text-[64.7px] md:leading-[70.6px]
+                                        [@media(min-width:1000px)]:text-[84.3px]
+                                        [@media(min-width:1000px)]:leading-[92px]
+                                    `}
+                                >
                                     {line}
                                 </h1>
                             </div>
                         ))}
                     </div>
+
                 </section>
 
                 {/* =========================
