@@ -175,13 +175,12 @@ export default function HomePageClient() {
                             >
                                 <h1
                                     className={`
-                                        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-     
-                                        tracking-[-0.01em]
-                                        text-[49px] leading-[52px]
-                                        sm:text-[59.7px] sm:leading-[53px]
-                                     
-                                    `}
+        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
+        tracking-[-0.01em]
+        text-[49px] leading-[52px]
+        md:text-[48px] md:leading-[53px]
+        lg:text-[63px] lg:leading-[69px]
+    `}
                                 >
                                     {line}
                                 </h1>
@@ -199,13 +198,12 @@ export default function HomePageClient() {
                             >
                                 <h1
                                     className={`
-                                        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
-                                        max-w-[14ch]
-                                        tracking-[-0.01em]
-                                        text-[49px] leading-[52.48px]
-                                        sm:text-[59.7px] md:leading-[52.52px]
-                                  
-                                    `}
+        m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
+        tracking-[-0.01em]
+        text-[49px] leading-[52px]
+        md:text-[48px] md:leading-[53px]
+        lg:text-[63px] lg:leading-[69px]
+    `}
                                 >
                                     {line}
                                 </h1>
