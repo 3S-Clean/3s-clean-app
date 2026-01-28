@@ -178,7 +178,8 @@ export default function HomePageClient() {
         m-0 p-0 font-sans font-semibold text-left text-[var(--text)]
         tracking-[-0.01em]
         text-[49px] leading-[52px]
-        md:text-[48px] md:leading-[53px]
+        sm:text-[55px] sm:leading-[53px]
+        md:text-[60px] md:leading-[53px]
         lg:text-[63px] lg:leading-[69px]
     `}
                                 >
