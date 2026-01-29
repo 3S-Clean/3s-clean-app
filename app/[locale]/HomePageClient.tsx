@@ -41,7 +41,8 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
         <p
             className={`
-                inline-block whitespace-nowrap
+                inline-block whitespace-nowrap 
+                px-3
                 font-sans font-bold text-left text-[var(--text)] mb-6
                 tracking-[0.05em]
                 text-[23px] leading-[2.2rem] 
@@ -192,6 +193,7 @@ export default function HomePageClient() {
                                         leading-[1.02]
                                         sm:leading-[1.04]
                                         md:leading-[1.06]
+                                        px-3
                             
                                       `}
                                 >
@@ -239,7 +241,7 @@ export default function HomePageClient() {
                                 key={it.id}
                                 href={`/definition#${it.id}`}
                                 className="
-                                    group block min-w-0
+                                    group block w-full min-w-0
                                     opacity-100 translate-y-0
                                     xl:flex-1 xl:opacity-0 xl:translate-y-6
                                     xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
@@ -255,7 +257,7 @@ export default function HomePageClient() {
                                           mr-auto
                                           xl:max-w-none
                                           py-9 sm:py-9 md:py-10 xl:py-6
-                                          px-6 sm:px-7 md:px-8
+                                          px-3 sm:px-4 md:px-6
                                         `}
                                 >
                                     {/* Title + Arrow рядом */}
@@ -265,7 +267,7 @@ export default function HomePageClient() {
                                         </BigTitle>
                                         <Arrow className="shrink-0" />
                                     </div>
-                                    <p className="text-[var(--text)] text-[13.12px] md:text-lg mb-5 max-w-[269px]">
+                                    <p className="text-[var(--text)] text-[13.12px] md:text-lg mb-5">
                                         {it.desc}
                                     </p>
                                 </div>
