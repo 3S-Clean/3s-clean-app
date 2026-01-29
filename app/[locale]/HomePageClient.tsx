@@ -230,7 +230,7 @@ export default function HomePageClient() {
                 {/* =========================
             PROMISE
            ========================= */}
-                <section className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                <section className="px-3 mt-16 mt- sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
                     <div className="flex flex-col xl:flex-row xl:gap-12">
@@ -277,7 +277,7 @@ export default function HomePageClient() {
                 {/* =========================
             VIDEO
            ========================= */}
-                <section className="w-full">
+                <section className="w-full mt-16">
                     <div className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                         <SectionKicker>{t("video.kicker")}</SectionKicker>
                         <h2 className="mt-2  px-3" >
@@ -290,21 +290,27 @@ export default function HomePageClient() {
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
+                    <div className="px-4 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                        <p className="min-w-0 text-left text-[var(--text)] text-[14px] leading-[1.2rem] md:text-lg mb-5]">
+                            {t("video.desc")}
+                        </p>
+                    </div>
+
                 </section>
 
                 {/* =========================
             EXPERIENCE
            ========================= */}
-                <section className="px-6 py-14 lg:py-20 max-w-7xl xl:max-w-[1400px] mx-auto">
+                <section className="px-3 mt-16 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
 
-                    <h2 className=" pt-3 mb-10 lg:mb-14">
+                    <h2 className=" px-3 mb-10 lg:mb-14">
                         <BigTitle>{t("experience.title")}</BigTitle>
                     </h2>
 
                     <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8">
                         {experience.map((it) => (
-                            <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
+                            <Link key={it.id} href={`/promise#${it.id}`} className="group block min-w-0">
                                 <div
                                     className={`
                                             ${cardBase}
@@ -316,23 +322,20 @@ export default function HomePageClient() {
                                             px-3 sm:px-4 md:px-6
                                           `}
                                 >
-                                    <div className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-4 min-w-0">
-                                        {/* Title слева */}
+                                    <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-4 min-w-0">
                                         <BigTitle className="min-w-0">
                                             {it.title}
                                         </BigTitle>
 
-                                        {/* пустая ячейка справа в первой строке */}
                                         <div />
 
-                                        {/* Description слева */}
                                         <p className="min-w-0 text-left text-[var(--text)] text-[16px] leading-[1.2rem] md:text-lg max-w-[340px]">
                                             {it.desc}
                                         </p>
 
-                                        {/* Price + Arrow справа */}
-                                        <div className="flex items-center gap-[10px] self-center">
-                                            <p className="text-15 leading-[1.2rem] font-bold text-[var(--text)]">
+                                        {/* Price + Arrow — строго по контенту */}
+                                        <div className="inline-flex items-center gap-[10px] self-center w-max whitespace-nowrap">
+                                            <p className="text-lg md:text-xl font-semibold text-[var(--text)]">
                                                 {it.price}
                                             </p>
                                             <Arrow />
