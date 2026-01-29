@@ -9,20 +9,19 @@ import Footer from "@/components/footer/Footer";
 /* -----------------------------
    Arrow
 ------------------------------ */
-function Arrow() {
+function Arrow({ className = "" }: { className?: string }) {
     return (
         <svg
-            className="
-      ml-auto
-      w-[18px] h-[37px]
-      sm:w-[20px] sm:h-[40px]
-      lg:w-[24px] lg:h-[48px]
-      flex-shrink-0
-      text-[var(--muted)]
-      transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-      group-hover:translate-x-1
-      group-active:translate-x-[2px]
-    "
+            className={`
+        w-[18px] h-[37px]
+        sm:w-[20px] sm:h-[40px]
+        lg:w-[24px] lg:h-[48px]
+        flex-shrink-0
+        transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+        group-hover:translate-x-1
+        group-active:translate-x-[2px]
+        ${className}
+      `}
             viewBox="0 0 19.64 37.59"
             fill="none"
             stroke="currentColor"
@@ -45,10 +44,10 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
                 inline-block whitespace-nowrap
                 font-sans font-bold text-left text-[var(--text)] mb-6
                 tracking-[0.05em]
-                text-[23px] leading-[2.3rem] 
-                sm:text-[35px] sm:leading-[2rem]
-                md:text-[26px] md:leading-[2rem]
-                xl:text-[33.5] xl:leading-[3rem]
+                text-[23px] leading-[2.2rem] 
+                sm:text-[30px] sm:leading-[2rem]
+                md:text-[35px] md:leading-[2rem]
+                xl:text-[40] xl:leading-[3rem]
         
       `}
         >
@@ -165,16 +164,13 @@ export default function HomePageClient() {
            ========================= */}
                 <section
                     className={`
-    px-3 sm:px-4
-    w-full h-auto
-    flex flex-col justify-start
-    mt-24 mb-24
-    sm:mt-24
-    sm:mb-24
-    md:pt-16 md:mb-28
-    lg:pb-20 lg:max-w-7xl lg:mx-auto lg:pt-20
-    xl:max-w-[1400px]
-  `}
+                        px-3 sm:px-4 md:px-6 
+                        flex flex-col justify-start
+                        mx-auto w-full max-w-7xl
+                        pt-24 pb-24
+                        md:pt-16 md:pb-28
+                        lg:pt-0 lg:pb-0
+                       `}
                 >
                     {/* Mobile (< md): много строк, слева */}
                     <div className={`md:hidden`}>
@@ -221,8 +217,8 @@ export default function HomePageClient() {
                                 m-0 p-0 font-sans font-semibold
                                 text-left text-[var(--text)]
                                 tracking-[-0.01em]
-                                text-[clamp(55px,6vw,90px)]
-                                leading-[1.02]
+                                text-[clamp(60px,6vw,90px)]
+                                leading-[1.04]
                               `}
                                 >
                                     {line}
@@ -234,38 +230,40 @@ export default function HomePageClient() {
                 {/* =========================
             PROMISE
            ========================= */}
-                <section className="px-4 pt-[88px] sm:pt-20 pb-16 lg:pb-20 max-w-7xl xl:max-w-[1400px] mx-auto xl:pt-20">
+                <section className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
 
-                    <div className="flex flex-col xl:flex-row xl:gap-8">
+                    <div className="flex flex-col xl:flex-row xl:gap-12">
                         {promise.map((it, index) => (
                             <Link
                                 key={it.id}
                                 href={`/definition#${it.id}`}
                                 className="
-                  group block min-w-0
-                  opacity-100 translate-y-0
-                  xl:flex-1 xl:opacity-0 xl:translate-y-6
-                  xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-                  motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
-                "
+                                    group block min-w-0
+                                    opacity-100 translate-y-0
+                                    xl:flex-1 xl:opacity-0 xl:translate-y-6
+                                    xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                    motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
+                                "
                                 style={{ animationDelay: `${650 + index * 160}ms` }}
                             >
                                 <div
                                     className={`
-                                            ${cardBase}
-                                            w-full min-w-0
-                                            max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
-                                            mr-auto
-                                            xl:max-w-none
-                                            py-9 sm:py-9 md:py-10 xl:py-6 px-0
-                                    `}
+                                          ${cardBase}
+                                          w-full min-w-0
+                                          max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+                                          mr-auto
+                                          xl:max-w-none
+                                          py-9 sm:py-9 md:py-10 xl:py-6
+                                          px-6 sm:px-7 md:px-8
+                                        `}
                                 >
-                                    <div className="flex items-start justify-between gap-6 min-w-0">
-                                        <BigTitle className="flex-1 min-w-0 whitespace-nowrap mb-5">
+                                    {/* Title + Arrow рядом */}
+                                    <div className="flex items-center gap-[17px] min-w-0 mb-5">
+                                        <BigTitle className="min-w-0 whitespace-nowrap">
                                             {it.title}
                                         </BigTitle>
-                                        <Arrow/>
+                                        <Arrow className="shrink-0" />
                                     </div>
                                     <p className="text-[var(--text)] text-[13.12px] md:text-lg mb-5 max-w-[269px]">
                                         {it.desc}
