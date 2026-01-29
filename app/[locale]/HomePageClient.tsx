@@ -237,7 +237,7 @@ export default function HomePageClient() {
                         {promise.map((it, index) => (
                             <Link
                                 key={it.id}
-                                href={`/definition#${it.id}`}
+                                href={`/promise#${it.id}`}
                                 className="
                                     group block w-full min-w-0
                                     opacity-100 translate-y-0
@@ -310,7 +310,7 @@ export default function HomePageClient() {
 
                     <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8">
                         {experience.map((it) => (
-                            <Link key={it.id} href={`/promise#${it.id}`} className="group block min-w-0">
+                            <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
                                 <div
                                     className={`
                                             ${cardBase}
