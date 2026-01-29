@@ -267,7 +267,7 @@ export default function HomePageClient() {
                                         </BigTitle>
                                         <Arrow className="shrink-0" />
                                     </div>
-                                    <p className="text-[var(--text)] text-[13.12px] md:text-lg mb-5">
+                                    <p className="w-full text-left text-[var(--text)] text-[13.12px] md:text-lg mb-5 max-w-[350px]">
                                         {it.desc}
                                     </p>
                                 </div>
