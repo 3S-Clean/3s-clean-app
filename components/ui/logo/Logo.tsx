@@ -6,7 +6,7 @@ export function Logo({ className }: { className?: string }) {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 47.04 47.04"
             className={className}
-            style={{ color: "#000" }} // можно убрать, если цвет задаёшь снаружи
+
         >
             <defs>
                 <style>{`
