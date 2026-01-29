@@ -33,6 +33,7 @@ export const footerColumns: FooterColumn[] = [
     {
         title: "Explore",
         links: [
+            { label: "Promise", href: "/promise" },
             { label: "Story", href: "/story" },
         ],
     },

@@ -249,13 +249,13 @@ export default function HomePageClient() {
                             >
                                 <div
                                     className={`
-                                          ${cardBase}
-                                          w-full min-w-0
-                                          max-w-[440px] md:max-w-[460px]
-                                          mr-auto
-                                          xl:max-w-none
-                                          py-9 sm:py-9 md:py-10 xl:py-6
-                                          px-3 sm:px-4 md:px-6
+                                         ${cardBase}
+                                            w-full min-w-0
+                                            max-w-[440px] md:max-w-[460px]
+                                            mr-auto
+                                            xl:max-w-none
+                                            py-9 sm:py-9 md:py-10 xl:py-6
+                                            px-4 sm:px-5 md:px-6
                                         `}
                                 >
                                     {/* Title + Arrow рядом */}
@@ -290,7 +290,7 @@ export default function HomePageClient() {
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
-                    <div className="px-4 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                    <div className="px-5 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                         <p className="min-w-0 text-left text-[var(--text)] text-[14px] leading-[1.2rem] md:text-lg mb-5]">
                             {t("video.desc")}
                         </p>
@@ -319,7 +319,7 @@ export default function HomePageClient() {
                                             mr-auto
                                             xl:max-w-none
                                             py-9 sm:py-9 md:py-10 xl:py-6
-                                            px-3 sm:px-4 md:px-6
+                                            px-4 sm:px-5 md:px-6
                                           `}
                                 >
                                     <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-4 min-w-0">
