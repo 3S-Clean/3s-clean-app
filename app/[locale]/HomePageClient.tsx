@@ -70,7 +70,6 @@ function BigTitle({
     return (
         <span
             className={`
-           
             min-w-0
             font-sans font-semibold tracking-[0em] text-[var(--text)]
             text-[43px] leading-[4rem]
@@ -168,7 +167,7 @@ export default function HomePageClient() {
                         px-3 sm:px-4 md:px-6
                         flex flex-col justify-start
                         mx-auto w-full max-w-7xl
-                        pt-6 pb-24
+                        pt-8 pb-24
                         lg:pt-4 lg:pb-0
                        `}
                 >
@@ -266,7 +265,7 @@ export default function HomePageClient() {
                                         </BigTitle>
                                         <Arrow className="shrink-0" />
                                     </div>
-                                    <p className="w-full text-left text-[var(--text)] text-[16px] leading-[1,2rem] md:text-lg mb-5 max-w-[340px]">
+                                    <p className="w-full text-left text-[var(--text)] text-[15px] leading-[1.2rem] md:text-lg mb-5 max-w-[340px]">
                                         {it.desc}
                                     </p>
                                 </div>
@@ -299,7 +298,7 @@ export default function HomePageClient() {
                 <section className="px-6 py-14 lg:py-20 max-w-7xl xl:max-w-[1400px] mx-auto">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
 
-                    <h2 className="mb-10 lg:mb-14">
+                    <h2 className=" pt-3 mb-10 lg:mb-14">
                         <BigTitle>{t("experience.title")}</BigTitle>
                     </h2>
 
@@ -308,28 +307,37 @@ export default function HomePageClient() {
                             <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
                                 <div
                                     className={`
-                    ${cardBase}
-                    w-full min-w-0
-                    max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
-                    mr-auto
-                    xl:max-w-none
-                    py-8 sm:py-9 md:py-10 xl:py-6 px-0
-                  `}
+                                            ${cardBase}
+                                            w-full min-w-0
+                                            max-w-[440px] md:max-w-[460px]
+                                            mr-auto
+                                            xl:max-w-none
+                                            py-9 sm:py-9 md:py-10 xl:py-6
+                                            px-3 sm:px-4 md:px-6
+                                          `}
                                 >
-                                    <div className="flex items-center justify-between gap-4 mb-4 min-w-0">
-                                        <BigTitle className="leading-none min-w-0 break-words xl:whitespace-nowrap">
+                                    <div className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-4 min-w-0">
+                                        {/* Title слева */}
+                                        <BigTitle className="min-w-0">
                                             {it.title}
                                         </BigTitle>
-                                        <Arrow />
+
+                                        {/* пустая ячейка справа в первой строке */}
+                                        <div />
+
+                                        {/* Description слева */}
+                                        <p className="min-w-0 text-left text-[var(--text)] text-[16px] leading-[1.2rem] md:text-lg max-w-[340px]">
+                                            {it.desc}
+                                        </p>
+
+                                        {/* Price + Arrow справа */}
+                                        <div className="flex items-center gap-[10px] self-center">
+                                            <p className="text-15 leading-[1.2rem] font-bold text-[var(--text)]">
+                                                {it.price}
+                                            </p>
+                                            <Arrow />
+                                        </div>
                                     </div>
-
-                                    <p className="text-[var(--muted)] text-base md:text-lg mb-5 leading-relaxed max-w-[38ch]">
-                                        {it.desc}
-                                    </p>
-
-                                    <p className="text-lg md:text-xl font-semibold text-[var(--text)]">
-                                        {it.price}
-                                    </p>
                                 </div>
                             </Link>
                         ))}
