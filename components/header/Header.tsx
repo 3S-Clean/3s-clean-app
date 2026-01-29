@@ -1,3 +1,4 @@
+// Header.tsx — меняю ТОЛЬКО ссылки (и добавляю helper для locale)
 "use client";
 
 import "@/components/header/header.css";
@@ -14,6 +15,12 @@ import { MenuIcon } from "@/components/ui/icons/MenuIcon";
 export default function Header() {
     const pathname = usePathname();
 
+    // ✅ locale helpers (чтобы /en/... считалось active для href "/experience")
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const pathnameNoLocale = hasLocale ? (pathname.replace(`/${locale}`, "") || "/") : pathname;
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -21,26 +28,17 @@ export default function Header() {
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
 
-    // ✅ Scroll detection for glass effect
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
-        };
-
-        // Check initial scroll position
+        const handleScroll = () => setIsScrolled(window.scrollY > 10);
         handleScroll();
-
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // ✅ Auth state (Supabase)
     useEffect(() => {
         const supabase = createClient();
 
-        supabase.auth.getSession().then(({ data }) => {
-            setIsAuthenticated(!!data.session);
-        });
+        supabase.auth.getSession().then(({ data }) => setIsAuthenticated(!!data.session));
 
         const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
             setIsAuthenticated(!!session);
@@ -52,11 +50,9 @@ export default function Header() {
     const closeMenu = useCallback(() => setIsMenuOpen(false), []);
     const toggleMenu = useCallback(() => setIsMenuOpen((v) => !v), []);
 
-    // ✅ scroll lock (fixed body)
     useEffect(() => {
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
-
             document.body.style.position = "fixed";
             document.body.style.top = `-${savedScrollYRef.current}px`;
             document.body.style.width = "100%";
@@ -77,20 +73,13 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
-    // ✅ close menu on route change
     useEffect(() => {
         if (prevPathnameRef.current === pathname) return;
-
         prevPathnameRef.current = pathname;
-
         if (!isMenuOpen) return;
-
-        queueMicrotask(() => {
-            setIsMenuOpen(false);
-        });
+        queueMicrotask(() => setIsMenuOpen(false));
     }, [pathname, isMenuOpen]);
 
-    // ✅ close menu on resize above breakpoint
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth > 568) closeMenu();
@@ -99,13 +88,13 @@ export default function Header() {
         return () => window.removeEventListener("resize", handleResize);
     }, [closeMenu]);
 
-    const accountHref = isAuthenticated ? "/account" : "/signup";
-
-    // ✅ helper: highlight active for nested routes too
+    // ✅ helper: active check on pathname WITHOUT locale
     const isActive = (href: string) => {
-        if (href === "/") return pathname === "/";
-        return pathname === href || pathname.startsWith(href + "/");
+        if (href === "/") return pathnameNoLocale === "/";
+        return pathnameNoLocale === href || pathnameNoLocale.startsWith(href + "/");
     };
+
+    const accountHref = withLocale(isAuthenticated ? "/account" : "/signup");
 
     return (
         <>
@@ -113,7 +102,7 @@ export default function Header() {
                 {/* Desktop Header */}
                 <div className="header-desktop">
                     <div className="header-left">
-                        <Link href="/" aria-label="Go to home" className="logo-link">
+                        <Link href={withLocale("/")} aria-label="Go to home" className="logo-link">
                             <Logo className="logo" />
                         </Link>
 
@@ -121,7 +110,7 @@ export default function Header() {
                             {mainNav.map((item) => (
                                 <Link
                                     key={item.href}
-                                    href={item.href}
+                                    href={withLocale(item.href)}
                                     className={`nav-link ${isActive(item.href) ? "active" : ""}`}
                                 >
                                     {item.label}
@@ -132,14 +121,10 @@ export default function Header() {
 
                     <div className="header-right">
                         <Link href={accountHref} className="user-link" aria-label="Account">
-                            {isAuthenticated ? (
-                                <UserCheckIcon className="user-icon" />
-                            ) : (
-                                <UserIcon className="user-icon" />
-                            )}
+                            {isAuthenticated ? <UserCheckIcon className="user-icon" /> : <UserIcon className="user-icon" />}
                         </Link>
 
-                        <Link href="/booking" className="book-button">
+                        <Link href={withLocale("/booking")} className="book-button">
                             Book Now
                         </Link>
                     </div>
@@ -156,11 +141,11 @@ export default function Header() {
                         <MenuIcon className="menu-icon" />
                     </button>
 
-                    <Link href="/" className="logo-link-mobile" aria-label="Go to home">
+                    <Link href={withLocale("/")} className="logo-link-mobile" aria-label="Go to home">
                         <Logo className="logo-mobile" />
                     </Link>
 
-                    <Link href="/booking" className="book-button-mobile">
+                    <Link href={withLocale("/booking")} className="book-button-mobile">
                         Book Now
                     </Link>
                 </div>
@@ -172,7 +157,7 @@ export default function Header() {
                     {mainNav.map((item) => (
                         <Link
                             key={item.href}
-                            href={item.href}
+                            href={withLocale(item.href)}
                             className={`mob-menu-link ${isActive(item.href) ? "current" : ""}`}
                             onClick={closeMenu}
                         >
@@ -182,15 +167,15 @@ export default function Header() {
 
                     <div className="mob-menu-auth">
                         {isAuthenticated ? (
-                            <Link href="/account" className="mob-menu-auth-link" onClick={closeMenu}>
+                            <Link href={withLocale("/account")} className="mob-menu-auth-link" onClick={closeMenu}>
                                 Account
                             </Link>
                         ) : (
                             <>
-                                <Link href="/signup" className="mob-menu-auth-link" onClick={closeMenu}>
+                                <Link href={withLocale("/signup")} className="mob-menu-auth-link" onClick={closeMenu}>
                                     Sign Up
                                 </Link>
-                                <Link href="/login" className="mob-menu-auth-link" onClick={closeMenu}>
+                                <Link href={withLocale("/login")} className="mob-menu-auth-link" onClick={closeMenu}>
                                     Log In
                                 </Link>
                             </>

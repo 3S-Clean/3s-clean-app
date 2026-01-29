@@ -1,3 +1,4 @@
+// /lib/navigation/navigation.ts
 export const mainNav = [
     { label: "Promise", href: "/promise" },
     { label: "Experience", href: "/experience" },
@@ -6,21 +7,9 @@ export const mainNav = [
     { label: "Contact", href: "/contact" },
 ];
 
-// --- Footer
-export type FooterLink = {
-    label: string;
-    href: string;
-};
-
-export type FooterColumn = {
-    title: string;
-    links: FooterLink[];
-};
-
-export type LegalLink = {
-    label: string;
-    href: string;
-};
+export type FooterLink = { label: string; href: string };
+export type FooterColumn = { title: string; links: FooterLink[] };
+export type LegalLink = { label: string; href: string };
 
 export const footerColumns: FooterColumn[] = [
     {
