@@ -46,9 +46,9 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
                 font-sans font-bold text-left text-[var(--text)] mb-6
                 tracking-[0.05em]
                 text-[23px] leading-[2.2rem] 
-                sm:text-[30px] sm:leading-[2rem]
-                md:text-[35px] md:leading-[2rem]
-                xl:text-[40] xl:leading-[3rem]
+                sm:text-[26px] sm:leading-[2rem]
+                md:text-[29px] md:leading-[2rem]
+                xl:text-[32px] xl:leading-[3rem]
         
       `}
         >
@@ -70,13 +70,13 @@ function BigTitle({
     return (
         <span
             className={`
-            inline-block whitespace-nowrap
+           
             min-w-0
             font-sans font-semibold tracking-[0em] text-[var(--text)]
-            text-[43px] leading-[36px]
-            sm:text-[45px] sm:leading-[4rem]
-            md:text-[35px] md:leading-[3rem]
-            xl:text-[53] xl:leading-[3.9575rem]
+            text-[43px] leading-[4rem]
+            sm:text-[48px] sm:leading-[4rem]
+            md:text-[50px] md:leading-[3rem]
+            xl:text-[52px] xl:leading-[3rem]
         ${className}
       `}
         >
@@ -159,22 +159,21 @@ export default function HomePageClient() {
         <>
             <Header />
 
-            <main className="min-h-screen bg-[var(--background)] pt-[80px] overflow-x-hidden">
+            <main className="min-h-screen bg-[var(--background)] pt-[90px] sm:pt-[86px] overflow-x-hidden">
                 {/* =========================
             HERO
            ========================= */}
                 <section
                     className={`
-                        px-3 sm:px-4 md:px-6 
+                        px-3 sm:px-4 md:px-6
                         flex flex-col justify-start
                         mx-auto w-full max-w-7xl
-                        pt-24 pb-24
-                        md:pt-16 md:pb-28
-                        lg:pt-0 lg:pb-0
+                        pt-6 pb-24
+                        lg:pt-4 lg:pb-0
                        `}
                 >
                     {/* Mobile (< md): много строк, слева */}
-                    <div className={`md:hidden`}>
+                    <div className={`md:hidden pb-32`}>
                         {heroRaw.split("\n").map((line, i) => (
                             <div
                                 key={`m-${i}`}
@@ -204,7 +203,7 @@ export default function HomePageClient() {
                     </div>
 
                     {/* md+ (≥ 768px): 3 строки, тоже слева */}
-                    <div className={`hidden md:block`}>
+                    <div className={`hidden md:block pb-10`}>
                         {desktopHeroLines.map((line, i) => (
                             <div
                                 key={`d-${i}`}
@@ -253,7 +252,7 @@ export default function HomePageClient() {
                                     className={`
                                           ${cardBase}
                                           w-full min-w-0
-                                          max-w-[520px] sm:max-w-[560px] md:max-w-[720px]
+                                          max-w-[440px] md:max-w-[460px]
                                           mr-auto
                                           xl:max-w-none
                                           py-9 sm:py-9 md:py-10 xl:py-6
@@ -267,7 +266,7 @@ export default function HomePageClient() {
                                         </BigTitle>
                                         <Arrow className="shrink-0" />
                                     </div>
-                                    <p className="w-full text-left text-[var(--text)] text-[13.12px] md:text-lg mb-5 max-w-[350px]">
+                                    <p className="w-full text-left text-[var(--text)] text-[16px] leading-[1,2rem] md:text-lg mb-5 max-w-[340px]">
                                         {it.desc}
                                     </p>
                                 </div>
@@ -280,14 +279,11 @@ export default function HomePageClient() {
             VIDEO
            ========================= */}
                 <section className="w-full">
-                    <div className="px-6 pt-10 pb-6 lg:pt-14 lg:pb-8 max-w-7xl xl:max-w-[1400px] mx-auto">
+                    <div className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                         <SectionKicker>{t("video.kicker")}</SectionKicker>
-                        <h2 className="mt-2">
-                            <BigTitle>{t("video.title")}</BigTitle>
+                        <h2 className="mt-2  px-3" >
+                            <BigTitle >{t("video.title")}</BigTitle>
                         </h2>
-                        <p className="mt-5 text-[var(--muted)] text-base md:text-lg leading-relaxed">
-                            {t("video.desc")}
-                        </p>
                     </div>
 
                     <div className="relative w-full h-[100svh] overflow-hidden">
