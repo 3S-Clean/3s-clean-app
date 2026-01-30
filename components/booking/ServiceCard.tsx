@@ -83,10 +83,14 @@ export default function ServiceCard(props: ServiceCardProps) {
                 "border border-black/5 dark:border-white/10",
                 "shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
                 "overflow-hidden",
-                // ✅ selectable behavior
-                isSelect ? "cursor-pointer select-none transition-all duration-200" : "",
-                // ❌ no translate / no extra ring
-                isSelect && !selected ? "hover:shadow-xl" : "",
+                // ✅ interactive behavior (select + link)
+                props.mode === "select" || props.mode === "link"
+                    ? "cursor-pointer select-none transition-all duration-200"
+                    : "",
+
+// ✅ hover lift for link + for unselected select
+                props.mode === "link" ? "hover:shadow-xl hover:-translate-y-1" : "",
+                isSelect && !selected ? "hover:shadow-xl hover:-translate-y-1" : "",
                 isSelect ? "active:scale-[0.99] focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15" : "",
             ].join(" ")}
         >

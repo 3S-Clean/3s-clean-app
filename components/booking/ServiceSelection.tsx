@@ -2,7 +2,6 @@
 
 import { useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Check } from "lucide-react";
 
 import { useBookingStore } from "@/lib/booking/store";
 import { SERVICES, type ServiceId } from "@/lib/booking/config";
@@ -46,7 +45,7 @@ export default function ServiceSelection() {
         });
     }, [tServices, tIncludes]);
 
-    // per-card includes heading (like Experience)
+    // per-card includes heading
     const includesHeadingById = useMemo(() => {
         return {
             core: t("includesHeading.core"),
@@ -61,70 +60,38 @@ export default function ServiceSelection() {
         [selectedService, setSelectedService]
     );
 
-    const onKeyDown = useCallback(
-        (e: React.KeyboardEvent, id: ServiceId) => {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onSelect(id);
-            }
-        },
-        [onSelect]
-    );
-
     return (
         <div className="animate-fadeIn">
             {/* HEADER */}
             <div className="mb-10">
-                <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
+                <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">
+                    {t("title")}
+                </h1>
                 <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
-            {/* CARDS (reused ServiceCard) */}
+            {/* CARDS */}
             <div className="flex flex-col gap-5">
                 {servicesUi.map((service) => {
                     const isSelected = selectedService === service.id;
 
                     return (
-                        <div
+                        <ServiceCard
                             key={service.id}
-                            role="button"
-                            tabIndex={0}
-                            aria-pressed={isSelected}
-                            onClick={() => onSelect(service.id)}
-                            onKeyDown={(e) => onKeyDown(e, service.id)}
-                            className={[
-                                "relative rounded-3xl transition-all duration-300 cursor-pointer select-none",
-                                "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/20 dark:focus-visible:ring-white/20",
-                                isSelected ? "shadow-xl -translate-y-[1px]" : "hover:shadow-xl hover:-translate-y-1",
-                                "active:scale-[0.99]",
-                            ].join(" ")}
-                        >
-                            {/* CHECKMARK (same UX as before) */}
-                            {isSelected && (
-                                <div
-                                    className="absolute top-5 right-5 z-10 w-8 h-8 rounded-full flex items-center justify-center bg-gray-900"
-                                    aria-hidden="true"
-                                >
-                                    <Check className="w-5 h-5 text-white" />
-                                </div>
-                            )}
-
-                            <ServiceCard
-                                mode="select"
-                                selected={isSelected}
-                                onSelect={() => onSelect(service.id)}
-                                service={service}
-                                title={service.title}
-                                desc={service.desc}
-                                includes={service.includes}
-                                fromLabel={t("from")}
-                                incVatLabel={t("incVat")}
-                                includesHeading={includesHeadingById[service.id]}
-                                showCta={false} // ✅ booking step: card click selects
-                                ctaLabel="" // ignored when showCta=false
-                                Tooltip={Tooltip}
-                            />
-                        </div>
+                            mode="select"
+                            selected={isSelected}
+                            onSelect={() => onSelect(service.id)}
+                            service={service}
+                            title={service.title}
+                            desc={service.desc}
+                            includes={service.includes}
+                            fromLabel={t("from")}
+                            incVatLabel={t("incVat")}
+                            includesHeading={includesHeadingById[service.id]}
+                            showCta={false}
+                            ctaLabel=""
+                            Tooltip={Tooltip}
+                        />
                     );
                 })}
             </div>
