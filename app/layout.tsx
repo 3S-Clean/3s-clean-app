@@ -30,6 +30,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" className={inter.variable} suppressHydrationWarning>
+        <head>
+             <title>3S Clean</title>
+            <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+            <link rel="apple-touch-icon" href="/favicon.svg" />
+        </head>
         <body className="antialiased">
         <DeviceDetector />
         {children}
