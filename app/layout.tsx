@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en" className={inter.variable} suppressHydrationWarning>
         <head>
             <title>3S Clean</title>
-            <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+            <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
             <link rel="apple-touch-icon" type="image/svg+xml" href="/favicon.svg" />
             <meta name="apple-mobile-web-app-capable" content="yes" />
             <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
