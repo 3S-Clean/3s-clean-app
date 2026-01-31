@@ -304,10 +304,6 @@ export default function HomePageClient() {
            ========================= */}
                 <section className="px-3 mt-16 mb-11 sm:px-4 md:px-6 mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
-                    <h2 className=" px-4 md:px-5 xl:px-6 mb-7 ">
-                        <BigTitle>{t("experience.title")}</BigTitle>
-                    </h2>
-
                     <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8 mt-5 xl:mt-12 ">
                         {experience.map((it) => (
                             <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
