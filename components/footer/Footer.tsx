@@ -42,58 +42,60 @@ export default function AccountFooter() {
 
     return (
         <footer className="footer">
-            {/* Navigation Columns */}
-            <div className="footer-columns">
-                {footerColumns.map((column) => (
-                    <div key={column.title} className="footer-column">
-                        <h3 className="footer-column-title">{column.title}</h3>
-                        <ul className="footer-column-links">
-                            {column.links.map((link) => (
-                                <li key={link.href}>
-                                    <Link href={link.href} className="footer-column-link">
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
-            </div>
+            <div className="footer-inner">
+                {/* Navigation Columns */}
+                <div className="footer-columns">
+                    {footerColumns.map((column) => (
+                        <div key={column.title} className="footer-column">
+                            <h3 className="footer-column-title">{column.title}</h3>
+                            <ul className="footer-column-links">
+                                {column.links.map((link) => (
+                                    <li key={link.href}>
+                                        <Link href={link.href} className="footer-column-link">
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
 
-            {/* Legal */}
-            <div className="footer-legal">
-                <h4 className="footer-legal-title">Legal</h4>
-                <div className="footer-legal-links">
-                    {legalLinks.map((link, i) => (
-                        <span key={link.href}>
+                {/* Legal */}
+                <div className="footer-legal">
+                    <h4 className="footer-legal-title">Legal</h4>
+                    <div className="footer-legal-links">
+                        {legalLinks.map((link, i) => (
+                            <span key={link.href}>
               <Link href={link.href} className="footer-legal-link">
                 {link.label}
               </Link>
-                            {i < legalLinks.length - 1 && (
-                                <span className="footer-legal-separator" />
-                            )}
+                                {i < legalLinks.length - 1 && (
+                                    <span className="footer-legal-separator" />
+                                )}
             </span>
+                        ))}
+                    </div>
+                    <p className="footer-copyright">
+                        © {currentYear} 3S-Clean. All rights reserved.
+                    </p>
+                </div>
+
+                {/* Social */}
+                <div className="footer-social">
+                    {socialLinks.map((social) => (
+                        <a
+                            key={social.label}
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="footer-social-link"
+                            aria-label={social.label}
+                        >
+                            {social.icon}
+                        </a>
                     ))}
                 </div>
-                <p className="footer-copyright">
-                    © {currentYear} 3S-Clean. All rights reserved.
-                </p>
-            </div>
-
-            {/* Social */}
-            <div className="footer-social">
-                {socialLinks.map((social) => (
-                    <a
-                        key={social.label}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="footer-social-link"
-                        aria-label={social.label}
-                    >
-                        {social.icon}
-                    </a>
-                ))}
             </div>
         </footer>
     );

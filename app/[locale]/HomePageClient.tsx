@@ -279,9 +279,9 @@ export default function HomePageClient() {
             VIDEO
            ========================= */}
                 <section className="w-full mt-16">
-                    <div className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                    <div className="px-3 sm:px-4 md:px-6 mx-auto w-full max-w-7xl xl:pt-20">
                         <SectionKicker>{t("video.kicker")}</SectionKicker>
-                        <h2 className="mt-2  px-3 sm:px-4 md:px-6" >
+                        <h2 className="mt-2  px-4 sm:px-5 md:px-7" >
                             <BigTitle >{t("video.title")}</BigTitle>
                         </h2>
                     </div>
@@ -291,7 +291,7 @@ export default function HomePageClient() {
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
-                    <div className="pl-6 sm:pl-8 md:pl-11 xl:pl-14 mx-auto w-full max-w-7xl">
+                    <div className="pl-7 sm:pl-9 md:pl-12 mx-auto w-full max-w-7xl">
                         <p className="min-w-0 text-left text-[var(--text)] text-[15px] leading-[1.2rem] mb-5">
                             {t("video.desc")}
                         </p>
@@ -302,14 +302,13 @@ export default function HomePageClient() {
                 {/* =========================
             EXPERIENCE
            ========================= */}
-                <section className="px-3 mt-16 mb-11 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                <section className="px-3 mt-16 mb-11 sm:px-4 md:px-6 mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
-
-                    <h2 className=" px-3 sm:px-4 md:px-6 mb-10 lg:mb-14">
+                    <h2 className=" px-4 md:px-5 xl:px-6 mb-7 ">
                         <BigTitle>{t("experience.title")}</BigTitle>
                     </h2>
 
-                    <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8">
+                    <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8 mt-5 xl:mt-12 ">
                         {experience.map((it) => (
                             <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
                                 <div
