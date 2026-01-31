@@ -242,9 +242,9 @@ export default function HomePageClient() {
                                 className="
                                     group block w-full min-w-0
                                     opacity-100 translate-y-0
-                                    xl:flex-1 xl:opacity-0 xl:translate-y-6
-                                    xl:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-                                    motion-reduce:xl:opacity-100 motion-reduce:xl:translate-y-0 motion-reduce:xl:animate-none
+                                    xl:flex-1 md:opacity-0 md:translate-y-6
+                                    md:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                    motion-reduce:md:opacity-100 motion-reduce:md:translate-y-0 motion-reduce:md:animate-none
                                 "
                                 style={{ animationDelay: `${650 + index * 160}ms` }}
                             >
