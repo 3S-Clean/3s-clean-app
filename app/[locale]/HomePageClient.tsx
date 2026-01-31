@@ -233,7 +233,6 @@ export default function HomePageClient() {
            ========================= */}
                 <section className="px-3 mt-16 mt- sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("promise.title")}</SectionKicker>
-
                     <div className="flex flex-col xl:flex-row xl:gap-12">
                         {promise.map((it, index) => (
                             <Link
