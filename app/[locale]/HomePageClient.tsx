@@ -42,7 +42,7 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
         <p
             className={`
                 inline-block whitespace-nowrap 
-                px-3
+                px-4 sm:px-5 md:px-7
                 font-sans font-bold text-left text-[var(--text)] mb-6
                 tracking-[0.05em]
                 text-[23px] leading-[2.2rem] 
@@ -207,9 +207,9 @@ export default function HomePageClient() {
                             <div
                                 key={`d-${i}`}
                                 className={`
-          opacity-0 translate-y-8
-          animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-        `}
+                                      opacity-0 translate-y-8
+                                      animate-[heroIn_1000ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                    `}
                                 style={{ animationDelay: `${i * 200}ms` }}
                             >
                                 <h1
@@ -219,6 +219,7 @@ export default function HomePageClient() {
                                 tracking-[-0.01em]
                                 text-[clamp(60px,6vw,90px)]
                                 leading-[1.04]
+                                sm:px-5 md:px-6
                               `}
                                 >
                                     {line}
@@ -280,7 +281,7 @@ export default function HomePageClient() {
                 <section className="w-full mt-16">
                     <div className="px-3 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                         <SectionKicker>{t("video.kicker")}</SectionKicker>
-                        <h2 className="mt-2  px-3" >
+                        <h2 className="mt-2  px-3 sm:px-4 md:px-6" >
                             <BigTitle >{t("video.title")}</BigTitle>
                         </h2>
                     </div>
@@ -290,8 +291,8 @@ export default function HomePageClient() {
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
-                    <div className="px-5 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
-                        <p className="min-w-0 text-left text-[var(--text)] text-[14px] leading-[1.2rem] md:text-lg mb-5]">
+                    <div className="pl-6 sm:pl-8 md:pl-11 xl:pl-14 mx-auto w-full max-w-7xl">
+                        <p className="min-w-0 text-left text-[var(--text)] text-[15px] leading-[1.2rem] mb-5">
                             {t("video.desc")}
                         </p>
                     </div>
@@ -301,10 +302,10 @@ export default function HomePageClient() {
                 {/* =========================
             EXPERIENCE
            ========================= */}
-                <section className="px-3 mt-16 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
+                <section className="px-3 mt-16 mb-11 sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
                     <SectionKicker>{t("experience.kicker")}</SectionKicker>
 
-                    <h2 className=" px-3 mb-10 lg:mb-14">
+                    <h2 className=" px-3 sm:px-4 md:px-6 mb-10 lg:mb-14">
                         <BigTitle>{t("experience.title")}</BigTitle>
                     </h2>
 
