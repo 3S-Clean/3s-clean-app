@@ -201,8 +201,8 @@ export default function AccountClient({
 function LiveCleaningVideo() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black dark:text-white md:text-2xl">Live Cleaning Video</h2>
-            <p className="mt-4 text-black/55 dark:text-white/60">...</p>
+            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Live Cleaning Video</h2>
+            <p className="mt-4 text-[var(--muted)]">...</p>
         </div>
     );
 }
@@ -210,8 +210,8 @@ function LiveCleaningVideo() {
 function VideoHistory() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black dark:text-white md:text-2xl">Video History</h2>
-            <p className="mt-4 text-black/55 dark:text-white/60">...</p>
+            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Video History</h2>
+            <p className="mt-4 text-[var(--muted)]">...</p>
         </div>
     );
 }
