@@ -48,7 +48,6 @@ function AccordionItem({
                 )}
             >
                 <span className="font-medium text-[var(--text)] pr-2">{item.question}</span>
-
                 {/* Icon pinned to the far right */}
                 <span className="ml-auto flex-shrink-0">
           <Plus
@@ -83,15 +82,6 @@ function AccordionItem({
                         )}
                     >
                         {/* Liquid Glass grain */}
-                        <div
-                            className="pointer-events-none absolute inset-0 rounded-xl opacity-[0.10] dark:opacity-[0.14]"
-                            style={{
-                                backgroundImage:
-                                    "radial-gradient(rgba(255,255,255,0.40) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)",
-                                backgroundSize: "18px 18px, 22px 22px",
-                                backgroundPosition: "0 0, 10px 12px",
-                            }}
-                        />
                         <p className="relative text-[var(--muted)] leading-relaxed">{item.answer}</p>
                     </div>
                 </div>
@@ -159,7 +149,6 @@ export default function FAQPage() {
     return (
         <>
             <Header />
-
             <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
                 {/* HERO (like Experience) */}
                 <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
@@ -168,7 +157,6 @@ export default function FAQPage() {
                     </h1>
                     <p className="mt-4 text-lg text-[var(--muted)] max-w-2xl">{t("hero.subtitle")}</p>
                 </section>
-
                 {/* Search */}
                 <section className="px-6 pb-4 max-w-7xl mx-auto">
                     <div className="relative max-w-3xl">
@@ -189,7 +177,6 @@ export default function FAQPage() {
                         />
                     </div>
                 </section>
-
                 {/* Category Filters (glassy in dark too) */}
                 <section className="px-6 py-4 max-w-7xl mx-auto">
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -204,7 +191,7 @@ export default function FAQPage() {
                                         "px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap",
                                         "transition-all duration-200",
                                         active
-                                            ? "bg-[var(--text)] text-[var(--background)]"
+                                            ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                                             : cx(
                                                 "bg-[var(--card)]/70 dark:bg-[var(--card)]/35 text-[var(--text)]",
                                                 "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
@@ -219,7 +206,6 @@ export default function FAQPage() {
                         })}
                     </div>
                 </section>
-
                 {/* FAQ Content */}
                 <section className="px-6 py-8 max-w-7xl mx-auto">
                     {filteredData.length === 0 ? (
@@ -231,7 +217,6 @@ export default function FAQPage() {
                             {filteredData.map((category) => (
                                 <div key={category.id}>
                                     <h2 className="text-xl font-bold mb-4">{category.title}</h2>
-
                                     {/* Glass container (consistent width, no weird highlights) */}
                                     <div
                                         className={cx(
@@ -242,17 +227,6 @@ export default function FAQPage() {
                                             "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_20px_60px_rgba(0,0,0,0.45)]"
                                         )}
                                     >
-                                        {/* Liquid Glass grain */}
-                                        <div
-                                            className="pointer-events-none absolute inset-0 rounded-2xl opacity-[0.10] dark:opacity-[0.14]"
-                                            style={{
-                                                backgroundImage:
-                                                    "radial-gradient(rgba(255,255,255,0.40) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.12) 1px, transparent 1px)",
-                                                backgroundSize: "18px 18px, 22px 22px",
-                                                backgroundPosition: "0 0, 10px 12px",
-                                            }}
-                                        />
-
                                         <div className="relative">
                                             {category.items.map((item, index) => (
                                                 <AccordionItem

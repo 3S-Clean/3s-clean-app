@@ -245,13 +245,13 @@
       "title": "CORE",
       "desc": "The essential cleaning program to keep your home consistently clean and presentable."
     },
-    "reset": {
-      "title": "RESET",
-      "desc": "An intensive deep clean to reset your home after events or long gaps."
-    },
     "initial": {
       "title": "INITIAL",
       "desc": "Recommended for first-time clients to establish a clean baseline."
+    },
+    "reset": {
+      "title": "RESET",
+      "desc": "An intensive deep clean to reset your home after events or long gaps."
     },
     "handover": {
       "title": "HANDOVER",

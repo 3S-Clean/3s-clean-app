@@ -62,14 +62,30 @@ export default function InsidePage() {
             <Header />
             <main className="min-h-screen bg-[var(--background)] pt-[80px]">
                 {/* Hero */}
-                <section className="mx-auto max-w-4xl px-6 pt-12 pb-8 md:pt-20 md:pb-16">
-                    <p className="mb-4 text-sm font-medium tracking-wider uppercase text-[var(--muted)]">
-                        Inside 3S
+                <section className="mx-auto max-w-4xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
+                    <p className={`
+                        inline-block whitespace-nowrap 
+                        px-4 sm:px-5 md:px-7
+                        font-sans font-bold text-left text-[var(--text)] mb-6
+                        tracking-[0.05em]
+                        text-[23px] leading-[2.2rem] 
+                        sm:text-[26px] sm:leading-[2rem]
+                        md:text-[29px] md:leading-[2rem]
+                        xl:text-[32px] xl:leading-[3rem]
+                        `}>
+                        3-S Story.
                     </p>
-                    <h1 className="mb-6 text-4xl font-bold tracking-tight text-[var(--text)] md:text-5xl lg:text-6xl">
+                    <h1 className={`
+                        min-w-0
+                        font-sans font-semibold tracking-[0em] text-[var(--text)]
+                        text-[43px] leading-[4rem]
+                        sm:text-[48px] sm:leading-[4rem]
+                        md:text-[50px] md:leading-[3rem]
+                        xl:text-[52px] xl:leading-[3rem]
+                    `}>
                         Home cleaning redefined
                     </h1>
-                    <p className="max-w-3xl text-lg leading-relaxed text-[var(--muted)] md:text-xl">
+                    <p className="max-w-3xl text-left text-[var(--text)] text-[15px] leading-[1.2rem] md:text-lg mb-5 mt-5">
                         The home-cleaning market seems to be stuck in the past: clients fear something can go
                         horribly wrong with their home without supervision, pricing is often a mystery, and
                         cleaners too often get treated like disposable labor.

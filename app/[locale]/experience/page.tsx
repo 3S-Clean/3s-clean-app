@@ -100,7 +100,16 @@ export default function ExperiencePage() {
             <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
                 {/* HERO */}
                 <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight whitespace-pre-line">
+                    <h1 className={`
+                        inline-block whitespace-nowrap 
+                        px-4 sm:px-5 md:px-7
+                        font-sans font-bold text-left text-[var(--text)] mb-6
+                        tracking-[0.05em]
+                        text-[23px] leading-[2.2rem] 
+                        sm:text-[26px] sm:leading-[2rem]
+                        md:text-[29px] md:leading-[2rem]
+                        xl:text-[32px] xl:leading-[3rem]
+                        `}>
                         {t("hero.title")}
                     </h1>
                     <p className="mt-4 text-lg text-[var(--muted)] max-w-2xl">{t("hero.subtitle")}</p>

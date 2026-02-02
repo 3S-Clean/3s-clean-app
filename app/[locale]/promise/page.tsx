@@ -11,7 +11,17 @@ import Footer from "@/components/footer/Footer";
 
 function SectionKicker({ children }: { children: React.ReactNode }) {
     return (
-        <p className="font-sans font-bold tracking-[-0.02em] text-[var(--text)] text-2xl sm:text-3xl md:text-4xl mb-6">
+        <p className={`
+            inline-block whitespace-nowrap 
+            px-4 sm:px-5 md:px-7
+            font-sans font-bold text-left text-[var(--text)] mb-6
+            tracking-[0.05em]
+            text-[23px] leading-[2.2rem] 
+            sm:text-[26px] sm:leading-[2rem]
+            md:text-[29px] md:leading-[2rem]
+            xl:text-[32px] xl:leading-[3rem]
+        
+      `} >
             {children}
         </p>
     );
@@ -126,16 +136,13 @@ export default function PromisePage() {
         <>
             <Header />
             <HashScrollFix />
-
-            <main className="min-h-screen bg-[var(--background)] pt-[90px] sm:pt-[86px] overflow-x-hidden">
-                {/* Hero (LEFT, same container widths as Home) */}
-                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl xl:max-w-[1400px] mx-auto">
+            <main className="mx-auto max-w-4xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
+                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
                     <SectionKicker>{t("hero.title")}</SectionKicker>
                 </section>
-
                 {/* SAUBER */}
                 <section id="sauber" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         <SectionShell>
                             <div className="mb-8">
                                 <BigTitle className="block">{t("sauber.title")}</BigTitle>
@@ -161,7 +168,7 @@ export default function PromisePage() {
 
                 {/* SICHER */}
                 <section id="sicher" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         <SectionShell>
                             <div className="mb-8">
                                 <BigTitle className="block">{t("sicher.title")}</BigTitle>
@@ -202,7 +209,7 @@ export default function PromisePage() {
 
                 {/* SOUVERÄN */}
                 <section id="souveran" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl xl:max-w-[1400px] mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         <SectionShell>
                             <div className="mb-8">
                                 <BigTitle className="block">{t("souveran.title")}</BigTitle>
@@ -233,7 +240,7 @@ export default function PromisePage() {
                 </section>
 
                 {/* CTA (можешь оставить по центру — если хочешь тоже слева скажи) */}
-                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-7xl xl:max-w-[1400px] mx-auto">
+                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-7xl mx-auto">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("cta.title")}</h2>
 
                     <Link
