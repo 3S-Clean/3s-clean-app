@@ -136,7 +136,7 @@ export default function PromisePage() {
         <>
             <Header />
             <HashScrollFix />
-            <main className="mx-auto max-w-4xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
+            <main className="mx-auto max-w-7xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
                 <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
                     <SectionKicker>{t("hero.title")}</SectionKicker>
                 </section>

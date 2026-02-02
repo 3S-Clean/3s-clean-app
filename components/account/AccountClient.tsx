@@ -78,17 +78,17 @@ export default function AccountClient({
             {/* FIXED HEADER */}
             <Header />
             {/* PAGE */}
-            <div className="min-h-screen bg-[#f8f8f8] pt-[92px]">
+            <div className="min-h-screen bg-[var(--background)] pt-[92px]">
                 {/* CONTENT */}
                 <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
-                    <div className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
+                    <div className="rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
                         <div className="flex items-start justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl font-semibold tracking-tight text-black">Account</h1>
-                                <p className="text-sm pt-1 text-gray-600">
+                                <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-white">Account</h1>
+                                <p className="text-sm pt-1 text-gray-600 dark:text-white/60">
                                     {greeting},{" "}
-                                    <span className="text-black font-medium">{displayName}</span>
+                                    <span className="text-black dark:text-white font-medium">{displayName}</span>
                                 </p>
                             </div>
 
@@ -109,7 +109,7 @@ export default function AccountClient({
                         </div>
                     </div>
                     {/* Tabs */}
-                    <nav className="rounded-2xl bg-white p-2 shadow-sm">
+                    <nav className="rounded-2xl bg-white dark:bg-gray-900 p-2 shadow-sm">
                         {/* Desktop */}
                         <div className="hidden md:block">
                             <div className="flex items-center gap-2">
@@ -119,7 +119,6 @@ export default function AccountClient({
                                         {tabs.map((tab) => {
                                             const Icon = tab.icon;
                                             const isActive = activeTab === tab.id;
-
                                             return (
                                                 <button
                                                     key={tab.id}
@@ -128,8 +127,8 @@ export default function AccountClient({
                                                     className={[
                                                         "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
                                                         isActive
-                                                            ? "bg-black/5 text-black"
-                                                            : "text-black/70 hover:bg-black/5 hover:text-black",
+                                                            ? "bg-black/5 text-black dark:bg-white/10 dark:text-white"
+                                                            : "text-black/70 hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
                                                     ].join(" ")}
                                                 >
                                                     <Icon size={20} strokeWidth={1.5} />
@@ -138,15 +137,14 @@ export default function AccountClient({
                                             );
                                         })}
                                     </div>
-
                                     {/* Fade hint on the right edge of the scroll area */}
-                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-white/0" />
+                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-white/0 dark:from-gray-900 dark:to-transparent" />
                                 </div>
 
                                 {/* Pinned logout (does not scroll, does not overlap) */}
                                 <div className="shrink-0">
-                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-4 py-2 shadow-sm backdrop-blur-md">
-                                        <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
+                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-4 py-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5">
+                                        <LogOut size={20} strokeWidth={1.5} className="text-black/60 dark:text-white/60" />
                                         <LogoutButton label="Logout" />
                                     </div>
                                 </div>
@@ -164,7 +162,7 @@ export default function AccountClient({
                                         onClick={() => setActiveTab(tab.id)}
                                         className={[
                                             "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                            isActive ? "bg-black/5 text-black" : "text-black/70 hover:bg-black/5",
+                                            isActive ? "bg-black/5 text-black dark:bg-white/10 dark:text-white" : "text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10"
                                         ].join(" ")}
                                     >
                                         <Icon size={20} strokeWidth={1.5} />
@@ -173,17 +171,17 @@ export default function AccountClient({
                                 );
                             })}
 
-                            <div className="my-1 h-px w-full bg-black/10" />
+                            <div className="my-1 h-px w-full bg-black/10 dark:bg-white/10" />
 
                             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5">
-                                <LogOut size={20} strokeWidth={1.5} className="text-black/60" />
+                                <LogOut size={20} strokeWidth={1.5}  className="text-black/60 dark:text-white/60" />
                                 <LogoutButton label="Logout" className="px-0 py-0 hover:bg-transparent" />
                             </div>
                         </div>
                     </nav>
 
                     {/* Content */}
-                    <div className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
+                    <div className="rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
                         {activeTab === "personal" && <PersonalInfoClient email={email} />}
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
@@ -203,8 +201,8 @@ export default function AccountClient({
 function LiveCleaningVideo() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">Live Cleaning Video</h2>
-            <p className="mt-4 text-black/55">Your live stream will appear here during an active service.</p>
+            <h2 className="text-xl font-semibold text-black dark:text-white md:text-2xl">Live Cleaning Video</h2>
+            <p className="mt-4 text-black/55 dark:text-white/60">...</p>
         </div>
     );
 }
@@ -212,8 +210,8 @@ function LiveCleaningVideo() {
 function VideoHistory() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">Video History</h2>
-            <p className="mt-4 text-black/55">Saved recordings will appear here after your service.</p>
+            <h2 className="text-xl font-semibold text-black dark:text-white md:text-2xl">Video History</h2>
+            <p className="mt-4 text-black/55 dark:text-white/60">...</p>
         </div>
     );
 }
