@@ -1,4 +1,3 @@
-// components/ui/infohelp/InfoHelp.tsx
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -22,6 +21,26 @@ function useIsTouchUI() {
     return isTouchUI;
 }
 
+/* ---------------- Dark theme detection (Tailwind .dark on <html>) ---------------- */
+
+function useIsDarkTheme() {
+    const [isDark, setIsDark] = useState(false);
+
+    useEffect(() => {
+        const el = document.documentElement;
+
+        const update = () => setIsDark(el.classList.contains("dark"));
+        update();
+
+        const obs = new MutationObserver(update);
+        obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+
+        return () => obs.disconnect();
+    }, []);
+
+    return isDark;
+}
+
 function lockBodyScroll(locked: boolean) {
     const body = document.body;
     if (!body) return;
@@ -40,19 +59,17 @@ function lockBodyScroll(locked: boolean) {
 export function InfoHelp({
                              text,
                              title = "Details",
-                             dark = false,
                          }: {
     text: string;
     title?: string;
-    dark?: boolean;
 }) {
     const isTouchUI = useIsTouchUI();
+    const isDarkTheme = useIsDarkTheme();
+
     const [open, setOpen] = useState(false);
     const btnRef = useRef<HTMLButtonElement | null>(null);
 
-    // ✅ hover close delay (desktop only)
     const closeTimerRef = useRef<number | null>(null);
-
     const clearCloseTimer = () => {
         if (closeTimerRef.current) {
             window.clearTimeout(closeTimerRef.current);
@@ -106,17 +123,18 @@ export function InfoHelp({
         return () => window.removeEventListener("pointerdown", onDown, true);
     }, [open, isTouchUI]);
 
-    /* icon colors */
     const iconClass = useMemo(
-        () => (dark ? "text-white/60 hover:text-white" : "text-gray-400 hover:text-gray-600"),
-        [dark]
+        () =>
+            isDarkTheme
+                ? "text-white/60 hover:text-white"
+                : "text-gray-400 hover:text-gray-600",
+        [isDarkTheme]
     );
 
     return (
         <span
             data-infohelp-root
             className="relative inline-flex"
-            // ✅ desktop hover: keep open when moving between icon and tooltip
             onMouseEnter={
                 !isTouchUI
                     ? () => {
@@ -147,7 +165,6 @@ export function InfoHelp({
             {!isTouchUI && open && (
                 <div
                     role="tooltip"
-                    // ✅ keep open while hovering tooltip
                     onMouseEnter={() => {
                         clearCloseTimer();
                         setOpen(true);
@@ -156,13 +173,14 @@ export function InfoHelp({
                     onClick={() => setOpen(false)}
                     className={[
                         "absolute z-50",
-                        "top-full mt-2",
-                        "left-0", // starts at icon edge
-                        // ✅ wider, less tall feeling (better wrap)
+                        "bottom-full mb-2", // ✅ above icon
+                        "left-0",
                         "w-[min(22rem,calc(100vw-2rem))]",
                         "px-3 py-2 text-sm leading-snug",
                         "rounded-lg shadow-lg",
-                        dark ? "bg-gray-900 text-white border border-white/10" : "bg-white text-gray-700 border border-gray-200",
+                        isDarkTheme
+                            ? "bg-white text-gray-700 border border-gray-200"
+                            : "bg-gray-900 text-white border border-white/10",
                     ].join(" ")}
                 >
                     {text}
@@ -190,7 +208,11 @@ export function InfoHelp({
                         >
                             {/* backdrop */}
                             <motion.div
-                                className={dark ? "absolute inset-0 bg-black/60" : "absolute inset-0 bg-black/40"}
+                                className={
+                                    isDarkTheme
+                                        ? "absolute inset-0 bg-black/60"
+                                        : "absolute inset-0 bg-black/40"
+                                }
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
@@ -202,7 +224,8 @@ export function InfoHelp({
                                 className={[
                                     "absolute bottom-0 left-0 right-0",
                                     "rounded-t-3xl px-5 pt-4 pb-6 shadow-2xl",
-                                    dark ? "bg-gray-900 text-white" : "bg-white text-gray-900",
+                                    // ✅ inverted like tooltip
+                                    isDarkTheme ? "bg-white text-gray-900" : "bg-gray-900 text-white",
                                 ].join(" ")}
                                 initial={{ y: 24 }}
                                 animate={{ y: 0 }}
@@ -219,9 +242,9 @@ export function InfoHelp({
                             >
                                 <div
                                     className={
-                                        dark
-                                            ? "mx-auto mb-3 h-1 w-10 rounded-full bg-white/20"
-                                            : "mx-auto mb-3 h-1 w-10 rounded-full bg-black/10"
+                                        isDarkTheme
+                                            ? "mx-auto mb-3 h-1 w-10 rounded-full bg-black/10"
+                                            : "mx-auto mb-3 h-1 w-10 rounded-full bg-white/20"
                                     }
                                 />
 
@@ -231,7 +254,11 @@ export function InfoHelp({
 
                                         <button
                                             type="button"
-                                            className={dark ? "mt-2 text-left text-sm text-white/80" : "mt-2 text-left text-sm text-gray-600"}
+                                            className={
+                                                isDarkTheme
+                                                    ? "mt-2 text-left text-sm text-gray-700"
+                                                    : "mt-2 text-left text-sm text-white/80"
+                                            }
                                             onClick={(e) => {
                                                 stop(e);
                                                 setOpen(false);
@@ -244,9 +271,9 @@ export function InfoHelp({
                                     <button
                                         type="button"
                                         className={
-                                            dark
-                                                ? "text-sm font-semibold text-white/70 px-3 py-2 -mr-2"
-                                                : "text-sm font-semibold text-gray-700 px-3 py-2 -mr-2"
+                                            isDarkTheme
+                                                ? "text-sm font-semibold text-gray-700 px-3 py-2 -mr-2"
+                                                : "text-sm font-semibold text-white/70 px-3 py-2 -mr-2"
                                         }
                                         onClick={(e) => {
                                             stop(e);

@@ -77,18 +77,13 @@ export default function ServiceCard(props: ServiceCardProps) {
                     : undefined
             }
             className={[
-                // ✅ true black in dark
-                "relative rounded-3xl bg-white text-gray-900 dark:bg-black dark:text-white",
-                // ✅ clean border + shadow (no “double card” look)
+                "relative rounded-3xl bg-white text-gray-900 dark:bg-[var(--card)]/70 dark:backdrop-blur-sm dark:text-white",
                 "border border-black/5 dark:border-white/10",
                 "shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
                 "overflow-hidden",
-                // ✅ interactive behavior (select + link)
                 props.mode === "select" || props.mode === "link"
                     ? "cursor-pointer select-none transition-all duration-200"
                     : "",
-
-// ✅ hover lift for link + for unselected select
                 props.mode === "link" ? "hover:shadow-xl hover:-translate-y-1" : "",
                 isSelect && !selected ? "hover:shadow-xl hover:-translate-y-1" : "",
                 isSelect ? "active:scale-[0.99] focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15" : "",
@@ -106,21 +101,16 @@ export default function ServiceCard(props: ServiceCardProps) {
                     <Check className="w-5 h-5 text-white" />
                 </div>
             )}
-
             <div className="px-6 md:px-8 py-7 md:py-8">
                 <h3 className="text-2xl md:text-3xl font-bold mb-2">{title}</h3>
-
                 <p className="text-sm text-gray-600 dark:text-white/70 mb-5">{desc}</p>
-
                 <p className="text-2xl font-bold">
                     {fromLabel} € {service.startingPrice}{" "}
                     <span className="text-sm font-normal text-gray-500 dark:text-white/60">
             {incVatLabel}
           </span>
                 </p>
-
                 <div className="mt-5 h-px w-full bg-gray-900/15 dark:bg-white/15" />
-
                 {/* CTA */}
                 {showCta && props.mode === "link" ? (
                     <Link
@@ -162,14 +152,13 @@ export default function ServiceCard(props: ServiceCardProps) {
                 <p className="text-sm font-semibold mt-6 mb-4 text-gray-600 dark:text-white/70">
                     {includesHeading}
                 </p>
-
                 <ul className="space-y-3">
                     {includes.map((it, i) => (
                         <li key={i} className="flex items-start">
                             <span className="w-1.5 h-1.5 rounded-full bg-gray-900/60 dark:bg-white/60 mt-2 mr-3" />
                             <span className="flex items-center flex-wrap gap-2">
                 <span className="text-[15px] text-gray-700 dark:text-white/80">{it.name}</span>
-                                {it.desc && Tooltip ? <Tooltip text={it.desc} title={it.name} dark /> : null}
+                                {it.desc && Tooltip ? <Tooltip text={it.desc} title={it.name} /> : null}
               </span>
                         </li>
                     ))}

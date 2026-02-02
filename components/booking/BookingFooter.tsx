@@ -149,7 +149,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
 
     // ✅ ВАЖНО: старый цвет (как было) — НЕ ТРОГАЮ
     const primaryBtn =
-        "px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all";
+        "px-5 md:px-8 py-3 bg-gray-900 text-white font-semibold rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-all dark:bg-white dark:text-gray-900 dark:hover:bg-white/90 dark:disabled:bg-white/50";
 
     const fromPriceValue = useMemo(() => {
         // чтобы next-intl не ругался на number — всегда строка
@@ -167,14 +167,14 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                     {/* ✅ Summary strip: в цвет кнопки Continue */}
                     {serviceId && (
                         <div className="mb-3">
-                            <div className="rounded-2xl bg-gray-900 text-white px-4 py-3 shadow-sm">
+                            <div className="rounded-2xl bg-gray-900 text-white px-4 py-3 shadow-sm dark:bg-white dark:text-gray-900">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
                                         <div className="font-semibold text-sm truncate">{serviceTitle}</div>
-                                        <div className="text-xs text-white/70 truncate">
+                                        <div className="text-xs text-white/70 truncate dark:text-gray-600">
                                             {summarySubtitle || t("summary.selectDetails")}
                                         </div>
-                                        <div className="text-xs text-white/50 mt-1">{summaryMeta}</div>
+                                        <div className="text-xs text-white/50 mt-1 dark:text-gray-500">{summaryMeta}</div>
                                     </div>
 
                                     <div className="text-right shrink-0">
@@ -185,7 +185,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                                     value: SERVICES.find((s) => s.id === serviceId)?.startingPrice ?? 0,
                                                 })}
                                         </div>
-                                        <div className="text-xs text-white/70 whitespace-nowrap">
+                                        <div className="text-xs text-white/70 whitespace-nowrap dark:text-gray-600">
                                             {showPrice
                                                 ? t("summary.time", { time: timeText })
                                                 : t("summary.selectDetails")}
@@ -214,7 +214,7 @@ export default function BookingFooter({ onSubmit, isSubmitting }: Props) {
                                 {step > 0 && (
                                     <button
                                         onClick={back}
-                                        className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all dark:border-white/15 dark:text-white dark:hover:bg-white/10"
+                                        className="px-5 md:px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all dark:bg-white dark:text-gray-900 dark:border-black/10 dark:hover:bg-white/90"
                                     >
                                         {t("back")}
                                     </button>

@@ -7,7 +7,30 @@ import { APARTMENT_SIZES, PEOPLE_OPTIONS, FINAL_PRICES } from "@/lib/booking/con
 import type { ApartmentSizeId, PeopleCountId, ServiceId } from "@/lib/booking/config";
 import { isApartmentSizeId, isPeopleCountId, isServiceId } from "@/lib/booking/guards";
 
-const PRIMARY_SOLID = "bg-gray-900 text-white";
+// ✅ Selected: light = dark (not pure black), dark = white
+const SELECTED_CARD =
+    "bg-gray-800 text-white border border-black/10 hover:bg-gray-700 " +
+    "dark:bg-white dark:text-gray-900 dark:border-black/10 dark:hover:bg-white/90";
+
+// ✅ Base: keep as before (light white, dark translucent)
+const BASE_CARD =
+    "bg-white text-gray-900 border border-black/10 hover:bg-black/[0.03] " +
+    "dark:bg-white/[0.06] dark:text-white dark:border-white/10 dark:hover:bg-white/[0.10]";
+
+function CheckIcon() {
+    return (
+        <svg viewBox="0 0 20 20" className="w-4 h-4">
+            <path
+                d="M16.7 5.7 8.1 14.3 3.3 9.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
 
 export default function ApartmentDetails() {
     const t = useTranslations("bookingDetails");
@@ -67,19 +90,13 @@ export default function ApartmentDetails() {
     return (
         <div className="animate-fadeIn">
             <div className="mb-10">
-                <h1 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
-                    {t("title")}
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-white/60">
-                    {t("subtitle")}
-                </p>
+                <h1 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">{t("title")}</h1>
+                <p className="text-sm text-gray-600 dark:text-white/60">{t("subtitle")}</p>
             </div>
 
             {/* Apartment Size */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">
-                    {t("size.title")}
-                </h3>
+                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">{t("size.title")}</h3>
 
                 <div className="grid grid-cols-2 gap-3">
                     {APARTMENT_SIZES.map((size) => {
@@ -99,22 +116,14 @@ export default function ApartmentDetails() {
                                         return;
                                     }
 
-                                    // ✅ first selection
                                     setApartmentSize(nextSize);
-
-                                    // ✅ default people if not selected
                                     if (!peopleCount) setPeopleCount("1-2");
                                 }}
                                 className={[
                                     "p-3.5 rounded-2xl text-center transition-all",
                                     "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
-                                    // ✅ light
-                                    "bg-white text-gray-900 border border-black/10",
-                                    "hover:bg-black/[0.03]",
-                                    // ✅ dark (как на Extras: не белое, читаемое)
-                                    "dark:bg-white/[0.06] dark:text-white dark:border-white/10",
-                                    "dark:hover:bg-white/[0.10]",
-                                    isSelected ? PRIMARY_SOLID : "",
+                                    // ✅ IMPORTANT: either base OR selected (no mixing)
+                                    isSelected ? SELECTED_CARD : BASE_CARD,
                                     "active:scale-[0.99]",
                                 ].join(" ")}
                             >
@@ -124,19 +133,13 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!sizeId && (
-                    <div className="mt-3 text-xs text-gray-500 dark:text-white/50">
-                        {t("size.tip")}
-                    </div>
-                )}
+                {!sizeId && <div className="mt-3 text-xs text-gray-500 dark:text-white/50">{t("size.tip")}</div>}
             </div>
 
             {/* People */}
             <div className="mb-8">
                 <div className="flex items-end justify-between gap-4 mb-3">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                        {t("people.title")}
-                    </h3>
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t("people.title")}</h3>
                     <div className="text-xs text-gray-600 dark:text-white/55">
                         {hasPets ? t("people.pricesInclPets") : t("people.pricesExclPets")}
                     </div>
@@ -145,7 +148,6 @@ export default function ApartmentDetails() {
                 <div className="grid grid-cols-3 gap-3">
                     {PEOPLE_OPTIONS.map((opt) => {
                         const optId = isPeopleCountId(opt.id) ? (opt.id as PeopleCountId) : null;
-
                         const diff = optId ? getPeoplePriceDiff(optId) : null;
                         const isSelected = peopleId === opt.id;
                         const isDisabled = !sizeId;
@@ -159,14 +161,9 @@ export default function ApartmentDetails() {
                                 className={[
                                     "p-3.5 rounded-2xl text-center transition-all",
                                     "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
-                                    // ✅ light
-                                    "bg-white text-gray-900 border border-black/10",
-                                    "hover:bg-black/[0.03]",
-                                    // ✅ dark
-                                    "dark:bg-white/[0.06] dark:text-white dark:border-white/10",
-                                    "dark:hover:bg-white/[0.10]",
                                     isDisabled ? "opacity-40 cursor-not-allowed" : "",
-                                    isSelected ? PRIMARY_SOLID : "",
+                                    // ✅ either base OR selected
+                                    isSelected ? SELECTED_CARD : BASE_CARD,
                                     !isDisabled ? "active:scale-[0.99]" : "",
                                 ].join(" ")}
                             >
@@ -176,8 +173,9 @@ export default function ApartmentDetails() {
                                     <div
                                         className={[
                                             "text-[11px] mt-1",
+                                            // ✅ selected: light on dark bg; dark on white bg
                                             isSelected
-                                                ? "text-white/75"
+                                                ? "text-white/75 dark:text-gray-600"
                                                 : diff === t("people.base")
                                                     ? "text-gray-600 dark:text-white/55"
                                                     : "text-gray-900 dark:text-white font-medium",
@@ -191,33 +189,23 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!sizeId && (
-                    <div className="mt-3 text-xs text-gray-500 dark:text-white/50">
-                        {t("people.pickSizeFirst")}
-                    </div>
-                )}
+                {!sizeId && <div className="mt-3 text-xs text-gray-500 dark:text-white/50">{t("people.pickSizeFirst")}</div>}
             </div>
 
             {/* Additional Info */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">
-                    {t("additional.title")}
-                </h3>
+                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">{t("additional.title")}</h3>
 
                 {/* Pets */}
                 <label
                     className={[
                         "flex items-center justify-between p-4 rounded-2xl mb-3 cursor-pointer transition-colors",
-                        // ✅ light
                         "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
-                        // ✅ dark
                         "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
                     ].join(" ")}
                 >
                     <div>
-                        <div className="font-medium text-sm text-gray-900 dark:text-white">
-                            {t("additional.pets")}
-                        </div>
+                        <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.pets")}</div>
 
                         {petSurcharge > 0 && (
                             <div
@@ -227,19 +215,31 @@ export default function ApartmentDetails() {
                                         : "text-xs text-gray-600 dark:text-white/55"
                                 }
                             >
-                                {hasPets
-                                    ? `+€${petSurcharge.toFixed(2)}`
-                                    : t("additional.petsAdds", { price: petSurcharge.toFixed(2) })}
+                                {hasPets ? `+€${petSurcharge.toFixed(2)}` : t("additional.petsAdds", { price: petSurcharge.toFixed(2) })}
                             </div>
                         )}
                     </div>
 
-                    <input
-                        type="checkbox"
-                        checked={hasPets}
-                        onChange={(e) => setHasPets(e.target.checked)}
-                        className="w-6 h-6 accent-[color:var(--text)]"
-                    />
+                    {/* ✅ round checkbox + correct check colors */}
+                    <span className="relative">
+            <input
+                type="checkbox"
+                checked={hasPets}
+                onChange={(e) => setHasPets(e.target.checked)}
+                className="sr-only"
+            />
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasPets
+                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasPets ? <CheckIcon /> : null}
+            </span>
+          </span>
                 </label>
 
                 {/* Kids */}
@@ -250,15 +250,27 @@ export default function ApartmentDetails() {
                         "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
                     ].join(" ")}
                 >
-                    <div className="font-medium text-sm text-gray-900 dark:text-white">
-                        {t("additional.kids")}
-                    </div>
-                    <input
-                        type="checkbox"
-                        checked={hasKids}
-                        onChange={(e) => setHasKids(e.target.checked)}
-                        className="w-6 h-6 accent-[color:var(--text)]"
-                    />
+                    <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.kids")}</div>
+
+                    <span className="relative">
+            <input
+                type="checkbox"
+                checked={hasKids}
+                onChange={(e) => setHasKids(e.target.checked)}
+                className="sr-only"
+            />
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasKids
+                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasKids ? <CheckIcon /> : null}
+            </span>
+          </span>
                 </label>
 
                 {/* Allergies */}
@@ -269,15 +281,27 @@ export default function ApartmentDetails() {
                         "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
                     ].join(" ")}
                 >
-                    <div className="font-medium text-sm text-gray-900 dark:text-white">
-                        {t("additional.allergies")}
-                    </div>
-                    <input
-                        type="checkbox"
-                        checked={hasAllergies}
-                        onChange={(e) => setHasAllergies(e.target.checked)}
-                        className="w-6 h-6 accent-[color:var(--text)]"
-                    />
+                    <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.allergies")}</div>
+
+                    <span className="relative">
+            <input
+                type="checkbox"
+                checked={hasAllergies}
+                onChange={(e) => setHasAllergies(e.target.checked)}
+                className="sr-only"
+            />
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasAllergies
+                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasAllergies ? <CheckIcon /> : null}
+            </span>
+          </span>
                 </label>
 
                 {hasAllergies && (

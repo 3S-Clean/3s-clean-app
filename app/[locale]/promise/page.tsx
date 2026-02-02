@@ -45,9 +45,13 @@ function SectionShell({ children }: { children: React.ReactNode }) {
             className="
         w-full
         rounded-3xl
-        bg-[var(--card)]/70 backdrop-blur-sm
-        text-[var(--text)]
+        bg-white
+        text-gray-900
+        border border-black/5
         p-8 md:p-12
+        dark:bg-[var(--card)]/70 dark:backdrop-blur-sm
+        dark:text-[var(--text)]
+        dark:border-white/10
       "
         >
             {children}
@@ -123,7 +127,7 @@ export default function PromisePage() {
             <Header />
             <HashScrollFix />
 
-            <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)] overflow-x-hidden">
+            <main className="min-h-screen bg-[var(--background)] pt-[90px] sm:pt-[86px] overflow-x-hidden">
                 {/* Hero (LEFT, same container widths as Home) */}
                 <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl xl:max-w-[1400px] mx-auto">
                     <SectionKicker>{t("hero.title")}</SectionKicker>

@@ -19,6 +19,21 @@ type ExistingBookingRow = {
     estimated_hours: number;
 };
 
+function CheckIcon() {
+    return (
+        <svg viewBox="0 0 20 20" className="w-4 h-4">
+            <path
+                d="M16.7 5.7 8.1 14.3 3.3 9.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+}
+
 export default function ContactSchedule() {
     const t = useTranslations("bookingSchedule.contactSchedule");
     const locale = useLocale();
@@ -37,11 +52,9 @@ export default function ContactSchedule() {
 
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
-
     // ✅ Terms UI only (wire to DB later)
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isTermsOpen, setIsTermsOpen] = useState(false);
-
     // ---------- hours -> minutes (точно, типобезопасно) ----------
     const estimatedMinutes = useMemo(() => {
         const baseHours =
@@ -129,21 +142,19 @@ export default function ContactSchedule() {
     const monthLabel = currentMonth.toLocaleString(locale, { month: "long" });
     const weekdays = t.raw("calendar.weekdays") as unknown as string[];
 
-    // ✅ цвет как раньше (твой booking footer)
-    const primarySelected = "bg-gray-900 text-white";
-    const primaryBtn = "bg-gray-900 text-white hover:bg-gray-800";
+    const primarySelected = "bg-gray-800 text-white dark:bg-white dark:text-gray-900";
+    const primaryBtn = "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90";
     const disabledBtn = "opacity-35 cursor-not-allowed";
 
     return (
         <div className="animate-fadeIn">
             {/* Header */}
             <div className="mb-10">
-                <div className="text-sm text-[var(--muted)] mb-2">
-                    {formData.firstName?.trim()
-                        ? t("hiName", { name: formData.firstName.trim() })
-                        : t("hi")}
-                </div>
-
+                {formData.firstName?.trim() ? (
+                    <div className="text-md text-[var(--muted)] mb-2">
+                        {t("hiName", { name: formData.firstName.trim() })}
+                    </div>
+                ) : null}
                 <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
                 <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
@@ -444,12 +455,25 @@ export default function ContactSchedule() {
             {/* ✅ Terms & Conditions */}
             <div className={["rounded-2xl p-4", "bg-[var(--card)]/70 backdrop-blur-md", "border border-black/10 dark:border-white/10"].join(" ")}>
                 <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={acceptedTerms}
-                        onChange={(e) => setAcceptedTerms(e.target.checked)}
-                        className="mt-1 w-5 h-5 accent-[color:var(--text)]"
-                    />
+                    <span className="relative mt-1">
+                          <input
+                              type="checkbox"
+                              checked={acceptedTerms}
+                              onChange={(e) => setAcceptedTerms(e.target.checked)}
+                              className="sr-only"
+                          />
+                          <span
+                              className={[
+                                  "grid place-items-center w-5 h-5 rounded-full border transition",
+                                  acceptedTerms
+                                      ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                                      : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
+                              ].join(" ")}
+                              aria-hidden="true"
+                          >
+                            {acceptedTerms ? <CheckIcon /> : null}
+                          </span>
+                    </span>
                     <div className="text-sm text-[var(--text)] leading-snug">
                         {t("terms.prefix")}{" "}
                         <button

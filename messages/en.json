@@ -311,7 +311,8 @@
     "adds": "adds",
     "hint": "You can adjust extras later if needed — no stress.",
     "badges": {
-      "recommended": "Recommended"
+      "recommended": "Recommended",
+      "popular": "Popular"
     },
     "aria": {
       "increase": "Increase {name}",
