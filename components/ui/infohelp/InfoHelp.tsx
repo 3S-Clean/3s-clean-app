@@ -28,14 +28,27 @@ function useIsDarkTheme() {
 
     useEffect(() => {
         const el = document.documentElement;
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
 
-        const update = () => setIsDark(el.classList.contains("dark"));
+        const update = () => {
+            const byClass = el.classList.contains("dark");
+            const byMedia = mq.matches;
+            setIsDark(byClass || byMedia);
+        };
+
         update();
 
+        // слушаем смену системной темы
+        mq.addEventListener("change", update);
+
+        // слушаем смену класса (если когда-то будет class-based dark)
         const obs = new MutationObserver(update);
         obs.observe(el, { attributes: true, attributeFilter: ["class"] });
 
-        return () => obs.disconnect();
+        return () => {
+            mq.removeEventListener("change", update);
+            obs.disconnect();
+        };
     }, []);
 
     return isDark;
@@ -173,7 +186,7 @@ export function InfoHelp({
                     onClick={() => setOpen(false)}
                     className={[
                         "absolute z-50",
-                        "bottom-full mb-2", // ✅ above icon
+                        "bottom-full mb-2",
                         "left-0",
                         "w-[min(22rem,calc(100vw-2rem))]",
                         "px-3 py-2 text-sm leading-snug",

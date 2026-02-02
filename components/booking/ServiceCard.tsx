@@ -6,7 +6,6 @@ import { Check } from "lucide-react";
 import type { ServiceId } from "@/lib/booking/config";
 
 type IncludeUI = { name: string; desc?: string };
-
 type TooltipComp = (p: { text: string; title?: string; dark?: boolean }) => React.ReactElement;
 
 type BaseService = {

@@ -7,16 +7,16 @@ export const SERVICES = [
         includesKeys: ["floors", "surfaces", "bathroom", "kitchen"],
     },
     {
-        id: "reset",
-        isDark: true,
-        startingPrice: 200,
-        includesKeys: ["floors", "surfaces", "bathroom", "kitchen", "limescale", "insideCupboards"],
-    },
-    {
         id: "initial",
         isDark: false,
         startingPrice: 165,
         includesKeys: ["floors", "surfaces", "bathroom", "kitchen", "limescale"],
+    },
+    {
+        id: "reset",
+        isDark: true,
+        startingPrice: 200,
+        includesKeys: ["floors", "surfaces", "bathroom", "kitchen", "limescale", "insideCupboards"],
     },
     {
         id: "handover",
