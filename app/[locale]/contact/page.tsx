@@ -15,7 +15,7 @@ export default function ContactPage() {
     return (
         <>
             <Header />
-            <main className="mx-auto max-w-4xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
+            <main className="min-h-screen bg-[var(--background)] pt-[80px]">
                 {/* Hero */}
                 <section className="px-6 pt-12 pb-8 md:pt-20 md:pb-12 max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-[var(--text)]">
