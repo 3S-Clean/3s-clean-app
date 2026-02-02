@@ -168,10 +168,10 @@ export default function FAQPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className={cx(
                                 "w-full pl-12 pr-4 py-4 rounded-2xl",
-                                "bg-[var(--card)]/70 dark:bg-[var(--card)]/35",
+                                "bg-[var(--card)]/85 dark:bg-[var(--card)]/35",
                                 "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
                                 "text-[var(--text)] placeholder:text-[var(--muted)]",
-                                "focus:outline-none focus:ring-4 focus:ring-black/10 dark:focus:ring-white/10",
+                                "focus:outline-none focus:ring-1 focus:ring-black/10 dark:focus:ring-white/10",
                                 "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]"
                             )}
                         />
@@ -221,9 +221,9 @@ export default function FAQPage() {
                                     <div
                                         className={cx(
                                             "relative rounded-2xl p-4",
-                                            "backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10",
-                                            "bg-[var(--card)]/70 dark:bg-[var(--card)]/35",
-                                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_20px_60px_rgba(0,0,0,0.06)]",
+                                            "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
+                                            "bg-[var(--card)]/92 dark:bg-[var(--card)]/35",
+                                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_20px_60px_rgba(0,0,0,0.08)]",
                                             "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_20px_60px_rgba(0,0,0,0.45)]"
                                         )}
                                     >
