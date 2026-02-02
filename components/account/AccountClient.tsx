@@ -78,17 +78,17 @@ export default function AccountClient({
             {/* FIXED HEADER */}
             <Header />
             {/* PAGE */}
-            <div className="min-h-screen bg-[var(--background)] pt-[92px]">
+            <div className="min-h-screen bg-[var(--background)] pt-[92px] text-[var(--text)]">
                 {/* CONTENT */}
                 <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
-                    <div className="rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
+                    <div className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
                         <div className="flex items-start justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-white">Account</h1>
-                                <p className="text-sm pt-1 text-gray-600 dark:text-white/60">
+                                <h1 className="text-3xl font-semibold tracking-tight text-[var(--text)]">Account</h1>
+                                <p className="text-sm pt-1 text-[var(--muted)]">
                                     {greeting},{" "}
-                                    <span className="text-black dark:text-white font-medium">{displayName}</span>
+                                    <span className="text-[var(--text)] font-medium">{displayName}</span>
                                 </p>
                             </div>
 
@@ -109,7 +109,7 @@ export default function AccountClient({
                         </div>
                     </div>
                     {/* Tabs */}
-                    <nav className="rounded-2xl bg-white dark:bg-gray-900 p-2 shadow-sm">
+                    <nav className="rounded-2xl bg-white dark:bg-black p-2 shadow-sm border border-black/5 dark:border-white/10">
                         {/* Desktop */}
                         <div className="hidden md:block">
                             <div className="flex items-center gap-2">
@@ -127,8 +127,8 @@ export default function AccountClient({
                                                     className={[
                                                         "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
                                                         isActive
-                                                            ? "bg-black/5 text-black dark:bg-white/10 dark:text-white"
-                                                            : "text-black/70 hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+                                                            ? "bg-[var(--text)]/5 text-[var(--text)]"
+                                                            : "text-[var(--text)]/70 hover:bg-[var(--text)]/5 hover:text-[var(--text)]",
                                                     ].join(" ")}
                                                 >
                                                     <Icon size={20} strokeWidth={1.5} />
@@ -138,13 +138,13 @@ export default function AccountClient({
                                         })}
                                     </div>
                                     {/* Fade hint on the right edge of the scroll area */}
-                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white to-white/0 dark:from-gray-900 dark:to-transparent" />
+                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white dark:from-black to-transparent" />
                                 </div>
 
                                 {/* Pinned logout (does not scroll, does not overlap) */}
                                 <div className="shrink-0">
-                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-4 py-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5">
-                                        <LogOut size={20} strokeWidth={1.5} className="text-black/60 dark:text-white/60" />
+                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-black/80 px-4 py-2 shadow-sm backdrop-blur-md">
+                                        <LogOut size={20} strokeWidth={1.5} className="text-[var(--muted)]"/>
                                         <LogoutButton label="Logout" />
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ export default function AccountClient({
                                         onClick={() => setActiveTab(tab.id)}
                                         className={[
                                             "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                            isActive ? "bg-black/5 text-black dark:bg-white/10 dark:text-white" : "text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10"
+                                            isActive ? "bg-[var(--text)]/5 text-[var(--text)]" : "text-[var(--text)]/70 hover:bg-[var(--text)]/5",
                                         ].join(" ")}
                                     >
                                         <Icon size={20} strokeWidth={1.5} />
@@ -175,13 +175,13 @@ export default function AccountClient({
 
                             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5">
                                 <LogOut size={20} strokeWidth={1.5}  className="text-black/60 dark:text-white/60" />
-                                <LogoutButton label="Logout" className="px-0 py-0 hover:bg-transparent" />
+                                <LogoutButton label="Logout"  className="text-[var(--muted)]" />
                             </div>
                         </div>
                     </nav>
 
                     {/* Content */}
-                    <div className="rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-sm md:p-8">
+                    <div className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
                         {activeTab === "personal" && <PersonalInfoClient email={email} />}
                         {activeTab === "live" && <LiveCleaningVideo />}
                         {activeTab === "history" && <VideoHistory />}
