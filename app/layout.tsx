@@ -1,4 +1,4 @@
-import type { Viewport, Metadata } from "next";
+import type { Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { DeviceDetector } from "@/components/ui/devicedetector/DeviceDetector";
@@ -25,13 +25,6 @@ export const viewport: Viewport = {
         { media: "(prefers-color-scheme: light)", color: "#F6F7F8" },
         { media: "(prefers-color-scheme: dark)", color: "#070A0D" },
     ],
-};
-
-export const metadata: Metadata = {
-    icons: {
-        icon: "/favicon.ico",
-        apple: "/apple-touch-icon-180x180.png",
-    },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

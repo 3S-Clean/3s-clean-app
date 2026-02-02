@@ -1,8 +1,17 @@
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
+import { Metadata } from "next";
 
 const locales = ["en", "de"] as const;
 type Locale = (typeof locales)[number];
+
+export const metadata: Metadata = {
+    icons: {
+        icon: "/favicon.ico",
+        apple: "/apple-touch-icon-180x180.png",
+    },
+};
+
 
 export default async function LocaleLayout({
                                                children,
@@ -11,12 +20,8 @@ export default async function LocaleLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
-    // ✅ Next 16: params — Promise
     const { locale } = await params;
-
     if (!locales.includes(locale as Locale)) notFound();
-
-    // messages лежат в /messages рядом с /app
     const messages = (await import(`../../messages/${locale}.json`)).default;
 
     return (
