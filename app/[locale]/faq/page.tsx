@@ -74,9 +74,10 @@ function AccordionItem({
                     <div
                         className={cx(
                             "relative rounded-xl p-4",
-                            "backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10",
-                            "bg-[var(--card)]/75 dark:bg-[var(--card)]/40",
-                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)] dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]",
+                            "backdrop-blur-xl ring-1 ring-black/4 dark:ring-white/10",
+                            "bg-[var(--card)]/95 dark:bg-[var(--card)]/45",
+                            "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55)]," +
+                            " dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10)]",
                             "transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
                             isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
                         )}
@@ -222,7 +223,7 @@ export default function FAQPage() {
                                         className={cx(
                                             "relative rounded-2xl p-4",
                                             "backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10",
-                                            "bg-[var(--card)]/92 dark:bg-[var(--card)]/35",
+                                            "bg-[var(--card)]/75 dark:bg-[var(--card)]/40",
                                             "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.55),0_20px_60px_rgba(0,0,0,0.08)]",
                                             "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_20px_60px_rgba(0,0,0,0.45)]"
                                         )}

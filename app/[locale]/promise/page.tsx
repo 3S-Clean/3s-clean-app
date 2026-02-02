@@ -245,13 +245,7 @@ export default function PromisePage() {
 
                     <Link
                         href="/experience"
-                        className="
-              inline-flex items-center gap-2
-              bg-[var(--text)] text-[var(--background)]
-              px-8 py-4 rounded-full font-medium
-              hover:opacity-90 active:opacity-90
-              transition-opacity
-            "
+                        className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                     >
                         {t("cta.button")}
                         <ArrowRight className="w-5 h-5" />

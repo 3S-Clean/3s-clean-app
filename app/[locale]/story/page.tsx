@@ -1,6 +1,7 @@
-import {  Video, DollarSign, Users, Shield, Check } from "lucide-react";
+import {Video, DollarSign, Users, Shield, Check, ArrowRight} from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import Link from "next/link";
 
 const problems = [
     {
@@ -94,7 +95,7 @@ export default function InsidePage() {
 
                 {/* Mission Statement */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <div className="rounded-2xl bg-[var(--primary)] p-8 text-[var(--primary-text)] md:p-12">
+                    <div className="rounded-2xl bg-gray-900 text-white p-8 md:p-12 dark:bg-white dark:text-gray-900">
                         <p className="mb-6 text-2xl font-bold leading-snug md:text-3xl">
                             That is why 3S-Clean is designed not to &#34;compete.&#34; We&#39;re here to reset the standard.
                         </p>
@@ -232,7 +233,7 @@ export default function InsidePage() {
 
                 {/* Stuttgart Coverage */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <div className="rounded-2xl bg-[var(--primary)] p-8 text-center text-[var(--primary-text)] md:p-12">
+                    <div className="rounded-2xl bg-gray-900 text-white p-8 md:p-12 dark:bg-white dark:text-gray-900">
                         <h2 className="mb-4 text-2xl font-bold md:text-3xl">
                             We currently serve households across Stuttgart
                         </h2>
@@ -250,7 +251,13 @@ export default function InsidePage() {
                     <p className="mb-8 text-lg text-[var(--muted)]">
                         Experience what professional cleaning should be.
                     </p>
-
+                    <Link
+                        href="/booking"
+                        className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
+                    >
+                        Book a cleaning now
+                        <ArrowRight className="w-5 h-5" />
+                    </Link>
                 </section>
             </main>
             <Footer />

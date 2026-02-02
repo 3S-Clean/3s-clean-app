@@ -129,7 +129,7 @@ export default function ContactPage() {
                         </p>
                         <Link
                             href="/booking"
-                            className="inline-flex items-center gap-2 bg-[var(--primary)] text-[var(--primary-text)] px-8 py-4 rounded-full font-medium hover:opacity-90 transition-opacity"
+                            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                         >
                             Book a cleaning now
                             <ArrowRight className="w-5 h-5" />
@@ -139,7 +139,7 @@ export default function ContactPage() {
 
                 {/* Business & Partnerships */}
                 <section className="px-6 py-8 max-w-4xl mx-auto">
-                    <div className="bg-[var(--primary)] text-[var(--primary-text)] rounded-2xl p-6 md:p-8">
+                    <div className="bg-gray-900 text-white rounded-2xl p-6 md:p-8 dark:bg-white dark:text-gray-900">
                         <h2 className="text-2xl font-bold mb-2">
                             Business & Partnerships
                         </h2>
@@ -148,7 +148,7 @@ export default function ContactPage() {
                         </p>
                         <a
                             href="mailto:business@3s-clean.de"
-                            className="inline-flex items-center gap-3 bg-[var(--primary-text)]/10 hover:bg-[var(--primary-text)]/20 px-5 py-3 rounded-xl transition-colors"
+                            className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl transition-colors dark:bg-gray-900/10 dark:hover:bg-gray-900/20"
                         >
                             <Mail className="w-5 h-5" />
                             <span>business@3s-clean.de</span>
