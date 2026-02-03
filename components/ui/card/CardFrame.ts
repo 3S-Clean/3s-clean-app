@@ -1,5 +1,4 @@
 // components/ui/CardFrame.ts
-
 export const CARD_FRAME = [
     "relative overflow-hidden",
     "rounded-3xl",

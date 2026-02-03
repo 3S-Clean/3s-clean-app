@@ -1,72 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import {useEffect} from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { ArrowRight } from "lucide-react";
+import {useTranslations} from "next-intl";
+import {ArrowRight} from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import SectionKicker from "@/components/ui/typography/SectionKicker";
+import BigTitle from "@/components/ui/typography/BigTitle";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
 
-/* ---------- Typography helpers (match Home) ---------- */
+function SectionShell({children}: { children: React.ReactNode }) {
+    const shellBase = [
+        "relative overflow-hidden",
+        "w-full rounded-3xl",
+        "bg-white text-gray-900",
+        "dark:bg-[var(--card)]/70 dark:backdrop-blur-sm dark:text-[var(--text)]",
+        "border border-black/5 dark:border-white/10",
+        "shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
+        "p-8 md:p-12",
+        "motion-reduce:transition-none",
+    ].join(" ");
 
-function SectionKicker({ children }: { children: React.ReactNode }) {
-    return (
-        <p className={`
-            inline-block whitespace-nowrap 
-            px-4 sm:px-5 md:px-7
-            font-sans font-bold text-left text-[var(--text)] mb-6
-            tracking-[0.05em]
-            text-[23px] leading-[2.2rem] 
-            sm:text-[26px] sm:leading-[2rem]
-            md:text-[29px] md:leading-[2rem]
-            xl:text-[32px] xl:leading-[3rem]
-        
-      `} >
-            {children}
-        </p>
-    );
-}
-
-function BigTitle({
-                      children,
-                      className = "",
-                  }: {
-    children: React.ReactNode;
-    className?: string;
-}) {
-    return (
-        <span
-            className={`
-        text-[54px] sm:text-[60px] md:text-[65px] lg:text-[65px] xl:text-[68px]
-        font-bold tracking-tight leading-[1.05] text-[var(--text)]
-        ${className}
-      `}
-        >
-      {children}
-    </span>
-    );
-}
-
-/* ---------- UI helpers ---------- */
-
-function SectionShell({ children }: { children: React.ReactNode }) {
-    return (
-        <div
-            className="
-        w-full
-        rounded-3xl
-        bg-white
-        text-gray-900
-        border border-black/5
-        p-8 md:p-12
-        dark:bg-[var(--card)]/70 dark:backdrop-blur-sm
-        dark:text-[var(--text)]
-        dark:border-white/10
-      "
-        >
-            {children}
-        </div>
-    );
+    return <div className={shellBase}>{children}</div>;
 }
 
 function Muted({
@@ -83,11 +39,11 @@ function Muted({
     );
 }
 
-function Body({ children }: { children: React.ReactNode }) {
+function Body({children}: { children: React.ReactNode }) {
     return <div className="space-y-6 text-[var(--muted)] text-base md:text-lg leading-relaxed">{children}</div>;
 }
 
-function InlineLink({ href, children }: { href: string; children: React.ReactNode }) {
+function InlineLink({href, children}: { href: string; children: React.ReactNode }) {
     return (
         <Link
             href={href}
@@ -104,7 +60,6 @@ function InlineLink({ href, children }: { href: string; children: React.ReactNod
 }
 
 /* ---------- hash scroll fix ---------- */
-
 function HashScrollFix() {
     useEffect(() => {
         const scrollToHash = (behavior: ScrollBehavior = "auto") => {
@@ -114,7 +69,7 @@ function HashScrollFix() {
             const el = document.getElementById(hash);
             if (!el) return;
 
-            el.scrollIntoView({ behavior, block: "start" });
+            el.scrollIntoView({behavior, block: "start"});
         };
 
         requestAnimationFrame(() => scrollToHash("auto"));
@@ -134,18 +89,22 @@ export default function PromisePage() {
 
     return (
         <>
-            <Header />
-            <HashScrollFix />
-            <main className="mx-auto max-w-7xl px-6 pb-8 md:pt-20 md:pb-16  pt-[90px] sm:pt-[86px]">
-                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
-                    <SectionKicker>{t("hero.title")}</SectionKicker>
+            <Header/>
+            <HashScrollFix/>
+            <main className="pb-8 md:pt-20 md:pb-16 pt-[90px] sm:pt-[86px]">
+                <section className="pt-10 pb-8 md:pt-16 md:pb-12">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionKicker>{t("hero.title")}</SectionKicker>
+                        </div>
+                    </div>
                 </section>
                 {/* SAUBER */}
                 <section id="sauber" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl mx-auto">
+                    <div className={PAGE_CONTAINER}>
                         <SectionShell>
                             <div className="mb-8">
-                                <BigTitle className="block">{t("sauber.title")}</BigTitle>
+                                <BigTitle as="h2" className="block">{t("sauber.title")}</BigTitle>
                                 <Muted className="italic mt-2">{t("sauber.subtitle")}</Muted>
                             </div>
 
@@ -168,10 +127,10 @@ export default function PromisePage() {
 
                 {/* SICHER */}
                 <section id="sicher" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl mx-auto">
+                    <div className={PAGE_CONTAINER}>
                         <SectionShell>
                             <div className="mb-8">
-                                <BigTitle className="block">{t("sicher.title")}</BigTitle>
+                                <BigTitle as="h2" className="block">{t("sicher.title")}</BigTitle>
                                 <Muted className="italic mt-2">{t("sicher.subtitle")}</Muted>
                             </div>
 
@@ -209,10 +168,10 @@ export default function PromisePage() {
 
                 {/* SOUVERÄN */}
                 <section id="souveran" className="py-10 md:py-14 scroll-mt-[96px]">
-                    <div className="max-w-7xl mx-auto">
+                    <div className={PAGE_CONTAINER}>
                         <SectionShell>
                             <div className="mb-8">
-                                <BigTitle className="block">{t("souveran.title")}</BigTitle>
+                                <BigTitle as="h2" className="block">{t("souveran.title")}</BigTitle>
                                 <Muted className="italic mt-2">{t("souveran.subtitle")}</Muted>
                             </div>
 
@@ -240,20 +199,23 @@ export default function PromisePage() {
                 </section>
 
                 {/* CTA (можешь оставить по центру — если хочешь тоже слева скажи) */}
-                <section className="px-6 pt-12 pb-16 md:pt-16 md:pb-24 max-w-7xl mx-auto">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("cta.title")}</h2>
-
-                    <Link
-                        href="/experience"
-                        className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
-                    >
-                        {t("cta.button")}
-                        <ArrowRight className="w-5 h-5" />
-                    </Link>
+                <section className="pt-12 pb-16 md:pt-16 md:pb-24">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("cta.title")}</h2>
+                            <Link
+                                href="/experience"
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
+                            >
+                                {t("cta.button")}
+                                <ArrowRight className="w-5 h-5"/>
+                            </Link>
+                        </div>
+                    </div>
                 </section>
             </main>
 
-            <Footer />
+            <Footer/>
         </>
     );
 }
