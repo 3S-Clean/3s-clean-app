@@ -198,7 +198,7 @@ export default function Header() {
                     ].join(" ")}
                 >
                     <button
-                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer"
+                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4"
                         onClick={toggleMenu}
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={isMenuOpen}
@@ -213,7 +213,7 @@ export default function Header() {
                         href={withLocale("/booking")}
                         className={[
                             "justify-self-end",
-                            "px-2 py-[3px] rounded-[12px] border",
+                            "px-2 py-[3px] rounded-[12px] border pr-4",
                             "border-[rgba(0,0,0,0.32)] dark:border-[rgba(255,255,255,0.28)]",
                             "bg-transparent",
                             "text-[12px] font-normal tracking-[0.05rem] no-underline",
