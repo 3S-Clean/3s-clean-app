@@ -14,7 +14,6 @@ import {PAGE_CONTAINER} from "@/components/ui/layout";
 
 export default function Header() {
     const pathname = usePathname();
-
     // ✅ locale helpers (чтобы /en/... считалось active для href "/experience")
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
@@ -122,7 +121,6 @@ export default function Header() {
                             <Logo
                                 className="w-[48px] h-[48px] md:w-[48px] md:h-[48px] lg:w-[38px] lg:h-[38px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                         </Link>
-
                         <nav className="flex gap-6" aria-label="Main navigation">
                             {mainNav.map((item) => (
                                 <Link
@@ -140,7 +138,6 @@ export default function Header() {
                             ))}
                         </nav>
                     </div>
-
                     {/* Right */}
                     <div
                         className={[
@@ -166,7 +163,6 @@ export default function Header() {
                                     className="w-[22px] h-[22px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)] transition-opacity duration-200 hover:opacity-70"/>
                             )}
                         </Link>
-
                         <Link
                             href={withLocale("/booking")}
                             className={[
@@ -184,7 +180,6 @@ export default function Header() {
                         </Link>
                     </div>
                 </div>
-
                 {/* Mobile Header (base) */}
                 <div
                     className={[
@@ -210,12 +205,10 @@ export default function Header() {
                     >
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
-
                     <Link href={withLocale("/")} className="flex items-center justify-center justify-self-center"
                           aria-label="Go to home">
                         <Logo className="w-[46px] h-[46px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </Link>
-
                     <Link
                         href={withLocale("/booking")}
                         className={[
@@ -233,7 +226,6 @@ export default function Header() {
                     </Link>
                 </div>
             </header>
-
             {/* Mobile Menu Overlay */}
             <div
                 className={[
@@ -272,7 +264,6 @@ export default function Header() {
                   text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                   transition-opacity duration-200 hover:opacity-70
                 "
-                                onClick={closeMenu}
                             >
                                 {item.label}
                             </Link>
@@ -296,7 +287,6 @@ export default function Header() {
                   text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                   transition-opacity duration-200
                 "
-                                onClick={closeMenu}
                             >
                                 Account
                             </Link>
@@ -311,7 +301,6 @@ export default function Header() {
                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                     transition-opacity duration-200
                   "
-                                    onClick={closeMenu}
                                 >
                                     Sign Up
                                 </Link>
@@ -324,7 +313,6 @@ export default function Header() {
                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                     transition-opacity duration-200
                   "
-                                    onClick={closeMenu}
                                 >
                                     Log In
                                 </Link>
