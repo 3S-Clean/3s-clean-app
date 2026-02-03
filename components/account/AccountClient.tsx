@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { User, Video, BookOpen, LogOut, Film, UserRoundPen } from "lucide-react";
+import {useState} from "react";
+import {BookOpen, Film, LogOut, User, UserRoundPen, Video} from "lucide-react";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
@@ -9,18 +9,18 @@ import PersonalInfoClient from "@/components/account/PersonalInfoClient";
 import OrdersTabClient from "@/components/account/OrdersTabClient";
 import Settings from "@/components/account/Settings";
 
-import { createClient } from "@/lib/supabase/client";
-import { Avatar } from "@/components/ui/avatar/Avatar";
-import { AvatarColorPicker } from "@/components/ui/avatarcolor/AvatarColorPicker";
+import {createClient} from "@/lib/supabase/client";
+import {Avatar} from "@/components/ui/avatar/Avatar";
+import {AvatarColorPicker} from "@/components/ui/avatarcolor/AvatarColorPicker";
 
 type Tab = "personal" | "live" | "history" | "orders" | "settings";
 
 const tabs = [
-    { id: "personal" as const, label: "Personal Information", icon: User },
-    { id: "live" as const, label: "Live Cleaning Video", icon: Video },
-    { id: "history" as const, label: "Video History", icon: Film },
-    { id: "orders" as const, label: "Order History", icon: BookOpen },
-    { id: "settings" as const, label: "Settings", icon: UserRoundPen },
+    {id: "personal" as const, label: "Personal Information", icon: User},
+    {id: "live" as const, label: "Live Cleaning Video", icon: Video},
+    {id: "history" as const, label: "Video History", icon: Film},
+    {id: "orders" as const, label: "Order History", icon: BookOpen},
+    {id: "settings" as const, label: "Settings", icon: UserRoundPen},
 ];
 
 function getGreeting(): string {
@@ -64,7 +64,7 @@ export default function AccountClient({
         setCurrentAvatarColor(color);
 
         const supabase = createClient();
-        const { error } = await supabase.from("profiles").update({ avatar_color: color }).eq("id", userId);
+        const {error} = await supabase.from("profiles").update({avatar_color: color}).eq("id", userId);
 
         if (error) {
             setCurrentAvatarColor(prev ?? null);
@@ -76,13 +76,14 @@ export default function AccountClient({
     return (
         <>
             {/* FIXED HEADER */}
-            <Header />
+            <Header/>
             {/* PAGE */}
             <div className="min-h-screen bg-[var(--background)] pt-[92px] text-[var(--text)]">
                 {/* CONTENT */}
                 <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
-                    <div className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
+                    <div
+                        className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <h1 className="text-3xl font-semibold tracking-tight text-[var(--text)]">Account</h1>
@@ -102,19 +103,21 @@ export default function AccountClient({
                                     seed={(userId || email) ?? email}
                                     size={52}
                                 />
-                                <AvatarColorPicker value={currentAvatarColor} onChangeAction={saveAvatarColor} />
+                                <AvatarColorPicker value={currentAvatarColor} onChangeAction={saveAvatarColor}/>
                             </div>
 
                             {/* ❌ Logout md+ убрали отсюда, чтобы не было дублей (он уже есть в Tabs) */}
                         </div>
                     </div>
                     {/* Tabs */}
-                    <nav className="rounded-2xl bg-white dark:bg-black p-2 shadow-sm border border-black/5 dark:border-white/10">
+                    <nav
+                        className="rounded-2xl bg-white dark:bg-black p-2 shadow-sm border border-black/5 dark:border-white/10">
                         {/* Desktop */}
                         <div className="hidden md:block">
                             <div className="flex items-center gap-2">
                                 {/* Tabs scroll area (only tabs scroll) */}
-                                <div className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap no-scrollbar snap-x-soft relative">
+                                <div
+                                    className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap no-scrollbar snap-x-soft relative">
                                     <div className="flex items-center gap-2 px-2">
                                         {tabs.map((tab) => {
                                             const Icon = tab.icon;
@@ -131,21 +134,23 @@ export default function AccountClient({
                                                             : "text-[var(--text)]/70 hover:bg-[var(--text)]/5 hover:text-[var(--text)]",
                                                     ].join(" ")}
                                                 >
-                                                    <Icon size={20} strokeWidth={1.5} />
+                                                    <Icon size={20} strokeWidth={1.5}/>
                                                     <span className="whitespace-nowrap">{tab.label}</span>
                                                 </button>
                                             );
                                         })}
                                     </div>
                                     {/* Fade hint on the right edge of the scroll area */}
-                                    <div className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white dark:from-black to-transparent" />
+                                    <div
+                                        className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white dark:from-black to-transparent"/>
                                 </div>
 
                                 {/* Pinned logout (does not scroll, does not overlap) */}
                                 <div className="shrink-0">
-                                    <div className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-black/80 px-4 py-2 shadow-sm backdrop-blur-md">
+                                    <div
+                                        className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-black/80 px-4 py-2 shadow-sm backdrop-blur-md">
                                         <LogOut size={20} strokeWidth={1.5} className="text-[var(--muted)]"/>
-                                        <LogoutButton label="Logout" />
+                                        <LogoutButton label="Logout"/>
                                     </div>
                                 </div>
                             </div>
@@ -165,32 +170,33 @@ export default function AccountClient({
                                             isActive ? "bg-[var(--text)]/5 text-[var(--text)]" : "text-[var(--text)]/70 hover:bg-[var(--text)]/5",
                                         ].join(" ")}
                                     >
-                                        <Icon size={20} strokeWidth={1.5} />
+                                        <Icon size={20} strokeWidth={1.5}/>
                                         {tab.label}
                                     </button>
                                 );
                             })}
 
-                            <div className="my-1 h-px w-full bg-black/10 dark:bg-white/10" />
+                            <div className="my-1 h-px w-full bg-black/10 dark:bg-white/10"/>
 
                             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5">
-                                <LogOut size={20} strokeWidth={1.5}  className="text-black/60 dark:text-white/60" />
-                                <LogoutButton label="Logout"  className="text-[var(--muted)]" />
+                                <LogOut size={20} strokeWidth={1.5} className="text-black/60 dark:text-white/60"/>
+                                <LogoutButton label="Logout" className="text-[var(--muted)]"/>
                             </div>
                         </div>
                     </nav>
 
                     {/* Content */}
-                    <div className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
-                        {activeTab === "personal" && <PersonalInfoClient email={email} />}
-                        {activeTab === "live" && <LiveCleaningVideo />}
-                        {activeTab === "history" && <VideoHistory />}
-                        {activeTab === "orders" && <OrdersTabClient />}
-                        {activeTab === "settings" && <Settings />}
+                    <div
+                        className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
+                        {activeTab === "personal" && <PersonalInfoClient email={email}/>}
+                        {activeTab === "live" && <LiveCleaningVideo/>}
+                        {activeTab === "history" && <VideoHistory/>}
+                        {activeTab === "orders" && <OrdersTabClient/>}
+                        {activeTab === "settings" && <Settings/>}
                     </div>
                 </main>
 
-                <Footer />
+                <Footer/>
             </div>
         </>
     );

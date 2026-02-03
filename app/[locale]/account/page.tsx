@@ -1,19 +1,19 @@
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {redirect} from "next/navigation";
+import {createSupabaseServerClient} from "@/lib/supabase/server";
 import AccountClient from "@/components/account/AccountClient";
 
 export default async function AccountPage() {
     const supabase = await createSupabaseServerClient();
 
     const {
-        data: { user },
+        data: {user},
         error,
     } = await supabase.auth.getUser();
 
     if (error || !user) redirect("/login");
 
     // Берём данные из profiles
-    const { data: profile } = await supabase
+    const {data: profile} = await supabase
         .from("profiles")
         .select("first_name, last_name, avatar_color")
         .eq("id", user.id)
