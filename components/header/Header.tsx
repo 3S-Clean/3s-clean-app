@@ -231,25 +231,25 @@ export default function Header() {
                 className={[
                     "fixed inset-0 z-[999] flex flex-col items-center",
                     "opacity-0 invisible pointer-events-none",
-                    "transition-[opacity,visibility] duration-[350ms]",
+                    "transition-[opacity,visibility] duration-[150ms]",
                     isMenuOpen ? "opacity-100 visible pointer-events-auto" : "",
                     "bg-[rgba(255,255,255,0)] dark:bg-[rgba(0,0,0,0.1)]",
                     "backdrop-blur-[50px] backdrop-saturate-[180%]",
                     "webkit-backdrop-strong",
-                    "android-menu", // fallback в css
+                    "android-menu",
                 ].join(" ")}
                 onClick={closeMenu}
             >
                 <div
                     className={[
-                        "relative z-[100] flex flex-col items-start",
+                        "relative z-[100] flex flex-col items-start pointer-events-auto",
                         "w-[90%] max-w-[360px]",
                         "mt-[180px] sm:mt-[220px]",
                         "px-6 py-4 gap-4 rounded-[12px]",
                         "bg-[rgba(255,255,255,0.2)] dark:bg-[rgba(255,255,255,0.06)]",
                         "backdrop-blur-[15px]",
                         "webkit-backdrop",
-                        "android-panel", // fallback в css
+                        "android-panel",
                         "dark:border dark:border-[rgba(255,255,255,0.1)]",
                     ].join(" ")}
                     onClick={(e) => e.stopPropagation()}
@@ -259,11 +259,13 @@ export default function Header() {
                             <Link
                                 key={item.href}
                                 href={withLocale(item.href)}
+                                onClick={closeMenu}
                                 className="
-                  text-[16px] font-normal tracking-[0.05rem] no-underline cursor-pointer
-                  text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                  transition-opacity duration-200 hover:opacity-70
-                "
+                                    pointer-events-auto
+                                    text-[16px] font-normal tracking-[0.05rem] no-underline
+                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                                    transition-opacity duration-200 hover:opacity-70
+                                "
                             >
                                 {item.label}
                             </Link>
@@ -272,21 +274,23 @@ export default function Header() {
 
                     <div
                         className="
-              mt-6 pt-4 w-full flex flex-col items-center gap-2
-              border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
-              android-auth-border
-            "
+                              mt-6 pt-4 w-full flex flex-col items-center gap-2
+                              border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
+                              android-auth-border
+                            "
                     >
                         {isAuthenticated ? (
                             <Link
                                 href={withLocale("/account")}
+                                onClick={closeMenu}
                                 className="
-                  flex items-center justify-center pt-[5px]
-                  opacity-60 hover:opacity-100
-                  text-[16px] font-normal no-underline cursor-pointer
-                  text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                  transition-opacity duration-200
-                "
+                                            pointer-events-auto
+                              flex items-center justify-center pt-[5px]
+                              opacity-60 hover:opacity-100
+                              text-[16px] font-normal no-underline
+                              text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                              transition-opacity duration-200
+                            "
                             >
                                 Account
                             </Link>
@@ -294,10 +298,12 @@ export default function Header() {
                             <>
                                 <Link
                                     href={withLocale("/signup")}
+                                    onClick={closeMenu}
                                     className="
+                                    pointer-events-auto
                     flex items-center justify-center pt-[5px]
                     opacity-60 hover:opacity-100
-                    text-[16px] font-normal no-underline cursor-pointer
+                    text-[16px] font-normal no-underline
                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                     transition-opacity duration-200
                   "
@@ -306,10 +312,12 @@ export default function Header() {
                                 </Link>
                                 <Link
                                     href={withLocale("/login")}
+                                    onClick={closeMenu}
                                     className="
+                                    pointer-events-auto
                     flex items-center justify-center pt-[5px]
                     opacity-60 hover:opacity-100
-                    text-[16px] font-normal no-underline cursor-pointer
+                    text-[16px] font-normal no-underline
                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                     transition-opacity duration-200
                   "
