@@ -12,6 +12,7 @@ import Settings from "@/components/account/Settings";
 import {createClient} from "@/lib/supabase/client";
 import {Avatar} from "@/components/ui/avatar/Avatar";
 import {AvatarColorPicker} from "@/components/ui/avatarcolor/AvatarColorPicker";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
 type Tab = "personal" | "live" | "history" | "orders" | "settings";
 
@@ -83,7 +84,7 @@ export default function AccountClient({
                 <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
                     <div
-                        className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
+                        className={[CARD_FRAME_BASE, "p-6 md:p-8"].join(" ")}>
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <h1 className="text-3xl font-semibold tracking-tight text-[var(--text)]">Account</h1>
@@ -105,13 +106,11 @@ export default function AccountClient({
                                 />
                                 <AvatarColorPicker value={currentAvatarColor} onChangeAction={saveAvatarColor}/>
                             </div>
-
                             {/* ❌ Logout md+ убрали отсюда, чтобы не было дублей (он уже есть в Tabs) */}
                         </div>
                     </div>
                     {/* Tabs */}
-                    <nav
-                        className="rounded-2xl bg-white dark:bg-black p-2 shadow-sm border border-black/5 dark:border-white/10">
+                    <nav className={[CARD_FRAME_BASE, "p-2"].join(" ")}>
                         {/* Desktop */}
                         <div className="hidden md:block">
                             <div className="flex items-center gap-2">
@@ -130,7 +129,7 @@ export default function AccountClient({
                                                     className={[
                                                         "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
                                                         isActive
-                                                            ? "bg-[var(--text)]/5 text-[var(--text)]"
+                                                            ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                                                             : "text-[var(--text)]/70 hover:bg-[var(--text)]/5 hover:text-[var(--text)]",
                                                     ].join(" ")}
                                                 >
@@ -144,7 +143,6 @@ export default function AccountClient({
                                     <div
                                         className="pointer-events-none sticky right-0 top-0 h-full w-16 bg-gradient-to-l from-white dark:from-black to-transparent"/>
                                 </div>
-
                                 {/* Pinned logout (does not scroll, does not overlap) */}
                                 <div className="shrink-0">
                                     <div
@@ -167,7 +165,7 @@ export default function AccountClient({
                                         onClick={() => setActiveTab(tab.id)}
                                         className={[
                                             "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                            isActive ? "bg-[var(--text)]/5 text-[var(--text)]" : "text-[var(--text)]/70 hover:bg-[var(--text)]/5",
+                                            isActive ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90" : "text-[var(--text)]/70 hover:bg-[var(--text)]/5",
                                         ].join(" ")}
                                     >
                                         <Icon size={20} strokeWidth={1.5}/>
@@ -175,19 +173,15 @@ export default function AccountClient({
                                     </button>
                                 );
                             })}
-
                             <div className="my-1 h-px w-full bg-black/10 dark:bg-white/10"/>
-
                             <div className="flex items-center gap-3 rounded-xl px-4 py-3.5">
                                 <LogOut size={20} strokeWidth={1.5} className="text-black/60 dark:text-white/60"/>
                                 <LogoutButton label="Logout" className="text-[var(--muted)]"/>
                             </div>
                         </div>
                     </nav>
-
                     {/* Content */}
-                    <div
-                        className="rounded-2xl bg-white dark:bg-black p-6 shadow-sm md:p-8 border border-black/5 dark:border-white/10">
+                    <div className={[CARD_FRAME_BASE, "p-6 md:p-8"].join(" ")}>
                         {activeTab === "personal" && <PersonalInfoClient email={email}/>}
                         {activeTab === "live" && <LiveCleaningVideo/>}
                         {activeTab === "history" && <VideoHistory/>}
