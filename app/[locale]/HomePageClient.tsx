@@ -100,7 +100,6 @@ function formatDesktopHero(raw: string) {
 ------------------------------ */
 const EXPERIENCE_ORDER = ["core", "initial", "reset", "handover"] as const;
 type ExperienceId = (typeof EXPERIENCE_ORDER)[number];
-
 export default function HomePageClient() {
     const t = useTranslations("home");
 
