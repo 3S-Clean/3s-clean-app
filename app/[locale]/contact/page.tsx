@@ -90,13 +90,13 @@ export default function ContactPage() {
                             className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Phone */}
-                                <div className={`${CONTACT_CARD_HOVER} text-center`}>
+                                <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-center gap-3 mb-3">
                                         <Phone className="w-5 h-5 text-[var(--text)]"/>
                                         <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Phone</h2>
                                     </div>
 
-                                    <p className="text-[var(--muted)] mb-5">
+                                    <p className="text-left text-[var(--muted)] mb-5">
                                         Direct consultation about cleanings, appointments, or individual questions.
                                     </p>
 
@@ -116,13 +116,13 @@ export default function ContactPage() {
                                 </div>
 
                                 {/* Email */}
-                                <div className={`${CONTACT_CARD_HOVER} text-center`}>
+                                <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-center gap-3 mb-3">
                                         <Mail className="w-5 h-5 text-[var(--text)]"/>
                                         <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Email</h2>
                                     </div>
 
-                                    <p className="text-[var(--muted)] mb-5">
+                                    <p className="text-left text-[var(--muted)] mb-5">
                                         Inquiries, feedback, or report issues. Response within 24 hours.
                                     </p>
 
@@ -152,13 +152,13 @@ export default function ContactPage() {
                             className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* WhatsApp */}
-                                <div className={`${CONTACT_CARD_HOVER} text-center`}>
+                                <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-center gap-3 mb-3">
                                         <MessageCircle className="w-5 h-5 text-[var(--text)]"/>
                                         <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">WhatsApp</h2>
                                     </div>
 
-                                    <p className="text-[var(--muted)] mb-5">
+                                    <p className="text-left text-[var(--muted)] mb-5">
                                         Fastest option for quick questions, schedule changes, or updates.
                                     </p>
 
@@ -180,13 +180,13 @@ export default function ContactPage() {
                                 </div>
 
                                 {/* Business */}
-                                <div className={`${CONTACT_CARD_HOVER} text-center`}>
+                                <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-center gap-3 mb-3">
                                         <Mail className="w-5 h-5 text-[var(--text)]"/>
                                         <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Business</h2>
                                     </div>
 
-                                    <p className="text-[var(--muted)] mb-5">
+                                    <p className="text-left text-[var(--muted)] mb-5">
                                         Property management, Airbnb hosts, commercial properties, or long-term
                                         cooperation.
                                     </p>
@@ -248,6 +248,7 @@ export default function ContactPage() {
                     </div>
                 </section>
             </main>
+
             <Footer/>
         </>
     );
