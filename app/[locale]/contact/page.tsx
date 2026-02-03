@@ -15,14 +15,14 @@ const businessHours = [
     {day: "Sunday", hours: "Closed"},
 ];
 
-const CONTACT_CARD = [CARD_FRAME_BASE, "p-6 md:p-8"].join(" ");
+const CONTACT_CARD = [CARD_FRAME_BASE, "p-4 md:p-5"].join(" ");
 
 const CONTACT_CARD_HOVER = [
     CARD_FRAME_BASE,
     "select-none transition-all duration-200",
     CARD_FRAME_HOVER_LIFT,
     "motion-reduce:transition-none motion-reduce:hover:transform-none",
-    "p-6 md:p-8",
+    "p-4 md:p-5",
 ].join(" ");
 
 export default function ContactPage() {
