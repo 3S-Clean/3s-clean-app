@@ -6,6 +6,8 @@ import Footer from "@/components/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
 import PillCTA from "@/components/ui/buttons/PillCTA";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT} from "@/components/ui/card/CardFrame";
+import BigTitle from "@/components/ui/typography/BigTitle";
+import BodyText from "@/components/ui/typography/BodyText";
 
 const businessHours = [
     {day: "Mon – Fri", hours: "08:00 – 18:00"},
@@ -30,44 +32,51 @@ export default function ContactPage() {
 
             <main
                 className="min-h-screen pb-8 md:pt-20 md:pb-16 pt-[90px] sm:pt-[86px] bg-[var(--background)] text-[var(--text)]">
-                {/* Hero (left, smaller) */}
+                {/* Hero: mobile center, md+ left */}
                 <section className="pt-12 pb-8 md:pt-20 md:pb-10">
                     <div className={PAGE_CONTAINER}>
                         <div
-                            className={`${CONTENT_GUTTER} max-w-4xl mx-auto flex flex-col gap-3 items-start text-left`}>
-                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text)]">
-                                How can we help?
-                            </h1>
-                            <p className="text-[var(--muted)] text-base">
-                                Personal consultation. Quick responses.
-                            </p>
+                            className={[
+                                CONTENT_GUTTER,
+                                "px-2 sm:px-4",
+                                "max-w-7xl xl:max-w-[1400px] mx-auto",
+                                "flex flex-col gap-3",
+                                "items-center text-center",
+                                "md:items-start md:text-left",
+                            ].join(" ")}
+                        >
+                            <BigTitle>How can we help?</BigTitle>
+                            <BodyText>Personal consultation. Quick responses.</BodyText>
                         </div>
                     </div>
                 </section>
 
-                {/* Availability (first card) */}
+                {/* Availability first (limited width) */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div className={`${CONTENT_GUTTER} max-w-4xl mx-auto`}>
-                            <div className={`${CONTACT_CARD} text-center`}>
-                                <div className="flex items-center justify-center gap-3 mb-4">
-                                    <MapPin className="w-5 h-5 text-[var(--text)]"/>
-                                    <h2 className="text-lg font-semibold text-[var(--text)]">Availability</h2>
-                                </div>
+                        <div
+                            className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
+                            <div className="mx-auto w-full max-w-4xl">
+                                <div className={`${CONTACT_CARD} text-center`}>
+                                    <div className="flex items-center justify-center gap-3 mb-4">
+                                        <MapPin className="w-5 h-5 text-[var(--text)]"/>
+                                        <h2 className="text-lg font-semibold text-[var(--text)]">Availability</h2>
+                                    </div>
 
-                                <div className="space-y-3">
-                                    {businessHours.map((item, index) => (
-                                        <div key={index} className="flex justify-center items-center gap-6">
-                                            <span className="text-[var(--muted)]">{item.day}</span>
-                                            <span
-                                                className={`font-medium ${
-                                                    item.hours === "Closed" ? "text-[var(--muted)]" : "text-[var(--text)]"
-                                                }`}
-                                            >
-                        {item.hours}
-                      </span>
-                                        </div>
-                                    ))}
+                                    <div className="space-y-3">
+                                        {businessHours.map((item, index) => (
+                                            <div key={index} className="flex justify-center items-center gap-6">
+                                                <span className="text-[var(--muted)]">{item.day}</span>
+                                                <span
+                                                    className={`font-medium ${
+                                                        item.hours === "Closed" ? "text-[var(--muted)]" : "text-[var(--text)]"
+                                                    }`}
+                                                >
+                          {item.hours}
+                        </span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +86,8 @@ export default function ContactPage() {
                 {/* Phone + Email */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div className={`${CONTENT_GUTTER} max-w-4xl mx-auto`}>
+                        <div
+                            className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Phone */}
                                 <div className={`${CONTACT_CARD_HOVER} text-center`}>
@@ -138,7 +148,8 @@ export default function ContactPage() {
                 {/* WhatsApp + Business */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div className={`${CONTENT_GUTTER} max-w-4xl mx-auto`}>
+                        <div
+                            className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* WhatsApp */}
                                 <div className={`${CONTACT_CARD_HOVER} text-center`}>
@@ -199,21 +210,22 @@ export default function ContactPage() {
                     </div>
                 </section>
 
-                {/* Booking (same size as availability) */}
+                {/* Booking (NOT a card) */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div className={`${CONTENT_GUTTER} max-w-4xl mx-auto`}>
-                            <div className={`${CONTACT_CARD} text-center`}>
-                                <h2 className="text-2xl font-bold mb-3 text-[var(--text)]">Instant Booking</h2>
-
-                                <p className="text-[var(--muted)] mb-6">
-                                    Transparent pricing. Immediate confirmation.
-                                </p>
-
-                                <PillCTA href="/booking" className="mx-auto max-w-[320px]">
-                                    Book a cleaning
-                                </PillCTA>
-                            </div>
+                        <div
+                            className={[
+                                CONTENT_GUTTER,
+                                "px-2 sm:px-4",
+                                "max-w-7xl xl:max-w-[1400px] mx-auto",
+                                "text-center",
+                            ].join(" ")}
+                        >
+                            <h2 className="text-2xl font-bold mb-3 text-[var(--text)]">Instant Booking</h2>
+                            <p className="text-[var(--muted)] mb-6">Transparent pricing. Immediate confirmation.</p>
+                            <PillCTA href="/booking" className="mx-auto max-w-[320px]">
+                                Book a cleaning
+                            </PillCTA>
                         </div>
                     </div>
                 </section>
@@ -221,7 +233,14 @@ export default function ContactPage() {
                 {/* Privacy Note (center + black text) */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div className={`${CONTENT_GUTTER} max-w-4xl mx-auto text-center`}>
+                        <div
+                            className={[
+                                CONTENT_GUTTER,
+                                "px-2 sm:px-4",
+                                "max-w-7xl xl:max-w-[1400px] mx-auto",
+                                "text-center",
+                            ].join(" ")}
+                        >
                             <p className="text-[var(--text)] text-sm">
                                 Your data is handled confidentially. No marketing. No data sharing.
                             </p>
@@ -229,7 +248,6 @@ export default function ContactPage() {
                     </div>
                 </section>
             </main>
-
             <Footer/>
         </>
     );
