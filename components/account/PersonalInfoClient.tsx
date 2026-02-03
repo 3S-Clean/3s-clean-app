@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import {useEffect, useMemo, useState} from "react";
+import {createClient} from "@/lib/supabase/client";
 
 type Profile = {
     id: string;
@@ -24,7 +24,7 @@ function getErrorMessage(e: unknown): string {
     return "Something went wrong.";
 }
 
-export default function PersonalInfoClient({ email }: { email: string }) {
+export default function PersonalInfoClient({email}: { email: string }) {
     const supabase = useMemo(() => createClient(), []);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -47,7 +47,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
         setError(null);
 
         try {
-            const { data: u, error: uErr } = await supabase.auth.getUser();
+            const {data: u, error: uErr} = await supabase.auth.getUser();
             const user = u?.user;
 
             if (uErr || !user) {
@@ -56,7 +56,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                 return;
             }
 
-            const { data, error: pErr } = await supabase
+            const {data, error: pErr} = await supabase
                 .from("profiles")
                 .select("id, first_name, last_name, phone, address, city, postal_code, country")
                 .eq("id", user.id)
@@ -100,7 +100,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
         setError(null);
 
         try {
-            const { data: u } = await supabase.auth.getUser();
+            const {data: u} = await supabase.auth.getUser();
             const user = u?.user;
 
             if (!user) {
@@ -144,7 +144,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                 return;
             }
 
-            const { error: upErr } = await supabase
+            const {error: upErr} = await supabase
                 .from("profiles")
                 .upsert(
                     {
@@ -157,7 +157,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                         postal_code,
                         country,
                     },
-                    { onConflict: "id" }
+                    {onConflict: "id"}
                 );
 
             if (upErr) {
@@ -178,8 +178,9 @@ export default function PersonalInfoClient({ email }: { email: string }) {
     if (loading) {
         return (
             <div>
-                <h2 className="text-xl font-semibold text-black md:text-2xl text-center">Personal Information</h2>
-                <p className="mt-4 text-black/55 text-center">Loading…</p>
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl text-center">Personal
+                    Information</h2>
+                <p className="mt-4 text-[var(--muted)] text-center">Loading…</p>
             </div>
         );
     }
@@ -196,18 +197,16 @@ export default function PersonalInfoClient({ email }: { email: string }) {
     return (
         <div>
             <div className="flex items-start justify-between gap-4">
-                <h2 className="text-xl font-semibold text-black md:text-2xl">Personal Information</h2>
-
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Personal Information</h2>
                 {!editing && hasAny ? (
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="text-sm text-black/60 transition hover:text-black"
+                        className="text-sm text-[var(--muted)] transition hover:text-[var(--text)]"
                     >
                         Edit
                     </button>
                 ) : null}
-
                 {editing ? (
                     <button
                         type="button"
@@ -224,7 +223,7 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                                 country: profile?.country ?? "Germany",
                             });
                         }}
-                        className="text-sm text-black/60 transition hover:text-black"
+                        className="text-sm text-[var(--muted)] transition hover:text-[var(--text)]"
                     >
                         Cancel
                     </button>
@@ -234,20 +233,23 @@ export default function PersonalInfoClient({ email }: { email: string }) {
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
             {/* EMPTY STATE */}
             {!editing && !hasAny && (
-                <div className="mt-6 rounded-2xl border border-black/10 bg-white/60 backdrop-blur p-5">
-                    <p className="text-[15px] font-medium text-black">Complete your profile</p>
-                    <p className="mt-1 text-sm text-black/55">
+                <div
+                    className="mt-6 rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-[var(--card)]/70 backdrop-blur p-5">
+                    <p className="text-[15px] font-medium text-[var(--text)]">Complete your profile</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
                         Add your details so booking is faster next time.
                     </p>
 
-                    <div className="mt-4 text-sm text-black/70">
-                        <span className="font-medium">Email:</span> {email}
+                    <div className="mt-4 text-sm text-[var(--muted)]">
+                        <span className="font-medium text-[var(--text)]">Email:</span> {email}
                     </div>
 
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="mt-5 w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90"
+                        className="mt-5 w-full rounded-2xl py-3.5 text-[15px] font-medium transition
++                                   bg-gray-900 text-white hover:bg-gray-800
++                                   dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                     >
                         Add details
                     </button>
@@ -256,15 +258,14 @@ export default function PersonalInfoClient({ email }: { email: string }) {
 
             {/* DISPLAY (только заполненные поля) */}
             {!editing && hasAny && (
-                <div className="mt-6 space-y-2 text-[15px] text-black/80">
+                <div className="mt-6 space-y-2 text-[15px] text-[var(--muted)]">
                     {isFilled(profile?.first_name) || isFilled(profile?.last_name) ? (
-                        <p className="font-medium text-black">
+                        <p className="font-medium text-[var(--text)]">
                             {[profile?.first_name, profile?.last_name].filter((x) => isFilled(x)).join(" ")}
                         </p>
                     ) : null}
 
                     {isFilled(profile?.phone) ? <p>{profile?.phone}</p> : null}
-
                     {/* адрес строкой, без пустот */}
                     {isFilled(profile?.address) || isFilled(profile?.postal_code) || isFilled(profile?.city) ? (
                         <p>
@@ -279,33 +280,34 @@ export default function PersonalInfoClient({ email }: { email: string }) {
                     <p>{email}</p>
                 </div>
             )}
-
             {/* EDIT FORM (все поля как booking) */}
             {editing && (
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Field label="First name" value={form.first_name} onChange={(v) => setForm({ ...form, first_name: v })} />
-                    <Field label="Last name" value={form.last_name} onChange={(v) => setForm({ ...form, last_name: v })} />
+                    <Field label="First name" value={form.first_name}
+                           onChange={(v) => setForm({...form, first_name: v})}/>
+                    <Field label="Last name" value={form.last_name} onChange={(v) => setForm({...form, last_name: v})}/>
 
-                    <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                    <Field label="Phone" value={form.phone} onChange={(v) => setForm({...form, phone: v})}/>
                     <Field
                         label="Postal code"
                         value={form.postal_code}
-                        onChange={(v) => setForm({ ...form, postal_code: v.replace(/\D/g, "").slice(0, 5) })}
+                        onChange={(v) => setForm({...form, postal_code: v.replace(/\D/g, "").slice(0, 5)})}
                         inputMode="numeric"
                     />
-
                     <div className="md:col-span-2">
-                        <Field label="Address" value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+                        <Field label="Address" value={form.address} onChange={(v) => setForm({...form, address: v})}/>
                     </div>
-
-                    <Field label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-                    <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
+                    <Field label="City" value={form.city} onChange={(v) => setForm({...form, city: v})}/>
+                    <Field label="Country" value={form.country} onChange={(v) => setForm({...form, country: v})}/>
                     <div className="md:col-span-2 mt-2">
                         <button
                             type="button"
                             onClick={onSave}
                             disabled={saving}
-                            className="w-full rounded-2xl bg-black py-3.5 text-[15px] font-medium text-white transition hover:bg-black/90 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-full rounded-2xl py-3.5 text-[15px] font-medium transition
++                                       bg-gray-900 text-white hover:bg-gray-800
++                                       dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
++                                       disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {saving ? "Saving…" : "Save changes"}
                         </button>
@@ -329,16 +331,17 @@ function Field({
 }) {
     return (
         <div className="space-y-2">
-            <label className="text-sm font-medium text-black/70">{label}</label>
+            <label className="text-sm font-medium text-[var(--muted)]">{label}</label>
             <input
                 value={value}
                 inputMode={inputMode}
                 onChange={(e) => onChange(e.target.value)}
                 className={[
-                    "w-full rounded-2xl border bg-white/70 backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
-                    "placeholder:text-black/35",
-                    "focus:ring-2 focus:ring-black/10 focus:border-black/20",
-                    "border-black/10",
+                    "w-full rounded-2xl border backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+                    "bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]",
+                    "placeholder:text-[var(--muted)]/70",
+                    "focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15 focus:border-black/20 dark:focus:border-white/20",
+                    "border-black/10 dark:border-white/10",
                 ].join(" ")}
             />
         </div>

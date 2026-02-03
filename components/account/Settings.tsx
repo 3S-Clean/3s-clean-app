@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import {useMemo, useState} from "react";
+import {createClient} from "@/lib/supabase/client";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
 function ChangePassword() {
     const [newPassword, setNewPassword] = useState("");
@@ -25,7 +26,7 @@ function ChangePassword() {
         try {
             const supabase = createClient();
 
-            const { error } = await supabase.auth.updateUser({
+            const {error} = await supabase.auth.updateUser({
                 password: newPassword.trim(),
             });
 
@@ -47,32 +48,40 @@ function ChangePassword() {
     };
 
     return (
-        <section className="mt-6 rounded-2xl border border-black/10 bg-white p-4">
-            <h3 className="text-lg font-semibold text-black">Security</h3>
-            <p className="mt-1 text-sm text-black/60">
+        <section className={[CARD_FRAME_BASE, "mt-6 p-4"].join(" ")}>
+            <h3 className="text-lg font-semibold text-[var(--text)]">Security</h3>
+            <p className="mt-1 text-sm text-[var(--muted)]">
                 Change your password. Minimum 8 characters.
             </p>
 
             <div className="mt-4 grid gap-3">
                 <div className="grid gap-1">
-                    <label className="text-sm text-black/70">New password</label>
+                    <label className="text-sm text-[var(--muted)]">New password</label>
                     <input
                         type="password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="h-11 w-full rounded-xl border border-black/10 px-3 outline-none focus:border-black/25"
+                        className="h-11 w-full rounded-xl border px-3 outline-none
++                                   bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]
++                                   border-black/10 dark:border-white/10
++                                   focus:border-black/25 dark:focus:border-white/20
++                                   focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15"
                         placeholder="••••••••"
                         autoComplete="new-password"
                     />
                 </div>
 
                 <div className="grid gap-1">
-                    <label className="text-sm text-black/70">Confirm password</label>
+                    <label className="text-sm text-[var(--muted)]">Confirm password</label>
                     <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="h-11 w-full rounded-xl border border-black/10 px-3 outline-none focus:border-black/25"
+                        className="h-11 w-full rounded-xl border px-3 outline-none
++                                   bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]
++                                   border-black/10 dark:border-white/10
++                                   focus:border-black/25 dark:focus:border-white/20
++                                   focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15"
                         placeholder="••••••••"
                         autoComplete="new-password"
                     />
@@ -84,7 +93,9 @@ function ChangePassword() {
                 <button
                     onClick={onChangePassword}
                     disabled={!canSubmit || loading}
-                    className="h-11 rounded-xl bg-black px-4 text-sm font-medium text-white disabled:opacity-40"
+                    className="h-11 rounded-xl px-4 text-sm font-medium transition disabled:opacity-40
++                               bg-gray-900 text-white hover:bg-gray-800
++                               dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
                 >
                     {loading ? "Updating..." : "Change password"}
                 </button>
@@ -109,7 +120,7 @@ function DeleteAccount() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/account/delete", { method: "POST" });
+            const res = await fetch("/api/account/delete", {method: "POST"});
             const data: { ok?: boolean; error?: string } = await res
                 .json()
                 .catch(() => ({}));
@@ -131,9 +142,9 @@ function DeleteAccount() {
     };
 
     return (
-        <section className="mt-6 rounded-2xl border  bg-white p-4">
-            <h3 className="text-lg font-semibold text-black">Danger zone</h3>
-            <p className="mt-1 text-sm text-black/60">
+        <section className={[CARD_FRAME_BASE, "mt-6 p-4"].join(" ")}>
+            <h3 className="text-lg font-semibold text-[var(--text)]">Delete Account</h3>
+            <p className="mt-1 text-sm text-[var(--muted)]">
                 Deleting your account is permanent. Orders will be kept for accounting,
                 but personal data in orders will be anonymized.
             </p>
@@ -144,8 +155,8 @@ function DeleteAccount() {
                 Delete account
             </button>
             {open && (
-                <div className="mt-4 rounded-2xl border border-black/10 p-4">
-                    <p className="text-sm text-black/70">
+                <div className={[CARD_FRAME_BASE, "mt-4 p-4"].join(" ")}>
+                    <p className="text-sm text-[var(--muted)]">
                         Type <b>DELETE</b> to confirm.
                     </p>
 
@@ -153,16 +164,19 @@ function DeleteAccount() {
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
                         placeholder="DELETE"
-                        className="mt-3 h-11 w-full rounded-xl border border-black/10 px-3 outline-none focus:border-black/25"
+                        className="mt-3 h-11 w-full rounded-xl border px-3 outline-none
++                                   bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]
++                                   border-black/10 dark:border-white/10
++                                   focus:border-black/25 dark:focus:border-white/20
++                                   focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15"
                     />
 
                     {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
-
                     <div className="mt-4 flex gap-2">
                         <button
                             disabled={loading}
                             onClick={() => setOpen(false)}
-                            className="h-11 flex-1 rounded-xl border border-black/10 bg-white text-sm font-medium text-black"
+                            className="h-11 flex-1 rounded-xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-[var(--card)]/70 text-sm font-medium text-[var(--text)]"
                         >
                             Cancel
                         </button>
@@ -184,13 +198,13 @@ function DeleteAccount() {
 export default function Settings() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
+            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">
                 Settings
             </h2>
 
             <div className="mx-auto mt-6 max-w-xl text-left">
-                <ChangePassword />
-                <DeleteAccount />
+                <ChangePassword/>
+                <DeleteAccount/>
             </div>
         </div>
     );

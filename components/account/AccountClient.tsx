@@ -130,7 +130,7 @@ export default function AccountClient({
                                                         "snap-item shrink-0 flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
                                                         isActive
                                                             ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
-                                                            : "text-[var(--text)]/70 hover:bg-[var(--text)]/5 hover:text-[var(--text)]",
+                                                            : "text-[var(--text)]/70 hover:bg-[var(--text)]/3 hover:text-[var(--text)]",
                                                     ].join(" ")}
                                                 >
                                                     <Icon size={20} strokeWidth={1.5}/>
@@ -145,10 +145,13 @@ export default function AccountClient({
                                 </div>
                                 {/* Pinned logout (does not scroll, does not overlap) */}
                                 <div className="shrink-0">
-                                    <div
-                                        className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/90 dark:bg-black/80 px-4 py-2 shadow-sm backdrop-blur-md">
+                                    <div className={[
+                                        "flex items-center gap-2.5 rounded-xl px-5 py-3 text-[15px] font-medium transition",
+                                        "text-[var(--text)]/70 hover:bg-[var(--text)]/3 hover:text-[var(--text)]",
+                                    ].join(" ")}
+                                    >
                                         <LogOut size={20} strokeWidth={1.5} className="text-[var(--muted)]"/>
-                                        <LogoutButton label="Logout"/>
+                                        <LogoutButton label="Logout" className="px-0 py-0"/>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +168,7 @@ export default function AccountClient({
                                         onClick={() => setActiveTab(tab.id)}
                                         className={[
                                             "flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition",
-                                            isActive ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90" : "text-[var(--text)]/70 hover:bg-[var(--text)]/5",
+                                            isActive ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90" : "text-[var(--text)]/70 hover:bg-[var(--text)]/3 hover:text-[var(--text)]",
                                         ].join(" ")}
                                     >
                                         <Icon size={20} strokeWidth={1.5}/>
