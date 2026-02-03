@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import BigTitle from "@/components/ui/typography/BigTitle";
+import SectionKicker from "@/components/ui/typography/SectionKicker";
+import BodyText from "@/components/ui/typography/BodyText";
+import { PAGE_CONTAINER, CONTENT_GUTTER } from "@/components/ui/layout";
 
 /* -----------------------------
    Arrow
@@ -33,67 +37,33 @@ function Arrow({ className = "" }: { className?: string }) {
         </svg>
     );
 }
-
-/* -----------------------------
-   Section kicker
------------------------------- */
-function SectionKicker({ children }: { children: React.ReactNode }) {
-    return (
-        <p
-            className={`
-                inline-block whitespace-nowrap 
-                px-4 sm:px-5 md:px-7
-                font-sans font-bold text-left text-[var(--text)] mb-6
-                tracking-[0.05em]
-                text-[23px] leading-[2.2rem] 
-                sm:text-[26px] sm:leading-[2rem]
-                md:text-[29px] md:leading-[2rem]
-                xl:text-[32px] xl:leading-[3rem]
-        
-      `}
-        >
-            {children}
-        </p>
-    );
-}
-
-/* -----------------------------
-   Big titles (cards)
------------------------------- */
-function BigTitle({
-                      children,
-                      className = "",
-                  }: {
-    children: React.ReactNode;
-    className?: string;
-}) {
-    return (
-        <span
-            className={`
-            min-w-0
-            font-sans font-semibold tracking-[0em] text-[var(--text)]
-            text-[43px] leading-[4rem]
-            sm:text-[48px] sm:leading-[4rem]
-            md:text-[50px] md:leading-[3rem]
-            xl:text-[52px] xl:leading-[3rem]
-        ${className}
-      `}
-        >
-      {children}
-    </span>
-    );
-}
-
 /* -----------------------------
    Card base (same hover/touch feel everywhere)
 ------------------------------ */
 const cardBase =
-    "rounded-2xl transition-all duration-220 ease-out " +
-    "hover:bg-[var(--card)] hover:shadow-[var(--shadow)] hover:-translate-y-1 " +
-    "active:bg-[var(--card)]/80 active:backdrop-blur-lg active:shadow-[var(--shadow)] active:-translate-y-[2px] active:scale-[0.995] " +
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text)]/20 " +
-    "motion-reduce:transition-none motion-reduce:hover:transform-none";
-
+    [
+        "relative overflow-hidden rounded-3xl",
+        "transition-all duration-200",
+        "cursor-pointer select-none",
+            // base: no surface (so it doesn't look like a card by default)
+        "bg-transparent shadow-none",
+        "border border-transparent",
+            // hover (desktop): become a real card (same shadows as ServiceCard)
+        "hover:bg-white hover:text-gray-900",
+        "dark:hover:bg-[var(--card)]/70 dark:hover:backdrop-blur-sm dark:hover:text-white",
+        "hover:border-black/5 dark:hover:border-white/10",
+        "hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
+        "hover:-translate-y-1",
+            // tap (mobile): show it on press (because there's no hover)
+        "active:bg-white active:text-gray-900",
+        "dark:active:bg-[var(--card)]/70 dark:active:backdrop-blur-sm dark:active:text-white",
+        "active:border-black/5 dark:active:border-white/10",
+        "active:shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:active:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
+        "active:scale-[0.99]",
+            // accessibility
+        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+        "motion-reduce:transition-none motion-reduce:hover:transform-none",
+    ].join(" ");
 /* -----------------------------
    HERO line splitting (desktop only)
 ------------------------------ */
@@ -231,58 +201,64 @@ export default function HomePageClient() {
                 {/* =========================
             PROMISE
            ========================= */}
-                <section className="px-3 mt-16 mt- sm:px-4 md:px-6   mx-auto w-full max-w-7xl xl:pt-20">
-                    <SectionKicker>{t("promise.title")}</SectionKicker>
-                    <div className="flex flex-col xl:flex-row xl:gap-12">
-                        {promise.map((it, index) => (
-                            <Link
-                                key={it.id}
-                                href={`/promise#${it.id}`}
-                                className="
-                                    group block w-full min-w-0
-                                    opacity-100 translate-y-0
-                                    xl:flex-1 md:opacity-0 md:translate-y-6
-                                    md:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
-                                    motion-reduce:md:opacity-100 motion-reduce:md:translate-y-0 motion-reduce:md:animate-none
-                                "
-                                style={{ animationDelay: `${650 + index * 160}ms` }}
-                            >
-                                <div
-                                    className={`
-                                         ${cardBase}
-                                            w-full min-w-0
-                                            max-w-[440px] md:max-w-[460px]
-                                            mr-auto
-                                            xl:max-w-none
-                                            py-9 sm:py-9 md:py-10 xl:py-6
-                                            px-4 sm:px-5 md:px-6
-                                        `}
-                                >
-                                    {/* Title + Arrow рядом */}
-                                    <div className="flex items-center gap-[17px] min-w-0 mb-5">
-                                        <BigTitle className="min-w-0 whitespace-nowrap">
-                                            {it.title}
-                                        </BigTitle>
-                                        <Arrow className="shrink-0" />
-                                    </div>
-                                    <p className="w-full text-left text-[var(--text)] text-[15px] leading-[1.2rem] md:text-lg mb-5 max-w-[340px]">
-                                        {it.desc}
-                                    </p>
+                <section className="mt-16 xl:pt-20">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionKicker>{t("promise.title")}</SectionKicker>
+                        </div>
+                            <div className="flex flex-col gap-6 xl:flex-row xl:gap-12">
+                                {promise.map((it, index) => (
+                                    <Link
+                                        key={it.id}
+                                        href={`/promise#${it.id}`}
+                                        className="
+                                            group block w-full min-w-0
+                                            opacity-100 translate-y-0
+                                            xl:flex-1 md:opacity-0 md:translate-y-6
+                                            md:animate-[promiseIn_900ms_cubic-bezier(0.16,1,0.3,1)_forwards]
+                                            motion-reduce:md:opacity-100 motion-reduce:md:translate-y-0 motion-reduce:md:animate-none
+                                        "
+                                        style={{ animationDelay: `${650 + index * 160}ms` }}
+                                    >
+                                                <div
+                                                    className={`
+                                                         ${cardBase}
+                                                            w-full min-w-0
+                                                    max-w-[440px] md:max-w-[460px]
+                                                    mr-auto
+                                                    xl:max-w-none
+                                                    py-9 sm:py-9 md:py-10 xl:py-6
+                                                    px-4 sm:px-5 md:px-6
+                                                `}
+                                        >
+                                            {/* Title + Arrow рядом */}
+                                            <div className="flex items-center gap-[17px] min-w-0 mb-5">
+                                                <BigTitle className="min-w-0 whitespace-nowrap">
+                                                    {it.title}
+                                                </BigTitle>
+                                                <Arrow className="shrink-0" />
+                                            </div>
+                                            <BodyText className="w-full mb-5 max-w-[340px]">
+                                                {it.desc}
+                                            </BodyText>
+                                        </div>
+                                    </Link>
+                                 ))}
                                 </div>
-                            </Link>
-                        ))}
-                    </div>
+                            </div>
                 </section>
 
                 {/* =========================
             VIDEO
            ========================= */}
                 <section className="w-full mt-16">
-                    <div className="px-3 sm:px-4 md:px-6 mx-auto w-full max-w-7xl xl:pt-20">
-                        <SectionKicker>{t("video.kicker")}</SectionKicker>
-                        <h2 className="mt-2  px-4 sm:px-5 md:px-7" >
-                            <BigTitle >{t("video.title")}</BigTitle>
-                        </h2>
+                    <div className={PAGE_CONTAINER + " xl:pt-20"}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionKicker>{t("video.kicker")}</SectionKicker>
+                            <h2 className="mt-2" >
+                                <BigTitle >{t("video.title")}</BigTitle>
+                            </h2>
+                        </div>
                     </div>
 
                     <div className="relative w-full h-[100svh] overflow-hidden">
@@ -290,44 +266,44 @@ export default function HomePageClient() {
                             <source src="/videos/live-video.mp4" type="video/mp4" />
                         </video>
                     </div>
-                    <div className="pl-7 sm:pl-9 md:pl-12 mx-auto w-full max-w-7xl">
-                        <p className="min-w-0 text-left text-[var(--text)] text-[15px] leading-[1.2rem] mb-5">
-                            {t("video.desc")}
-                        </p>
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <BodyText className="mb-5">
+                               {t("video.desc")}
+                             </BodyText>
+                        </div>
                     </div>
-
                 </section>
-
                 {/* =========================
             EXPERIENCE
            ========================= */}
-                <section className="px-3 mb-14 mt-16 sm:px-4 md:px-6 mx-auto w-full max-w-7xl xl:pt-20">
-                    <SectionKicker>{t("experience.kicker")}</SectionKicker>
-                    <div className="flex flex-col xl:grid xl:grid-cols-2 gap-3 xl:gap-8">
-                        {experience.map((it) => (
-                            <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
-                                <div
-                                    className={`
-                                            ${cardBase}
-                                            w-full min-w-0
-                                            max-w-[440px] md:max-w-[460px]
-                                            mr-auto
-                                            xl:max-w-none
-                                            py-9 sm:py-9 md:py-10 xl:py-6
-                                            px-4 sm:px-5 md:px-6
-                                          `}
-                                >
-                                    <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-4 min-w-0">
-                                        <BigTitle className="min-w-0">
-                                            {it.title}
-                                        </BigTitle>
+                <section className="mb-14 mt-16 xl:pt-20">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionKicker>{t("experience.kicker")}</SectionKicker>
+                        </div>
+                        <div className="flex flex-col xl:grid xl:grid-cols-2 gap-y-6 xl:gap-y-8 gap-x-3 xl:gap-x-4">
+                            {experience.map((it) => (
+                                <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
+                                    <div
+                                        className={`
+                                                ${cardBase}
+                                                w-full min-w-0
+                                                max-w-[440px] md:max-w-[460px] xl:max-w-[520px]
+                                                mr-auto
+                                                py-9 sm:py-9 md:py-10 xl:py-6
+                                                px-4 sm:px-5 md:px-6
+                                              `}
+                                    >
+                                        <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-4 min-w-0">
+                                            <BigTitle className="min-w-0">
+                                                {it.title}
+                                            </BigTitle>
 
-                                        <div />
-
-                                        <p className="min-w-0 text-left text-[var(--text)] text-[16px] leading-[1.2rem] md:text-lg max-w-[340px]">
-                                            {it.desc}
-                                        </p>
-
+                                            <div />
+                                            <BodyText className="max-w-[340px]">
+                                                {it.desc}
+                                            </BodyText>
                                         {/* Price + Arrow — строго по контенту */}
                                         <div className="inline-flex items-center gap-[10px] self-center w-max whitespace-nowrap">
                                             <p className="text-lg md:text-xl font-semibold text-[var(--text)]">
@@ -338,7 +314,8 @@ export default function HomePageClient() {
                                     </div>
                                 </div>
                             </Link>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </section>
 

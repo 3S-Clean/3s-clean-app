@@ -19,22 +19,22 @@ export default function AccountFooter() {
 
     const socialLinks: SocialLink[] = [
         {
-            icon: <FiYoutube className="social-icon" />,
+            icon: <FiYoutube className="social-copyright-icon" />,
             href: "https://youtube.com/@3sclean",
             label: "YouTube",
         },
         {
-            icon: <LuMessageCircle className="social-icon" />,
+            icon: <LuMessageCircle className="social-copyright-icon" />,
             href: "https://wa.me/your-number",
             label: "WhatsApp",
         },
         {
-            icon: <RiTiktokLine className="social-icon" />,
+            icon: <RiTiktokLine className="social-copyright-icon" />,
             href: "https://tiktok.com/@3sclean",
             label: "TikTok",
         },
         {
-            icon: <FiInstagram className="social-icon" />,
+            icon: <FiInstagram className="social-copyright-icon" />,
             href: "https://instagram.com/3sclean",
             label: "Instagram",
         },
@@ -60,7 +60,6 @@ export default function AccountFooter() {
                         </div>
                     ))}
                 </div>
-
                 {/* Legal */}
                 <div className="footer-legal">
                     <h4 className="footer-legal-title">Legal</h4>
@@ -76,25 +75,27 @@ export default function AccountFooter() {
             </span>
                         ))}
                     </div>
-                    <p className="footer-copyright">
-                        © {currentYear} 3S-Clean. All rights reserved.
-                    </p>
                 </div>
 
                 {/* Social */}
-                <div className="footer-social">
-                    {socialLinks.map((social) => (
-                        <a
-                            key={social.label}
-                            href={social.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="footer-social-link"
-                            aria-label={social.label}
-                        >
-                            {social.icon}
-                        </a>
-                    ))}
+                <div className="footer-copyright-social">
+                    <p className="footer-copyright-date">
+                        © {currentYear} 3S-Clean. All rights reserved.
+                    </p>
+                    <div className="footer-copyright-icon-wrap ">
+                        {socialLinks.map((social) => (
+                            <a
+                                key={social.label}
+                                href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="footer-copyright-icon-link"
+                                aria-label={social.label}
+                            >
+                                {social.icon}
+                            </a>
+                        ))}
+                    </div>
                 </div>
             </div>
         </footer>
