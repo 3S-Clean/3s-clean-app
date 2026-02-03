@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import {createClient} from "@/lib/supabase/client";
 
 type OrderRow = {
     id: string;
@@ -59,8 +59,8 @@ function statusLabel(s: string) {
 function OrderHistoryEmpty() {
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
-            <p className="mt-4 text-black/55">Your past orders will appear here.</p>
+            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
+            <p className="mt-4 text-[var(--muted)]">Your past orders will appear here.</p>
 
             <Link
                 href="/booking"
@@ -86,21 +86,21 @@ export default function OrdersTabClient() {
             setError(null);
 
             try {
-                const { data: u, error: uErr } = await supabase.auth.getUser();
+                const {data: u, error: uErr} = await supabase.auth.getUser();
                 if (uErr || !u?.user) {
                     if (!cancelled) setError("Not authenticated.");
                     if (!cancelled) setOrders([]);
                     return;
                 }
 
-                const { data, error } = await supabase
+                const {data, error} = await supabase
                     .from("orders")
                     .select(
                         "id,status,service_type,apartment_size,people_count,scheduled_date,scheduled_time,estimated_hours,total_price,created_at"
                     )
                     .eq("user_id", u.user.id)
-                    .order("scheduled_date", { ascending: true })
-                    .order("scheduled_time", { ascending: true });
+                    .order("scheduled_date", {ascending: true})
+                    .order("scheduled_time", {ascending: true});
 
                 if (cancelled) return;
 
@@ -125,8 +125,8 @@ export default function OrdersTabClient() {
     if (loading) {
         return (
             <div className="text-center">
-                <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
-                <p className="mt-4 text-black/55">Loading…</p>
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
+                <p className="mt-4 text-[var(--muted)]">Loading…</p>
             </div>
         );
     }
@@ -134,22 +134,22 @@ export default function OrdersTabClient() {
     if (error) {
         return (
             <div className="text-center">
-                <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
-                <p className="mt-4 text-black/55">{error}</p>
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
+                <p className="mt-4 text-[var(--muted)]">{error}</p>
             </div>
         );
     }
 
     if (orders.length === 0) {
-        return <OrderHistoryEmpty />;
+        return <OrderHistoryEmpty/>;
     }
 
     return (
         <div>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h2 className="text-xl font-semibold text-black md:text-2xl">Order History</h2>
-                    <p className="mt-1 text-black/55">All your bookings appear here.</p>
+                    <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
+                    <p className="mt-1 text-[var(--muted)]">All your bookings appear here.</p>
                 </div>
             </div>
             <div className="space-y-5">
@@ -158,34 +158,32 @@ export default function OrdersTabClient() {
                         key={o.id}
                         href={`/app/%5Blocale%5D/account/orders/${o.id}`}
                         className="
-                block rounded-3xl bg-[#f6f7f8]
-                p-6 transition
-                hover:bg-[#f1f2f3]
+                            block rounded-3xl p-6 transition-colors
+            +                bg-gray-900 text-white hover:bg-gray-800
+            +                dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
             "
                     >
                         <div className="flex items-start justify-between gap-6">
                             {/* LEFT */}
                             <div>
-                                <div className="text-lg font-semibold capitalize text-black">
+                                <div className="text-lg font-semibold capitalize">
                                     {o.service_type}
                                 </div>
 
-                                <div className="mt-2 text-sm text-black/55">
+                                <div className="mt-2 text-sm opacity-80">
                                     {formatDate(o.scheduled_date)} • {o.scheduled_time} • {hours(o.estimated_hours)}
                                 </div>
-
-                                <div className="mt-1 text-sm text-black/55">
+                                <div className="mt-1 text-sm opacity-80">
                                     {o.apartment_size} • {o.people_count} people
                                 </div>
                             </div>
 
                             {/* RIGHT */}
                             <div className="text-right shrink-0">
-                                <div className="text-xl font-semibold text-black">
+                                <div className="text-xl font-semibold">
                                     {money(o.total_price)}
                                 </div>
-
-                                <div className="mt-1 text-sm text-black/50">
+                                <div className="mt-1 text-sm opacity-75">
                                     {statusLabel(o.status)}
                                 </div>
                             </div>
