@@ -14,7 +14,6 @@ import {PAGE_CONTAINER} from "@/components/ui/layout";
 
 export default function Header() {
     const pathname = usePathname();
-    // ✅ locale helpers (чтобы /en/... считалось active для href "/experience")
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
     const pathnameNoLocale = hasLocale ? (pathname.replace(`/${locale}`, "") || "/") : pathname;
@@ -23,9 +22,11 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuAnimating, setIsMenuAnimating] = useState(false);
 
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
+    const menuToggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -36,18 +37,42 @@ export default function Header() {
 
     useEffect(() => {
         const supabase = createClient();
-
         supabase.auth.getSession().then(({data}) => setIsAuthenticated(!!data.session));
-
         const {data: sub} = supabase.auth.onAuthStateChange((_event, session) => {
             setIsAuthenticated(!!session);
         });
-
         return () => sub.subscription.unsubscribe();
     }, []);
 
-    const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-    const toggleMenu = useCallback(() => setIsMenuOpen((v) => !v), []);
+    const closeMenu = useCallback(() => {
+        setIsMenuAnimating(true);
+        setIsMenuOpen(false);
+        menuToggleTimeoutRef.current = setTimeout(() => {
+            setIsMenuAnimating(false);
+        }, 150);
+    }, []);
+
+    const toggleMenu = useCallback(() => {
+        if (isMenuAnimating) return;
+
+        if (isMenuOpen) {
+            closeMenu();
+        } else {
+            setIsMenuAnimating(true);
+            setIsMenuOpen(true);
+            menuToggleTimeoutRef.current = setTimeout(() => {
+                setIsMenuAnimating(false);
+            }, 10);
+        }
+    }, [isMenuOpen, isMenuAnimating, closeMenu]);
+
+    useEffect(() => {
+        return () => {
+            if (menuToggleTimeoutRef.current) {
+                clearTimeout(menuToggleTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (isMenuOpen) {
@@ -56,7 +81,7 @@ export default function Header() {
             document.body.style.top = `-${savedScrollYRef.current}px`;
             document.body.style.width = "100%";
             document.body.style.overflow = "hidden";
-        } else {
+        } else if (!isMenuAnimating) {
             document.body.style.position = "";
             document.body.style.top = "";
             document.body.style.width = "";
@@ -65,19 +90,21 @@ export default function Header() {
         }
 
         return () => {
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
-            document.body.style.overflow = "";
+            if (!isMenuOpen) {
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.width = "";
+                document.body.style.overflow = "";
+            }
         };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, isMenuAnimating]);
 
     useEffect(() => {
         if (prevPathnameRef.current === pathname) return;
         prevPathnameRef.current = pathname;
         if (!isMenuOpen) return;
-        queueMicrotask(() => setIsMenuOpen(false));
-    }, [pathname, isMenuOpen]);
+        queueMicrotask(() => closeMenu());
+    }, [pathname, isMenuOpen, closeMenu]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -87,13 +114,15 @@ export default function Header() {
         return () => window.removeEventListener("resize", handleResize);
     }, [closeMenu]);
 
-    // ✅ helper: active check on pathname WITHOUT locale
     const isActive = (href: string) => {
         if (href === "/") return pathnameNoLocale === "/";
         return pathnameNoLocale === href || pathnameNoLocale.startsWith(href + "/");
     };
 
     const accountHref = withLocale(isAuthenticated ? "/account" : "/signup");
+
+    // Disable pointer events ДО окончания анимации
+    const overlayIsInteractive = isMenuOpen && !isMenuAnimating;
 
     return (
         <>
@@ -192,27 +221,29 @@ export default function Header() {
                                 "bg-[rgba(255,255,255,0.25)] dark:bg-[rgba(0,0,0,0.3)]",
                                 "backdrop-blur-[20px] backdrop-saturate-[180%]",
                                 "webkit-backdrop",
-                                "android-header-scrolled", // fallback в css
+                                "android-header-scrolled",
                             ].join(" ")
                             : "",
                     ].join(" ")}
                 >
                     <button
-                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4"
+                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4 z-[10001]"
                         onClick={toggleMenu}
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={isMenuOpen}
+                        disabled={isMenuAnimating}
                     >
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
-                    <Link href={withLocale("/")} className="flex items-center justify-center justify-self-center"
+                    <Link href={withLocale("/")}
+                          className="flex items-center justify-center justify-self-center z-[10001]"
                           aria-label="Go to home">
                         <Logo className="w-[46px] h-[46px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </Link>
                     <Link
                         href={withLocale("/booking")}
                         className={[
-                            "justify-self-end",
+                            "justify-self-end z-[10001]",
                             "px-2 py-[3px] rounded-[12px] border pr-4",
                             "border-[rgba(0,0,0,0.32)] dark:border-[rgba(255,255,255,0.28)]",
                             "bg-transparent",
@@ -230,19 +261,21 @@ export default function Header() {
             <div
                 className={[
                     "fixed inset-0 z-[999] flex flex-col items-center",
-                    "opacity-0 invisible pointer-events-none",
                     "transition-[opacity,visibility] duration-[150ms]",
-                    isMenuOpen ? "opacity-100 visible pointer-events-auto" : "",
+                    isMenuOpen
+                        ? "opacity-100 visible"
+                        : "opacity-0 invisible pointer-events-none",
+                    !overlayIsInteractive && "pointer-events-none",
                     "bg-[rgba(255,255,255,0)] dark:bg-[rgba(0,0,0,0.1)]",
                     "backdrop-blur-[50px] backdrop-saturate-[180%]",
                     "webkit-backdrop-strong",
                     "android-menu",
                 ].join(" ")}
-                onClick={closeMenu}
+                onClick={overlayIsInteractive ? closeMenu : undefined}
             >
                 <div
                     className={[
-                        "relative z-[100] flex flex-col items-start pointer-events-auto",
+                        "relative z-[100] flex flex-col items-start",
                         "w-[90%] max-w-[360px]",
                         "mt-[180px] sm:mt-[220px]",
                         "px-6 py-4 gap-4 rounded-[12px]",
@@ -251,6 +284,7 @@ export default function Header() {
                         "webkit-backdrop",
                         "android-panel",
                         "dark:border dark:border-[rgba(255,255,255,0.1)]",
+                        "pointer-events-auto",
                     ].join(" ")}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -261,7 +295,6 @@ export default function Header() {
                                 href={withLocale(item.href)}
                                 onClick={closeMenu}
                                 className="
-                                    pointer-events-auto
                                     text-[16px] font-normal tracking-[0.05rem] no-underline
                                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                                     transition-opacity duration-200 hover:opacity-70
@@ -274,23 +307,22 @@ export default function Header() {
 
                     <div
                         className="
-                              mt-6 pt-4 w-full flex flex-col items-center gap-2
-                              border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
-                              android-auth-border
-                            "
+                            mt-6 pt-4 w-full flex flex-col items-center gap-2
+                            border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
+                            android-auth-border
+                        "
                     >
                         {isAuthenticated ? (
                             <Link
                                 href={withLocale("/account")}
                                 onClick={closeMenu}
                                 className="
-                                            pointer-events-auto
-                              flex items-center justify-center pt-[5px]
-                              opacity-60 hover:opacity-100
-                              text-[16px] font-normal no-underline
-                              text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                              transition-opacity duration-200
-                            "
+                                    flex items-center justify-center pt-[5px]
+                                    opacity-60 hover:opacity-100
+                                    text-[16px] font-normal no-underline
+                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                                    transition-opacity duration-200
+                                "
                             >
                                 Account
                             </Link>
@@ -300,13 +332,12 @@ export default function Header() {
                                     href={withLocale("/signup")}
                                     onClick={closeMenu}
                                     className="
-                                    pointer-events-auto
-                    flex items-center justify-center pt-[5px]
-                    opacity-60 hover:opacity-100
-                    text-[16px] font-normal no-underline
-                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                    transition-opacity duration-200
-                  "
+                                        flex items-center justify-center pt-[5px]
+                                        opacity-60 hover:opacity-100
+                                        text-[16px] font-normal no-underline
+                                        text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                                        transition-opacity duration-200
+                                    "
                                 >
                                     Sign Up
                                 </Link>
@@ -314,13 +345,12 @@ export default function Header() {
                                     href={withLocale("/login")}
                                     onClick={closeMenu}
                                     className="
-                                    pointer-events-auto
-                    flex items-center justify-center pt-[5px]
-                    opacity-60 hover:opacity-100
-                    text-[16px] font-normal no-underline
-                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                    transition-opacity duration-200
-                  "
+                                        flex items-center justify-center pt-[5px]
+                                        opacity-60 hover:opacity-100
+                                        text-[16px] font-normal no-underline
+                                        text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                                        transition-opacity duration-200
+                                    "
                                 >
                                     Log In
                                 </Link>

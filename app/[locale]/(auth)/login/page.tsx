@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
-import { loginSchema, type LoginValues } from "@/lib/validators";
-import { createClient } from "@/lib/supabase/client";
-import { useBookingStore } from "@/lib/booking/store";
+import {useMemo, useState} from "react";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useRouter, useSearchParams} from "next/navigation";
+import {loginSchema, type LoginValues} from "@/lib/validators";
+import {createClient} from "@/lib/supabase/client";
+import {useBookingStore} from "@/lib/booking/store";
 import Link from "next/link";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 
@@ -15,16 +16,16 @@ export default function LoginClient() {
     const router = useRouter();
     const sp = useSearchParams();
     const supabase = useMemo(() => createClient(), []);
-    const { resetBooking } = useBookingStore();
+    const {resetBooking} = useBookingStore();
     const pendingOrderToken = sp.get("pendingOrder") || "";
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting, isValid, submitCount },
+        formState: {errors, isSubmitting, isValid, submitCount},
     } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
-        defaultValues: { email: "", password: "" },
+        defaultValues: {email: "", password: ""},
         mode: "onChange",
     });
 
@@ -32,7 +33,7 @@ export default function LoginClient() {
     const shouldShake = submitCount > 0 && Object.keys(errors).length > 0;
     const onSubmit = async (values: LoginValues) => {
         setStatus(null);
-        const { error } = await supabase.auth.signInWithPassword({
+        const {error} = await supabase.auth.signInWithPassword({
             email: values.email,
             password: values.password,
         });
@@ -46,7 +47,7 @@ export default function LoginClient() {
                         ? "Wrong email or password."
                         : error.message;
 
-            setStatus({ type: "error", msg });
+            setStatus({type: "error", msg});
             return;
         }
 
@@ -56,12 +57,13 @@ export default function LoginClient() {
             try {
                 try {
                     localStorage.setItem("pendingOrderToken", pendingOrderToken);
-                } catch {}
+                } catch {
+                }
 
                 const res = await fetch("/api/booking/link-order", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ pendingToken: pendingOrderToken }),
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({pendingToken: pendingOrderToken}),
                 });
 
                 const json: { orderId?: string; error?: string } = await res.json().catch(() => ({}));
@@ -69,7 +71,8 @@ export default function LoginClient() {
                 resetBooking();
                 try {
                     localStorage.removeItem("pendingOrderToken");
-                } catch {}
+                } catch {
+                }
 
                 if (res.ok && json?.orderId) {
                     router.replace(`/booking/success?orderId=${encodeURIComponent(String(json.orderId))}`);
@@ -96,13 +99,12 @@ export default function LoginClient() {
             <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
                 Welcome back
             </h1>
-
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Log in to manage bookings and access your cleaning records.
             </p>
-
             {pendingOrderToken ? (
-                <div className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
+                <div
+                    className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
                     <p className="text-sm text-[color:var(--muted)]">
                         ✓ Booking detected — after login it will be linked to your account.
                     </p>
@@ -116,36 +118,45 @@ export default function LoginClient() {
                         type="email"
                         placeholder="Enter your email address"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
-                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                            "placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[color:var(--input-border)]",
-                            errors.email ? "border-red-400/70" : "",
+                            "w-full",
+                            CARD_FRAME_BASE,
+                            "rounded-2xl px-4 py-3.5 text-[16px]",
+                            // input becomes “transparent field inside card”
+                            "bg-transparent",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "outline-none transition-all duration-200",
+                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "active:scale-[0.99]",
+                            // error override (keep subtle, but clear)
+                            errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
                         {...register("email")}
                     />
                     {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
-
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-[color:var(--muted)]">Password</label>
                     <input
                         type="password"
                         placeholder="Enter your password"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
-                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                            "placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[color:var(--input-border)]",
-                            errors.password ? "border-red-400/70" : "",
+                            "w-full",
+                            CARD_FRAME_BASE,
+                            "rounded-2xl px-4 py-3.5 text-[16px]",
+                            "bg-transparent",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "outline-none transition-all duration-200",
+                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "active:scale-[0.99]",
+                            errors.password ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
                         {...register("password")}
                     />
                     {errors.password && <p className="text-sm text-red-500/90">{errors.password.message}</p>}
                 </div>
-
                 <div className="flex items-center justify-between">
-                    <Link href="/forgot-password" className="text-sm text-[color:var(--muted)] hover:opacity-80 transition">
+                    <Link href="/forgot-password"
+                          className="text-sm text-[color:var(--muted)] hover:opacity-80 transition">
                         Forgot password?
                     </Link>
                 </div>

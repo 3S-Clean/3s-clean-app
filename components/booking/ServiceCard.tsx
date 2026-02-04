@@ -121,9 +121,13 @@ export default function ServiceCard(props: ServiceCardProps) {
                             "py-2.5",
                             "transition-all border",
                             "bg-gray-900 text-white border-gray-900",
-                            "hover:bg-white hover:text-gray-900 hover:border-gray-900",
+                            // Hover only on devices that actually support hover (fix Android sticky hover)
+                            "[@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-gray-900 [@media(hover:hover)]:hover:border-gray-900",
                             "dark:bg-white dark:text-gray-900 dark:border-white/20",
-                            "dark:hover:bg-gray-900 dark:hover:text-white dark:hover:border-white/20",
+                            "[@media(hover:hover)]:dark:hover:bg-gray-900 [@media(hover:hover)]:dark:hover:text-white [@media(hover:hover)]:dark:hover:border-white/20",
+                            // Touch feedback (phones/tablets)
+                            "active:bg-white active:text-gray-900 active:border-gray-900",
+                            "dark:active:bg-gray-900 dark:active:text-white dark:active:border-white/20",
                         ].join(" ")}
                     >
                         {ctaLabel}
@@ -141,9 +145,11 @@ export default function ServiceCard(props: ServiceCardProps) {
                             "py-2.5",
                             "transition-all border",
                             "bg-gray-900 text-white border-gray-900",
-                            "hover:bg-white hover:text-gray-900 hover:border-gray-900",
+                            "[@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-gray-900 [@media(hover:hover)]:hover:border-gray-900",
                             "dark:bg-white dark:text-gray-900 dark:border-white/20",
-                            "dark:hover:bg-gray-900 dark:hover:text-white dark:hover:border-white/20",
+                            "[@media(hover:hover)]:dark:hover:bg-gray-900 [@media(hover:hover)]:dark:hover:text-white [@media(hover:hover)]:dark:hover:border-white/20",
+                            "active:bg-white active:text-gray-900 active:border-gray-900",
+                            "dark:active:bg-gray-900 dark:active:text-white dark:active:border-white/20",
                         ].join(" ")}
                     >
                         {ctaLabel}

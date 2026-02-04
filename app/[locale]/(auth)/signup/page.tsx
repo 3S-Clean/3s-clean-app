@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { createClient } from "@/lib/supabase/client";
-import { signupEmailSchema, type SignupEmailValues } from "@/lib/validators";
-import { useBookingStore } from "@/lib/booking/store";
+import {useEffect, useMemo, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {createClient} from "@/lib/supabase/client";
+import {signupEmailSchema, type SignupEmailValues} from "@/lib/validators";
+import {useBookingStore} from "@/lib/booking/store";
 
 export default function SignupClient() {
     const router = useRouter();
     const sp = useSearchParams();
 
     const supabase = useMemo(() => createClient(), []);
-    const { resetBooking } = useBookingStore();
+    const {resetBooking} = useBookingStore();
 
     const prefillEmail = sp.get("email") || "";
     const pendingOrderToken = sp.get("pendingOrder") || "";
@@ -24,16 +24,16 @@ export default function SignupClient() {
         handleSubmit,
         watch,
         setValue,
-        formState: { errors, isSubmitting, isValid, submitCount },
+        formState: {errors, isSubmitting, isValid, submitCount},
     } = useForm<SignupEmailValues>({
         resolver: zodResolver(signupEmailSchema),
-        defaultValues: { email: prefillEmail },
+        defaultValues: {email: prefillEmail},
         mode: "onChange",
     });
 
     // если query email меняется — обновим поле
     useEffect(() => {
-        if (prefillEmail) setValue("email", prefillEmail, { shouldValidate: true });
+        if (prefillEmail) setValue("email", prefillEmail, {shouldValidate: true});
     }, [prefillEmail, setValue]);
 
     const [status, setStatus] = useState<null | { type: "ok" | "error"; msg: string }>(null);
@@ -49,9 +49,9 @@ export default function SignupClient() {
     const onSubmit = async (values: SignupEmailValues) => {
         setStatus(null);
 
-        const { error } = await supabase.auth.signInWithOtp({
+        const {error} = await supabase.auth.signInWithOtp({
             email: values.email,
-            options: { shouldCreateUser: true },
+            options: {shouldCreateUser: true},
         });
 
         if (error) {
@@ -64,14 +64,15 @@ export default function SignupClient() {
                     ? "This email is already registered. Try logging in."
                     : error.message;
 
-            setStatus({ type: "error", msg });
+            setStatus({type: "error", msg});
             return;
         }
 
         try {
             localStorage.setItem("pendingEmail", values.email);
             if (pendingOrderToken) localStorage.setItem("pendingOrderToken", pendingOrderToken);
-        } catch {}
+        } catch {
+        }
 
         // если есть pendingOrder — букинг “сохранён” в orders, store можно чистить
         if (pendingOrderToken) resetBooking();
@@ -99,7 +100,8 @@ export default function SignupClient() {
             </p>
 
             {pendingOrderToken ? (
-                <div className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
+                <div
+                    className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
                     <p className="text-sm text-[color:var(--muted)]">
                         ✓ Booking detected — after verification it will appear in your order history.
                     </p>
@@ -113,11 +115,15 @@ export default function SignupClient() {
                         type="email"
                         placeholder="name@domain.com"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[16px] outline-none transition backdrop-blur",
-                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                            "placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                            errors.email ? "border-red-400/70" : "",
+                            "w-full",
+                            CARD_FRAME_BASE,
+                            "rounded-2xl px-4 py-3.5 text-[16px]",
+                            "bg-transparent",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "outline-none transition-all duration-200",
+                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "active:scale-[0.99]",
+                            errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
                         {...register("email")}
                     />
