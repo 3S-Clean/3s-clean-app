@@ -1,20 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import {useMemo} from "react";
+import {useTranslations} from "next-intl";
 
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-
-import { SERVICES } from "@/lib/booking/config";
-import type { ServiceId } from "@/lib/booking/config";
-
+import type {ServiceId} from "@/lib/booking/config";
+import {SERVICES} from "@/lib/booking/config";
 import ServiceCard from "@/components/booking/ServiceCard";
-import { InfoHelp } from "@/components/ui/infohelp/InfoHelp";
+import {InfoHelp} from "@/components/ui/infohelp/InfoHelp";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
+import PageTitle from "@/components/ui/typography/PageTitle";
+import PageSubtitle from "@/components/ui/typography/PageSubtitle";
+import SectionTitle from "@/components/ui/typography/SectionTitle";
+import BodyText from "@/components/ui/typography/BodyText";
 
 /* ----------------------------- Tooltip ----------------------------- */
-function Tooltip({ text, title }: { text: string; title?: string }) {
-    return <InfoHelp text={text} title={title} />;
+function Tooltip({text, title}: { text: string; title?: string }) {
+    return <InfoHelp text={text} title={title}/>;
 }
 
 type OptionalServiceItem = {
@@ -71,15 +74,14 @@ export default function ExperiencePage() {
         return SERVICES.map((s) => {
             const title = tServices(`${s.id}.title`);
             const desc = tServices(`${s.id}.desc`);
-
             const includes = s.includesKeys.map((key) => {
                 const name = tIncludes(`${key}.name`);
                 const rawDesc = tIncludes(`${key}.desc`);
                 const desc = rawDesc?.trim() ? rawDesc : undefined;
-                return { name, desc };
+                return {name, desc};
             });
 
-            return { ...s, title, desc, includes };
+            return {...s, title, desc, includes};
         });
     }, [tServices, tIncludes]);
 
@@ -95,96 +97,91 @@ export default function ExperiencePage() {
 
     return (
         <>
-            <Header />
-
+            <Header/>
             <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
                 {/* HERO */}
-                <section className="px-6 pt-10 pb-8 md:pt-16 md:pb-12 max-w-7xl mx-auto">
-                    <h1 className={`
-                        inline-block whitespace-nowrap 
-                        px-4 sm:px-5 md:px-7
-                        font-sans font-bold text-left text-[var(--text)] mb-6
-                        tracking-[0.05em]
-                        text-[23px] leading-[2.2rem] 
-                        sm:text-[26px] sm:leading-[2rem]
-                        md:text-[29px] md:leading-[2rem]
-                        xl:text-[32px] xl:leading-[3rem]
-                        `}>
-                        {t("hero.title")}
-                    </h1>
-                    <p className="mt-4 text-lg text-[var(--muted)] max-w-2xl">{t("hero.subtitle")}</p>
+                <section className="pt-10 pb-8 md:pt-16 md:pb-12">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <PageTitle>{t("hero.title")}</PageTitle>
+                            <PageSubtitle>{t("hero.subtitle")}</PageSubtitle>
+                        </div>
+                    </div>
                 </section>
-
                 {/* CARDS (REUSED ServiceCard) */}
-                <section className="px-6 py-10 max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {servicesUi.map((service) => (
-                            <ServiceCard
-                                key={service.id}
-                                mode="link"
-                                href={`/booking?service=${encodeURIComponent(service.id)}`}
-                                service={service}
-                                title={service.title}
-                                desc={service.desc}
-                                includes={service.includes}
-                                // labels
-                                fromLabel={t("cards.from")}
-                                incVatLabel={t("cards.incVat")}
-                                includesHeading={includesHeadingById[service.id]}
-                                // CTA
-                                ctaLabel={t("cards.cta")} // "Select"
-                                showCta={true}
-                                // style
-                                // tooltip component (если в ServiceCard поддержано)
-                                Tooltip={Tooltip}
-                            />
-                        ))}
+                <section className="py-10">
+                    <div className={PAGE_CONTAINER}>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {servicesUi.map((service) => (
+                                <ServiceCard
+                                    key={service.id}
+                                    mode="link"
+                                    href={`/booking?service=${encodeURIComponent(service.id)}`}
+                                    service={service}
+                                    title={service.title}
+                                    desc={service.desc}
+                                    includes={service.includes}
+                                    // labels
+                                    fromLabel={t("cards.from")}
+                                    incVatLabel={t("cards.incVat")}
+                                    includesHeading={includesHeadingById[service.id]}
+                                    // CTA
+                                    ctaLabel={t("cards.cta")} // "Select"
+                                    showCta={true}
+                                    // style
+                                    // tooltip component (если в ServiceCard поддержано)
+                                    Tooltip={Tooltip}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </section>
-
                 {/* OPTIONAL */}
-                <section className="px-6 py-12 max-w-7xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-2">{t("optional.title")}</h2>
-                    <p className="text-[var(--muted)] mb-8">{t("optional.subtitle")}</p>
-
-                    <div className="space-y-4">
-                        {optionalServices.map((item, i) => (
-                            <div
-                                key={i}
-                                className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-black/5 dark:border-white/10"
-                            >
-                                <div className="flex items-start gap-2">
-                                    <span className="font-medium">{item.name}</span>
-                                    {item.frequency ? (
-                                        <Tooltip
-                                            title={item.name}
-                                            text={`${item.time ? item.time + ", " : ""}${item.frequency}`}
-                                        />
-                                    ) : null}
-                                </div>
-
-                                <span className="text-[var(--muted)] font-medium">{item.price}</span>
+                <section className="py-12">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionTitle className="pb-3">{t("optional.title")}</SectionTitle>
+                            <BodyText>{t("optional.subtitle")}</BodyText>
+                            <div className="space-y-4 pt-5">
+                                {optionalServices.map((item, i) => (
+                                    <div
+                                        key={i}
+                                        className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-black/5 dark:border-white/10"
+                                    >
+                                        <div className="flex items-start gap-2">
+                                            <span className="font-medium">{item.name}</span>
+                                            {item.frequency ? (
+                                                <Tooltip
+                                                    title={item.name}
+                                                    text={`${item.time ? item.time + ", " : ""}${item.frequency}`}
+                                                />
+                                            ) : null}
+                                        </div>
+                                        <span className="text-[var(--muted)] font-medium">{item.price}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </section>
-
                 {/* EXCLUSIONS */}
-                <section className="px-6 py-12 max-w-7xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-6">{t("exclusions.title")}</h2>
-
-                    <ul className="space-y-3">
-                        {exclusions.map((item, i) => (
-                            <li key={i} className="flex items-start text-[var(--muted)]">
-                                <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 mt-2 mr-3" />
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
+                <section className="py-12">
+                    <div className={PAGE_CONTAINER}>
+                        <div className={CONTENT_GUTTER}>
+                            <SectionTitle className="pb-3">{t("exclusions.title")}</SectionTitle>
+                            <ul className="space-y-3">
+                                {exclusions.map((item, i) => (
+                                    <li key={i} className="flex items-start text-[var(--muted)]">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 mt-2 mr-3"/>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
                 </section>
             </main>
-
-            <Footer />
+            <Footer/>
         </>
     );
 }

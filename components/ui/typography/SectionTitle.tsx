@@ -12,7 +12,7 @@ export default function SectionTitle({
         <h2
             className={[
                 "font-sans font-semibold tracking-[-0.01em] text-[var(--text)]",
-                "text-[clamp(22px,2.4vw,30px)] leading-[1.1]",
+                "text-[clamp(23px,2.4vw,35px)] leading-[1.1]",
                 "leading-[1.05]",
                 className,
             ].join(" ")}

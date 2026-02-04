@@ -6,7 +6,9 @@ import Footer from "@/components/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
 import PillCTA from "@/components/ui/buttons/PillCTA";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT} from "@/components/ui/card/CardFrame";
-import BigTitle from "@/components/ui/typography/BigTitle";
+import PageTitle from "@/components/ui/typography/PageTitle";
+import PageSubtitle from "@/components/ui/typography/PageSubtitle";
+import SectionTitle from "@/components/ui/typography/SectionTitle"
 import BodyText from "@/components/ui/typography/BodyText";
 
 const businessHours = [
@@ -17,7 +19,6 @@ const businessHours = [
 
 // чуть компактнее, как ты просил
 const CONTACT_CARD = [CARD_FRAME_BASE, "p-4 md:p-5"].join(" ");
-
 const CONTACT_CARD_HOVER = [
     CARD_FRAME_BASE,
     "select-none transition-all duration-200",
@@ -30,42 +31,29 @@ export default function ContactPage() {
     return (
         <>
             <Header/>
-
             <main
-                className="min-h-screen pb-8 md:pt-20 md:pb-16 pt-[90px] sm:pt-[86px] bg-[var(--background)] text-[var(--text)]">
-                {/* Hero: ALWAYS center */}
-                <section className="pt-12 pb-8 md:pt-20 md:pb-10">
+                className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
+                {/* Hero: */}
+                <section className="pt-10 pb-8 md:pt-16 md:pb-12">
                     <div className={PAGE_CONTAINER}>
-                        <div
-                            className={[
-                                CONTENT_GUTTER,
-                                "px-2 sm:px-4",
-                                "max-w-7xl xl:max-w-[1400px] mx-auto",
-                                "flex flex-col gap-3",
-                                "items-center text-center",
-                            ].join(" ")}
+                        <div className={CONTENT_GUTTER}
                         >
-                            <BigTitle>How can we help?</BigTitle>
-                            <BodyText>Personal consultation. Quick responses.</BodyText>
+                            <PageTitle>How can we help?</PageTitle>
+                            <PageSubtitle>Personal consultation. Quick responses.</PageSubtitle>
                         </div>
                     </div>
                 </section>
-
-                {/* Availability first:
-            - phone: left (not centered)
-            - md+: card centered, but content left
-        */}
+                {/* Availability first:*/}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
                         <div
                             className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
-                            <div className="w-full max-w-4xl mx-0 md:mx-auto">
+                            <div className="w-full max-w-4xl md:max-w-xl lg:max-w-2xl mx-0 md:mx-auto">
                                 <div className={`${CONTACT_CARD} text-left`}>
                                     <div className="flex items-center justify-start gap-3 mb-4">
                                         <MapPin className="w-5 h-5 text-[var(--text)]"/>
-                                        <h2 className="text-lg font-semibold text-[var(--text)]">Availability</h2>
+                                        <SectionTitle>Availability</SectionTitle>
                                     </div>
-
                                     <div className="space-y-3">
                                         {businessHours.map((item, index) => (
                                             <div key={index} className="flex justify-start items-center gap-6">
@@ -85,61 +73,53 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </section>
-
                 {/* Phone + Email: always left inside cards */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
                         <div
                             className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-6">
                                 {/* Phone */}
                                 <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-start gap-3 mb-3">
                                         <Phone className="w-5 h-5 text-[var(--text)]"/>
-                                        <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Phone</h2>
+                                        <SectionTitle>Phone</SectionTitle>
                                     </div>
-
-                                    <p className="text-left text-[var(--muted)] mb-5">
+                                    <BodyText className="mb-5">
                                         Direct consultation about cleanings, appointments, or individual questions.
-                                    </p>
-
-                                    {/* кнопка слева (как ты попросил) */}
+                                    </BodyText>
                                     <a
                                         href="tel:+4917629607551"
                                         className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
+                                          inline-flex items-center gap-2
+                                          px-5 py-3 rounded-xl
+                                          font-medium transition-colors
+                                          bg-gray-900 text-white hover:bg-gray-800
+                                          dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
+                                        "
                                     >
                                         <Phone className="w-4 h-4"/>
                                         <span>+49 176 2960 7551</span>
                                     </a>
                                 </div>
-
                                 {/* Email */}
                                 <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-start gap-3 mb-3">
                                         <Mail className="w-5 h-5 text-[var(--text)]"/>
                                         <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Email</h2>
                                     </div>
-
-                                    <p className="text-left text-[var(--muted)] mb-5">
+                                    <BodyText className="mb-5">
                                         Inquiries, feedback, or report issues. Response within 24 hours.
-                                    </p>
-
-                                    {/* кнопка слева */}
+                                    </BodyText>
                                     <a
                                         href="mailto:kontakt@3s-clean.de"
                                         className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
+                                          inline-flex items-center gap-2
+                                          px-5 py-3 rounded-xl
+                                          font-medium transition-colors
+                                          bg-gray-900 text-white hover:bg-gray-800
+                                          dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
+                                        "
                                     >
                                         <Mail className="w-4 h-4"/>
                                         <span>kontakt@3s-clean.de</span>
@@ -149,64 +129,56 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </section>
-
                 {/* WhatsApp + Business: always left inside cards */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
                         <div
                             className={[CONTENT_GUTTER, "px-2 sm:px-4", "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-6">
                                 {/* WhatsApp */}
                                 <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-start gap-3 mb-3">
                                         <MessageCircle className="w-5 h-5 text-[var(--text)]"/>
-                                        <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">WhatsApp</h2>
+                                        <SectionTitle>WhatsApp</SectionTitle>
                                     </div>
-
-                                    <p className="text-left text-[var(--muted)] mb-5">
+                                    <BodyText className="mb-5">
                                         Fastest option for quick questions, schedule changes, or updates.
-                                    </p>
-
-                                    {/* кнопка слева */}
+                                    </BodyText>
                                     <a
                                         href="https://wa.me/491762960755"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
+                                          inline-flex items-center gap-2
+                                          px-5 py-3 rounded-xl
+                                          font-medium transition-colors
+                                          bg-gray-900 text-white hover:bg-gray-800
+                                          dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
+                                        "
                                     >
                                         <MessageCircle className="w-4 h-4"/>
                                         <span>Start chat</span>
                                     </a>
                                 </div>
-
                                 {/* Business */}
                                 <div className={CONTACT_CARD_HOVER}>
                                     <div className="flex items-center justify-start gap-3 mb-3">
                                         <Mail className="w-5 h-5 text-[var(--text)]"/>
-                                        <h2 className="text-xl md:text-2xl font-bold text-[var(--text)]">Business</h2>
+                                        <SectionTitle>Business</SectionTitle>
                                     </div>
-
-                                    <p className="text-left text-[var(--muted)] mb-5">
+                                    <BodyText className="mb-5">
                                         Property management, Airbnb hosts, commercial properties, or long-term
                                         cooperation.
-                                    </p>
-
-                                    {/* кнопка слева */}
+                                    </BodyText>
                                     <a
                                         href="mailto:business@3s-clean.de"
                                         className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
+                                          inline-flex items-center gap-2
+                                          px-5 py-3 rounded-xl
+                                          font-medium transition-colors
+                                          bg-gray-900 text-white hover:bg-gray-800
+                                          dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
+                                        "
                                     >
                                         <Mail className="w-5 h-5"/>
                                         <span>business@3s-clean.de</span>
@@ -216,11 +188,6 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </section>
-
-                {/* Booking:
-            - phone: left
-            - md+: center
-        */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
                         <div
@@ -231,38 +198,30 @@ export default function ContactPage() {
                                 "text-left md:text-center",
                             ].join(" ")}
                         >
-                            <h2 className="text-2xl font-bold mb-3 text-[var(--text)]">Instant Booking</h2>
-                            <p className="text-[var(--muted)] mb-6">Transparent pricing. Immediate confirmation.</p>
-
+                            <SectionTitle>Instant Booking</SectionTitle>
+                            <BodyText className="mb-5">Transparent pricing. Immediate confirmation.</BodyText>
                             <PillCTA href="/booking" className="max-w-[320px] md:mx-auto">
                                 Book a cleaning
                             </PillCTA>
                         </div>
                     </div>
                 </section>
-
-                {/* Privacy Note:
-            - phone: left
-            - md+: center
-        */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
-                        <div
-                            className={[
-                                CONTENT_GUTTER,
-                                "px-2 sm:px-4",
-                                "max-w-7xl xl:max-w-[1400px] mx-auto",
-                                "text-left md:text-center",
-                            ].join(" ")}
+                        <div className={[
+                            CONTENT_GUTTER,
+                            "px-2 sm:px-4",
+                            "max-w-7xl xl:max-w-[1400px] mx-auto",
+                            "text-left md:text-center",
+                        ].join(" ")}
                         >
-                            <p className="text-[var(--text)] text-sm">
+                            <BodyText>
                                 Your data is handled confidentially. No marketing. No data sharing.
-                            </p>
+                            </BodyText>
                         </div>
                     </div>
                 </section>
             </main>
-
             <Footer/>
         </>
     );

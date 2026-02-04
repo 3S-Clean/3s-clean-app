@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {createClient} from "@/lib/supabase/client";
 
 import PostcodeCheck from "@/components/booking/PostcodeCheck";
 import ServiceSelection from "@/components/booking/ServiceSelection";
@@ -12,19 +12,19 @@ import ContactSchedule from "@/components/booking/ContactSchedule";
 import BookingFooter from "@/components/booking/BookingFooter";
 import Header from "@/components/header/Header";
 
-import { useBookingStore } from "@/lib/booking/store";
+import {useBookingStore} from "@/lib/booking/store";
 import {
-    SERVICES,
+    type ApartmentSizeId,
     EXTRAS,
     getBasePrice,
     getEstimatedHours,
-    type ServiceId,
-    type ApartmentSizeId,
     type PeopleCountId,
+    type ServiceId,
+    SERVICES,
 } from "@/lib/booking/config";
 
-import { useExtrasI18n } from "@/lib/services/useExtrasI18n";
-import { isServiceId, isApartmentSizeId, isPeopleCountId, isExtraId } from "@/lib/booking/guards";
+import {useExtrasI18n} from "@/lib/services/useExtrasI18n";
+import {isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId} from "@/lib/booking/guards";
 
 /* ----------------------------- Types ----------------------------- */
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
@@ -57,7 +57,7 @@ export default function BookingClient() {
     const supabase = useMemo(() => createClient(), []);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { getExtraText } = useExtrasI18n();
+    const {getExtraText} = useExtrasI18n();
 
     const {
         step,
@@ -70,9 +70,9 @@ export default function BookingClient() {
         peopleCount,
         hasPets,
 
-        hasKids,          // ✅ добавили
-        hasAllergies,     // ✅ добавили
-        allergyNote,      // ✅ добавили
+        hasKids,
+        hasAllergies,
+        allergyNote,
 
         extras,
 
@@ -109,10 +109,10 @@ export default function BookingClient() {
         let cancelled = false;
 
         const run = async () => {
-            const { data: u } = await supabase.auth.getUser();
+            const {data: u} = await supabase.auth.getUser();
             if (!u?.user || cancelled) return;
 
-            const { data } = await supabase
+            const {data} = await supabase
                 .from("profiles")
                 .select("first_name,last_name,email,phone,address,postal_code,city,country,notes")
                 .eq("id", u.user.id)
@@ -170,7 +170,7 @@ export default function BookingClient() {
                 extrasPrice += linePrice;
                 extrasHours += extra.hours * qty;
 
-                const { name } = getExtraText(extraId);
+                const {name} = getExtraText(extraId);
 
                 extrasArray.push({
                     id: extraId,
@@ -220,7 +220,7 @@ export default function BookingClient() {
 
             const res = await fetch("/api/booking/create-order", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     orderData: {
                         service_type: selectedService,
@@ -270,9 +270,10 @@ export default function BookingClient() {
     /* ---------------- UI ---------------- */
     return (
         <>
-            <Header />
+            <Header/>
             <div className="min-h-screen bg-[var(--background)] mt-[80px] text-[var(--text)]">
-                <header className="sticky top-0 z-40 bg-[var(--background)] py-5 border-0 shadow-none ring-0 outline-none">
+                <header
+                    className="sticky top-0 z-40 bg-[var(--background)] py-5 border-0 shadow-none ring-0 outline-none">
                     <div className="flex justify-center gap-2">
                         {[0, 1, 2, 3, 4].map((s) => (
                             <div
@@ -289,14 +290,14 @@ export default function BookingClient() {
                 </header>
 
                 <main className="max-w-2xl mx-auto px-6 py-10 pb-[calc(220px+env(safe-area-inset-bottom))]">
-                    {step === 0 && <ServiceSelection />}
-                    {step === 1 && <PostcodeCheck />}
-                    {step === 2 && <ApartmentDetails />}
-                    {step === 3 && <ExtraServices />}
-                    {step === 4 && <ContactSchedule />}
+                    {step === 0 && <ServiceSelection/>}
+                    {step === 1 && <PostcodeCheck/>}
+                    {step === 2 && <ApartmentDetails/>}
+                    {step === 3 && <ExtraServices/>}
+                    {step === 4 && <ContactSchedule/>}
                 </main>
 
-                <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting} />
+                <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting}/>
             </div>
         </>
     );

@@ -5,7 +5,7 @@ import Link from "next/link";
 import {Check} from "lucide-react";
 import type {ServiceId} from "@/lib/booking/config";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE} from "@/components/ui/card/CardFrame";
-import BigTitle from "@/components/ui/typography/PageTitle";
+import SectionTitle from "@/components/ui/typography/SectionTitle";
 import BodyText from "@/components/ui/typography/BodyText";
 
 type IncludeUI = { name: string; desc?: string };
@@ -99,9 +99,9 @@ export default function ServiceCard(props: ServiceCardProps) {
                 </div>
             )}
             <div className="px-6 md:px-8 py-7 md:py-8">
-                <BigTitle as="h3" className="text-2xl md:text-3xl font-bold mb-2">
+                <SectionTitle className="mb-2">
                     {title}
-                </BigTitle>
+                </SectionTitle>
                 <BodyText className="text-sm text-gray-600 dark:text-white/70 mb-5">
                     {desc}
                 </BodyText>
