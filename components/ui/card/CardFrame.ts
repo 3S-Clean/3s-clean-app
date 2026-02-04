@@ -2,11 +2,15 @@ export const CARD_FRAME_BASE = [
     "relative overflow-hidden",
     "rounded-3xl",
 
-    "bg-white text-gray-900",
+    // (2) subtle premium gradient in light mode
+    "bg-gradient-to-br from-white via-white to-gray-50/50",
+    "text-gray-900",
+
+    // glass in dark mode
     "dark:bg-[var(--card)]/70 dark:backdrop-blur-sm dark:text-white",
 
-    "border border-black/5 dark:border-white/10",
-    "shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
+    // (1) no border — depth via shadow
+    "shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_34px_rgba(0,0,0,0.48)]",
 ].join(" ");
 
 export const CARD_FRAME_INTERACTIVE = [

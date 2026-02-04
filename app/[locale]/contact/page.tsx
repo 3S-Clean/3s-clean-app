@@ -15,6 +15,7 @@ const businessHours = [
     {day: "Sunday", hours: "Closed"},
 ];
 
+// чуть компактнее, как ты просил
 const CONTACT_CARD = [CARD_FRAME_BASE, "p-4 md:p-5"].join(" ");
 
 const CONTACT_CARD_HOVER = [
@@ -102,6 +103,7 @@ export default function ContactPage() {
                                         Direct consultation about cleanings, appointments, or individual questions.
                                     </p>
 
+                                    {/* кнопка слева (как ты попросил) */}
                                     <a
                                         href="tel:+4917629607551"
                                         className="
@@ -128,6 +130,7 @@ export default function ContactPage() {
                                         Inquiries, feedback, or report issues. Response within 24 hours.
                                     </p>
 
+                                    {/* кнопка слева */}
                                     <a
                                         href="mailto:kontakt@3s-clean.de"
                                         className="
@@ -164,6 +167,7 @@ export default function ContactPage() {
                                         Fastest option for quick questions, schedule changes, or updates.
                                     </p>
 
+                                    {/* кнопка слева */}
                                     <a
                                         href="https://wa.me/491762960755"
                                         target="_blank"
@@ -193,6 +197,7 @@ export default function ContactPage() {
                                         cooperation.
                                     </p>
 
+                                    {/* кнопка слева */}
                                     <a
                                         href="mailto:business@3s-clean.de"
                                         className="
