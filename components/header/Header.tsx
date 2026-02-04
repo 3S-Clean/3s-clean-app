@@ -1,7 +1,7 @@
 "use client";
 
 import "@/components/header/header.css";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {createClient} from "@/lib/supabase/client";
@@ -16,7 +16,7 @@ export default function Header() {
     const pathname = usePathname();
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
-    const pathnameNoLocale = hasLocale ? (pathname.replace(`/${locale}`, "") || "/") : pathname;
+    const pathnameNoLocale = hasLocale ? pathname.replace(`/${locale}`, "") || "/" : pathname;
     const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,29 +74,34 @@ export default function Header() {
         };
     }, []);
 
-    useEffect(() => {
+    // ✅ FIX: stable scroll lock/unlock (no jump to top)
+    useLayoutEffect(() => {
+        const body = document.body;
+
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
-            document.body.style.position = "fixed";
-            document.body.style.top = `-${savedScrollYRef.current}px`;
-            document.body.style.width = "100%";
-            document.body.style.overflow = "hidden";
-        } else if (!isMenuAnimating) {
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
-            document.body.style.overflow = "";
-            window.scrollTo(0, savedScrollYRef.current);
+            body.style.position = "fixed";
+            body.style.top = `-${savedScrollYRef.current}px`;
+            body.style.left = "0";
+            body.style.right = "0";
+            body.style.width = "100%";
+            body.style.overflow = "hidden";
+            return;
         }
 
-        return () => {
-            if (!isMenuOpen) {
-                document.body.style.position = "";
-                document.body.style.top = "";
-                document.body.style.width = "";
-                document.body.style.overflow = "";
-            }
-        };
+        if (isMenuAnimating) return;
+
+        const top = body.style.top; // e.g. "-438px"
+        const y = top ? Math.abs(parseInt(top, 10)) : savedScrollYRef.current;
+
+        body.style.position = "";
+        body.style.top = "";
+        body.style.left = "";
+        body.style.right = "";
+        body.style.width = "";
+        body.style.overflow = "";
+
+        window.scrollTo(0, y);
     }, [isMenuOpen, isMenuAnimating]);
 
     useEffect(() => {
@@ -209,6 +214,7 @@ export default function Header() {
                         </Link>
                     </div>
                 </div>
+
                 {/* Mobile Header (base) */}
                 <div
                     className={[
@@ -235,11 +241,15 @@ export default function Header() {
                     >
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
-                    <Link href={withLocale("/")}
-                          className="flex items-center justify-center justify-self-center z-[10001]"
-                          aria-label="Go to home">
+
+                    <Link
+                        href={withLocale("/")}
+                        className="flex items-center justify-center justify-self-center z-[10001]"
+                        aria-label="Go to home"
+                    >
                         <Logo className="w-[46px] h-[46px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </Link>
+
                     <Link
                         href={withLocale("/booking")}
                         className={[
@@ -257,14 +267,13 @@ export default function Header() {
                     </Link>
                 </div>
             </header>
+
             {/* Mobile Menu Overlay */}
             <div
                 className={[
                     "fixed inset-0 z-[999] flex flex-col items-center",
                     "transition-[opacity,visibility] duration-[150ms]",
-                    isMenuOpen
-                        ? "opacity-100 visible"
-                        : "opacity-0 invisible pointer-events-none",
+                    isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none",
                     !overlayIsInteractive && "pointer-events-none",
                     "bg-[rgba(255,255,255,0)] dark:bg-[rgba(0,0,0,0.1)]",
                     "backdrop-blur-[50px] backdrop-saturate-[180%]",
@@ -295,10 +304,10 @@ export default function Header() {
                                 href={withLocale(item.href)}
                                 onClick={closeMenu}
                                 className="
-                                    text-[16px] font-normal tracking-[0.05rem] no-underline
-                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                                    transition-opacity duration-200 hover:opacity-70
-                                "
+                  text-[16px] font-normal tracking-[0.05rem] no-underline
+                  text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                  transition-opacity duration-200 hover:opacity-70
+                "
                             >
                                 {item.label}
                             </Link>
@@ -307,22 +316,22 @@ export default function Header() {
 
                     <div
                         className="
-                            mt-6 pt-4 w-full flex flex-col items-center gap-2
-                            border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
-                            android-auth-border
-                        "
+              mt-6 pt-4 w-full flex flex-col items-center gap-2
+              border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)]
+              android-auth-border
+            "
                     >
                         {isAuthenticated ? (
                             <Link
                                 href={withLocale("/account")}
                                 onClick={closeMenu}
                                 className="
-                                    flex items-center justify-center pt-[5px]
-                                    opacity-60 hover:opacity-100
-                                    text-[16px] font-normal no-underline
-                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                                    transition-opacity duration-200
-                                "
+                  flex items-center justify-center pt-[5px]
+                  opacity-60 hover:opacity-100
+                  text-[16px] font-normal no-underline
+                  text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                  transition-opacity duration-200
+                "
                             >
                                 Account
                             </Link>
@@ -332,12 +341,12 @@ export default function Header() {
                                     href={withLocale("/signup")}
                                     onClick={closeMenu}
                                     className="
-                                        flex items-center justify-center pt-[5px]
-                                        opacity-60 hover:opacity-100
-                                        text-[16px] font-normal no-underline
-                                        text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                                        transition-opacity duration-200
-                                    "
+                    flex items-center justify-center pt-[5px]
+                    opacity-60 hover:opacity-100
+                    text-[16px] font-normal no-underline
+                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                    transition-opacity duration-200
+                  "
                                 >
                                     Sign Up
                                 </Link>
@@ -345,12 +354,12 @@ export default function Header() {
                                     href={withLocale("/login")}
                                     onClick={closeMenu}
                                     className="
-                                        flex items-center justify-center pt-[5px]
-                                        opacity-60 hover:opacity-100
-                                        text-[16px] font-normal no-underline
-                                        text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
-                                        transition-opacity duration-200
-                                    "
+                    flex items-center justify-center pt-[5px]
+                    opacity-60 hover:opacity-100
+                    text-[16px] font-normal no-underline
+                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
+                    transition-opacity duration-200
+                  "
                                 >
                                     Log In
                                 </Link>
