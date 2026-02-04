@@ -3,7 +3,6 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 import PageTitle from "@/components/ui/typography/PageTitle";
-import PageSubtitle from "@/components/ui/typography/PageSubtitle";
 import BodyText from "@/components/ui/typography/BodyText";
 import SectionTitle from "@/components/ui/typography/SectionTitle";
 import BodyMuted from "@/components/ui/typography/BodyMuted";
@@ -76,15 +75,15 @@ export default function InsidePage() {
                             <PageTitle className="mb-6">
                                 3-S Story
                             </PageTitle>
-                            <PageSubtitle>
-                                Home cleaning redefined
-                            </PageSubtitle>
                         </div>
                     </div>
                 </section>
                 {/* Mission Statement */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <BodyText className="mb-5 mt-6">
+                    <SectionTitle>
+                        Home cleaning redefined
+                    </SectionTitle>
+                    <BodyText className="mb-8 mt-6">
                         The home-cleaning market seems to be stuck in the past: clients fear something can go
                         horribly wrong with their home without supervision, pricing is often a mystery, and
                         cleaners too often get treated like disposable labor.
@@ -129,10 +128,9 @@ export default function InsidePage() {
                 </section>
                 {/* What We Fix */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <SectionTitle className="mb-4">
+                    <SectionTitle className="mb-6">
                         What we want to fix
                     </SectionTitle>
-                    <BodyMuted className="mb-10">that others ignore</BodyMuted>
                     <div className="space-y-4">
                         {problems.map((problem, index) => (
                             <div key={index}
@@ -152,10 +150,7 @@ export default function InsidePage() {
                 </section>
                 {/* Our Approach - 3S */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <SectionTitle className="mb-4">Our approach</SectionTitle>
-                    <BodyMuted className="mb-10">
-                        We designed 3S-Clean to fix all three problems—using modern processes and modern tools.
-                    </BodyMuted>
+                    <SectionTitle className="mb-6">Our approach</SectionTitle>
                     <div className="grid gap-4 md:grid-cols-3">
                         {approach.map((item, index) => (
                             <div
@@ -172,7 +167,7 @@ export default function InsidePage() {
                 </section>
                 {/* What Clients Can Expect */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <SectionTitle className="mb-10">
+                    <SectionTitle className="mb-6">
                         What our clients can expect
                     </SectionTitle>
                     <div className="space-y-4">
@@ -197,7 +192,7 @@ export default function InsidePage() {
                 </section>
                 {/* Stats */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <SectionTitle className="mb-10">
+                    <SectionTitle className="mb-6">
                         Numbers that matter
                     </SectionTitle>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
