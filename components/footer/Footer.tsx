@@ -10,31 +10,32 @@ export default function AccountFooter() {
     return (
         <footer
             className="
-                flex w-full flex-col items-center justify-center
-                bg-[#f8f9fa] dark:bg-[#070A0D]
-                gap-6
-                pt-8 pb-5
-                lg:pt-[80px] lg:pb-[50px] lg:gap-8
-            "
+        flex w-full flex-col items-center justify-center
+        bg-[#f8f9fa] dark:bg-[#070A0D]
+        gap-6
+        pt-8 pb-5
+        lg:pt-[80px] lg:pb-[50px] lg:gap-8
+      "
         >
             <div className={PAGE_CONTAINER}>
                 <div className={CONTENT_GUTTER}>
-                    {/* Navigation Columns - single row on desktop, 2 columns on tablet, 1 column on mobile */}
+                    {/* Navigation Columns - single row on desktop, 3 columns on tablet, 1 column on mobile */}
                     <div
                         className="
-                        flex w-full flex-col gap-6
-                        md:grid md:grid-cols-2 md:gap-8
-                        lg:flex lg:flex-row lg:gap-12
-                    "
+              flex w-full flex-col gap-6
+              md:grid md:grid-cols-3 md:gap-8
+              lg:flex lg:flex-row lg:gap-12
+            "
                     >
                         {footerColumns.map((column) => (
                             <div key={column.title} className="flex flex-col gap-2 lg:gap-3">
-                                <h3 className="
-                                    m-0 font-semibold
-                                    text-[16px] leading-[110%]
-                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.9
-                                    lg:text-[18px] lg:leading-[150%]
-                                "
+                                <h3
+                                    className="
+                    m-0 font-semibold
+                    text-[16px] leading-[110%]
+                    text-black/90 dark:text-white/90
+                    lg:text-[18px] lg:leading-[150%]
+                  "
                                 >
                                     {column.title}
                                 </h3>
@@ -45,11 +46,11 @@ export default function AccountFooter() {
                                             <Link
                                                 href={link.href}
                                                 className="
-                                                    cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                                                    text-[13px] leading-[100%]
-                                                     text-[rgb(26,26,26)] dark:text-[rgba(255,255,2
-                                                    lg:text-[15px] lg:leading-[130%]
-                                                "
+                          cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                          text-[13px] leading-[100%]
+                          text-black/90 dark:text-white/70
+                          lg:text-[15px] lg:leading-[130%]
+                        "
                                             >
                                                 {link.label}
                                             </Link>
@@ -58,15 +59,47 @@ export default function AccountFooter() {
                                 </ul>
                             </div>
                         ))}
+
+                        {/* Resources (3rd on tablet) */}
+                        <div className="flex flex-col gap-2 lg:gap-3">
+                            <h3
+                                className="
+                  m-0 font-semibold
+                  text-[16px] leading-[110%]
+                  text-black/90 dark:text-white/90
+                  lg:text-[18px] lg:leading-[150%]
+                "
+                            >
+                                Resources
+                            </h3>
+                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                                {legalLinks.map((link) => (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            className="
+                        cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                        text-[13px] leading-[100%]
+                        text-black/90 dark:text-white/70
+                        lg:text-[15px] lg:leading-[130%]
+                      "
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
                         {/* Connect */}
                         <div className="flex flex-col gap-2 lg:gap-3">
                             <h3
                                 className="
-                                m-0 font-semibold
-                                text-[16px] leading-[110%]
-                                text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.9
-                                lg:text-[18px] lg:leading-[150%]
-                        "
+                  m-0 font-semibold
+                  text-[16px] leading-[110%]
+                  text-black/90 dark:text-white/90
+                  lg:text-[18px] lg:leading-[150%]
+                "
                             >
                                 Connect
                             </h3>
@@ -78,11 +111,11 @@ export default function AccountFooter() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="
-                                            cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                                            text-[13px] leading-[100%]
-                                            text-[rgb(26,26,26)] dark:text-[rgba(255,255,2
-                                            lg:text-[15px] lg:leading-[130%]
-                                        "
+                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                      text-[13px] leading-[100%]
+                      text-black/90 dark:text-white/70
+                      lg:text-[15px] lg:leading-[130%]
+                    "
                                     >
                                         Instagram
                                     </Link>
@@ -93,11 +126,11 @@ export default function AccountFooter() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="
-                                            cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                                            text-[13px] leading-[100%]
-                                            text-[rgb(26,26,26)] dark:text-[rgba(255,255,2
-                                            lg:text-[15px] lg:leading-[130%]
-                                        "
+                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                      text-[13px] leading-[100%]
+                      text-black/90 dark:text-white/70
+                      lg:text-[15px] lg:leading-[130%]
+                    "
                                     >
                                         YouTube
                                     </Link>
@@ -108,46 +141,15 @@ export default function AccountFooter() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="
-                                            cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                                            text-[13px] leading-[100%]
-                                            text-[rgb(26,26,26)] dark:text-[rgba(255,255,2
-                                            lg:text-[15px] lg:leading-[130%]
-                                        "
+                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                      text-[13px] leading-[100%]
+                      text-black/90 dark:text-white/70
+                      lg:text-[15px] lg:leading-[130%]
+                    "
                                     >
                                         TikTok
                                     </Link>
                                 </li>
-                            </ul>
-                        </div>
-
-                        {/* Resources */}
-                        <div className="flex flex-col gap-2 lg:gap-3">
-                            <h3
-                                className="
-                                    m-0 font-semibold
-                                    text-[16px] leading-[110%]
-                                    text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.9
-                                    lg:text-[18px] lg:leading-[150%]
-                                "
-                            >
-                                Resources
-                            </h3>
-                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                                {legalLinks.map((link) => (
-                                    <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="
-                                            cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                                            text-[13px] leading-[100%]
-                                            text-[rgb(26,26,26)] dark:text-[rgba(255,255,2
-                                            lg:text-[15px] lg:leading-[130%]
-                                        "
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
                             </ul>
                         </div>
                     </div>
@@ -155,18 +157,18 @@ export default function AccountFooter() {
                     {/* Copyright */}
                     <div
                         className="
-            mt-5 flex w-full flex-col gap-[10px]
-            border-t border-t-[rgba(0,0,0,0.06)]
-            dark:border-t-[rgba(255,255,255,0.12)]
-          "
+              mt-5 flex w-full flex-col gap-[10px]
+              border-t border-t-[rgba(0,0,0,0.06)]
+              dark:border-t-[rgba(255,255,255,0.12)]
+            "
                     >
                         <p
                             className="
-              flex items-start
-              text-[12px] leading-[120%]
-              text-[rgb(154,154,154)] dark:text-[rgba(255,255,255,0.45)]
-              lg:text-[13px] lg:leading-[130%]
-            "
+                flex items-start
+                text-[12px] leading-[120%]
+                text-[rgb(154,154,154)] dark:text-[rgba(255,255,255,0.45)]
+                lg:text-[13px] lg:leading-[130%]
+              "
                         >
                             © {currentYear} 3S-Clean. All rights reserved.
                         </p>
