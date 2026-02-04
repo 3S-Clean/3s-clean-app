@@ -1,7 +1,7 @@
 "use client";
 
 import "@/components/header/header.css";
-import {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {createClient} from "@/lib/supabase/client";
@@ -14,6 +14,8 @@ import {PAGE_CONTAINER} from "@/components/ui/layout";
 
 export default function Header() {
     const pathname = usePathname();
+
+    // ✅ locale helpers
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
     const pathnameNoLocale = hasLocale ? pathname.replace(`/${locale}`, "") || "/" : pathname;
@@ -22,11 +24,13 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+
+    // ✅ fast open + block interactions during animation
     const [isMenuAnimating, setIsMenuAnimating] = useState(false);
+    const menuToggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
-    const menuToggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -37,20 +41,26 @@ export default function Header() {
 
     useEffect(() => {
         const supabase = createClient();
+
         supabase.auth.getSession().then(({data}) => setIsAuthenticated(!!data.session));
+
         const {data: sub} = supabase.auth.onAuthStateChange((_event, session) => {
             setIsAuthenticated(!!session);
         });
+
         return () => sub.subscription.unsubscribe();
     }, []);
 
     const closeMenu = useCallback(() => {
+        if (isMenuAnimating) return;
         setIsMenuAnimating(true);
         setIsMenuOpen(false);
+
+        // оставляем короткую блокировку на время закрывающей анимации
         menuToggleTimeoutRef.current = setTimeout(() => {
             setIsMenuAnimating(false);
         }, 150);
-    }, []);
+    }, [isMenuAnimating]);
 
     const toggleMenu = useCallback(() => {
         if (isMenuAnimating) return;
@@ -58,6 +68,7 @@ export default function Header() {
         if (isMenuOpen) {
             closeMenu();
         } else {
+            // ✅ максимально быстрое открытие
             setIsMenuAnimating(true);
             setIsMenuOpen(true);
             menuToggleTimeoutRef.current = setTimeout(() => {
@@ -68,40 +79,34 @@ export default function Header() {
 
     useEffect(() => {
         return () => {
-            if (menuToggleTimeoutRef.current) {
-                clearTimeout(menuToggleTimeoutRef.current);
-            }
+            if (menuToggleTimeoutRef.current) clearTimeout(menuToggleTimeoutRef.current);
         };
     }, []);
 
-    // ✅ FIX: stable scroll lock/unlock (no jump to top)
-    useLayoutEffect(() => {
-        const body = document.body;
-
+    // ✅ lock scroll + prevent click-through below (сохраняем прозрачность/blur)
+    useEffect(() => {
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
-            body.style.position = "fixed";
-            body.style.top = `-${savedScrollYRef.current}px`;
-            body.style.left = "0";
-            body.style.right = "0";
-            body.style.width = "100%";
-            body.style.overflow = "hidden";
-            return;
+            document.body.style.position = "fixed";
+            document.body.style.top = `-${savedScrollYRef.current}px`;
+            document.body.style.width = "100%";
+            document.body.style.overflow = "hidden";
+        } else if (!isMenuAnimating) {
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
+            document.body.style.overflow = "";
+            window.scrollTo(0, savedScrollYRef.current);
         }
 
-        if (isMenuAnimating) return;
-
-        const top = body.style.top; // e.g. "-438px"
-        const y = top ? Math.abs(parseInt(top, 10)) : savedScrollYRef.current;
-
-        body.style.position = "";
-        body.style.top = "";
-        body.style.left = "";
-        body.style.right = "";
-        body.style.width = "";
-        body.style.overflow = "";
-
-        window.scrollTo(0, y);
+        return () => {
+            if (!isMenuOpen) {
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.width = "";
+                document.body.style.overflow = "";
+            }
+        };
     }, [isMenuOpen, isMenuAnimating]);
 
     useEffect(() => {
@@ -126,7 +131,7 @@ export default function Header() {
 
     const accountHref = withLocale(isAuthenticated ? "/account" : "/signup");
 
-    // Disable pointer events ДО окончания анимации
+    // ✅ overlay кликабелен только когда полностью открыт
     const overlayIsInteractive = isMenuOpen && !isMenuAnimating;
 
     return (
@@ -172,6 +177,7 @@ export default function Header() {
                             ))}
                         </nav>
                     </div>
+
                     {/* Right */}
                     <div
                         className={[
@@ -197,6 +203,7 @@ export default function Header() {
                                     className="w-[22px] h-[22px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)] transition-opacity duration-200 hover:opacity-70"/>
                             )}
                         </Link>
+
                         <Link
                             href={withLocale("/booking")}
                             className={[
@@ -233,7 +240,7 @@ export default function Header() {
                     ].join(" ")}
                 >
                     <button
-                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4 z-[10001]"
+                        className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4"
                         onClick={toggleMenu}
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={isMenuOpen}
@@ -242,18 +249,15 @@ export default function Header() {
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
 
-                    <Link
-                        href={withLocale("/")}
-                        className="flex items-center justify-center justify-self-center z-[10001]"
-                        aria-label="Go to home"
-                    >
+                    <Link href={withLocale("/")} className="flex items-center justify-center justify-self-center"
+                          aria-label="Go to home">
                         <Logo className="w-[46px] h-[46px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </Link>
 
                     <Link
                         href={withLocale("/booking")}
                         className={[
-                            "justify-self-end z-[10001]",
+                            "justify-self-end",
                             "px-2 py-[3px] rounded-[12px] border pr-4",
                             "border-[rgba(0,0,0,0.32)] dark:border-[rgba(255,255,255,0.28)]",
                             "bg-transparent",
@@ -272,19 +276,23 @@ export default function Header() {
             <div
                 className={[
                     "fixed inset-0 z-[999] flex flex-col items-center",
+                    "opacity-0 invisible pointer-events-none",
                     "transition-[opacity,visibility] duration-[150ms]",
-                    isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none",
-                    !overlayIsInteractive && "pointer-events-none",
+                    isMenuOpen ? "opacity-100 visible pointer-events-auto" : "",
+                    // ✅ сохраняем прозрачность + blur, но блокируем клики по странице снизу
                     "bg-[rgba(255,255,255,0)] dark:bg-[rgba(0,0,0,0.1)]",
                     "backdrop-blur-[50px] backdrop-saturate-[180%]",
                     "webkit-backdrop-strong",
                     "android-menu",
+                    // ✅ во время анимации не даём клики вообще (ни по overlay, ни “сквозь”)
+                    !overlayIsInteractive ? "pointer-events-none" : "",
                 ].join(" ")}
                 onClick={overlayIsInteractive ? closeMenu : undefined}
+                aria-hidden={!isMenuOpen}
             >
                 <div
                     className={[
-                        "relative z-[100] flex flex-col items-start",
+                        "relative z-[100] flex flex-col items-start pointer-events-auto",
                         "w-[90%] max-w-[360px]",
                         "mt-[180px] sm:mt-[220px]",
                         "px-6 py-4 gap-4 rounded-[12px]",
@@ -293,7 +301,6 @@ export default function Header() {
                         "webkit-backdrop",
                         "android-panel",
                         "dark:border dark:border-[rgba(255,255,255,0.1)]",
-                        "pointer-events-auto",
                     ].join(" ")}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -304,6 +311,7 @@ export default function Header() {
                                 href={withLocale(item.href)}
                                 onClick={closeMenu}
                                 className="
+                  pointer-events-auto
                   text-[16px] font-normal tracking-[0.05rem] no-underline
                   text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]
                   transition-opacity duration-200 hover:opacity-70
@@ -326,6 +334,7 @@ export default function Header() {
                                 href={withLocale("/account")}
                                 onClick={closeMenu}
                                 className="
+                  pointer-events-auto
                   flex items-center justify-center pt-[5px]
                   opacity-60 hover:opacity-100
                   text-[16px] font-normal no-underline
@@ -341,6 +350,7 @@ export default function Header() {
                                     href={withLocale("/signup")}
                                     onClick={closeMenu}
                                     className="
+                    pointer-events-auto
                     flex items-center justify-center pt-[5px]
                     opacity-60 hover:opacity-100
                     text-[16px] font-normal no-underline
@@ -354,6 +364,7 @@ export default function Header() {
                                     href={withLocale("/login")}
                                     onClick={closeMenu}
                                     className="
+                    pointer-events-auto
                     flex items-center justify-center pt-[5px]
                     opacity-60 hover:opacity-100
                     text-[16px] font-normal no-underline
