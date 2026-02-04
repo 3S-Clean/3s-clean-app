@@ -103,7 +103,7 @@ export default function InsidePage() {
                 {/* The Story */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle className="mb-6">
-                        The story behind 3S
+                        The vision behind 3S
                     </SectionTitle>
                     <div className="space-y-6 text-lg leading-relaxed text-[var(--muted)]">
                         <BodyText>
