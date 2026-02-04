@@ -4,15 +4,18 @@ export const CARD_FRAME_BASE = [
     // subtle premium gradient (light)
     "bg-gradient-to-br from-white via-white to-gray-50/50",
     "text-gray-900",
-    // glass (dark)
-    "dark:bg-[var(--card)]/70 dark:backdrop-blur-sm dark:text-white",
+    // Dark: subtle premium gradient (NOT white) + glass blur
+    "dark:bg-gradient-to-br dark:from-[var(--card)]/85 dark:via-[var(--card)]/70 dark:to-black/30",
+    "dark:backdrop-blur-sm dark:text-white",
+    "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_12px_34px_rgba(0,0,0,0.48)]",
     // no border — depth via shadow
-    "shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_34px_rgba(0,0,0,0.48)]",
+    "shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
 ].join(" ");
 
 export const CARD_FRAME_INTERACTIVE = [
     "cursor-pointer select-none transition-all duration-200",
-    "active:scale-[0.99]",
+    // Press: a bit more noticeable
+    "active:scale-[0.985] active:translate-y-[1px]",
     "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
     "motion-reduce:transition-none motion-reduce:hover:transform-none",
 ].join(" ");
