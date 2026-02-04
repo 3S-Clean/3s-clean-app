@@ -69,10 +69,10 @@ export default function InsidePage() {
             <Header/>
             <main className="min-h-screen bg-[var(--background)] pt-[80px]">
                 {/* Hero */}
-                <section className="pt-[90px] sm:pt-[86px] pb-8 md:pt-20 md:pb-16">
+                <section className="pt-[90px] sm:pt-[86px] pb-5 md:pt-20 md:pb-7">
                     <div className={PAGE_CONTAINER}>
                         <div className={[CONTENT_GUTTER, "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
-                            <PageTitle className="mb-6">
+                            <PageTitle>
                                 3-S Story
                             </PageTitle>
                         </div>
@@ -143,7 +143,7 @@ export default function InsidePage() {
                                     </div>
                                     <h3 className="text-xl font-bold text-[var(--text)]">{problem.title}</h3>
                                 </div>
-                                <p className="text-[clamp(12px,1.6vw,15px)] text-[var(--muted)] leading-relaxed">{problem.description}</p>
+                                <p className="text-[clamp(13px,1.6vw,15px)] text-[var(--muted)] leading-relaxed">{problem.description}</p>
                             </div>
                         ))}
                     </div>
