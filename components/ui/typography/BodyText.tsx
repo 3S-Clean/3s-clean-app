@@ -12,7 +12,7 @@ export default function BodyText({
         <p
             className={[
                 "text-[var(--text)]",
-                "text-[clamp(15px,1.6vw,18px)]",
+                "text-[clamp(14px,1.6vw,17px)]",
                 "leading-[1.35]",
                 className,
             ].join(" ")}

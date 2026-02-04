@@ -12,7 +12,7 @@ export default function BodyMuted({
         <p
             className={[
                 "text-[var(--muted)]",
-                "text-[clamp(13px,1.6vw,15px)]",
+                "text-[clamp(13px,1.6vw,16px)]",
                 "leading-[1.35]",
                 className,
             ].join(" ")}
