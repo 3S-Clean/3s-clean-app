@@ -154,7 +154,7 @@ export default function FAQPage() {
                     <div className={PAGE_CONTAINER}>
                         <div className={cx(CONTENT_GUTTER, "flex flex-col gap-4")}>
                             <PageTitle className="md:hidden">{t("hero.titleMobile")}</PageTitle>
-                            <PageTitle className="hidden md:block">{t("hero.title")}</PageTitle>
+                            <PageTitle className="mb-6 hidden md:block">{t("hero.title")}</PageTitle>
                             <PageSubtitle>{t("hero.subtitle")}</PageSubtitle>
                         </div>
                     </div>

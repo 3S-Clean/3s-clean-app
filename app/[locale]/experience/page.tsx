@@ -103,7 +103,7 @@ export default function ExperiencePage() {
                 <section className="pt-10 pb-8 md:pt-16 md:pb-12">
                     <div className={PAGE_CONTAINER}>
                         <div className={CONTENT_GUTTER}>
-                            <PageTitle>{t("hero.title")}</PageTitle>
+                            <PageTitle className="mb-6">{t("hero.title")}</PageTitle>
                             <PageSubtitle>{t("hero.subtitle")}</PageSubtitle>
                         </div>
                     </div>

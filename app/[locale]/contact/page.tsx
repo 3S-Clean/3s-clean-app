@@ -38,7 +38,7 @@ export default function ContactPage() {
                     <div className={PAGE_CONTAINER}>
                         <div className={CONTENT_GUTTER}
                         >
-                            <PageTitle>How can we help?</PageTitle>
+                            <PageTitle className="mb-6">How can we help?</PageTitle>
                             <PageSubtitle>Personal consultation. Quick responses.</PageSubtitle>
                         </div>
                     </div>
