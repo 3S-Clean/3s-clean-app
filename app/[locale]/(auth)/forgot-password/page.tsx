@@ -2,13 +2,14 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validators";
-import { createClient } from "@/lib/supabase/client";
+import {useEffect, useMemo, useState} from "react";
+import {useRouter} from "next/navigation";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {forgotPasswordSchema, type ForgotPasswordValues} from "@/lib/validators";
+import {createClient} from "@/lib/supabase/client";
+import Link from "next/link";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 
@@ -20,10 +21,10 @@ export default function ForgotPasswordPage() {
         register,
         handleSubmit,
         watch,
-        formState: { errors, isSubmitting, isValid, submitCount },
+        formState: {errors, isSubmitting, isValid, submitCount},
     } = useForm<ForgotPasswordValues>({
         resolver: zodResolver(forgotPasswordSchema),
-        defaultValues: { email: "" },
+        defaultValues: {email: ""},
         mode: "onChange",
     });
 
@@ -41,16 +42,17 @@ export default function ForgotPasswordPage() {
 
         const cleanEmail = values.email.trim().toLowerCase();
 
-        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
+        const {error} = await supabase.auth.resetPasswordForEmail(cleanEmail);
 
         if (error) {
-            setStatus({ type: "error", msg: error.message });
+            setStatus({type: "error", msg: error.message});
             return;
         }
 
         try {
             localStorage.setItem("pendingResetEmail", cleanEmail);
-        } catch {}
+        } catch {
+        }
 
         router.replace("/verify-code?flow=recovery");
     };
@@ -64,7 +66,6 @@ export default function ForgotPasswordPage() {
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Enter your email and we’ll send you a verification code.
             </p>
-
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-[color:var(--muted)]">Email</label>
@@ -72,17 +73,20 @@ export default function ForgotPasswordPage() {
                         type="email"
                         placeholder="name@domain.com"
                         className={[
-                            "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
-                            "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                            "placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                            errors.email ? "border-red-400/70" : "",
+                            "w-full",
+                            CARD_FRAME_BASE,
+                            "rounded-2xl px-4 py-3.5 text-[15px]",
+                            "bg-transparent",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "outline-none transition-all duration-200",
+                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "active:scale-[0.99]",
+                            errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
                         {...register("email")}
                     />
                     {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
-
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
@@ -95,7 +99,6 @@ export default function ForgotPasswordPage() {
                 >
                     {isSubmitting ? "Sending…" : "Send code"}
                 </button>
-
                 {status && (
                     <p
                         className={[
@@ -109,9 +112,9 @@ export default function ForgotPasswordPage() {
 
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Back to{" "}
-                    <link className="text-[color:var(--text)] hover:underline" href="/login">
+                    <Link className="text-[color:var(--text)] hover:underline" href="/login">
                         Log in
-                    </link>
+                    </Link>
                 </p>
             </form>
         </div>
