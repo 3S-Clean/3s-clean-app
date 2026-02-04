@@ -15,7 +15,7 @@ import {PAGE_CONTAINER} from "@/components/ui/layout";
 export default function Header() {
     const pathname = usePathname();
 
-    // ✅ locale helpers
+    // ✅ locale helpers (чтобы /en/... считалось active для href "/experience")
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
     const pathnameNoLocale = hasLocale ? pathname.replace(`/${locale}`, "") || "/" : pathname;
@@ -24,10 +24,6 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-
-    // ✅ fast open + block interactions during animation
-    const [isMenuAnimating, setIsMenuAnimating] = useState(false);
-    const menuToggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const savedScrollYRef = useRef(0);
     const prevPathnameRef = useRef(pathname);
@@ -51,39 +47,9 @@ export default function Header() {
         return () => sub.subscription.unsubscribe();
     }, []);
 
-    const closeMenu = useCallback(() => {
-        if (isMenuAnimating) return;
-        setIsMenuAnimating(true);
-        setIsMenuOpen(false);
+    const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+    const toggleMenu = useCallback(() => setIsMenuOpen((v) => !v), []);
 
-        // оставляем короткую блокировку на время закрывающей анимации
-        menuToggleTimeoutRef.current = setTimeout(() => {
-            setIsMenuAnimating(false);
-        }, 150);
-    }, [isMenuAnimating]);
-
-    const toggleMenu = useCallback(() => {
-        if (isMenuAnimating) return;
-
-        if (isMenuOpen) {
-            closeMenu();
-        } else {
-            // ✅ максимально быстрое открытие
-            setIsMenuAnimating(true);
-            setIsMenuOpen(true);
-            menuToggleTimeoutRef.current = setTimeout(() => {
-                setIsMenuAnimating(false);
-            }, 10);
-        }
-    }, [isMenuOpen, isMenuAnimating, closeMenu]);
-
-    useEffect(() => {
-        return () => {
-            if (menuToggleTimeoutRef.current) clearTimeout(menuToggleTimeoutRef.current);
-        };
-    }, []);
-
-    // ✅ lock scroll + prevent click-through below (сохраняем прозрачность/blur)
     useEffect(() => {
         if (isMenuOpen) {
             savedScrollYRef.current = window.scrollY;
@@ -91,7 +57,7 @@ export default function Header() {
             document.body.style.top = `-${savedScrollYRef.current}px`;
             document.body.style.width = "100%";
             document.body.style.overflow = "hidden";
-        } else if (!isMenuAnimating) {
+        } else {
             document.body.style.position = "";
             document.body.style.top = "";
             document.body.style.width = "";
@@ -100,21 +66,19 @@ export default function Header() {
         }
 
         return () => {
-            if (!isMenuOpen) {
-                document.body.style.position = "";
-                document.body.style.top = "";
-                document.body.style.width = "";
-                document.body.style.overflow = "";
-            }
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.width = "";
+            document.body.style.overflow = "";
         };
-    }, [isMenuOpen, isMenuAnimating]);
+    }, [isMenuOpen]);
 
     useEffect(() => {
         if (prevPathnameRef.current === pathname) return;
         prevPathnameRef.current = pathname;
         if (!isMenuOpen) return;
-        queueMicrotask(() => closeMenu());
-    }, [pathname, isMenuOpen, closeMenu]);
+        queueMicrotask(() => setIsMenuOpen(false));
+    }, [pathname, isMenuOpen]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -124,15 +88,13 @@ export default function Header() {
         return () => window.removeEventListener("resize", handleResize);
     }, [closeMenu]);
 
+    // ✅ helper: active check on pathname WITHOUT locale
     const isActive = (href: string) => {
         if (href === "/") return pathnameNoLocale === "/";
         return pathnameNoLocale === href || pathnameNoLocale.startsWith(href + "/");
     };
 
     const accountHref = withLocale(isAuthenticated ? "/account" : "/signup");
-
-    // ✅ overlay кликабелен только когда полностью открыт
-    const overlayIsInteractive = isMenuOpen && !isMenuAnimating;
 
     return (
         <>
@@ -160,6 +122,7 @@ export default function Header() {
                             <Logo
                                 className="w-[48px] h-[48px] md:w-[48px] md:h-[48px] lg:w-[38px] lg:h-[38px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                         </Link>
+
                         <nav className="flex gap-6" aria-label="Main navigation">
                             {mainNav.map((item) => (
                                 <Link
@@ -234,7 +197,7 @@ export default function Header() {
                                 "bg-[rgba(255,255,255,0.25)] dark:bg-[rgba(0,0,0,0.3)]",
                                 "backdrop-blur-[20px] backdrop-saturate-[180%]",
                                 "webkit-backdrop",
-                                "android-header-scrolled",
+                                "android-header-scrolled", // fallback в css
                             ].join(" ")
                             : "",
                     ].join(" ")}
@@ -244,7 +207,6 @@ export default function Header() {
                         onClick={toggleMenu}
                         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={isMenuOpen}
-                        disabled={isMenuAnimating}
                     >
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
@@ -279,16 +241,12 @@ export default function Header() {
                     "opacity-0 invisible pointer-events-none",
                     "transition-[opacity,visibility] duration-[150ms]",
                     isMenuOpen ? "opacity-100 visible pointer-events-auto" : "",
-                    // ✅ сохраняем прозрачность + blur, но блокируем клики по странице снизу
                     "bg-[rgba(255,255,255,0)] dark:bg-[rgba(0,0,0,0.1)]",
                     "backdrop-blur-[50px] backdrop-saturate-[180%]",
                     "webkit-backdrop-strong",
                     "android-menu",
-                    // ✅ во время анимации не даём клики вообще (ни по overlay, ни “сквозь”)
-                    !overlayIsInteractive ? "pointer-events-none" : "",
                 ].join(" ")}
-                onClick={overlayIsInteractive ? closeMenu : undefined}
-                aria-hidden={!isMenuOpen}
+                onClick={closeMenu}
             >
                 <div
                     className={[
@@ -360,6 +318,7 @@ export default function Header() {
                                 >
                                     Sign Up
                                 </Link>
+
                                 <Link
                                     href={withLocale("/login")}
                                     onClick={closeMenu}
