@@ -48,7 +48,6 @@
       }
     }
   },
-
   "promise": {
     "hero": {
       "title": "3S-Clean Promise:"
@@ -111,7 +110,6 @@
       "button": "Get Started"
     }
   },
-
   "booking": {
     "serviceSelection": {
       "title": "Choose Your Experience",
@@ -126,7 +124,6 @@
       }
     }
   },
-
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
@@ -239,7 +236,6 @@
       ]
     }
   },
-
   "services": {
     "core": {
       "title": "CORE",
@@ -258,7 +254,6 @@
       "desc": "Specialized cleaning before moving in or handing over a property."
     }
   },
-
   "servicesIncludes": {
     "floors": {
       "name": "Floors",
@@ -289,22 +284,56 @@
       "desc": "Interior window cleaning where accessible."
     }
   },
-
   "extras": {
-    "linen-single": { "name": "Linen change", "unit": "single bed" },
-    "linen-double": { "name": "Linen change", "unit": "double bed" },
-    "oven": { "name": "Oven deep clean", "unit": "unit" },
-    "fridge": { "name": "Fridge deep clean", "unit": "unit" },
-    "freezer": { "name": "Freezer deep clean", "unit": "unit" },
-    "windows-inside": { "name": "Window cleaning", "unit": "m² glass (inside)" },
-    "windows-outside": { "name": "Window cleaning", "unit": "m² glass (outside)" },
-    "balcony": { "name": "Balcony / terrace cleaning", "unit": "10 m²" },
-    "limescale": { "name": "Intensive limescale removal", "unit": "30 min" },
-    "cupboards": { "name": "Cupboards / cabinets organization", "unit": "hour" },
-    "wardrobe": { "name": "Wardrobe arranging", "unit": "hour" },
-    "sofa": { "name": "Sofa upholstery vacuuming", "unit": "seat" }
+    "linen-single": {
+      "name": "Linen change",
+      "unit": "single bed"
+    },
+    "linen-double": {
+      "name": "Linen change",
+      "unit": "double bed"
+    },
+    "oven": {
+      "name": "Oven deep clean",
+      "unit": "unit"
+    },
+    "fridge": {
+      "name": "Fridge deep clean",
+      "unit": "unit"
+    },
+    "freezer": {
+      "name": "Freezer deep clean",
+      "unit": "unit"
+    },
+    "windows-inside": {
+      "name": "Window cleaning",
+      "unit": "m² glass (inside)"
+    },
+    "windows-outside": {
+      "name": "Window cleaning",
+      "unit": "m² glass (outside)"
+    },
+    "balcony": {
+      "name": "Balcony / terrace cleaning",
+      "unit": "10 m²"
+    },
+    "limescale": {
+      "name": "Intensive limescale removal",
+      "unit": "30 min"
+    },
+    "cupboards": {
+      "name": "Cupboards / cabinets organization",
+      "unit": "hour"
+    },
+    "wardrobe": {
+      "name": "Wardrobe arranging",
+      "unit": "hour"
+    },
+    "sofa": {
+      "name": "Sofa upholstery vacuuming",
+      "unit": "seat"
+    }
   },
-
   "bookingExtras": {
     "title": "Extra Services",
     "subtitle": "Add optional services to your cleaning.",
@@ -328,12 +357,10 @@
   "bookingDetails": {
     "title": "Apartment Details",
     "subtitle": "Help us understand your space for accurate pricing",
-
     "size": {
       "title": "Apartment Size *",
       "tip": "Tip: choose the size that best matches your usable living area."
     },
-
     "people": {
       "title": "People Living There *",
       "pricesInclPets": "Prices shown incl. pets",
@@ -341,7 +368,6 @@
       "pickSizeFirst": "Select an apartment size first.",
       "base": "Base"
     },
-
     "additional": {
       "title": "Additional Information",
       "pets": "Pets at home",
@@ -351,7 +377,6 @@
       "allergiesPlaceholder": "Please describe any allergies..."
     }
   },
-
   "bookingFooter": {
     "footer": {
       "back": "Back",
@@ -360,7 +385,6 @@
       "booking": "Booking...",
       "price": "€ {value}",
       "fromPrice": "From € {value}",
-
       "hint": {
         "service": "Select a service",
         "postcode": "Enter your PLZ",
@@ -374,7 +398,6 @@
         "pickSize": "Select apartment size",
         "pickPeople": "Select people"
       },
-
       "summary": {
         "pets": "pets",
         "noExtras": "No extras selected",
@@ -386,13 +409,11 @@
         "from": "From € {value}",
         "time": "~{time}"
       },
-
       "buttonHint": {
         "final": "Complete required fields"
       }
     }
   },
-
   "bookingSchedule": {
     "contactSchedule": {
       "hi": "Hi",
@@ -413,7 +434,15 @@
       "calendar": {
         "title": "Select Date & Time *",
         "subtitle": "~{hours}h cleaning. Must finish by {end}:00.",
-        "weekdays": ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+        "weekdays": [
+          "SUN",
+          "MON",
+          "TUE",
+          "WED",
+          "THU",
+          "FRI",
+          "SAT"
+        ]
       },
       "slots": {
         "title": "Available times for {date}",
@@ -465,10 +494,10 @@
       "createAccountToPay": "Create account to pay"
     }
   },
-
   "faqPage": {
     "hero": {
-      "title": "FAQs",
+      "title": "Frequently Asked Questions",
+      "titleMobile": "FAQ",
       "subtitle": "Everything you need to know"
     },
     "search": {
@@ -584,30 +613,24 @@
       }
     ]
   },
-
   "errors": {
     "requiredFields": "Please fill in all required contact details.",
     "createOrderFailed": "We couldn’t create the booking. Please try again.",
     "generic": "Something went wrong."
   },
-
   "postcode": {
     "postcodeCheck": {
       "title": "Check availability",
       "subtitle": "Enter your postal code to see if we currently serve your area.",
       "postcodePlaceholder": "Postal code",
       "checking": "Checking…",
-
       "availableTitle": "Available",
       "availableBody": "Great — we serve PLZ {postcode}. You can continue.",
-
       "unavailableTitle": "Not available",
       "unavailableBody": "We don’t serve PLZ {postcode} yet.",
-
       "emailPlaceholder": "Enter your email",
       "notifyCta": "Notify me",
       "notifyLoading": "Sending…",
-
       "notifiedTitle": "You’ll be notified",
       "notifiedBody": "We’ll email you when we expand to PLZ {postcode}."
     }

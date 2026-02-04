@@ -5,10 +5,8 @@ import {useTranslations} from "next-intl";
 import {useMemo} from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import BigTitle from "@/components/ui/typography/BigTitle";
-import SectionKicker from "@/components/ui/typography/SectionKicker";
-import BodyText from "@/components/ui/typography/BodyText";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
+import {CARD_FRAME_GHOST_ACTION} from "@/components/ui/card/CardFrame";
 
 /* -----------------------------
    Arrow
@@ -38,33 +36,74 @@ function Arrow({className = ""}: { className?: string }) {
     );
 }
 
-/* -----------------------------
-   Card base (same hover/touch feel everywhere)
------------------------------- */
-const cardBase =
-    [
-        "relative overflow-hidden rounded-3xl",
-        "transition-all duration-200",
-        "cursor-pointer select-none",
-        // base: no surface (so it doesn't look like a card by default)
-        "bg-transparent shadow-none",
-        "border border-transparent",
-        // hover (desktop): become a real card (same shadows as ServiceCard)
-        "hover:bg-white hover:text-gray-900",
-        "dark:hover:bg-[var(--card)]/70 dark:hover:backdrop-blur-sm dark:hover:text-white",
-        "hover:border-black/5 dark:hover:border-white/10",
-        "hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
-        "hover:-translate-y-1",
-        // tap (mobile): show it on press (because there's no hover)
-        "active:bg-white active:text-gray-900",
-        "dark:active:bg-[var(--card)]/70 dark:active:backdrop-blur-sm dark:active:text-white",
-        "active:border-black/5 dark:active:border-white/10",
-        "active:shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:active:shadow-[0_10px_30px_rgba(0,0,0,0.50)]",
-        "active:scale-[0.99]",
-        // accessibility
-        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
-        "motion-reduce:transition-none motion-reduce:hover:transform-none",
-    ].join(" ");
+function BigTitle({
+                      children,
+                      className = "",
+                  }: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <h3
+            className={[
+                "min-w-0",
+                "font-sans font-semibold tracking-[0em] text-[var(--text)]",
+                "text-[43px] leading-[4rem]",
+                "sm:text-[48px] sm:leading-[4rem]",
+                "md:text-[50px] md:leading-[3rem]",
+                "xl:text-[52px] xl:leading-[3rem]",
+                className,
+            ].join(" ")}
+        >
+            {children}
+        </h3>
+    );
+}
+
+function SectionKicker({
+                           children,
+                           className = "",
+                       }: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <p
+            className={[
+                "inline-block whitespace-nowrap",
+                "font-sans font-bold text-left text-[var(--text)] mb-6",
+                "tracking-[0.05em]",
+                "text-[23px] leading-[2.2rem]",
+                "sm:text-[26px] sm:leading-[2rem]",
+                "md:text-[29px] md:leading-[2rem]",
+                "xl:text-[32px] xl:leading-[3rem]",
+                className,
+            ].join(" ")}
+        >
+            {children}
+        </p>
+    );
+}
+
+function BodyText({
+                      children,
+                      className = "",
+                  }: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <p
+            className={[
+                "min-w-0 text-left text-[var(--text)]",
+                "text-[15px] leading-[1.2rem] md:text-lg",
+                className,
+            ].join(" ")}
+        >
+            {children}
+        </p>
+    );
+}
 
 /* -----------------------------
    HERO line splitting (desktop only)
@@ -124,11 +163,9 @@ export default function HomePageClient() {
             price: t(`experience.${id}.price`),
         }));
     }, [t]);
-
     return (
         <>
             <Header/>
-
             <main className="min-h-screen bg-[var(--background)] pt-[90px] sm:pt-[86px] overflow-x-hidden">
                 {/* =========================
             HERO
@@ -170,7 +207,6 @@ export default function HomePageClient() {
                                 </div>
                             ))}
                         </div>
-
                         {/* md+ (≥ 768px): 3 строки, тоже слева */}
                         <div className={`hidden md:block pb-10`}>
                             {desktopHeroLines.map((line, i) => (
@@ -220,16 +256,14 @@ export default function HomePageClient() {
                                         "
                                     style={{animationDelay: `${650 + index * 160}ms`}}
                                 >
-                                    <div
-                                        className={`
-                                                         ${cardBase}
-                                                            w-full min-w-0
-                                                    max-w-[440px] md:max-w-[460px]
-                                                    mr-auto
-                                                    xl:max-w-none
-                                                    py-9 sm:py-9 md:py-10 xl:py-6
-                                                    px-4 sm:px-5 md:px-6
-                                                `}
+                                    <div className={[
+                                        CARD_FRAME_GHOST_ACTION,
+                                        "w-full min-w-0",
+                                        "max-w-[440px] md:max-w-[460px] xl:max-w-[520px]",
+                                        "mr-auto",
+                                        "py-9 sm:py-9 md:py-10 xl:py-6",
+                                        "px-4 sm:px-5 md:px-6",
+                                    ].join(" ")}
                                     >
                                         {/* Title + Arrow рядом */}
                                         <div className="flex items-center gap-[17px] min-w-0 mb-5">
@@ -247,7 +281,6 @@ export default function HomePageClient() {
                         </div>
                     </div>
                 </section>
-
                 {/* =========================
             VIDEO
            ========================= */}
@@ -255,12 +288,11 @@ export default function HomePageClient() {
                     <div className={PAGE_CONTAINER + " xl:pt-20"}>
                         <div className={CONTENT_GUTTER}>
                             <SectionKicker>{t("video.kicker")}</SectionKicker>
-                            <h2 className="mt-2">
+                            <span className="mt-2">
                                 <BigTitle>{t("video.title")}</BigTitle>
-                            </h2>
+                            </span>
                         </div>
                     </div>
-
                     <div className="relative w-full h-[100svh] overflow-hidden">
                         <video autoPlay muted loop playsInline
                                className="absolute inset-0 w-full h-full object-cover object-center">
@@ -286,21 +318,19 @@ export default function HomePageClient() {
                         <div className="flex flex-col xl:grid xl:grid-cols-2 gap-y-6 xl:gap-y-8 gap-x-3 xl:gap-x-4">
                             {experience.map((it) => (
                                 <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
-                                    <div
-                                        className={`
-                                                ${cardBase}
-                                                w-full min-w-0
-                                                max-w-[440px] md:max-w-[460px] xl:max-w-[520px]
-                                                mr-auto
-                                                py-9 sm:py-9 md:py-10 xl:py-6
-                                                px-4 sm:px-5 md:px-6
-                                              `}
+                                    <div className={[
+                                        CARD_FRAME_GHOST_ACTION,
+                                        "w-full min-w-0",
+                                        "max-w-[440px] md:max-w-[460px] xl:max-w-[520px]",
+                                        "mr-auto",
+                                        "py-9 sm:py-9 md:py-10 xl:py-6",
+                                        "px-4 sm:px-5 md:px-6",
+                                    ].join(" ")}
                                     >
                                         <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-4 min-w-0">
                                             <BigTitle className="min-w-0">
                                                 {it.title}
                                             </BigTitle>
-
                                             <div/>
                                             <BodyText className="max-w-[340px]">
                                                 {it.desc}
@@ -320,7 +350,6 @@ export default function HomePageClient() {
                         </div>
                     </div>
                 </section>
-
                 {/* keyframes (global) */}
                 <style jsx global>{`
                     @keyframes heroIn {

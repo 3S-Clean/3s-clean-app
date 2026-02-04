@@ -48,7 +48,6 @@
       }
     }
   },
-
   "booking": {
     "serviceSelection": {
       "title": "Wähle deine Experience",
@@ -63,7 +62,6 @@
       }
     }
   },
-
   "definition": {
     "hero": {
       "title": "3S-Clean Versprechen:"
@@ -126,7 +124,6 @@
       "button": "Jetzt starten"
     }
   },
-
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
@@ -239,7 +236,6 @@
       ]
     }
   },
-
   "services": {
     "core": {
       "title": "CORE",
@@ -258,7 +254,6 @@
       "desc": "Spezielle Reinigung vor Ein- oder Auszug."
     }
   },
-
   "servicesIncludes": {
     "floors": {
       "name": "Böden",
@@ -289,22 +284,56 @@
       "desc": "Innenreinigung erreichbarer Fenster."
     }
   },
-
   "extras": {
-    "linen-single": { "name": "Bettwäsche wechseln", "unit": "Einzelbett" },
-    "linen-double": { "name": "Bettwäsche wechseln", "unit": "Doppelbett" },
-    "oven": { "name": "Backofen – Intensivreinigung", "unit": "Gerät" },
-    "fridge": { "name": "Kühlschrank – Intensivreinigung", "unit": "Gerät" },
-    "freezer": { "name": "Gefrierschrank – Intensivreinigung", "unit": "Gerät" },
-    "windows-inside": { "name": "Fensterreinigung", "unit": "m² Glas (innen)" },
-    "windows-outside": { "name": "Fensterreinigung", "unit": "m² Glas (außen)" },
-    "balcony": { "name": "Balkon/Terrasse – Reinigung", "unit": "10 m²" },
-    "limescale": { "name": "Intensive Kalkentfernung", "unit": "30 Min." },
-    "cupboards": { "name": "Schrank-/Küchenorganisation", "unit": "Stunde" },
-    "wardrobe": { "name": "Kleiderschrank ordnen", "unit": "Stunde" },
-    "sofa": { "name": "Polster – Staubsaugen", "unit": "Sitzplatz" }
+    "linen-single": {
+      "name": "Bettwäsche wechseln",
+      "unit": "Einzelbett"
+    },
+    "linen-double": {
+      "name": "Bettwäsche wechseln",
+      "unit": "Doppelbett"
+    },
+    "oven": {
+      "name": "Backofen – Intensivreinigung",
+      "unit": "Gerät"
+    },
+    "fridge": {
+      "name": "Kühlschrank – Intensivreinigung",
+      "unit": "Gerät"
+    },
+    "freezer": {
+      "name": "Gefrierschrank – Intensivreinigung",
+      "unit": "Gerät"
+    },
+    "windows-inside": {
+      "name": "Fensterreinigung",
+      "unit": "m² Glas (innen)"
+    },
+    "windows-outside": {
+      "name": "Fensterreinigung",
+      "unit": "m² Glas (außen)"
+    },
+    "balcony": {
+      "name": "Balkon/Terrasse – Reinigung",
+      "unit": "10 m²"
+    },
+    "limescale": {
+      "name": "Intensive Kalkentfernung",
+      "unit": "30 Min."
+    },
+    "cupboards": {
+      "name": "Schrank-/Küchenorganisation",
+      "unit": "Stunde"
+    },
+    "wardrobe": {
+      "name": "Kleiderschrank ordnen",
+      "unit": "Stunde"
+    },
+    "sofa": {
+      "name": "Polster – Staubsaugen",
+      "unit": "Sitzplatz"
+    }
   },
-
   "bookingExtras": {
     "title": "Zusatzleistungen",
     "subtitle": "Füge optionale Services zu deiner Reinigung hinzu.",
@@ -327,12 +356,10 @@
   "bookingDetails": {
     "title": "Wohnungsdetails",
     "subtitle": "Hilf uns, deine Wohnung für eine genaue Preisberechnung einzuschätzen",
-
     "size": {
       "title": "Wohnungsgröße *",
       "tip": "Tipp: Wähle die Größe, die deiner nutzbaren Wohnfläche am besten entspricht."
     },
-
     "people": {
       "title": "Personen im Haushalt *",
       "pricesInclPets": "Preise inkl. Haustiere",
@@ -340,7 +367,6 @@
       "pickSizeFirst": "Bitte zuerst die Wohnungsgröße auswählen.",
       "base": "Basis"
     },
-
     "additional": {
       "title": "Zusätzliche Informationen",
       "pets": "Haustiere im Haushalt",
@@ -358,7 +384,6 @@
       "booking": "Buchung...",
       "price": "€ {value}",
       "fromPrice": "Ab € {value}",
-
       "hint": {
         "service": "Service auswählen",
         "postcode": "PLZ eingeben",
@@ -367,13 +392,11 @@
         "contact": "Kontakt & Termin",
         "continue": "Weiter"
       },
-
       "sub": {
         "incVatTime": "inkl. MwSt. • ~{time}",
         "pickSize": "Wohnungsgröße auswählen",
         "pickPeople": "Personen auswählen"
       },
-
       "summary": {
         "pets": "Haustiere",
         "noExtras": "Keine Extras ausgewählt",
@@ -385,7 +408,6 @@
         "from": "Ab € {value}",
         "time": "~{time}"
       },
-
       "buttonHint": {
         "final": "Pflichtfelder ausfüllen"
       }
@@ -411,7 +433,15 @@
       "calendar": {
         "title": "Datum & Uhrzeit auswählen *",
         "subtitle": "ca. {hours}h Reinigung. Muss bis {end}:00 Uhr beendet sein.",
-        "weekdays": ["SO", "MO", "DI", "MI", "DO", "FR", "SA"]
+        "weekdays": [
+          "SO",
+          "MO",
+          "DI",
+          "MI",
+          "DO",
+          "FR",
+          "SA"
+        ]
       },
       "slots": {
         "title": "Verfügbare Zeiten für {date}",
@@ -463,10 +493,10 @@
       "createAccountToPay": "Konto erstellen & bezahlen"
     }
   },
-
   "faqPage": {
     "hero": {
       "title": "FAQs",
+      "titleMobile": "FAQ",
       "subtitle": "Alles, was du wissen musst"
     },
     "search": {
@@ -587,24 +617,19 @@
     "createOrderFailed": "Die Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "generic": "Etwas ist schiefgelaufen."
   },
-
   "postcode": {
     "postcodeCheck": {
       "title": "Verfügbarkeit prüfen",
       "subtitle": "Geben Sie Ihre Postleitzahl ein, um zu prüfen, ob wir in Ihrer Region verfügbar sind.",
       "postcodePlaceholder": "Postleitzahl",
       "checking": "Wird geprüft…",
-
       "availableTitle": "Verfügbar",
       "availableBody": "Super — wir sind in der PLZ {postcode} verfügbar. Sie können fortfahren.",
-
       "unavailableTitle": "Nicht verfügbar",
       "unavailableBody": "Leider sind wir in der PLZ {postcode} noch nicht verfügbar.",
-
       "emailPlaceholder": "E-Mail-Adresse eingeben",
       "notifyCta": "Benachrichtigen",
       "notifyLoading": "Wird gesendet…",
-
       "notifiedTitle": "Sie werden benachrichtigt",
       "notifiedBody": "Wir informieren Sie per E-Mail, sobald wir in der PLZ {postcode} verfügbar sind."
     }

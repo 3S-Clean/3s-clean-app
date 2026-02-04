@@ -1,5 +1,4 @@
-"use client";
-
+// components/ui/typography/BodyText.tsx
 import type React from "react";
 
 export default function BodyText({
@@ -12,8 +11,9 @@ export default function BodyText({
     return (
         <p
             className={[
-                "min-w-0 text-left text-[var(--text)]",
-                "text-[15px] leading-[1.2rem] md:text-lg",
+                "text-[var(--text)]",
+                "text-[clamp(15px,1.6vw,18px)]",
+                "leading-[1.35]",
                 className,
             ].join(" ")}
         >
