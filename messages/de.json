@@ -15,7 +15,7 @@
       },
       "souveran": {
         "title": "SOUVERÄN",
-        "desc": "Keine Freelancer. Festangestellte Mitarbeitende mit Fokus auf Qualität und Beständigkeit."
+        "desc": "Keine Freelancer. Festangestellte Mitarbeitende, denen Qualität und Beständigkeit wichtig sind."
       }
     },
     "video": {
@@ -29,22 +29,22 @@
       "core": {
         "title": "CORE",
         "desc": "Das essentielle Reinigungsprogramm, um Ihr Zuhause dauerhaft sauber und gepflegt zu halten",
-        "price": "Ab 120 € inkl. MwSt."
+        "price": "Ab 120 €"
       },
       "reset": {
         "title": "RESET",
         "desc": "Intensive Tiefenreinigung zur Auffrischung von Wohnungen mit starken Verschmutzungen nach längeren Reinigungspausen oder Veranstaltungen.",
-        "price": "Ab 200 € inkl. MwSt."
+        "price": "Ab 200 €"
       },
       "initial": {
         "title": "INITIAL",
         "desc": "Reinigung für Erstkund:innen, um ein dauerhaft gut haltbares Sauberkeitsniveau in normal gepflegten Wohnungen zu schaffen.",
-        "price": "Empfohlen ab 165 € inkl. MwSt."
+        "price": "Ab 165 €"
       },
       "handover": {
         "title": "HANDOVER",
         "desc": "Reinigung für den Einzug oder vor der Wohnungsübergabe an den Vermieter",
-        "price": "Ab 220 € inkl. MwSt."
+        "price": "Ab 220 €"
       }
     }
   },
@@ -59,7 +59,7 @@
     "sauber": {
       "title": "SAUBER",
       "subtitle": "– ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
-      "p1": "Wird ein Zuhause nicht regelmäßig gereinigt, sammeln sich Staub, Allergene und Unordnung an. Das erhöht gesundheitliche Risiken und mindert das Wohlbefinden. Das Leben in den eigenen vier Wänden wird stressig – ganz zu schweigen davon, Gäste einzuladen. Vielen Menschen fehlen dafür Zeit, Erfahrung oder Energie – wir verstehen das.",
+      "p1": "Wird ein Zuhause nicht regelmäßig gereinigt, sammeln sich Unordnung und Allergene an, die gesundheitlichen Risiken steigen — und der Raum fühlt sich einfach unwohl an. Das Leben in den eigenen vier Wänden wird stressig – ganz zu schweigen davon, Gäste einzuladen. Vielen Menschen fehlen dafür Zeit oder Energie – wir verstehen das.",
       "p2": "Genau hier kommen wir ins Spiel.",
       "p3": {
         "before": "Wir haben individuell abgestimmte Reinigungsprogramme",
@@ -71,9 +71,9 @@
       "title": "SICHER",
       "subtitle": "– Vertrauen, das Sie überprüfen können – nicht nur hoffen müssen.",
       "p1": {
-        "before": "Es kann sich unangenehm anfühlen, fremde Personen ins eigene Zuhause zu lassen – Vertrauen ist nichts Selbstverständliches, sondern muss verdient werden. Um Ihnen maximale Sicherheit zu bieten, nutzen wir",
+        "before": "Es kann stressig sein, fremde Personen ins eigene Zuhause zu lassen – Vertrauen ist nichts Selbstverständliches, sondern muss verdient werden. Um Ihnen maximale Sicherheit zu bieten, nutzen wir",
         "strong": "GoPro-Kameras, die unsere Mitarbeitenden während jeder Reinigung tragen",
-        "after": "– so können Sie die Reinigung per sicherem Livestream verfolgen oder den Video-Report innerhalb von 7 Tagen später ansehen."
+        "after": "– so können Sie die Reinigung über einen sicheren Link als Livestream verfolgen oder den Video-Report innerhalb von 7 Tagen später ansehen."
       },
       "p2": {
         "before": "So behalten Sie jederzeit die Kontrolle und wissen genau, was in Ihrem Zuhause passiert – auch wenn Sie während der Reinigung nicht anwesend sind. Sollte etwas unklar sein, sehen Sie sich einfach die Aufnahmen an – und",
@@ -183,7 +183,7 @@
         "windowsOutside": {
           "name": "Fensterreinigung – außen",
           "price": "4,40 € pro m² Glas",
-          "time": "+Minuten pro Standardfenster",
+          "time": "+15 Minuten pro Standardfenster",
           "frequency": "empfohlen alle 4–6 Monate"
         },
         "balcony": {
@@ -255,7 +255,7 @@
     "handover": {
       "title": "HANDOVER",
       "desc": "Reinigung für den Einzug oder vor der Wohnungsübergabe an den Vermieter",
-      "rule": "Wählen Sie HANDOVER für Ein-/Auszug oder Wohnungsübergaben, bei denen „sieht sauber aus“ nicht ausreicht."
+      "rule": "Wählen Sie HANDOVER für Ein-/Auszug oder Wohnungsübergaben, bei denen \u201Esieht sauber aus\u201C nicht ausreicht."
     }
   },
   "servicesIncludes": {
@@ -639,7 +639,7 @@
       },
       "notes": {
         "label": "Zusätzliche Hinweise",
-        "placeholder": "Zugang, Parkplatz, Besonderheiten …"
+        "placeholder": "Zugangshinweise, Parkplatz …"
       },
       "terms": {
         "prefix": "Ich habe die",
@@ -734,7 +734,7 @@
           },
           {
             "question": "Warum sind Ihre Preise höher als bei privaten Reinigungskräften?",
-            "answer": "Private Kräfte zahlen oft keine Steuern und haben meist keine Versicherung oder Haftungsdeckung. Wir bieten geschultes, geprüftes Personal, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfall. Sie zahlen für Stabilität und Sicherheit — nicht für Glück. Zusätzlich können Sie bis zu 20 % Ihrer Reinigungskosten nach §35a EStG steuerlich absetzen."
+            "answer": "Private Kräfte zahlen keine Steuern und haben in der Regel keine Versicherung oder Haftungsdeckung. Wir bieten geschultes, geprüftes Personal, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfall. Sie zahlen für Stabilität und Sicherheit — nicht für Glück. Zusätzlich können Sie bis zu 20 % Ihrer Reinigungskosten nach §35a EStG steuerlich absetzen."
           },
           {
             "question": "Bekomme ich eine Rechnung für die Steuerermäßigung (haushaltsnahe Dienstleistungen)?",
@@ -1015,7 +1015,7 @@
         }
       },
       "resources": {
-        "title": "Rechtliches",
+        "title": "Ressourcen",
         "links": {
           "impressum": "Impressum",
           "datenschutz": "Datenschutz",
@@ -1031,8 +1031,8 @@
     },
     "mission": {
       "title": "Home Cleaning neu definiert",
-      "lead": "Der Markt für Haushaltsreinigung wirkt oft stehengeblieben: Kund:innen fürchten Schäden ohne Aufsicht, Preise sind häufig intransparent und Reinigungskräfte werden zu oft wie austauschbare Arbeitskräfte behandelt.",
-      "cardTitle": "Deshalb ist 3S-Clean nicht dafür gemacht, einfach nur „zu konkurrieren“. Wir setzen einen neuen Standard.",
+      "lead": "Der Markt für Haushaltsreinigung scheint in der Vergangenheit steckengeblieben zu sein: Kund:innen befürchten, dass ohne Aufsicht etwas ernsthaft schiefgehen kann, Preise sind häufig intransparent und Reinigungskräfte werden zu oft wie austauschbare Arbeitskräfte behandelt.",
+      "cardTitle": "Deshalb ist 3S-Clean nicht dafür gemacht, einfach nur \u201Ezu konkurrieren\u201C. Wir setzen einen neuen Standard.",
       "cardBody": "3S-Clean ist ein Premium-Reinigungsservice, der auf einer einfachen Überzeugung basiert: Wenn Sie jemanden in Ihr Zuhause lassen, verdienen Sie Klarheit — bei Qualität, Sicherheit und Fairness. Und die Person, die die Leistung erbringt, verdient Respekt und Stabilität."
     },
     "story": {
@@ -1055,7 +1055,7 @@
       },
       {
         "title": "Unfaire Arbeitsbedingungen",
-        "description": "Viel Reinigung passiert in Grauzonen. Reinigungskräfte haben keine Sicherheit, Schwarzarbeit bedeutet keine Rente, keine saubere Absicherung, keine Stabilität. Das ist nicht „effizient“ — das ist kaputt. Unser Modell setzt auf echte Beschäftigung, Training und langfristige Würde — weil Qualität und Fairness zusammen skalieren."
+        "description": "Viel Reinigung passiert in Grauzonen. Reinigungskräfte haben keine Sicherheit, Schwarzarbeit bedeutet keine Rente, keine saubere Absicherung, keine Stabilität. Das ist nicht \u201Eeffizient\u201C \u2014 das ist kaputt. Unser Modell setzt auf echte Beschäftigung, Training und langfristige Würde — weil Qualität und Fairness zusammen skalieren."
       }
     ],
     "approachTitle": "Unser Ansatz",
@@ -1079,7 +1079,7 @@
     "benefits": [
       {
         "title": "Videodokumentation",
-        "description": "Sie können live zusehen oder später prüfen. Weniger Unsicherheit, messbare Qualität."
+        "description": "Sie können live zusehen oder später prüfen. Keine Unsicherheit und messbare Qualität."
       },
       {
         "title": "Leistungsumfang statt Stundenlogik",
