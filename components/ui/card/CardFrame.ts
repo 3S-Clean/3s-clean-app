@@ -4,14 +4,8 @@ export const CARD_FRAME_BASE = [
     "bg-[var(--card)] backdrop-blur-sm",
     "text-gray-900",
 
-    // Light: glass overlay WITHOUT top wash
-    "before:pointer-events-none before:absolute before:inset-0 before:content-['']",
-    "before:opacity-[0.95]",
-    "before:[background:radial-gradient(120%_90%_at_18%_0%,rgba(255,255,255,0.55)_0%,rgba(255,255,255,0)_60%)]",
-    "dark:before:opacity-0",
-
-    // Light: depth (mid/bottom)
-    "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.82),inset_0_18px_24px_rgba(255,255,255,0.22),inset_0_-220px_320px_rgba(0,0,0,0.095),0_8px_24px_rgba(0,0,0,0.08)]",
+    // ✅ Light: NO top glow. Only bottom-to-mid depth (clean + premium)
+    "[box-shadow:inset_0_-260px_380px_rgba(0,0,0,0.14),0_8px_24px_rgba(0,0,0,0.08)]",
 
     // Dark: subtle premium gradient (NOT white) + glass blur
     "dark:bg-gradient-to-br dark:from-[var(--card)]/85 dark:via-[var(--card)]/70 dark:to-black/30",
