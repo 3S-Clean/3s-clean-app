@@ -1,7 +1,9 @@
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
+import {useTranslations} from "next-intl";
 import {createClient} from "@/lib/supabase/client";
+import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
 
 type Profile = {
     id: string;
@@ -25,6 +27,7 @@ function getErrorMessage(e: unknown): string {
 }
 
 export default function PersonalInfoClient({email}: { email: string }) {
+    const t = useTranslations("account.personalInfo");
     const supabase = useMemo(() => createClient(), []);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -39,7 +42,7 @@ export default function PersonalInfoClient({email}: { email: string }) {
         address: "",
         city: "",
         postal_code: "",
-        country: "Germany",
+        country: t("defaults.country"),
     });
 
     const load = async () => {
@@ -51,7 +54,7 @@ export default function PersonalInfoClient({email}: { email: string }) {
             const user = u?.user;
 
             if (uErr || !user) {
-                setError("Not authenticated.");
+                setError(t("errors.notAuthenticated"));
                 setLoading(false);
                 return;
             }
@@ -78,7 +81,7 @@ export default function PersonalInfoClient({email}: { email: string }) {
                 address: p?.address ?? "",
                 city: p?.city ?? "",
                 postal_code: p?.postal_code ?? "",
-                country: p?.country ?? "Germany",
+                country: p?.country ?? t("defaults.country"),
             });
 
             setLoading(false);
@@ -104,42 +107,41 @@ export default function PersonalInfoClient({email}: { email: string }) {
             const user = u?.user;
 
             if (!user) {
-                setError("Not authenticated.");
+                setError(t("errors.notAuthenticated"));
                 setSaving(false);
                 return;
             }
 
-            // ✅ в профиле делаем как в booking: основные поля обязательны
             const first_name = form.first_name.trim();
             const last_name = form.last_name.trim();
             const phone = form.phone.trim();
             const address = form.address.trim();
             const city = form.city.trim();
             const postal_code = form.postal_code.trim();
-            const country = form.country.trim() || "Germany";
+            const country = form.country.trim() || t("defaults.country");
 
             if (!first_name || !last_name) {
-                setError("Please fill first name and last name.");
+                setError(t("errors.fillFirstLast"));
                 setSaving(false);
                 return;
             }
             if (!phone) {
-                setError("Please fill phone.");
+                setError(t("errors.fillPhone"));
                 setSaving(false);
                 return;
             }
             if (!address) {
-                setError("Please fill address.");
+                setError(t("errors.fillAddress"));
                 setSaving(false);
                 return;
             }
             if (!postal_code || postal_code.length !== 5) {
-                setError("Please fill a valid postal code (5 digits).");
+                setError(t("errors.invalidPostal"));
                 setSaving(false);
                 return;
             }
             if (!city) {
-                setError("Please fill city.");
+                setError(t("errors.fillCity"));
                 setSaving(false);
                 return;
             }
@@ -178,9 +180,8 @@ export default function PersonalInfoClient({email}: { email: string }) {
     if (loading) {
         return (
             <div>
-                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl text-center">Personal
-                    Information</h2>
-                <p className="mt-4 text-[var(--muted)] text-center">Loading…</p>
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl text-center">{t("title")}</h2>
+                <p className="mt-4 text-[var(--muted)] text-center">{t("loading")}</p>
             </div>
         );
     }
@@ -197,16 +198,18 @@ export default function PersonalInfoClient({email}: { email: string }) {
     return (
         <div>
             <div className="flex items-start justify-between gap-4">
-                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Personal Information</h2>
+                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">{t("title")}</h2>
+
                 {!editing && hasAny ? (
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
                         className="text-sm text-[var(--muted)] transition hover:text-[var(--text)]"
                     >
-                        Edit
+                        {t("actions.edit")}
                     </button>
                 ) : null}
+
                 {editing ? (
                     <button
                         type="button"
@@ -220,43 +223,44 @@ export default function PersonalInfoClient({email}: { email: string }) {
                                 address: profile?.address ?? "",
                                 city: profile?.city ?? "",
                                 postal_code: profile?.postal_code ?? "",
-                                country: profile?.country ?? "Germany",
+                                country: profile?.country ?? t("defaults.country"),
                             });
                         }}
                         className="text-sm text-[var(--muted)] transition hover:text-[var(--text)]"
                     >
-                        Cancel
+                        {t("actions.cancel")}
                     </button>
                 ) : null}
             </div>
 
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+
             {/* EMPTY STATE */}
             {!editing && !hasAny && (
                 <div
                     className="mt-6 rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-[var(--card)]/70 backdrop-blur p-5">
-                    <p className="text-[15px] font-medium text-[var(--text)]">Complete your profile</p>
-                    <p className="mt-1 text-sm text-[var(--muted)]">
-                        Add your details so booking is faster next time.
-                    </p>
+                    <p className="text-[15px] font-medium text-[var(--text)]">{t("empty.title")}</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">{t("empty.subtitle")}</p>
 
                     <div className="mt-4 text-sm text-[var(--muted)]">
-                        <span className="font-medium text-[var(--text)]">Email:</span> {email}
+                        <span className="font-medium text-[var(--text)]">{t("empty.emailLabel")}</span> {email}
                     </div>
 
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="mt-5 w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-+                                   bg-gray-900 text-white hover:bg-gray-800
-+                                   dark:bg-white dark:text-gray-900 dark:hover:bg-white/90"
+                        className={[
+                            "mt-5 w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                            "bg-gray-900 text-white hover:bg-gray-800",
+                            "dark:bg-white dark:text-gray-900 dark:hover:bg-white/90",
+                        ].join(" ")}
                     >
-                        Add details
+                        {t("empty.cta")}
                     </button>
                 </div>
             )}
 
-            {/* DISPLAY (только заполненные поля) */}
+            {/* DISPLAY (only filled fields) */}
             {!editing && hasAny && (
                 <div className="mt-6 space-y-2 text-[15px] text-[var(--muted)]">
                     {isFilled(profile?.first_name) || isFilled(profile?.last_name) ? (
@@ -266,7 +270,7 @@ export default function PersonalInfoClient({email}: { email: string }) {
                     ) : null}
 
                     {isFilled(profile?.phone) ? <p>{profile?.phone}</p> : null}
-                    {/* адрес строкой, без пустот */}
+
                     {isFilled(profile?.address) || isFilled(profile?.postal_code) || isFilled(profile?.city) ? (
                         <p>
                             {[profile?.address, [profile?.postal_code, profile?.city].filter((x) => isFilled(x)).join(" ")]
@@ -280,36 +284,45 @@ export default function PersonalInfoClient({email}: { email: string }) {
                     <p>{email}</p>
                 </div>
             )}
-            {/* EDIT FORM (все поля как booking) */}
+
+            {/* EDIT FORM */}
             {editing && (
                 <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Field label="First name" value={form.first_name}
+                    <Field label={t("fields.firstName")} value={form.first_name}
                            onChange={(v) => setForm({...form, first_name: v})}/>
-                    <Field label="Last name" value={form.last_name} onChange={(v) => setForm({...form, last_name: v})}/>
+                    <Field label={t("fields.lastName")} value={form.last_name}
+                           onChange={(v) => setForm({...form, last_name: v})}/>
 
-                    <Field label="Phone" value={form.phone} onChange={(v) => setForm({...form, phone: v})}/>
+                    <Field label={t("fields.phone")} value={form.phone} onChange={(v) => setForm({...form, phone: v})}/>
                     <Field
-                        label="Postal code"
+                        label={t("fields.postalCode")}
                         value={form.postal_code}
                         onChange={(v) => setForm({...form, postal_code: v.replace(/\D/g, "").slice(0, 5)})}
                         inputMode="numeric"
                     />
+
                     <div className="md:col-span-2">
-                        <Field label="Address" value={form.address} onChange={(v) => setForm({...form, address: v})}/>
+                        <Field label={t("fields.address")} value={form.address}
+                               onChange={(v) => setForm({...form, address: v})}/>
                     </div>
-                    <Field label="City" value={form.city} onChange={(v) => setForm({...form, city: v})}/>
-                    <Field label="Country" value={form.country} onChange={(v) => setForm({...form, country: v})}/>
+
+                    <Field label={t("fields.city")} value={form.city} onChange={(v) => setForm({...form, city: v})}/>
+                    <Field label={t("fields.country")} value={form.country}
+                           onChange={(v) => setForm({...form, country: v})}/>
+
                     <div className="md:col-span-2 mt-2">
                         <button
                             type="button"
                             onClick={onSave}
                             disabled={saving}
-                            className="w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-+                                       bg-gray-900 text-white hover:bg-gray-800
-+                                       dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-+                                       disabled:opacity-40 disabled:cursor-not-allowed"
+                            className={[
+                                "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                                "bg-gray-900 text-white hover:bg-gray-800",
+                                "dark:bg-white dark:text-gray-900 dark:hover:bg-white/90",
+                                "disabled:opacity-40 disabled:cursor-not-allowed",
+                            ].join(" ")}
                         >
-                            {saving ? "Saving…" : "Save changes"}
+                            {saving ? t("actions.saving") : t("actions.save")}
                         </button>
                     </div>
                 </div>
@@ -337,11 +350,14 @@ function Field({
                 inputMode={inputMode}
                 onChange={(e) => onChange(e.target.value)}
                 className={[
-                    "w-full rounded-2xl border backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
-                    "bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]",
-                    "placeholder:text-[var(--muted)]/70",
-                    "focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15 focus:border-black/20 dark:focus:border-white/20",
-                    "border-black/10 dark:border-white/10",
+                    "w-full",
+                    AUTH_CARD_BASE,
+                    "rounded-2xl px-4 py-3.5 text-[15px]",
+                    "bg-transparent",
+                    "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                    "outline-none transition-all duration-200",
+                    "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                    "active:scale-[0.99]",
                 ].join(" ")}
             />
         </div>

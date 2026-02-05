@@ -28,23 +28,23 @@
       "title": "",
       "core": {
         "title": "CORE",
-        "desc": "Regular cleaning on a weekly or bi-weekly basis to keep your home fresh and tidy.",
-        "price": "From €120"
+        "desc": "The essential cleaning program to keep your home consistently clean and presentable",
+        "price": "From € 120 including VAT"
       },
       "reset": {
         "title": "RESET",
-        "desc": "An intensive deep clean to reset your home after events or long gaps.",
-        "price": "From €200"
+        "desc": "An intensive deep cleaning to revitalize homes with heavy buildup from a long cleaning gap or after events.",
+        "price": "From € 200 including VAT"
       },
       "initial": {
         "title": "INITIAL",
-        "desc": "Recommended for first-time clients to establish a clean baseline.",
-        "price": "From €165"
+        "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition.",
+        "price": "From € 165 including VAT"
       },
       "handover": {
         "title": "HANDOVER",
-        "desc": "Specialized cleaning before moving in or handing over a property.",
-        "price": "From €220"
+        "desc": "Cleaning to make your home move-in ready or before handover to landlord",
+        "price": "From € 220 including VAT"
       }
     }
   },
@@ -127,7 +127,7 @@
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
-      "subtitle": "Choose the type of service that fits your home."
+      "subtitle": "Choose the type of service that best fits you and your home."
     },
     "cards": {
       "cta": "Select",
@@ -142,83 +142,83 @@
     },
     "optional": {
       "title": "Optional Services",
-      "subtitle": "Available at time of booking to complement each 3S-Clean Experience:",
+      "subtitle": "Extras available at time of booking to complete your 3S-Clean Experience:",
       "items": {
         "linenSingle": {
-          "name": "Linen change – single bed",
-          "price": "€7.50 per bed",
+          "name": "Linen change - single bed",
+          "price": "€ 7,50 per bed",
           "time": "add 10 minutes per bed",
           "frequency": "recommended every cleaning session"
         },
         "linenDouble": {
-          "name": "Linen change – double bed",
-          "price": "€14 per bed",
+          "name": "Linen change - double bed",
+          "price": "€ 14 per bed",
           "time": "add 15 minutes per bed",
           "frequency": "recommended every cleaning session"
         },
         "oven": {
           "name": "Oven heavy duty clean",
-          "price": "€100 per unit",
+          "price": "€ 100 per unit",
           "time": "add 2 hours",
-          "frequency": "recommended once in 4–6 months"
+          "frequency": "recommended once in 4-6 months"
         },
         "fridge": {
           "name": "Fridge heavy duty clean",
-          "price": "€50 per unit",
+          "price": "€ 50 per unit",
           "time": "add 1 hour",
-          "frequency": "recommended every 6 months"
+          "frequency": "recommended once every 6 months"
         },
         "freezer": {
           "name": "Freezer heavy duty clean",
-          "price": "€50 per unit",
+          "price": "€ 50 per unit",
           "time": "add 1 hour",
           "frequency": "recommended once a year"
         },
         "windowsInside": {
-          "name": "Window cleaning – inside",
-          "price": "€4.25 per m²",
-          "time": "add 15 minutes per window",
-          "frequency": "recommended every 4–6 months"
+          "name": "Window cleaning - inside",
+          "price": "€ 4,25 per m² of glass",
+          "time": "add 15 minutes per standard window",
+          "frequency": "recommended every 4-6 months"
         },
         "windowsOutside": {
-          "name": "Window cleaning – outside",
-          "price": "€4.40 per m²",
-          "time": "add time per window",
-          "frequency": "recommended every 4–6 months"
+          "name": "Window cleaning - outside",
+          "price": "€ 4,40 per m² of glass",
+          "time": "add minutes per standard window",
+          "frequency": "recommended every 4-6 months"
         },
         "balcony": {
-          "name": "Balcony / terrace pressure cleaning",
-          "price": "€5.25 per m²",
+          "name": "Balcony/terrace high pressure water cleaning",
+          "price": "€ 5,25 per m²",
           "time": "add 30 minutes per 5 m²",
-          "frequency": "recommended every 6 months"
+          "frequency": "recommended once every 6 months"
         },
         "limescale": {
           "name": "Intensive limescale removal",
-          "price": "€27 per 30 minutes",
+          "price": "€ 27 per half-hour block",
           "time": "",
-          "frequency": "recommended every 4–6 months"
+          "frequency": "recommended every 4-6 months"
         },
         "cupboards": {
-          "name": "Cupboards & cabinets organization",
-          "price": "€50 per hour",
+          "name": "Cupboards/cabinets organization",
+          "price": "€ 50 per hour",
           "time": "",
-          "frequency": "recommended every 6 months"
+          "frequency": "recommended once every 6 months"
         },
         "wardrobe": {
           "name": "Wardrobe arranging",
-          "price": "€50 per hour",
+          "price": "€ 50 per hour",
           "time": "",
           "frequency": "recommended once a month"
         },
         "upholstery": {
           "name": "Upholstery intensive clean",
-          "price": "€6.50 per seat",
-          "time": "add 20 minutes",
-          "frequency": "recommended every 2–3 months"
+          "price": "€ 6,50 per seat",
+          "time": "add 20 minutes per 3-seater sofa",
+          "frequency": "recommended every 2-3 months"
         },
         "handwash": {
-          "name": "Glasses / plates handwash",
-          "price": "€2 per item",
+          "name": "Glasses/plates handwash",
+          "price": "€ 2 per item",
           "time": "",
           "frequency": ""
         }
@@ -227,31 +227,31 @@
     "exclusions": {
       "title": "What we do not do:",
       "items": [
-        "Moving heavy furniture or cleaning behind fixed furniture.",
-        "Laundry and ironing.",
-        "Carpet shampooing.",
-        "Heavy renovation dirt, plaster or paint splashes.",
-        "Repairs, filling holes or patch-up painting.",
-        "Disposal of bulky waste."
+        "Moving heavy furniture or cleaning behind fixed furniture",
+        "Laundry and ironing",
+        "Carpet shampooing",
+        "Heavy renovation dirt, plaster, paint splashes",
+        "Repairs, filling holes, patch-up painting",
+        "Disposal of bulky waste"
       ]
     }
   },
   "services": {
     "core": {
       "title": "CORE",
-      "desc": "The essential cleaning program to keep your home consistently clean and presentable."
+      "desc": "The essential cleaning program to keep your home consistently clean and presentable"
     },
     "initial": {
       "title": "INITIAL",
-      "desc": "Recommended for first-time clients to establish a clean baseline."
+      "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition."
     },
     "reset": {
       "title": "RESET",
-      "desc": "An intensive deep clean to reset your home after events or long gaps."
+      "desc": "An intensive deep cleaning to revitalize homes with heavy buildup from a long cleaning gap or after events."
     },
     "handover": {
       "title": "HANDOVER",
-      "desc": "Specialized cleaning before moving in or handing over a property."
+      "desc": "Cleaning to make your home move-in ready or before handover to landlord"
     }
   },
   "servicesIncludes": {
@@ -1026,6 +1026,80 @@
       "errors": {
         "notAuthenticated": "Not authenticated.",
         "loadFailed": "We couldn’t load your orders."
+      }
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "loading": "Loading…",
+      "defaults": {
+        "country": "Germany"
+      },
+      "actions": {
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "save": "Save changes",
+        "saving": "Saving…"
+      },
+      "empty": {
+        "title": "Complete your profile",
+        "subtitle": "Add your details so booking is faster next time.",
+        "emailLabel": "Email:",
+        "cta": "Add details"
+      },
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "phone": "Phone",
+        "address": "Address",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country"
+      },
+      "errors": {
+        "notAuthenticated": "Not authenticated.",
+        "fillFirstLast": "Please fill first name and last name.",
+        "fillPhone": "Please fill phone.",
+        "fillAddress": "Please fill address.",
+        "fillCity": "Please fill city.",
+        "invalidPostal": "Please fill a valid postal code (5 digits)."
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "changePassword": {
+        "title": "Security",
+        "subtitle": "Change your password. Minimum 8 characters.",
+        "labels": {
+          "newPassword": "New password",
+          "confirmPassword": "Confirm password"
+        },
+        "placeholders": {
+          "password": "••••••••",
+          "confirm": "••••••••"
+        },
+        "cta": {
+          "default": "Change password",
+          "loading": "Updating..."
+        },
+        "success": "Password updated.",
+        "errors": {
+          "generic": "Password update failed"
+        }
+      },
+      "deleteAccount": {
+        "title": "Delete Account",
+        "subtitle": "Deleting your account is permanent. Orders will be kept for accounting, but personal data in orders will be anonymized.",
+        "cta": {
+          "open": "Delete account",
+          "cancel": "Cancel",
+          "confirm": "Confirm delete",
+          "deleting": "Deleting..."
+        },
+        "confirmHintPrefix": "Type",
+        "confirmHintSuffix": "to confirm.",
+        "errors": {
+          "generic": "Delete failed"
+        }
       }
     }
   }

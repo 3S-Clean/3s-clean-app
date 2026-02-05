@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import { useBookingStore } from "@/lib/booking/store";
-import { createClient } from "@/lib/supabase/client";
-import { isServiceAreaPostcode } from "@/lib/booking/guards";
-import { Check, X } from "lucide-react";
-import { z } from "zod";
+import {useEffect, useMemo, useState} from "react";
+import {useTranslations} from "next-intl";
+import {useBookingStore} from "@/lib/booking/store";
+import {createClient} from "@/lib/supabase/client";
+import {isServiceAreaPostcode} from "@/lib/booking/guards";
+import {Check, X} from "lucide-react";
+import {z} from "zod";
+import {AUTH_CARD_BASE, CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
 type Status = "idle" | "checking" | "available" | "unavailable" | "notified";
 type ProfileRow = { postal_code: string | null };
 
-const CheckPostcodeResponse = z.object({ available: z.boolean() });
-const NotifyResponse = z.object({ success: z.boolean() });
+const CheckPostcodeResponse = z.object({available: z.boolean()});
+const NotifyResponse = z.object({success: z.boolean()});
 
 function clean5(v: string) {
     return v.replace(/\D/g, "").slice(0, 5);
@@ -54,11 +55,11 @@ export default function PostcodeCheck() {
 
         (async () => {
             try {
-                const { data: u } = await supabase.auth.getUser();
+                const {data: u} = await supabase.auth.getUser();
                 const user = u?.user;
                 if (!user) return;
 
-                const { data } = await supabase
+                const {data} = await supabase
                     .from("profiles")
                     .select("postal_code")
                     .eq("id", user.id)
@@ -70,7 +71,7 @@ export default function PostcodeCheck() {
                 const v = (p?.postal_code || "").trim();
                 if (v) {
                     setPostcode(v);
-                    setFormData({ postalCode: v }); // sync in formData
+                    setFormData({postalCode: v}); // sync in formData
                 }
             } catch {
                 // silent
@@ -105,8 +106,8 @@ export default function PostcodeCheck() {
             try {
                 const res = await fetch("/api/booking/check-postcode", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ postcode }),
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({postcode}),
                 });
 
                 const raw = await res.json().catch(() => null);
@@ -143,15 +144,15 @@ export default function PostcodeCheck() {
         try {
             const res = await fetch("/api/booking/notify", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: notifyEmail.trim(), postcode }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email: notifyEmail.trim(), postcode}),
             });
 
             const raw = await res.json().catch(() => null);
             const parsed = NotifyResponse.safeParse(raw);
 
             if (!res.ok || !parsed.success || !parsed.data.success) {
-                console.error("notify failed", { status: res.status, raw });
+                console.error("notify failed", {status: res.status, raw});
                 return;
             }
 
@@ -161,36 +162,33 @@ export default function PostcodeCheck() {
         }
     };
 
-    // -------- UI tokens (glass) --------
-    const glassCard =
-        "w-full max-w-md mt-6 rounded-3xl " +
-        "bg-white/80 dark:bg-white/5 " +
-        "backdrop-blur-xl " +
-        "shadow-[0_16px_40px_rgba(0,0,0,0.10)] " +
-        "p-6";
-
-    const iconBubble =
-        "w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 " +
-        "bg-black/5 dark:bg-white/10";
-
-    const titleCls = "text-lg font-semibold mb-1 text-black dark:text-white";
-    const bodyCls = "text-black/60 dark:text-white/70";
-
+    // -------- UI (new design tokens) --------
     const inputCls = [
-        "w-full rounded-2xl px-4 py-3.5 text-[16px] outline-none transition",
-        "bg-white/60 dark:bg-white/5 backdrop-blur-xl",
+        "w-full",
+        AUTH_CARD_BASE,
+        "rounded-2xl px-4 py-3.5 text-[16px]",
+        "bg-transparent",
         "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-        "focus:ring-1 focus:ring-[var(--ring)]",
+        "outline-none transition-all duration-200",
+        "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+        "active:scale-[0.99]",
     ].join(" ");
+
+    const cardCls = [CARD_FRAME_BASE, "w-full max-w-md mt-6 p-6 text-left"].join(" ");
 
     const buttonCls = [
-        "mt-4 w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
+        "mt-4 w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
         "bg-gray-900 text-white dark:bg-white dark:text-gray-900",
+        "hover:opacity-90",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
     ].join(" ");
 
+    const iconBubble = "h-10 w-10 rounded-xl flex items-center justify-center bg-[var(--text)]/5 dark:bg-white/10";
+    const titleCls = "text-lg font-semibold text-[color:var(--text)]";
+    const bodyCls = "mt-1 text-sm text-[color:var(--muted)]";
+
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fadeIn">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
             <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
             <p className="text-[var(--muted)] mb-8 max-w-md">{t("subtitle")}</p>
 
@@ -206,7 +204,7 @@ export default function PostcodeCheck() {
                     setPlzAutofillDisabled(true);
 
                     setPostcode(v);
-                    setFormData({ postalCode: v });
+                    setFormData({postalCode: v});
 
                     if (v.length < 5) {
                         setStatus("idle");
@@ -222,49 +220,61 @@ export default function PostcodeCheck() {
             )}
 
             {status === "available" && (
-                <div className={glassCard}>
-                    <div className={iconBubble}>
-                        <Check className="w-6 h-6 text-black/70 dark:text-white/80" />
+                <div className={cardCls}>
+                    <div className="flex items-start gap-3">
+                        <div className={iconBubble}>
+                            <Check className="h-5 w-5 text-[color:var(--text)]"/>
+                        </div>
+                        <div>
+                            <div className={titleCls}>{t("availableTitle")}</div>
+                            <div className={bodyCls}>{t("availableBody", {postcode})}</div>
+                        </div>
                     </div>
-                    <div className={titleCls}>{t("availableTitle")}</div>
-                    <div className={bodyCls}>{t("availableBody", { postcode })}</div>
                 </div>
             )}
 
             {status === "unavailable" && (
-                <div className={glassCard}>
-                    <div className={iconBubble}>
-                        <X className="w-6 h-6 text-black/70 dark:text-white/80" />
+                <div className={cardCls}>
+                    <div className="flex items-start gap-3">
+                        <div className={iconBubble}>
+                            <X className="h-5 w-5 text-[color:var(--text)]"/>
+                        </div>
+                        <div className="w-full">
+                            <div className={titleCls}>{t("unavailableTitle")}</div>
+                            <div className={[bodyCls, "mb-4"].join(" ")}>{t("unavailableBody", {postcode})}</div>
+
+                            <input
+                                type="email"
+                                value={notifyEmail}
+                                onChange={(e) => setNotifyEmail(e.target.value)}
+                                placeholder={t("emailPlaceholder")}
+                                className={inputCls}
+                            />
+
+                            <button
+                                type="button"
+                                onClick={submitNotify}
+                                disabled={!canNotify || notifyLoading}
+                                className={buttonCls}
+                            >
+                                {notifyLoading ? t("notifyLoading") : t("notifyCta")}
+                            </button>
+                        </div>
                     </div>
-                    <div className={titleCls}>{t("unavailableTitle")}</div>
-                    <div className={`${bodyCls} mb-4`}>{t("unavailableBody", { postcode })}</div>
-
-                    <input
-                        type="email"
-                        value={notifyEmail}
-                        onChange={(e) => setNotifyEmail(e.target.value)}
-                        placeholder={t("emailPlaceholder")}
-                        className={inputCls}
-                    />
-
-                    <button
-                        type="button"
-                        onClick={submitNotify}
-                        disabled={!canNotify || notifyLoading}
-                        className={buttonCls}
-                    >
-                        {notifyLoading ? t("notifyLoading") : t("notifyCta")}
-                    </button>
                 </div>
             )}
 
             {status === "notified" && (
-                <div className={glassCard}>
-                    <div className={iconBubble}>
-                        <Check className="w-6 h-6 text-black/70 dark:text-white/80" />
+                <div className={cardCls}>
+                    <div className="flex items-start gap-3">
+                        <div className={iconBubble}>
+                            <Check className="h-5 w-5 text-[color:var(--text)]"/>
+                        </div>
+                        <div>
+                            <div className={titleCls}>{t("notifiedTitle")}</div>
+                            <div className={bodyCls}>{t("notifiedBody", {postcode})}</div>
+                        </div>
                     </div>
-                    <div className={titleCls}>{t("notifiedTitle")}</div>
-                    <div className={bodyCls}>{t("notifiedBody", { postcode })}</div>
                 </div>
             )}
         </div>

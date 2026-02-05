@@ -18,10 +18,7 @@ export default function LogoutButton({
 
         // ✅ разлогинить ВЕЗДЕ (все устройства/сессии)
         await supabase.auth.signOut({scope: "global"});
-
         setLoading(false);
-
-        // ✅ редирект в Webflow + сброс UI-флага
         window.location.href = "/";
     };
 
