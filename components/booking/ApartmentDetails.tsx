@@ -12,15 +12,15 @@ import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/components/ui/card/CardFrame"
 // light: dark ring
 // dark: light ring
 const SELECTED_CARD = [
-    "ring-1 ring-gray-900/25",
-    "dark:ring-white/25",
+    "border-2 border-gray-900/35",
+    "dark:border-white/35",
 ].join(" ");
+
+// ✅ Selected: same base + stronger border (no fill)
+const SELECTED_CARD_CLASS = [CARD_FRAME_ACTION, SELECTED_CARD].join(" ");
 
 // ✅ Base (not selected): use our standard clickable card base
 const BASE_CARD = CARD_FRAME_ACTION;
-
-// ✅ Selected: keep it clickable + our base rounding etc, but add ring
-const SELECTED_CARD_CLASS = [CARD_FRAME_ACTION, SELECTED_CARD].join(" ");
 
 // ✅ For checkbox rows (pets/kids/allergies) we want clickable card feel too
 const ROW_CARD_BASE = [

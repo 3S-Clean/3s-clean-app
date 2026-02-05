@@ -105,10 +105,10 @@ export default function ExtraServices() {
                             CARD_FRAME_BASE,
                             CARD_FRAME_INTERACTIVE,
                             "text-left w-full p-4 rounded-3xl",
-                            // ✅ only lift when NOT selected (selected should feel “solid”)
+                            "border-2 border-transparent",
                             !isSelected ? CARD_FRAME_HOVER_LIFT : "",
-                            // ✅ selected = border only (no fill)
-                            isSelected ? "ring-1 ring-gray-900/25 dark:ring-white/25" : "",
+                            // ✅ selected = border only (no fill) — stronger + always visible
+                            isSelected ? "border-2 border-gray-900/35 dark:border-white/35" : "",
                             // ✅ unselected keeps your card token; add a subtle hover ring only
                             !isSelected ? "hover:ring-1 hover:ring-[var(--text)]/10" : "",
                             // ✅ tiny active press
