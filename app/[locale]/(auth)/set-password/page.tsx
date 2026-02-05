@@ -139,7 +139,6 @@ export default function SetPasswordPage() {
                         "active:scale-[0.99]",
                     ].join(" ")}
                 />
-
                 <input
                     type="password"
                     placeholder={t("placeholders.confirm")}
@@ -156,7 +155,6 @@ export default function SetPasswordPage() {
                         "active:scale-[0.99]",
                     ].join(" ")}
                 />
-
                 <button
                     type="button"
                     onClick={submit}

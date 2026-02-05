@@ -748,6 +748,284 @@
       },
       "support": {
         "prefix": "If you have any issues, contact"
+      },
+      "resetPassword": {
+        "checking": {
+          "title": "Preparing reset…",
+          "subtitle": "Please wait."
+        },
+        "error": {
+          "title": "Reset failed",
+          "cta": {
+            "requestNew": "Request a new reset code",
+            "backToLogin": "Back to login"
+          }
+        },
+        "success": {
+          "title": "Password updated",
+          "fallback": "Done."
+        },
+        "form": {
+          "title": "Set new password",
+          "subtitle": "Choose a new password for your account.",
+          "labels": {
+            "password": "New password",
+            "confirm": "Confirm new password"
+          },
+          "placeholders": {
+            "confirm": "Repeat your password",
+            "password": "Minimum 8 characters"
+          },
+          "cta": {
+            "default": "Update password",
+            "loading": "Saving…"
+          },
+          "footer": {
+            "backTo": "Back to",
+            "login": "Log in"
+          }
+        },
+        "status": {
+          "updated": "Password updated. Please log in with your new password."
+        },
+        "errors": {
+          "flowNotActive": "This reset flow is not active. Please request a new reset code.",
+          "sessionMissingOrExpired": "Your reset session is missing or expired. Please request a new reset code."
+        }
+      }
+    }
+  },
+  "footer": {
+    "columns": {
+      "getStarted": {
+        "title": "Get Started",
+        "links": {
+          "experiences": "Experiences",
+          "booking": "Booking"
+        }
+      },
+      "explore": {
+        "title": "Explore",
+        "links": {
+          "promise": "Promise",
+          "story": "Story"
+        }
+      },
+      "support": {
+        "title": "Support",
+        "links": {
+          "faq": "FAQ",
+          "contact": "Contact"
+        }
+      },
+      "connect": {
+        "title": "Connect",
+        "links": {
+          "tiktok": "TikTok",
+          "youtube": "YouTube",
+          "instagram": "Instagram"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "links": {
+          "impressum": "Imprint",
+          "datenschutz": "Privacy",
+          "agb": "Terms"
+        }
+      }
+    },
+    "copyright": "© {year} 3S-Clean. All rights reserved."
+  },
+  "inside": {
+    "hero": {
+      "title": "3-S Story"
+    },
+    "mission": {
+      "title": "Home cleaning redefined",
+      "lead": "The home-cleaning market seems to be stuck in the past: clients fear something can go horribly wrong with their home without supervision, pricing is often a mystery, and cleaners too often get treated like disposable labor.",
+      "cardTitle": "That is why 3S-Clean is designed not to “compete.” We’re here to reset the standard.",
+      "cardBody": "3S-Clean is a premium cleaning service built on one simple belief: if you’re letting someone into your home, you deserve clarity—on quality, on safety, and on fairness. And the person performing the service deserves respect and security."
+    },
+    "story": {
+      "title": "The vision behind 3S",
+      "p1": "When one of the people behind the 3S-Clean concept moved to Germany in 2022, like many newcomers, he had to fight for stability: changing his life-long habits, building trust, making new connections, and becoming an active, contributing member in a new society.",
+      "p2": "What helped him stay grounded was something surprisingly simple: cleaning his own home. He enjoys the process—because it’s honest work, it shows results, and it restores control when everything else may feel uncertain. But to most people home cleaning is a black box: they do not have the time, do not know where to start, and are reluctant to hire help.",
+      "p3": "Home cleaning still remains a black box for most. But what if one could incorporate technology into the process and open it up? That is how the idea of 3S-Clean was conceived."
+    },
+    "fix": {
+      "title": "What we want to fix"
+    },
+    "problems": [
+      {
+        "title": "The visibility and accountability gap",
+        "description": "Most clients have no idea what happens during a cleaning unless they sit there and watch. That's not trust — it's blind faith. We introduced video documentation to solve the biggest trust problem in this industry. You can watch a live stream or review afterward. No guessing. No awkward questions and conversations."
+      },
+      {
+        "title": "The pricing mess",
+        "description": "Most cleaning service providers charge per hour, which sounds simple—until it isn't. Clients often feel like they end up paying for time, not value. We're moving away from vague time-based logic toward clearly defined work scopes, backed by proof and consistency—so pricing becomes understandable. And clients can also save on cleaning expenses: up to 20% through tax reduction according to §35a EStG."
+      },
+      {
+        "title": "Unfair working conditions",
+        "description": "A lot of cleaning happens in gray zones. Cleaners have no security, cash jobs mean no pensions, no proper medical coverage, no stability. That's not \"efficient\"—that is broken. Our model is built to support real employment, training, and long-term working dignity—because quality and fairness scale together."
+      }
+    ],
+    "approachTitle": "Our approach",
+    "approach": [
+      {
+        "title": "Sauber",
+        "description": "Clearly defined standards and consistent results"
+      },
+      {
+        "title": "Sicher",
+        "description": "Safety and liability, with transparent pricing"
+      },
+      {
+        "title": "Souverän",
+        "description": "Predictable delivery by people who feel secure in their job"
+      }
+    ],
+    "expect": {
+      "title": "What our clients can expect"
+    },
+    "benefits": [
+      {
+        "title": "Video documentation",
+        "description": "You can watch a live stream or review later. No uncertainty and measurable quality."
+      },
+      {
+        "title": "Scope-based service",
+        "description": "We focus on what gets done—not just how long someone was present—so pricing becomes understandable and fair."
+      },
+      {
+        "title": "Secure employment",
+        "description": "Our cleaners are officially employed, trained, and insured. We want people to do this work with dignity so that our clients can rely on consistency."
+      }
+    ],
+    "numbers": {
+      "title": "Numbers that matter"
+    },
+    "stats": [
+      {
+        "label": "Tax deduction",
+        "sublabel": "up to"
+      },
+      {
+        "label": "Liability insurance",
+        "sublabel": ""
+      },
+      {
+        "label": "Days video access",
+        "sublabel": "up to"
+      },
+      {
+        "label": "Free cancellation",
+        "sublabel": "before appointment"
+      }
+    ],
+    "coverage": {
+      "title": "We currently serve households across Stuttgart",
+      "body": "Enter your postal code during booking to confirm coverage instantly."
+    },
+    "cta": {
+      "title": "Ready for real transparency?",
+      "subtitle": "Experience what professional cleaning should be.",
+      "button": "Book a cleaning now"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "How can we help?",
+      "subtitle": "Personal consultation. Quick responses."
+    },
+    "availability": {
+      "title": "Availability",
+      "note": "Times may vary slightly on public holidays."
+    },
+    "hours": {
+      "monFri": "Mon – Fri",
+      "monFriTime": "08:00 – 18:00",
+      "sat": "Saturday",
+      "satTime": "09:00 – 14:00",
+      "sun": "Sunday",
+      "sunTime": "Closed",
+      "closed": "Closed"
+    },
+    "phone": {
+      "title": "Phone",
+      "body": "Direct consultation about cleanings, appointments, or individual questions."
+    },
+    "email": {
+      "title": "Email",
+      "body": "Inquiries, feedback, or report issues. Response within 24 hours."
+    },
+    "whatsapp": {
+      "title": "WhatsApp",
+      "body": "Fastest option for quick questions, schedule changes, or updates.",
+      "cta": "Start chat"
+    },
+    "business": {
+      "title": "Business",
+      "body": "Property management, Airbnb hosts, commercial properties, or long-term cooperation."
+    },
+    "instant": {
+      "title": "Instant Booking",
+      "subtitle": "Transparent pricing. Immediate confirmation.",
+      "cta": "Book a cleaning"
+    },
+    "privacyNote": "Your data is handled confidentially. No marketing. No data sharing."
+  },
+  "account": {
+    "title": "Account",
+    "logout": "Logout",
+    "greeting": {
+      "morning": "Good morning",
+      "day": "Hello",
+      "evening": "Good evening",
+      "night": "Good night"
+    },
+    "tabs": {
+      "personal": "Personal Information",
+      "live": "Live Cleaning Video",
+      "history": "Video History",
+      "orders": "Order History",
+      "settings": "Settings"
+    },
+    "content": {
+      "live": {
+        "title": "Live Cleaning Video",
+        "body": "..."
+      },
+      "history": {
+        "title": "Video History",
+        "body": "..."
+      }
+    },
+    "errors": {
+      "saveColor": "Could not save color. Please try again."
+    },
+    "orders": {
+      "title": "Order History",
+      "subtitle": "All your bookings appear here.",
+      "loading": "Loading…",
+      "meta": {
+        "people": "people"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "unknown": "—"
+      },
+      "empty": {
+        "body": "Your past orders will appear here.",
+        "cta": "Create your first booking"
+      },
+      "errors": {
+        "notAuthenticated": "Not authenticated.",
+        "loadFailed": "We couldn’t load your orders."
       }
     }
   }

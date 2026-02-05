@@ -5,7 +5,7 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
 import {createClient} from "@/lib/supabase/client";
 import {signupEmailSchema, type SignupEmailValues} from "@/lib/validators";
 import {useBookingStore} from "@/lib/booking/store";
@@ -97,69 +97,64 @@ export default function SignupClient() {
     return (
         <div className={[shouldShake ? "gc-shake" : "", "space-y-6"].filter(Boolean).join(" ")}>
             {/* main signup card content */}
-            <div>
-                <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">{t("title")}</h1>
-
-                <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">{t("subtitle")}</p>
-
-                <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-[color:var(--muted)]">{t("labels.email")}</label>
-                        <input
-                            type="email"
-                            placeholder={t("placeholders.email")}
-                            className={[
-                                "w-full",
-                                CARD_FRAME_BASE,
-                                "rounded-2xl px-4 py-3.5 text-[15px]",
-                                "bg-transparent",
-                                "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                                "outline-none transition-all duration-200",
-                                "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
-                                "active:scale-[0.99]",
-                                errors.email ? "ring-2 ring-red-400/50" : "",
-                            ].join(" ")}
-                            {...register("email")}
-                        />
-                        {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={!isValid || isSubmitting}
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">{t("title")}</h1>
+            <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">{t("subtitle")}</p>
+            <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-[color:var(--muted)]">{t("labels.email")}</label>
+                    <input
+                        type="email"
+                        placeholder={t("placeholders.email")}
                         className={[
-                            "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
-                            "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
-                            "hover:opacity-90",
-                            "disabled:opacity-40 disabled:cursor-not-allowed",
+                            "w-full",
+                            AUTH_CARD_BASE,
+                            "rounded-2xl px-4 py-3.5 text-[15px]",
+                            "bg-transparent",
+                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                            "outline-none transition-all duration-200",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "active:scale-[0.99]",
+                            errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
-                    >
-                        {isSubmitting ? t("cta.loading") : t("cta.default")}
-                    </button>
+                        {...register("email")}
+                    />
+                    {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
+                </div>
+                <button
+                    type="submit"
+                    disabled={!isValid || isSubmitting}
+                    className={[
+                        "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                        "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
+                        "hover:opacity-90",
+                        "disabled:opacity-40 disabled:cursor-not-allowed",
+                    ].join(" ")}
+                >
+                    {isSubmitting ? t("cta.loading") : t("cta.default")}
+                </button>
 
-                    {status && (
-                        <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
-                            {status.msg}
-                        </p>
-                    )}
-
-                    <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
-                        {t("footer.haveAccount")}{" "}
-                        <a
-                            className="text-[color:var(--text)] hover:underline cursor-pointer"
-                            href={
-                                pendingOrderToken
-                                    ? withLocale(`/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}`)
-                                    : withLocale("/login")
-                            }
-                        >
-                            {t("footer.login")}
-                        </a>
+                {status && (
+                    <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
+                        {status.msg}
                     </p>
-                </form>
-            </div>
+                )}
+                <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
+                    {t("footer.haveAccount")}{" "}
+                    <a
+                        className="text-[color:var(--text)] hover:underline cursor-pointer"
+                        href={
+                            pendingOrderToken
+                                ? withLocale(`/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}`)
+                                : withLocale("/login")
+                        }
+                    >
+                        {t("footer.login")}
+                    </a>
+                </p>
+            </form>
             {/* ✅ separate card UNDER the signup card */}
             {pendingOrderToken ? <BookingDetectedCard text={t("bookingDetected")}/> : null}
         </div>
+
     );
 }

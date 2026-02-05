@@ -9,7 +9,7 @@ import {loginSchema, type LoginValues} from "@/lib/validators";
 import {createClient} from "@/lib/supabase/client";
 import {useBookingStore} from "@/lib/booking/store";
 import Link from "next/link";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
 import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
 
 type Status = null | { type: "ok" | "error"; msg: string };
@@ -119,7 +119,7 @@ export default function LoginClient() {
                             placeholder={t("placeholders.email")}
                             className={[
                                 "w-full",
-                                CARD_FRAME_BASE,
+                                AUTH_CARD_BASE,
                                 "rounded-2xl px-4 py-3.5 text-[16px]",
                                 "bg-transparent",
                                 "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
@@ -139,7 +139,7 @@ export default function LoginClient() {
                             placeholder={t("placeholders.password")}
                             className={[
                                 "w-full",
-                                CARD_FRAME_BASE,
+                                AUTH_CARD_BASE,
                                 "rounded-2xl px-4 py-3.5 text-[16px]",
                                 "bg-transparent",
                                 "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",

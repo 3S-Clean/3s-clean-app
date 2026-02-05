@@ -6,7 +6,7 @@ import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
 import {forgotPasswordSchema, type ForgotPasswordValues} from "@/lib/validators";
 import {createClient} from "@/lib/supabase/client";
 import Link from "next/link";
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
                         placeholder="name@domain.com"
                         className={[
                             "w-full",
-                            CARD_FRAME_BASE,
+                            AUTH_CARD_BASE,
                             "rounded-2xl px-4 py-3.5 text-[15px]",
                             "bg-transparent",
                             "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",

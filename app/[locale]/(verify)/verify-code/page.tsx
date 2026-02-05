@@ -9,7 +9,6 @@ import {createClient} from "@/lib/supabase/client";
 import {useBookingStore} from "@/lib/booking/store";
 import {z} from "zod";
 import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 import OtpBoxes from "@/components/ui/auth/OtpBoxes";
 
 type Flow = "signup" | "recovery";
@@ -315,7 +314,6 @@ function VerifyCodeInner() {
             )}
           </span>
                     </div>
-
                     <button
                         type="button"
                         onClick={verify}
@@ -329,7 +327,6 @@ function VerifyCodeInner() {
                     >
                         {loading ? t("cta.verifying") : t("cta.verify")}
                     </button>
-
                     <button
                         type="button"
                         onClick={resend}
@@ -337,7 +334,6 @@ function VerifyCodeInner() {
                         className={[
                             "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
                             "bg-transparent",
-                            CARD_FRAME_BASE,
                             "text-[color:var(--text)]",
                             "hover:opacity-90",
                             "disabled:opacity-40 disabled:cursor-not-allowed",
@@ -369,7 +365,6 @@ function VerifyCodeInner() {
 
                 <p className="mt-10 text-sm text-[color:var(--muted)]">{t("footerHint")}</p>
             </div>
-
             {/* ✅ separate card UNDER the auth card */}
             {flow === "signup" && pendingOrderToken ? <BookingDetectedCard text={t("bookingDetected")}/> : null}
         </div>

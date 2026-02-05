@@ -1,5 +1,5 @@
 import type React from "react";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
 
 
 export default function BookingDetectedCard({
@@ -13,7 +13,7 @@ export default function BookingDetectedCard({
         <div
             className={[
                 "rounded-2xl px-4 py-3",
-                CARD_FRAME_BASE,
+                AUTH_CARD_BASE,
                 "bg-[var(--input-bg)]/60 backdrop-blur",
                 className,
             ].join(" ")}

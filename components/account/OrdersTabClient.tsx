@@ -2,7 +2,12 @@
 
 import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
+import {useTranslations} from "next-intl";
+import {usePathname} from "next/navigation";
 import {createClient} from "@/lib/supabase/client";
+import SectionTitle from "@/components/ui/typography/SectionTitle";
+import BodyText from "@/components/ui/typography/BodyText";
+import {CARD_FRAME_ACTION, CARD_FRAME_STATIC} from "@/components/ui/card/CardFrame";
 
 type OrderRow = {
     id: string;
@@ -17,9 +22,13 @@ type OrderRow = {
     created_at: string;
 };
 
-function formatDate(d: string) {
+function formatDate(d: string, locale: string) {
     const dt = new Date(d + "T00:00:00");
-    return dt.toLocaleDateString("en-GB", {
+
+    // next-intl locale: "en" | "de" → for Intl use "en-GB" or "de-DE"
+    const intlLocale = locale === "de" ? "de-DE" : "en-GB";
+
+    return dt.toLocaleDateString(intlLocale, {
         weekday: "short",
         day: "2-digit",
         month: "short",
@@ -39,34 +48,41 @@ function hours(v: number | string) {
     return `~${n}h`;
 }
 
-function statusLabel(s: string) {
+function statusKey(s: string) {
     switch (s) {
         case "pending":
-            return "Pending";
+            return "pending";
         case "confirmed":
-            return "Confirmed";
+            return "confirmed";
         case "in_progress":
-            return "In progress";
+            return "in_progress";
         case "completed":
-            return "Completed";
+            return "completed";
         case "cancelled":
-            return "Cancelled";
+            return "cancelled";
         default:
-            return s;
+            return "unknown";
     }
 }
 
-function OrderHistoryEmpty() {
+function OrderHistoryEmpty({bookingHref}: { bookingHref: string }) {
+    const t = useTranslations("account.orders");
     return (
         <div className="text-center">
-            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
-            <p className="mt-4 text-[var(--muted)]">Your past orders will appear here.</p>
+            <SectionTitle className="text-xl font-semibold text-[var(--text)] md:text-2xl">
+                {t("title")}
+            </SectionTitle>
+            <BodyText className="mt-4 text-[var(--muted)]">{t("empty.body")}</BodyText>
 
             <Link
-                href="/booking"
-                className="mt-6 inline-block px-6 py-3 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 transition"
+                href={bookingHref}
+                className={[
+                    "mt-6 inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition",
+                    "bg-gray-900 text-white hover:bg-gray-800",
+                    "dark:bg-white dark:text-gray-900 dark:hover:bg-white/90",
+                ].join(" ")}
             >
-                Create your first booking
+                {t("empty.cta")}
             </Link>
         </div>
     );
@@ -74,6 +90,14 @@ function OrderHistoryEmpty() {
 
 export default function OrdersTabClient() {
     const supabase = useMemo(() => createClient(), []);
+    const t = useTranslations("account.orders");
+    const pathname = usePathname();
+
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+    const localeSafe = hasLocale ? locale : "en";
+
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<OrderRow[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -88,7 +112,7 @@ export default function OrdersTabClient() {
             try {
                 const {data: u, error: uErr} = await supabase.auth.getUser();
                 if (uErr || !u?.user) {
-                    if (!cancelled) setError("Not authenticated.");
+                    if (!cancelled) setError(t("errors.notAuthenticated"));
                     if (!cancelled) setOrders([]);
                     return;
                 }
@@ -105,7 +129,7 @@ export default function OrdersTabClient() {
                 if (cancelled) return;
 
                 if (error) {
-                    setError("We couldn’t load your orders.");
+                    setError(t("errors.loadFailed"));
                     setOrders([]);
                     return;
                 }
@@ -120,13 +144,15 @@ export default function OrdersTabClient() {
         return () => {
             cancelled = true;
         };
-    }, [supabase]);
+    }, [supabase, t]);
 
     if (loading) {
         return (
             <div className="text-center">
-                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
-                <p className="mt-4 text-[var(--muted)]">Loading…</p>
+                <SectionTitle className="text-xl font-semibold text-[var(--text)] md:text-2xl">
+                    {t("title")}
+                </SectionTitle>
+                <BodyText className="mt-4 text-[var(--muted)]">{t("loading")}</BodyText>
             </div>
         );
     }
@@ -134,62 +160,67 @@ export default function OrdersTabClient() {
     if (error) {
         return (
             <div className="text-center">
-                <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
-                <p className="mt-4 text-[var(--muted)]">{error}</p>
+                <SectionTitle className="text-xl font-semibold text-[var(--text)] md:text-2xl">
+                    {t("title")}
+                </SectionTitle>
+                <BodyText className="mt-4 text-[var(--muted)]">{error}</BodyText>
             </div>
         );
     }
 
     if (orders.length === 0) {
-        return <OrderHistoryEmpty/>;
+        return <OrderHistoryEmpty bookingHref={withLocale("/booking")}/>;
     }
 
     return (
         <div>
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">Order History</h2>
-                    <p className="mt-1 text-[var(--muted)]">All your bookings appear here.</p>
+                    <SectionTitle className="text-xl font-semibold text-[var(--text)] md:text-2xl">
+                        {t("title")}
+                    </SectionTitle>
+                    <BodyText className="mt-1 text-[var(--muted)]">{t("subtitle")}</BodyText>
                 </div>
             </div>
+
             <div className="space-y-5">
                 {orders.map((o) => (
                     <Link
                         key={o.id}
-                        href={`/app/%5Blocale%5D/account/orders/${o.id}`}
-                        className="
-                            block rounded-3xl p-6 transition-colors
-            +                bg-gray-900 text-white hover:bg-gray-800
-            +                dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-            "
+                        href={withLocale(`/account/orders/${o.id}`)}
+                        className={[CARD_FRAME_ACTION, "block p-6"].join(" ")}
                     >
                         <div className="flex items-start justify-between gap-6">
                             {/* LEFT */}
                             <div>
-                                <div className="text-lg font-semibold capitalize">
+                                <div className="text-lg font-semibold capitalize text-[color:var(--text)]">
                                     {o.service_type}
                                 </div>
 
-                                <div className="mt-2 text-sm opacity-80">
-                                    {formatDate(o.scheduled_date)} • {o.scheduled_time} • {hours(o.estimated_hours)}
+                                <div className="mt-2 text-sm text-[color:var(--muted)]">
+                                    {formatDate(o.scheduled_date, localeSafe)} • {o.scheduled_time} • {hours(o.estimated_hours)}
                                 </div>
-                                <div className="mt-1 text-sm opacity-80">
-                                    {o.apartment_size} • {o.people_count} people
+
+                                <div className="mt-1 text-sm text-[color:var(--muted)]">
+                                    {o.apartment_size} • {o.people_count} {t("meta.people")}
                                 </div>
                             </div>
 
                             {/* RIGHT */}
                             <div className="text-right shrink-0">
-                                <div className="text-xl font-semibold">
-                                    {money(o.total_price)}
-                                </div>
-                                <div className="mt-1 text-sm opacity-75">
-                                    {statusLabel(o.status)}
+                                <div
+                                    className="text-xl font-semibold text-[color:var(--text)]">{money(o.total_price)}</div>
+                                <div className="mt-1 text-sm text-[color:var(--muted)]">
+                                    {t(`status.${statusKey(o.status)}`)}
                                 </div>
                             </div>
                         </div>
                     </Link>
                 ))}
+            </div>
+            {/* пример обычной НЕкликабельной карточки (если понадобится позже) */}
+            <div className="mt-6 hidden">
+                <div className={[CARD_FRAME_STATIC, "p-6"].join(" ")}>...</div>
             </div>
         </div>
     );

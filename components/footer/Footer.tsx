@@ -1,11 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import {footerColumns, legalLinks} from "@/lib/navigation/navigation";
+import {usePathname} from "next/navigation";
+import {useTranslations} from "next-intl";
+import {footerColumns} from "@/lib/navigation/navigation";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
+
+function isExternal(href: string) {
+    return href.startsWith("http://") || href.startsWith("https://");
+}
 
 export default function AccountFooter() {
     const currentYear = new Date().getFullYear();
+
+    const pathname = usePathname();
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+
+    // full keys in navigation -> no namespace needed
+    const t = useTranslations();
 
     return (
         <footer
@@ -27,12 +41,8 @@ export default function AccountFooter() {
               lg:flex lg:flex-row lg:gap-12
             "
                     >
-                        {/* Top row (3 columns) */}
                         {footerColumns.map((column) => (
-                            <div
-                                key={column.title}
-                                className="flex flex-col gap-2 lg:gap-3 md:col-span-2"
-                            >
+                            <div key={column.titleKey} className="flex flex-col gap-2 lg:gap-3 md:col-span-2">
                                 <h3
                                     className="
                     m-0 font-semibold
@@ -41,121 +51,37 @@ export default function AccountFooter() {
                     lg:text-[18px] lg:leading-[150%]
                   "
                                 >
-                                    {column.title}
+                                    {t(column.titleKey)}
                                 </h3>
 
                                 <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                                    {column.links.map((link) => (
-                                        <li key={link.href}>
-                                            <Link
-                                                href={link.href}
-                                                className="
-                          cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                          text-[13px] leading-[100%]
-                          text-black/90 dark:text-white/70
-                          lg:text-[15px] lg:leading-[130%]
-                        "
-                                            >
-                                                {link.label}
-                                            </Link>
-                                        </li>
-                                    ))}
+                                    {column.links.map((link) => {
+                                        const external = isExternal(link.href);
+                                        const href = external ? link.href : withLocale(link.href);
+
+                                        return (
+                                            <li key={link.href}>
+                                                <Link
+                                                    href={href}
+                                                    {...(external ? {
+                                                        target: "_blank",
+                                                        rel: "noopener noreferrer"
+                                                    } : {})}
+                                                    className="
+                            cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                            text-[13px] leading-[100%]
+                            text-black/90 dark:text-white/70
+                            lg:text-[15px] lg:leading-[130%]
+                          "
+                                                >
+                                                    {t(link.labelKey)}
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                             </div>
                         ))}
-
-                        {/* Bottom row (2 columns) */}
-                        <div className="flex flex-col gap-2 lg:gap-3 md:col-span-2">
-                            <h3
-                                className="
-                  m-0 font-semibold
-                  text-[16px] leading-[110%]
-                  text-black/90 dark:text-white/90
-                  lg:text-[18px] lg:leading-[150%]
-                "
-                            >
-                                Connect
-                            </h3>
-
-                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                                <li>
-                                    <Link
-                                        href="https://instagram.com/3s_clean.de"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="
-                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                      text-[13px] leading-[100%]
-                      text-black/90 dark:text-white/70
-                      lg:text-[15px] lg:leading-[130%]
-                    "
-                                    >
-                                        Instagram
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="https://youtube.com/@3sclean"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="
-                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                      text-[13px] leading-[100%]
-                      text-black/90 dark:text-white/70
-                      lg:text-[15px] lg:leading-[130%]
-                    "
-                                    >
-                                        YouTube
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        href="https://tiktok.com/@3sclean"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="
-                      cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                      text-[13px] leading-[100%]
-                      text-black/90 dark:text-white/70
-                      lg:text-[15px] lg:leading-[130%]
-                    "
-                                    >
-                                        TikTok
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div className="flex flex-col gap-2 lg:gap-3 md:col-span-2">
-                            <h3
-                                className="
-                  m-0 font-semibold
-                  text-[16px] leading-[110%]
-                  text-black/90 dark:text-white/90
-                  lg:text-[18px] lg:leading-[150%]
-                "
-                            >
-                                Resources
-                            </h3>
-
-                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                                {legalLinks.map((link) => (
-                                    <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="
-                        cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                        text-[13px] leading-[100%]
-                        text-black/90 dark:text-white/70
-                        lg:text-[15px] lg:leading-[130%]
-                      "
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
                     </div>
 
                     {/* Copyright */}
@@ -174,7 +100,7 @@ export default function AccountFooter() {
                 lg:text-[13px] lg:leading-[130%]
               "
                         >
-                            © {currentYear} 3S-Clean. All rights reserved.
+                            {t("footer.copyright", {year: currentYear})}
                         </p>
                     </div>
                 </div>

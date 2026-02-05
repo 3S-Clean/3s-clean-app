@@ -7,36 +7,45 @@ export const mainNav = [
     {label: "Contact", href: "/contact"},
 ];
 
-export type FooterLink = { label: string; href: string };
-export type FooterColumn = { title: string; links: FooterLink[] };
-export type LegalLink = { label: string; href: string };
+export type FooterLink = { labelKey: string; href: string };
+export type FooterColumn = { titleKey: string; links: FooterLink[] };
 
 export const footerColumns: FooterColumn[] = [
     {
-        title: "Get Started",
+        titleKey: "footer.columns.getStarted.title",
         links: [
-            {label: "Experiences", href: "/experience"},
-            {label: "Booking", href: "/booking"},
+            {labelKey: "footer.columns.getStarted.links.experiences", href: "/experience"},
+            {labelKey: "footer.columns.getStarted.links.booking", href: "/booking"},
         ],
     },
     {
-        title: "Explore",
+        titleKey: "footer.columns.explore.title",
         links: [
-            {label: "Promise", href: "/promise"},
-            {label: "Story", href: "/story"},
+            {labelKey: "footer.columns.explore.links.promise", href: "/promise"},
+            {labelKey: "footer.columns.explore.links.story", href: "/story"},
         ],
     },
     {
-        title: "Support",
+        titleKey: "footer.columns.support.title",
         links: [
-            {label: "FAQ", href: "/faq"},
-            {label: "Contact", href: "/contact"},
+            {labelKey: "footer.columns.support.links.faq", href: "/faq"},
+            {labelKey: "footer.columns.support.links.contact", href: "/contact"},
         ],
     },
-];
-
-export const legalLinks: LegalLink[] = [
-    {label: "Impressum", href: "/impressum"},
-    {label: "Datenschutz", href: "/datenschutz"},
-    {label: "AGB", href: "/agb"},
+    {
+        titleKey: "footer.columns.connect.title",
+        links: [
+            {labelKey: "footer.columns.connect.links.tiktok", href: "https://tiktok.com/@3sclean"},
+            {labelKey: "footer.columns.connect.links.youtube", href: "https://youtube.com/@3sclean"},
+            {labelKey: "footer.columns.connect.links.instagram", href: "https://instagram.com/3s_clean.de"},
+        ],
+    },
+    {
+        titleKey: "footer.columns.resources.title",
+        links: [
+            {labelKey: "footer.columns.resources.links.impressum", href: "/impressum"},
+            {labelKey: "footer.columns.resources.links.datenschutz", href: "/datenschutz"},
+            {labelKey: "footer.columns.resources.links.agb", href: "/agb"},
+        ],
+    },
 ];

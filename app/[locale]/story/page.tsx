@@ -1,3 +1,5 @@
+"use client";
+
 import {Check, Euro, Shield, Users, Video} from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
@@ -8,72 +10,54 @@ import SectionTitle from "@/components/ui/typography/SectionTitle";
 import BodyMuted from "@/components/ui/typography/BodyMuted";
 import PillCTA from "@/components/ui/buttons/PillCTA";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
+import {usePathname} from "next/navigation";
+import {useTranslations} from "next-intl";
 
-const problems = [
-    {
-        icon: Video,
-        title: "The visibility and accountability gap",
-        description:
-            "Most clients have no idea what happens during a cleaning unless they sit there and watch. That's not trust — it's blind faith. We introduced video documentation to solve the biggest trust problem in this industry. You can watch a live stream or review afterward. No guessing. No awkward questions and conversations.",
-    },
-    {
-        icon: Euro,
-        title: "The pricing mess",
-        description:
-            "Most cleaning service providers charge per hour, which sounds simple—until it isn't. Clients often feel like they end up paying for time, not value. We're moving away from vague time-based logic toward clearly defined work scopes, backed by proof and consistency—so pricing becomes understandable. And clients can also save on cleaning expenses: up to 20% through tax reduction according to §35a EStG.",
-    },
-    {
-        icon: Users,
-        title: "Unfair working conditions",
-        description:
-            'A lot of cleaning happens in gray zones. Cleaners have no security, cash jobs mean no pensions, no proper medical coverage, no stability. That\'s not "efficient"—that is broken. Our model is built to support real employment, training, and long-term working dignity—because quality and fairness scale together.',
-    },
-];
-
-const approach = [
-    {title: "Sauber", description: "Clearly defined standards and consistent results"},
-    {title: "Sicher", description: "Safety and liability, with transparent pricing"},
-    {title: "Souverän", description: "Predictable delivery by people who feel secure in their job"},
-];
-
-const clientBenefits = [
-    {
-        icon: Video,
-        title: "Video documentation",
-        description: "You can watch a live stream or review later. No uncertainty and measurable quality.",
-    },
-    {
-        icon: Check,
-        title: "Scope-based service",
-        description:
-            "We focus on what gets done—not just how long someone was present—so pricing becomes understandable and fair.",
-    },
-    {
-        icon: Shield,
-        title: "Secure employment",
-        description:
-            "Our cleaners are officially employed, trained, and insured. We want people to do this work with dignity so that our clients can rely on consistency.",
-    },
-];
-
-const stats = [
-    {value: "20%", label: "Tax deduction", sublabel: "up to"},
-    {value: "100%", label: "Liability insurance", sublabel: ""},
-    {value: "7", label: "Days video access", sublabel: "up to"},
-    {value: "24h", label: "Free cancellation", sublabel: "before appointment"},
-];
+const problemsIcons = [Video, Euro, Users] as const;
+const benefitIcons = [Video, Check, Shield] as const;
 
 export default function InsidePage() {
+    const t = useTranslations("inside");
+    const pathname = usePathname();
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+
+    const problems = [
+        {icon: problemsIcons[0], title: t("problems.0.title"), description: t("problems.0.description")},
+        {icon: problemsIcons[1], title: t("problems.1.title"), description: t("problems.1.description")},
+        {icon: problemsIcons[2], title: t("problems.2.title"), description: t("problems.2.description")},
+    ];
+
+    const approach = [
+        {title: t("approach.0.title"), description: t("approach.0.description")},
+        {title: t("approach.1.title"), description: t("approach.1.description")},
+        {title: t("approach.2.title"), description: t("approach.2.description")},
+    ];
+
+    const clientBenefits = [
+        {icon: benefitIcons[0], title: t("benefits.0.title"), description: t("benefits.0.description")},
+        {icon: benefitIcons[1], title: t("benefits.1.title"), description: t("benefits.1.description")},
+        {icon: benefitIcons[2], title: t("benefits.2.title"), description: t("benefits.2.description")},
+    ];
+
+    const stats = [
+        {value: "20%", label: t("stats.0.label"), sublabel: t("stats.0.sublabel")},
+        {value: "100%", label: t("stats.1.label"), sublabel: t("stats.1.sublabel")},
+        {value: "7", label: t("stats.2.label"), sublabel: t("stats.2.sublabel")},
+        {value: "24h", label: t("stats.3.label"), sublabel: t("stats.3.sublabel")},
+    ];
+
     return (
         <>
             <Header/>
-            <main className="min-h-screen bg-[var(--background)] pt-[80px]">
+            <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
                 {/* Hero */}
-                <section className="pt-[90px] sm:pt-[86px] pb-5 md:pt-20 md:pb-7">
+                <section className="pt-10 pb-8 md:pt-16 md:pb-12">
                     <div className={PAGE_CONTAINER}>
                         <div className={[CONTENT_GUTTER, "max-w-7xl xl:max-w-[1400px] mx-auto"].join(" ")}>
                             <PageTitle>
-                                3-S Story
+                                {t("hero.title")}
                             </PageTitle>
                         </div>
                     </div>
@@ -81,55 +65,41 @@ export default function InsidePage() {
                 {/* Mission Statement */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle>
-                        Home cleaning redefined
+                        {t("mission.title")}
                     </SectionTitle>
                     <BodyText className="mb-8 mt-6">
-                        The home-cleaning market seems to be stuck in the past: clients fear something can go
-                        horribly wrong with their home without supervision, pricing is often a mystery, and
-                        cleaners too often get treated like disposable labor.
+                        {t("mission.lead")}
                     </BodyText>
                     <div className={[CARD_FRAME_BASE, "p-8 md:p-12"].join(" ")}>
                         <SectionTitle className="mb-6">
-                            That is why 3S-Clean is designed not to &#34;compete.&#34; We&#39;re here to reset the
-                            standard.
+                            {t("mission.cardTitle")}
                         </SectionTitle>
                         <BodyText className="text-lg leading-relaxed opacity-80">
-                            3S-Clean is a premium cleaning service built on one simple belief: if you&#39;re letting
-                            someone into your home, you deserve clarity—on quality, on safety, and on fairness.
-                            And the person performing the service deserves respect and security.
+                            {t("mission.cardBody")}
                         </BodyText>
                     </div>
                 </section>
                 {/* The Story */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle className="mb-6">
-                        The vision behind 3S
+                        {t("story.title")}
                     </SectionTitle>
                     <div className="space-y-6 text-lg leading-relaxed text-[var(--muted)]">
                         <BodyText>
-                            When one of the people behind the 3S-Clean concept moved to Germany in 2022, like many
-                            newcomers, he had to fight for stability: changing his life-long habits, building
-                            trust, making new connections, and becoming an active, contributing member in a new
-                            society.
+                            {t("story.p1")}
                         </BodyText>
                         <BodyText>
-                            What helped him stay grounded was something surprisingly simple: cleaning his own
-                            home. He enjoys the process—because it&#39;s honest work, it shows results, and it
-                            restores control when everything else may feel uncertain. But to most people home
-                            cleaning is a black box: they do not have the time, do not know where to start, and
-                            are reluctant to hire help.
+                            {t("story.p2")}
                         </BodyText>
                         <BodyText>
-                            Home cleaning still remains a black box for most. But what if one could incorporate
-                            technology into the process and open it up? That is how the idea of 3S-Clean was
-                            conceived.
+                            {t("story.p3")}
                         </BodyText>
                     </div>
                 </section>
                 {/* What We Fix */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle className="mb-6">
-                        What we want to fix
+                        {t("fix.title")}
                     </SectionTitle>
                     <div className="space-y-4">
                         {problems.map((problem, index) => (
@@ -150,7 +120,7 @@ export default function InsidePage() {
                 </section>
                 {/* Our Approach - 3S */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
-                    <SectionTitle className="mb-6">Our approach</SectionTitle>
+                    <SectionTitle className="mb-6">{t("approachTitle")}</SectionTitle>
                     <div className="grid gap-4 md:grid-cols-3">
                         {approach.map((item, index) => (
                             <div
@@ -168,7 +138,7 @@ export default function InsidePage() {
                 {/* What Clients Can Expect */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle className="mb-6">
-                        What our clients can expect
+                        {t("expect.title")}
                     </SectionTitle>
                     <div className="space-y-4">
                         {clientBenefits.map((benefit, index) => (
@@ -193,7 +163,7 @@ export default function InsidePage() {
                 {/* Stats */}
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <SectionTitle className="mb-6">
-                        Numbers that matter
+                        {t("numbers.title")}
                     </SectionTitle>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {stats.map((stat, index) => (
@@ -216,10 +186,10 @@ export default function InsidePage() {
                 <section className="mx-auto max-w-4xl px-6 py-12 md:py-16">
                     <div className={[CARD_FRAME_BASE, "p-8 md:p-12"].join(" ")}>
                         <SectionTitle className="mb-4">
-                            We currently serve households across Stuttgart
+                            {t("coverage.title")}
                         </SectionTitle>
                         <BodyText className="text-lg opacity-80">
-                            Enter your postal code during booking to confirm coverage instantly.
+                            {t("coverage.body")}
                         </BodyText>
                     </div>
                 </section>
@@ -228,13 +198,13 @@ export default function InsidePage() {
                     <div className={PAGE_CONTAINER}>
                         <div className={CONTENT_GUTTER}>
                             <SectionTitle className="mb-4">
-                                Ready for real transparency?
+                                {t("cta.title")}
                             </SectionTitle>
                             <BodyMuted className="mb-8">
-                                Experience what professional cleaning should be.
+                                {t("cta.subtitle")}
                             </BodyMuted>
-                            <PillCTA href="/booking" className="mt-5">
-                                Book a cleaning now
+                            <PillCTA href={withLocale("/booking")} className="mt-5">
+                                {t("cta.button")}
                             </PillCTA>
                         </div>
                     </div>
