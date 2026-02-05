@@ -1,17 +1,17 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import {useCallback, useMemo} from "react";
+import {useTranslations} from "next-intl";
 
-import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES, type ServiceId } from "@/lib/booking/config";
+import {useBookingStore} from "@/lib/booking/store";
+import {type ServiceId, SERVICES} from "@/lib/booking/config";
 
 import ServiceCard from "@/components/booking/ServiceCard";
-import { InfoHelp } from "@/components/ui/infohelp/InfoHelp";
+import {InfoHelp} from "@/components/ui/infohelp/InfoHelp";
 
 /* ----------------------------- Tooltip ----------------------------- */
-function Tooltip({ text, title }: { text: string; title?: string }) {
-    return <InfoHelp text={text} title={title} />;
+function Tooltip({text, title}: { text: string; title?: string }) {
+    return <InfoHelp text={text} title={title}/>;
 }
 
 type IncludeUI = { name: string; desc?: string };
@@ -21,8 +21,13 @@ type ServiceUI = (typeof SERVICES)[number] & {
     includes: IncludeUI[];
 };
 
+type IncludeRaw = {
+    name: string;
+    desc?: string;
+};
+
 export default function ServiceSelection() {
-    const { selectedService, setSelectedService } = useBookingStore();
+    const {selectedService, setSelectedService} = useBookingStore();
 
     const t = useTranslations("booking.serviceSelection");
     const tServices = useTranslations("services");
@@ -35,13 +40,20 @@ export default function ServiceSelection() {
             const desc = tServices(`${s.id}.desc`);
 
             const includes = s.includesKeys.map((key) => {
-                const name = tIncludes(`${key}.name`);
-                const rawDesc = tIncludes(`${key}.desc`);
-                const desc = rawDesc?.trim() ? rawDesc : undefined;
-                return { name, desc };
+                const raw = tIncludes.raw(key) as
+                    | (Partial<Record<ServiceId, IncludeRaw>> & { core?: IncludeRaw })
+                    | undefined;
+
+                const picked = raw?.[s.id] ?? raw?.core;
+
+                const name = picked?.name ?? "";
+                const rawDesc = picked?.desc ?? "";
+                const desc = typeof rawDesc === "string" && rawDesc.trim() ? rawDesc : undefined;
+
+                return {name, desc};
             });
 
-            return { ...s, title, desc, includes };
+            return {...s, title, desc, includes};
         });
     }, [tServices, tIncludes]);
 

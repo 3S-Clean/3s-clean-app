@@ -39,7 +39,7 @@
       "initial": {
         "title": "INITIAL",
         "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition.",
-        "price": "From € 165 including VAT"
+        "price": "Recommended From € 165 including VAT"
       },
       "handover": {
         "title": "HANDOVER",
@@ -239,49 +239,235 @@
   "services": {
     "core": {
       "title": "CORE",
-      "desc": "The essential cleaning program to keep your home consistently clean and presentable"
+      "desc": "The essential cleaning program to keep your home consistently clean and presentable",
+      "rule": "Choose CORE if your home is in generally good shape and you want it to stay that way (recommended weekly or bi-weekly)."
     },
     "initial": {
       "title": "INITIAL",
-      "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition."
+      "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition.",
+      "rule": "Choose INITIAL if it's your first booking and your home is normally maintained (no heavy buildup)."
     },
     "reset": {
       "title": "RESET",
-      "desc": "An intensive deep cleaning to revitalize homes with heavy buildup from a long cleaning gap or after events."
+      "desc": "An intensive deep cleaning to revitalize homes with heavy buildup from a long cleaning gap or after events.",
+      "rule": "Choose RESET if there is visible buildup or proper cleaning has been neglected for an extended period."
     },
     "handover": {
       "title": "HANDOVER",
-      "desc": "Cleaning to make your home move-in ready or before handover to landlord"
+      "desc": "Cleaning to make your home move-in ready or before handover to landlord",
+      "rule": "Choose HANDOVER for move-in/move-out or landlord handover where \"looks clean\" isn't enough."
     }
   },
   "servicesIncludes": {
     "floors": {
-      "name": "Floors",
-      "desc": "Vacuuming and wet cleaning of all accessible floors."
+      "core": {
+        "name": "Floors",
+        "desc": "Vacuuming/sweeping and mopping of all accessible floors"
+      },
+      "initial": {
+        "name": "Floors",
+        "desc": "Vacuuming/sweeping and mopping of all accessible floors"
+      },
+      "reset": {
+        "name": "Floors",
+        "desc": "Spot removal of standard stains and edge/detail work where accessible using professional-grade detergent"
+      },
+      "handover": {
+        "name": "Floors",
+        "desc": "Spot removal of standard stains and edge/detail work where accessible using professional-grade detergent"
+      }
     },
     "surfaces": {
-      "name": "Visible surfaces",
-      "desc": "Dusting and wiping of all reachable surfaces."
+      "core": {
+        "name": "Furniture Surfaces",
+        "desc": "Dusting of visible surfaces"
+      },
+      "initial": {
+        "name": "Furniture Surfaces",
+        "desc": "Detailed wiping of baseboards, lamp shade, picture frames, radiators (where accessible), cupboard fronts using mild detergent where needed"
+      },
+      "reset": {
+        "name": "Furniture surfaces",
+        "desc": "Buildup removal on high-touch surfaces (grease/dust layers) incl. baseboards, radiators (where accessible), cupboard fronts, worktops, tables; professional-grade detergents where required"
+      },
+      "handover": {
+        "name": "Furniture surfaces",
+        "desc": "Buildup removal on high-touch surfaces (grease/dust layers) incl. baseboards, radiators (where accessible), cupboard fronts, worktops, tables; professional-grade detergents where required"
+      }
     },
     "bathroom": {
-      "name": "Bathroom",
-      "desc": "Sink, toilet, shower, bathtub and tiles."
+      "core": {
+        "name": "Bathroom & WC",
+        "desc": "Wet cleaning of sink, toilet, shower/bathtub, mirrors, fittings using mild detergents; light limescale removal"
+      },
+      "initial": {
+        "name": "Bathroom & WC",
+        "desc": "Limescale (normal household level) removal on taps, shower walls and tiles using professional-grade detergents"
+      },
+      "reset": {
+        "name": "Bathroom & WC",
+        "desc": "Intensive limescale removal and detailing around fittings/edges where safe and accessible"
+      },
+      "handover": {
+        "name": "Bathroom",
+        "desc": "Handover-grade descaling of fittings and tiles as far as standard methods allow (no disassembly)"
+      }
     },
     "kitchen": {
-      "name": "Kitchen",
-      "desc": "Countertops, sink, stovetop and exterior of appliances."
+      "core": {
+        "name": "Kitchen",
+        "desc": "Wet cleaning of countertops, stove top, sink, exterior of appliances, exterior of cupboards (spot cleaning where necessary) using mild detergents; loading/emptying of dishwasher"
+      },
+      "initial": {
+        "name": "Kitchen",
+        "desc": "Detailed wet cleaning of stove top, tiles/splash-back, cabinet fronts, extractor hood exterior with targeted degreasing where needed"
+      },
+      "reset": {
+        "name": "Kitchen",
+        "desc": "Intensive degreasing of stovetop area and grease-prone surfaces (extractor hood exterior, splash back, cabinet fronts) as far as standard methods allow"
+      },
+      "handover": {
+        "name": "Kitchen",
+        "desc": "Intensive degreasing of stovetop area and grease-prone surfaces (extractor hood exterior, splash back, cabinet fronts) as far as standard methods allow"
+      }
     },
     "limescale": {
-      "name": "Limescale removal",
-      "desc": "Targeted removal of visible limescale buildup."
+      "initial": {
+        "name": "Limescale removal",
+        "desc": "Limescale (normal household level) removal on taps, shower walls and tiles using professional-grade detergents"
+      },
+      "reset": {
+        "name": "Limescale removal",
+        "desc": "Intensive limescale removal and detailing around fittings/edges where safe and accessible"
+      },
+      "handover": {
+        "name": "Limescale removal",
+        "desc": "Handover-grade descaling of fittings and tiles as far as standard methods allow (no disassembly)"
+      }
     },
     "insideCupboards": {
-      "name": "Inside cupboards",
-      "desc": "Cleaning inside empty cupboards and cabinets."
+      "handover": {
+        "name": "Cupboards & Drawers",
+        "desc": "Wet cleaning inside of empty cupboards and drawers in kitchen, bathroom, pantry"
+      }
     },
     "windowsInside": {
-      "name": "Windows (inside)",
-      "desc": "Interior window cleaning where accessible."
+      "core": {
+        "name": "Windows",
+        "desc": "Dry dusting of sills and frames"
+      },
+      "initial": {
+        "name": "Windows",
+        "desc": "Wet wiping of sills and frames (no glass cleaning)"
+      },
+      "reset": {
+        "name": "Windows",
+        "desc": "Wet wiping of sills and frames (no glass cleaning)"
+      },
+      "handover": {
+        "name": "Windows",
+        "desc": "Basic cleaning of interior glass, frames and sills"
+      }
+    },
+    "doors": {
+      "core": {
+        "name": "Interior doors and switches",
+        "desc": "Dusting and quick removal of fingerprints"
+      },
+      "initial": {
+        "name": "Interior doors and switches",
+        "desc": "Dusting and quick removal of fingerprints"
+      },
+      "reset": {
+        "name": "Interior doors and switches",
+        "desc": "Dusting and quick removal of fingerprints"
+      },
+      "handover": {
+        "name": "Interior doors and switches",
+        "desc": "Wet wiping using professional-grade detergents"
+      }
+    },
+    "beds": {
+      "core": {
+        "name": "Beds",
+        "desc": "Making of beds (no linen change)"
+      },
+      "initial": {
+        "name": "Beds",
+        "desc": "Making of beds (no linen change)"
+      },
+      "reset": {
+        "name": "Beds",
+        "desc": "Making of beds (no linen change)"
+      },
+      "handover": {
+        "name": "Beds",
+        "desc": "Making of beds (no linen change)"
+      }
+    },
+    "trash": {
+      "core": {
+        "name": "Trash",
+        "desc": "Emptying, wiping and relining of bins"
+      },
+      "initial": {
+        "name": "Trash",
+        "desc": "Emptying, wiping and relining of bins"
+      },
+      "reset": {
+        "name": "Trash",
+        "desc": "Disposing of bottles, cans, and other light domestic garbage into building's containers"
+      },
+      "handover": {
+        "name": "Trash",
+        "desc": "Disposing of non-industrial garbage into building's containers (no bulky waste)"
+      }
+    },
+    "general": {
+      "core": {
+        "name": "General",
+        "desc": "Room airing; subtle, eco-friendly room scent (optional)"
+      },
+      "initial": {
+        "name": "General",
+        "desc": "Room airing; subtle, eco-friendly room scent (optional)"
+      },
+      "reset": {
+        "name": "General",
+        "desc": "Room airing; subtle, eco-friendly room scent (optional)"
+      },
+      "handover": {
+        "name": "General",
+        "desc": "Room airing; subtle, eco-friendly room scent (optional)"
+      }
+    },
+    "upholstery": {
+      "reset": {
+        "name": "Upholstery",
+        "desc": "Vacuuming of sofas/armchairs (surface only, no extraction)"
+      },
+      "handover": {
+        "name": "Upholstery",
+        "desc": "Vacuuming of sofas/armchairs (surface only, no extraction)"
+      }
+    },
+    "oven": {
+      "handover": {
+        "name": "Oven",
+        "desc": "Wet cleaning inside using professional-grade detergents as far as standard methods allow without disassembly"
+      }
+    },
+    "fridge": {
+      "handover": {
+        "name": "Fridge/Freezer",
+        "desc": "Wet cleaning inside empty appliances using professional-grade detergents (freezer defrosted by client in advance)"
+      }
+    },
+    "walls": {
+      "handover": {
+        "name": "Walls",
+        "desc": "Removal of visible dust and cobwebs on reachable areas (dry; no full wall washing)"
+      }
     }
   },
   "extras": {
@@ -434,6 +620,8 @@
       "calendar": {
         "title": "Select Date & Time *",
         "subtitle": "~{hours}h cleaning. Must finish by {end}:00.",
+        "prev": "Previous month",
+        "next": "Next month",
         "weekdays": [
           "SUN",
           "MON",

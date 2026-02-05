@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { useBookingStore } from "@/lib/booking/store";
-import {
-    EXTRAS,
-    HOLIDAYS,
-    TIME_SLOTS,
-    WORKING_HOURS_END,
-    getEstimatedHours,
-} from "@/lib/booking/config";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { isExtraId, isServiceId, isApartmentSizeId } from "@/lib/booking/guards";
+import {useEffect, useMemo, useState} from "react";
+import {useLocale, useTranslations} from "next-intl";
+import {useBookingStore} from "@/lib/booking/store";
+import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END,} from "@/lib/booking/config";
+import {ChevronLeft, ChevronRight, X} from "lucide-react";
+import {isApartmentSizeId, isExtraId, isServiceId} from "@/lib/booking/guards";
+import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE,} from "@/components/ui/card/CardFrame";
 
 type ExistingBookingRow = {
     scheduled_date: string; // YYYY-MM-DD
@@ -52,10 +47,10 @@ export default function ContactSchedule() {
 
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
-    // ✅ Terms UI only (wire to DB later)
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isTermsOpen, setIsTermsOpen] = useState(false);
-    // ---------- hours -> minutes (точно, типобезопасно) ----------
+
+    // ---------- hours -> minutes ----------
     const estimatedMinutes = useMemo(() => {
         const baseHours =
             isServiceId(selectedService) && isApartmentSizeId(apartmentSize)
@@ -71,7 +66,7 @@ export default function ContactSchedule() {
         return Math.max(0, Math.round((baseHours + extrasHours) * 60));
     }, [selectedService, apartmentSize, extras]);
 
-    // ---------- fetch existing bookings via API ----------
+    // ---------- fetch existing bookings ----------
     useEffect(() => {
         const controller = new AbortController();
 
@@ -84,8 +79,8 @@ export default function ContactSchedule() {
             try {
                 const res = await fetch("/api/booking/existing-bookings", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ startDate: start, endDate: end }),
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({startDate: start, endDate: end}),
                     signal: controller.signal,
                 });
 
@@ -114,7 +109,7 @@ export default function ContactSchedule() {
             const bStartMin = (bh || 0) * 60 + (bm || 0);
             const bEndMin = bStartMin + Math.round((Number(b.estimated_hours) || 0) * 60);
 
-            if (startMin < bEndMin && endMin > bStartMin) return false; // overlap
+            if (startMin < bEndMin && endMin > bStartMin) return false;
         }
 
         return true;
@@ -139,12 +134,40 @@ export default function ContactSchedule() {
         return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
     };
 
-    const monthLabel = currentMonth.toLocaleString(locale, { month: "long" });
+    const monthLabel = currentMonth.toLocaleString(locale, {month: "long"});
     const weekdays = t.raw("calendar.weekdays") as unknown as string[];
 
-    const primarySelected = "bg-gray-800 text-white dark:bg-white dark:text-gray-900";
-    const primaryBtn = "bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-white/90";
-    const disabledBtn = "opacity-35 cursor-not-allowed";
+    // ✅ primary style (same as Continue)
+    const PRIMARY_SOLID = "bg-gray-900 text-white dark:bg-white dark:text-gray-900";
+    const PRIMARY_HOVER = "hover:bg-gray-800 dark:hover:bg-white/90";
+    const DISABLED = "opacity-35 cursor-not-allowed";
+
+    // ✅ inputs same as your “visible” style
+    const INPUT = [
+        "w-full rounded-2xl border backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+        "bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]",
+        "placeholder:text-[var(--muted)]/70",
+        "focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15",
+        "focus:border-black/20 dark:focus:border-white/20",
+        "border-black/10 dark:border-white/10",
+    ].join(" ");
+
+    const TEXTAREA = [
+        "w-full rounded-2xl border backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
+        "bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]",
+        "placeholder:text-[var(--muted)]/70",
+        "focus:ring-2 focus:ring-black/10 dark:focus:ring-white/15",
+        "focus:border-black/20 dark:focus:border-white/20",
+        "border-black/10 dark:border-white/10",
+        "resize-y min-h-[110px]",
+    ].join(" ");
+
+    const ICON_BTN = [
+        CARD_FRAME_BASE,
+        CARD_FRAME_INTERACTIVE,
+        "p-2 rounded-full",
+        "hover:bg-[var(--card)]/60",
+    ].join(" ");
 
     return (
         <div className="animate-fadeIn">
@@ -152,9 +175,10 @@ export default function ContactSchedule() {
             <div className="mb-10">
                 {formData.firstName?.trim() ? (
                     <div className="text-md text-[var(--muted)] mb-2">
-                        {t("hiName", { name: formData.firstName.trim() })}
+                        {t("hiName", {name: formData.firstName.trim()})}
                     </div>
                 ) : null}
+
                 <h1 className="text-3xl font-semibold mb-3 text-[var(--text)]">{t("title")}</h1>
                 <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
@@ -162,36 +186,22 @@ export default function ContactSchedule() {
             {/* Contact Form */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">
-                        {t("form.firstName")}
-                    </label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.firstName")}</label>
                     <input
                         type="text"
                         value={formData.firstName}
-                        onChange={(e) => setFormData({ firstName: e.target.value })}
-                        className={[
-                            "w-full px-4 py-3 rounded-xl outline-none transition",
-                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
-                        ].join(" ")}
+                        onChange={(e) => setFormData({firstName: e.target.value})}
+                        className={INPUT}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">
-                        {t("form.lastName")}
-                    </label>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.lastName")}</label>
                     <input
                         type="text"
                         value={formData.lastName}
-                        onChange={(e) => setFormData({ lastName: e.target.value })}
-                        className={[
-                            "w-full px-4 py-3 rounded-xl outline-none transition",
-                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
-                        ].join(" ")}
+                        onChange={(e) => setFormData({lastName: e.target.value})}
+                        className={INPUT}
                     />
                 </div>
             </div>
@@ -201,13 +211,8 @@ export default function ContactSchedule() {
                 <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ email: e.target.value })}
-                    className={[
-                        "w-full px-4 py-3 rounded-xl outline-none transition",
-                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)]",
-                    ].join(" ")}
+                    onChange={(e) => setFormData({email: e.target.value})}
+                    className={INPUT}
                 />
             </div>
 
@@ -216,13 +221,8 @@ export default function ContactSchedule() {
                 <input
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ phone: e.target.value })}
-                    className={[
-                        "w-full px-4 py-3 rounded-xl outline-none transition",
-                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)]",
-                    ].join(" ")}
+                    onChange={(e) => setFormData({phone: e.target.value})}
+                    className={INPUT}
                 />
             </div>
 
@@ -231,14 +231,9 @@ export default function ContactSchedule() {
                 <input
                     type="text"
                     value={formData.address}
-                    onChange={(e) => setFormData({ address: e.target.value })}
+                    onChange={(e) => setFormData({address: e.target.value})}
                     placeholder={t("form.addressPlaceholder")}
-                    className={[
-                        "w-full px-4 py-3 rounded-xl outline-none transition",
-                        "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)]",
-                    ].join(" ")}
+                    className={INPUT}
                 />
             </div>
 
@@ -250,14 +245,9 @@ export default function ContactSchedule() {
                         type="text"
                         inputMode="numeric"
                         value={formData.postalCode ?? ""}
-                        onChange={(e) => setFormData({ postalCode: e.target.value.replace(/\D/g, "").slice(0, 5) })}
+                        onChange={(e) => setFormData({postalCode: e.target.value.replace(/\D/g, "").slice(0, 5)})}
                         placeholder="70173"
-                        className={[
-                            "w-full px-4 py-3 rounded-xl outline-none transition",
-                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
-                        ].join(" ")}
+                        className={INPUT}
                     />
                 </div>
 
@@ -266,14 +256,9 @@ export default function ContactSchedule() {
                     <input
                         type="text"
                         value={formData.city ?? ""}
-                        onChange={(e) => setFormData({ city: e.target.value })}
+                        onChange={(e) => setFormData({city: e.target.value})}
                         placeholder="Stuttgart"
-                        className={[
-                            "w-full px-4 py-3 rounded-xl outline-none transition",
-                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
-                        ].join(" ")}
+                        className={INPUT}
                     />
                 </div>
 
@@ -282,14 +267,9 @@ export default function ContactSchedule() {
                     <input
                         type="text"
                         value={formData.country ?? ""}
-                        onChange={(e) => setFormData({ country: e.target.value })}
+                        onChange={(e) => setFormData({country: e.target.value})}
                         placeholder="Germany"
-                        className={[
-                            "w-full px-4 py-3 rounded-xl outline-none transition",
-                            "bg-[var(--input-bg)] border border-[var(--input-border)]",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
-                        ].join(" ")}
+                        className={INPUT}
                     />
                 </div>
             </div>
@@ -304,14 +284,15 @@ export default function ContactSchedule() {
                     })}
                 </p>
 
-                <div className={["rounded-2xl p-6", "bg-[var(--card)]/70 backdrop-blur-md", "border border-black/10 dark:border-white/10"].join(" ")}>
+                <div className={[CARD_FRAME_BASE, "rounded-3xl p-6"].join(" ")}>
                     <div className="flex justify-between items-center mb-6">
                         <button
                             type="button"
                             onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
-                            className="p-2 rounded-full transition hover:bg-[var(--card)]/60"
+                            className={ICON_BTN}
+                            aria-label={t("calendar.prev")}
                         >
-                            <ChevronLeft className="w-5 h-5 text-[var(--muted)]" />
+                            <ChevronLeft className="w-5 h-5 text-[var(--muted)]"/>
                         </button>
 
                         <div className="text-lg text-[var(--text)]">
@@ -322,9 +303,10 @@ export default function ContactSchedule() {
                         <button
                             type="button"
                             onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
-                            className="p-2 rounded-full transition hover:bg-[var(--card)]/60"
+                            className={ICON_BTN}
+                            aria-label={t("calendar.next")}
                         >
-                            <ChevronRight className="w-5 h-5 text-[var(--muted)]" />
+                            <ChevronRight className="w-5 h-5 text-[var(--muted)]"/>
                         </button>
                     </div>
 
@@ -337,11 +319,11 @@ export default function ContactSchedule() {
                     </div>
 
                     <div className="grid grid-cols-7 gap-1">
-                        {Array.from({ length: firstDay }).map((_, i) => (
-                            <div key={`e${i}`} />
+                        {Array.from({length: firstDay}).map((_, i) => (
+                            <div key={`e${i}`}/>
                         ))}
 
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
+                        {Array.from({length: daysInMonth}).map((_, i) => {
                             const day = i + 1;
                             const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                             const date = new Date(year, month, day);
@@ -367,13 +349,14 @@ export default function ContactSchedule() {
                                         setSelectedTime(null);
                                     }}
                                     className={[
-                                        "aspect-square rounded-xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                                        "aspect-square rounded-2xl text-sm font-medium transition-all",
+                                        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
-                                            ? primarySelected
+                                            ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ")
                                             : disabled
-                                                ? `${disabledBtn} text-[var(--muted)]`
+                                                ? `${DISABLED} text-[var(--muted)] bg-[var(--card)]/40`
                                                 : "text-[var(--text)] hover:bg-[var(--card)]/60",
+                                        "active:scale-[0.99]",
                                     ].join(" ")}
                                 >
                                     {day}
@@ -397,9 +380,7 @@ export default function ContactSchedule() {
                         })}
                     </h3>
 
-                    <p className="text-sm text-[var(--muted)] mb-4">
-                        {t("slots.subtitle", { end: String(WORKING_HOURS_END) })}
-                    </p>
+                    <p className="text-sm text-[var(--muted)] mb-4">{t("slots.subtitle", {end: String(WORKING_HOURS_END)})}</p>
 
                     <div className="grid grid-cols-4 gap-2">
                         {TIME_SLOTS.map((slot) => {
@@ -413,13 +394,14 @@ export default function ContactSchedule() {
                                     onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
                                     disabled={!available}
                                     className={[
-                                        "py-2.5 rounded-xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                                        "py-2.5 rounded-2xl text-sm font-medium transition-all",
+                                        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
-                                            ? primarySelected
+                                            ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ")
                                             : available
-                                                ? "bg-[var(--card)]/70 backdrop-blur text-[var(--text)] hover:bg-[var(--card)]"
-                                                : `${disabledBtn} bg-[var(--card)]/40 text-[var(--muted)]`,
+                                                ? "text-[var(--text)] hover:bg-[var(--card)]/60"
+                                                : `${DISABLED} bg-[var(--card)]/40 text-[var(--muted)]`,
+                                        "active:scale-[0.99]",
                                     ].join(" ")}
                                 >
                                     {slot.label}
@@ -430,7 +412,7 @@ export default function ContactSchedule() {
 
                     {selectedTime && (
                         <p className="mt-4 text-sm font-medium text-[var(--text)]">
-                            ✓ {t("slots.scheduled", { start: selectedTime, end: getEndTime() })}
+                            ✓ {t("slots.scheduled", {start: selectedTime, end: getEndTime()})}
                         </p>
                     )}
                 </div>
@@ -441,39 +423,35 @@ export default function ContactSchedule() {
                 <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("notes.label")}</label>
                 <textarea
                     value={formData.notes}
-                    onChange={(e) => setFormData({ notes: e.target.value })}
+                    onChange={(e) => setFormData({notes: e.target.value})}
                     placeholder={t("notes.placeholder")}
-                    className={[
-                        "w-full px-4 py-3 rounded-xl resize-y min-h-[100px] outline-none transition",
-                        "bg-[var(--input-bg)] border border-[var(--input-border)] text-[color:var(--text)]",
-                        "placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)]",
-                    ].join(" ")}
+                    className={TEXTAREA}
                 />
             </div>
 
-            {/* ✅ Terms & Conditions */}
-            <div className={["rounded-2xl p-4", "bg-[var(--card)]/70 backdrop-blur-md", "border border-black/10 dark:border-white/10"].join(" ")}>
+            {/* ✅ Terms */}
+            <div className={[CARD_FRAME_BASE, "rounded-3xl p-4"].join(" ")}>
                 <label className="flex items-start gap-3 cursor-pointer">
-                    <span className="relative mt-1">
-                          <input
-                              type="checkbox"
-                              checked={acceptedTerms}
-                              onChange={(e) => setAcceptedTerms(e.target.checked)}
-                              className="sr-only"
-                          />
-                          <span
-                              className={[
-                                  "grid place-items-center w-5 h-5 rounded-full border transition",
-                                  acceptedTerms
-                                      ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                                      : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
-                              ].join(" ")}
-                              aria-hidden="true"
-                          >
-                            {acceptedTerms ? <CheckIcon /> : null}
-                          </span>
-                    </span>
+          <span className="relative mt-1">
+            <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="sr-only"
+            />
+            <span
+                className={[
+                    "grid place-items-center w-5 h-5 rounded-full border transition",
+                    acceptedTerms
+                        ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-white border-black/15 text-transparent dark:bg-[var(--card)]/70 dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {acceptedTerms ? <CheckIcon/> : null}
+            </span>
+          </span>
+
                     <div className="text-sm text-[var(--text)] leading-snug">
                         {t("terms.prefix")}{" "}
                         <button
@@ -498,15 +476,10 @@ export default function ContactSchedule() {
                     aria-modal="true"
                     onMouseDown={() => setIsTermsOpen(false)}
                 >
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"/>
 
                     <div
-                        className={[
-                            "relative w-full max-w-xl rounded-2xl p-5",
-                            "bg-[var(--background)]",
-                            "border border-black/10 dark:border-white/10",
-                            "shadow-[var(--shadow)]",
-                        ].join(" ")}
+                        className={[CARD_FRAME_BASE, "relative w-full max-w-xl rounded-3xl p-5"].join(" ")}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between gap-3 mb-3">
@@ -514,10 +487,10 @@ export default function ContactSchedule() {
                             <button
                                 type="button"
                                 onClick={() => setIsTermsOpen(false)}
-                                className="p-2 rounded-full hover:bg-[var(--card)]/60 transition"
+                                className={ICON_BTN}
                                 aria-label={t("terms.close")}
                             >
-                                <X className="w-5 h-5 text-[var(--muted)]" />
+                                <X className="w-5 h-5 text-[var(--muted)]"/>
                             </button>
                         </div>
 
@@ -546,10 +519,7 @@ export default function ContactSchedule() {
                                     setAcceptedTerms(true);
                                     setIsTermsOpen(false);
                                 }}
-                                className={[
-                                    "px-5 py-2.5 rounded-full font-semibold transition",
-                                    primaryBtn,
-                                ].join(" ")}
+                                className={["px-5 py-2.5 rounded-full font-semibold transition", PRIMARY_SOLID, PRIMARY_HOVER].join(" ")}
                             >
                                 {t("terms.accept")}
                             </button>

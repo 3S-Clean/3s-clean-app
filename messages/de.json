@@ -434,6 +434,8 @@
       "calendar": {
         "title": "Datum & Uhrzeit auswählen *",
         "subtitle": "~{hours} Std. Reinigung. Muss bis {end}:00 abgeschlossen sein.",
+        "prev": "Vorheriger Monat",
+        "next": "Nächster Monat",
         "weekdays": [
           "SO",
           "MO",

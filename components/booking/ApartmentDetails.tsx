@@ -1,21 +1,33 @@
 "use client";
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { useBookingStore } from "@/lib/booking/store";
-import { APARTMENT_SIZES, PEOPLE_OPTIONS, FINAL_PRICES } from "@/lib/booking/config";
-import type { ApartmentSizeId, PeopleCountId, ServiceId } from "@/lib/booking/config";
-import { isApartmentSizeId, isPeopleCountId, isServiceId } from "@/lib/booking/guards";
+import {useMemo} from "react";
+import {useTranslations} from "next-intl";
+import {useBookingStore} from "@/lib/booking/store";
+import type {ApartmentSizeId, PeopleCountId, ServiceId} from "@/lib/booking/config";
+import {APARTMENT_SIZES, FINAL_PRICES, PEOPLE_OPTIONS} from "@/lib/booking/config";
+import {isApartmentSizeId, isPeopleCountId, isServiceId} from "@/lib/booking/guards";
+import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/components/ui/card/CardFrame";
 
-// ✅ Selected: light = dark (not pure black), dark = white
-const SELECTED_CARD =
-    "bg-gray-800 text-white border border-black/10 hover:bg-gray-700 " +
-    "dark:bg-white dark:text-gray-900 dark:border-black/10 dark:hover:bg-white/90";
+// ✅ Selected state in our system:
+// light: dark card, white text
+// dark: white card, dark text
+const SELECTED_CARD = [
+    "bg-gray-900 text-white",
+    "dark:bg-white dark:text-gray-900",
+].join(" ");
 
-// ✅ Base: keep as before (light white, dark translucent)
-const BASE_CARD =
-    "bg-white text-gray-900 border border-black/10 hover:bg-black/[0.03] " +
-    "dark:bg-white/[0.06] dark:text-white dark:border-white/10 dark:hover:bg-white/[0.10]";
+// ✅ Base (not selected): use our standard clickable card base
+const BASE_CARD = CARD_FRAME_ACTION;
+
+// ✅ Selected: keep it clickable + our base rounding etc, but override bg/text
+const SELECTED_CARD_CLASS = [CARD_FRAME_ACTION, SELECTED_CARD].join(" ");
+
+// ✅ For checkbox rows (pets/kids/allergies) we want clickable card feel too
+const ROW_CARD_BASE = [
+    CARD_FRAME_ACTION,
+    "p-4 rounded-2xl",
+    "flex items-center justify-between",
+].join(" ");
 
 function CheckIcon() {
     return (
@@ -90,13 +102,13 @@ export default function ApartmentDetails() {
     return (
         <div className="animate-fadeIn">
             <div className="mb-10">
-                <h1 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">{t("title")}</h1>
-                <p className="text-sm text-gray-600 dark:text-white/60">{t("subtitle")}</p>
+                <h1 className="text-2xl font-semibold mb-2 text-[var(--text)]">{t("title")}</h1>
+                <p className="text-sm text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
             {/* Apartment Size */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">{t("size.title")}</h3>
+                <h3 className="text-base font-semibold mb-3 text-[var(--text)]">{t("size.title")}</h3>
 
                 <div className="grid grid-cols-2 gap-3">
                     {APARTMENT_SIZES.map((size) => {
@@ -120,11 +132,9 @@ export default function ApartmentDetails() {
                                     if (!peopleCount) setPeopleCount("1-2");
                                 }}
                                 className={[
-                                    "p-3.5 rounded-2xl text-center transition-all",
+                                    "p-3.5 rounded-2xl text-center",
+                                    isSelected ? SELECTED_CARD_CLASS : BASE_CARD,
                                     "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
-                                    // ✅ IMPORTANT: either base OR selected (no mixing)
-                                    isSelected ? SELECTED_CARD : BASE_CARD,
-                                    "active:scale-[0.99]",
                                 ].join(" ")}
                             >
                                 <div className="text-base font-semibold">{size.label}</div>
@@ -133,14 +143,14 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!sizeId && <div className="mt-3 text-xs text-gray-500 dark:text-white/50">{t("size.tip")}</div>}
+                {!sizeId && <div className="mt-3 text-xs text-[var(--muted)]">{t("size.tip")}</div>}
             </div>
 
             {/* People */}
             <div className="mb-8">
                 <div className="flex items-end justify-between gap-4 mb-3">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t("people.title")}</h3>
-                    <div className="text-xs text-gray-600 dark:text-white/55">
+                    <h3 className="text-base font-semibold text-[var(--text)]">{t("people.title")}</h3>
+                    <div className="text-xs text-[var(--muted)]">
                         {hasPets ? t("people.pricesInclPets") : t("people.pricesExclPets")}
                     </div>
                 </div>
@@ -159,12 +169,10 @@ export default function ApartmentDetails() {
                                 disabled={isDisabled}
                                 onClick={() => setPeopleCount(opt.id)}
                                 className={[
-                                    "p-3.5 rounded-2xl text-center transition-all",
+                                    "p-3.5 rounded-2xl text-center",
                                     "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
                                     isDisabled ? "opacity-40 cursor-not-allowed" : "",
-                                    // ✅ either base OR selected
-                                    isSelected ? SELECTED_CARD : BASE_CARD,
-                                    !isDisabled ? "active:scale-[0.99]" : "",
+                                    isSelected ? SELECTED_CARD_CLASS : BASE_CARD,
                                 ].join(" ")}
                             >
                                 <div className="text-base font-semibold">{opt.label}</div>
@@ -173,12 +181,11 @@ export default function ApartmentDetails() {
                                     <div
                                         className={[
                                             "text-[11px] mt-1",
-                                            // ✅ selected: light on dark bg; dark on white bg
                                             isSelected
                                                 ? "text-white/75 dark:text-gray-600"
                                                 : diff === t("people.base")
-                                                    ? "text-gray-600 dark:text-white/55"
-                                                    : "text-gray-900 dark:text-white font-medium",
+                                                    ? "text-[var(--muted)]"
+                                                    : "text-[color:var(--text)] font-medium",
                                         ].join(" ")}
                                     >
                                         {diff}
@@ -189,119 +196,100 @@ export default function ApartmentDetails() {
                     })}
                 </div>
 
-                {!sizeId && <div className="mt-3 text-xs text-gray-500 dark:text-white/50">{t("people.pickSizeFirst")}</div>}
+                {!sizeId && <div className="mt-3 text-xs text-[var(--muted)]">{t("people.pickSizeFirst")}</div>}
             </div>
 
             {/* Additional Info */}
             <div className="mb-8">
-                <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-white">{t("additional.title")}</h3>
+                <h3 className="text-base font-semibold mb-3 text-[var(--text)]">{t("additional.title")}</h3>
 
                 {/* Pets */}
-                <label
-                    className={[
-                        "flex items-center justify-between p-4 rounded-2xl mb-3 cursor-pointer transition-colors",
-                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
-                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
-                    ].join(" ")}
-                >
-                    <div>
-                        <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.pets")}</div>
+                <label className={[ROW_CARD_BASE, "mb-3"].join(" ")}>
+                    <div className="text-left">
+                        <div className="font-medium text-sm text-[var(--text)]">{t("additional.pets")}</div>
 
                         {petSurcharge > 0 && (
                             <div
                                 className={
                                     hasPets
-                                        ? "text-sm font-semibold text-gray-900 dark:text-white"
-                                        : "text-xs text-gray-600 dark:text-white/55"
+                                        ? "text-sm font-semibold text-[var(--text)]"
+                                        : "text-xs text-[var(--muted)]"
                                 }
                             >
-                                {hasPets ? `+€${petSurcharge.toFixed(2)}` : t("additional.petsAdds", { price: petSurcharge.toFixed(2) })}
+                                {hasPets ? `+€${petSurcharge.toFixed(2)}` : t("additional.petsAdds", {price: petSurcharge.toFixed(2)})}
                             </div>
                         )}
                     </div>
 
-                    {/* ✅ round checkbox + correct check colors */}
                     <span className="relative">
-            <input
-                type="checkbox"
-                checked={hasPets}
-                onChange={(e) => setHasPets(e.target.checked)}
-                className="sr-only"
-            />
-            <span
-                className={[
-                    "grid place-items-center w-6 h-6 rounded-full border transition",
-                    hasPets
-                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
-                ].join(" ")}
-                aria-hidden="true"
-            >
-              {hasPets ? <CheckIcon /> : null}
-            </span>
-          </span>
+                        <input
+                            type="checkbox"
+                            checked={hasPets}
+                            onChange={(e) => setHasPets(e.target.checked)}
+                            className="sr-only"
+                        />
+                        <span
+                            className={[
+                                "grid place-items-center w-6 h-6 rounded-full border transition",
+                                hasPets
+                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                            ].join(" ")}
+                            aria-hidden="true"
+                        >
+                            {hasPets ? <CheckIcon/> : null}
+                        </span>
+                    </span>
                 </label>
 
                 {/* Kids */}
-                <label
-                    className={[
-                        "flex items-center justify-between p-4 rounded-2xl mb-3 cursor-pointer transition-colors",
-                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
-                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
-                    ].join(" ")}
-                >
-                    <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.kids")}</div>
+                <label className={[ROW_CARD_BASE, "mb-3"].join(" ")}>
+                    <div className="font-medium text-sm text-[var(--text)] text-left">{t("additional.kids")}</div>
 
                     <span className="relative">
-            <input
-                type="checkbox"
-                checked={hasKids}
-                onChange={(e) => setHasKids(e.target.checked)}
-                className="sr-only"
-            />
-            <span
-                className={[
-                    "grid place-items-center w-6 h-6 rounded-full border transition",
-                    hasKids
-                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
-                ].join(" ")}
-                aria-hidden="true"
-            >
-              {hasKids ? <CheckIcon /> : null}
-            </span>
-          </span>
+                        <input
+                            type="checkbox"
+                            checked={hasKids}
+                            onChange={(e) => setHasKids(e.target.checked)}
+                            className="sr-only"
+                        />
+                        <span
+                            className={[
+                                "grid place-items-center w-6 h-6 rounded-full border transition",
+                                hasKids
+                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                            ].join(" ")}
+                            aria-hidden="true"
+                        >
+                            {hasKids ? <CheckIcon/> : null}
+                        </span>
+                    </span>
                 </label>
 
                 {/* Allergies */}
-                <label
-                    className={[
-                        "flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-colors",
-                        "bg-white border border-black/10 hover:ring-1 hover:ring-black/10",
-                        "dark:bg-white/[0.06] dark:border-white/10 dark:hover:ring-white/10",
-                    ].join(" ")}
-                >
-                    <div className="font-medium text-sm text-gray-900 dark:text-white">{t("additional.allergies")}</div>
+                <label className={ROW_CARD_BASE}>
+                    <div className="font-medium text-sm text-[var(--text)] text-left">{t("additional.allergies")}</div>
 
                     <span className="relative">
-            <input
-                type="checkbox"
-                checked={hasAllergies}
-                onChange={(e) => setHasAllergies(e.target.checked)}
-                className="sr-only"
-            />
-            <span
-                className={[
-                    "grid place-items-center w-6 h-6 rounded-full border transition",
-                    hasAllergies
-                        ? "bg-gray-800 border-gray-800 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                        : "bg-white border-black/15 text-transparent dark:bg-white/[0.06] dark:border-white/20 dark:text-transparent",
-                ].join(" ")}
-                aria-hidden="true"
-            >
-              {hasAllergies ? <CheckIcon /> : null}
-            </span>
-          </span>
+                        <input
+                            type="checkbox"
+                            checked={hasAllergies}
+                            onChange={(e) => setHasAllergies(e.target.checked)}
+                            className="sr-only"
+                        />
+                        <span
+                            className={[
+                                "grid place-items-center w-6 h-6 rounded-full border transition",
+                                hasAllergies
+                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                            ].join(" ")}
+                            aria-hidden="true"
+                        >
+                            {hasAllergies ? <CheckIcon/> : null}
+                        </span>
+                    </span>
                 </label>
 
                 {hasAllergies && (
@@ -311,11 +299,11 @@ export default function ApartmentDetails() {
                         placeholder={t("additional.allergiesPlaceholder")}
                         className={[
                             "w-full mt-3 px-4 py-3 rounded-xl resize-none text-sm outline-none transition",
-                            // light
-                            "bg-white border border-black/10 text-gray-900 placeholder:text-gray-500/70",
-                            // dark
-                            "dark:bg-white/[0.06] dark:border-white/10 dark:text-white dark:placeholder:text-white/40",
-                            "focus:ring-2 focus:ring-[var(--ring)]",
+                            // ✅ same input feel as our auth/inputs, but keep textarea compact
+                            AUTH_CARD_BASE,
+                            "bg-transparent",
+                            "placeholder:text-[color:var(--muted)]/70",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
                         ].join(" ")}
                         rows={3}
                     />

@@ -34,6 +34,11 @@ type ServiceUI = (typeof SERVICES)[number] & {
     includes: IncludeUI[];
 };
 
+type IncludeRaw = {
+    name: string;
+    desc?: string;
+};
+
 export default function ExperiencePage() {
     const t = useTranslations("experiencePage");
     const tServices = useTranslations("services");
@@ -74,10 +79,18 @@ export default function ExperiencePage() {
         return SERVICES.map((s) => {
             const title = tServices(`${s.id}.title`);
             const desc = tServices(`${s.id}.desc`);
+
             const includes = s.includesKeys.map((key) => {
-                const name = tIncludes(`${key}.name`);
-                const rawDesc = tIncludes(`${key}.desc`);
-                const desc = rawDesc?.trim() ? rawDesc : undefined;
+                const raw = tIncludes.raw(key) as
+                    | (Partial<Record<ServiceId, IncludeRaw>> & { core?: IncludeRaw })
+                    | undefined;
+
+                const picked = raw?.[s.id] ?? raw?.core;
+
+                const name = picked?.name ?? "";
+                const rawDesc = picked?.desc ?? "";
+                const desc = typeof rawDesc === "string" && rawDesc.trim() ? rawDesc : undefined;
+
                 return {name, desc};
             });
 
@@ -108,6 +121,7 @@ export default function ExperiencePage() {
                         </div>
                     </div>
                 </section>
+
                 {/* CARDS (REUSED ServiceCard) */}
                 <section className="py-10">
                     <div className={PAGE_CONTAINER}>
@@ -128,7 +142,6 @@ export default function ExperiencePage() {
                                     // CTA
                                     ctaLabel={t("cards.cta")} // "Select"
                                     showCta={true}
-                                    // style
                                     // tooltip component (если в ServiceCard поддержано)
                                     Tooltip={Tooltip}
                                 />
@@ -136,6 +149,7 @@ export default function ExperiencePage() {
                         </div>
                     </div>
                 </section>
+
                 {/* OPTIONAL */}
                 <section className="py-12">
                     <div className={PAGE_CONTAINER}>
@@ -164,6 +178,7 @@ export default function ExperiencePage() {
                         </div>
                     </div>
                 </section>
+
                 {/* EXCLUSIONS */}
                 <section className="py-12">
                     <div className={PAGE_CONTAINER}>

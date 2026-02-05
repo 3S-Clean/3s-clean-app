@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import type { ServiceIncludeKey, ServiceId } from "@/lib/booking/config";
+import {useTranslations} from "next-intl";
+import type {ServiceId, ServiceIncludeKey} from "@/lib/booking/config";
 
 type IncludeRaw = {
     name: string;
@@ -17,17 +17,21 @@ export function useServicesI18n() {
         desc: tServices(`${id}.desc`),
     });
 
-    const getIncludeText = (key: ServiceIncludeKey) => {
-        const raw = tIncludes.raw(key) as IncludeRaw | undefined;
+    const getIncludeText = (serviceId: ServiceId, key: ServiceIncludeKey) => {
+        const raw = tIncludes.raw(key) as
+            | (Partial<Record<ServiceId, IncludeRaw>> & { core?: IncludeRaw })
+            | undefined;
+
+        const picked = raw?.[serviceId] ?? raw?.core;
 
         return {
-            name: raw?.name ?? "",
+            name: picked?.name ?? "",
             desc:
-                typeof raw?.desc === "string" && raw.desc.trim()
-                    ? raw.desc
+                typeof picked?.desc === "string" && picked.desc.trim()
+                    ? picked.desc
                     : undefined,
         };
     };
 
-    return { getServiceText, getIncludeText };
+    return {getServiceText, getIncludeText};
 }

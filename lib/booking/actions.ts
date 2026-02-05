@@ -1,15 +1,15 @@
 "use client";
 
 import {
+    type ApartmentSizeId,
+    type ExtraId,
     EXTRAS,
     getBasePrice,
     getEstimatedHours,
-    type ServiceId,
-    type ApartmentSizeId,
     type PeopleCountId,
-    type ExtraId,
+    type ServiceId,
 } from "@/lib/booking/config";
-import { isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId } from "@/lib/booking/guards";
+import {isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId} from "@/lib/booking/guards";
 
 /* ===========================
    Types
@@ -109,13 +109,13 @@ function normalizeIds(input: {
     size: string;
     people: string;
 }): { serviceId: ServiceId; sizeId: ApartmentSizeId; peopleId: PeopleCountId } {
-    const { service, size, people } = input;
+    const {service, size, people} = input;
 
     if (!isServiceId(service)) throw new Error(`Invalid service id: ${service}`);
     if (!isApartmentSizeId(size)) throw new Error(`Invalid apartment size id: ${size}`);
     if (!isPeopleCountId(people)) throw new Error(`Invalid people count id: ${people}`);
 
-    return { serviceId: service, sizeId: size, peopleId: people };
+    return {serviceId: service, sizeId: size, peopleId: people};
 }
 
 /* ===========================
@@ -130,8 +130,7 @@ export function calculateOrderTotals(
     extras: Record<string, number>
 ): OrderTotals {
     // ✅ type-safe ids from strings (fixes build error)
-    const { serviceId, sizeId, peopleId } = normalizeIds({ service, size, people });
-
+    const {serviceId, sizeId, peopleId} = normalizeIds({service, size, people});
     const basePrice = getBasePrice(serviceId, sizeId, peopleId, hasPets);
 
     let extrasPrice = 0;
@@ -183,7 +182,7 @@ async function postJSON<TReq extends Record<string, unknown>, TRes>(
 ): Promise<TRes> {
     const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body),
     });
 
@@ -200,45 +199,45 @@ async function postJSON<TReq extends Record<string, unknown>, TRes>(
 export function checkPostcode(postcode: string) {
     return postJSON<{ postcode: string }, { available: boolean }>(
         "/api/booking/check-postcode",
-        { postcode }
+        {postcode}
     );
 }
 
 export function submitNotifyRequest(email: string, postcode: string) {
     return postJSON<{ email: string; postcode: string }, { success: boolean }>(
         "/api/notify",
-        { email, postcode }
+        {email, postcode}
     );
 }
 
 export function createOrder(orderData: CreateOrderPayload) {
     return postJSON<{ orderData: CreateOrderPayload }, CreateOrderResponse>(
         "/api/booking/create-order",
-        { orderData }
+        {orderData}
     );
 }
 
 export function linkOrderToUser(pendingToken: string) {
     return postJSON<{ pendingToken: string }, LinkOrderResponse>(
         "/api/booking/link-order",
-        { pendingToken }
+        {pendingToken}
     );
 }
 
 export function getExistingBookings(startDate: string, endDate: string) {
     return postJSON<{ startDate: string; endDate: string }, ExistingBookingRow[]>(
         "/api/booking/existing-bookings",
-        { startDate, endDate }
+        {startDate, endDate}
     );
 }
 
 export function getOrder(orderId: string) {
-    return postJSON<{ orderId: string }, unknown>("/api/booking/get-order", { orderId });
+    return postJSON<{ orderId: string }, unknown>("/api/booking/get-order", {orderId});
 }
 
 export function getOrderPublic(orderId?: string, pendingToken?: string) {
     return postJSON<{ orderId?: string; pendingToken?: string }, GetOrderPublicResponse>(
         "/api/booking/get-order-public",
-        { orderId, pendingToken }
+        {orderId, pendingToken}
     );
 }

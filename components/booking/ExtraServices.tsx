@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { useBookingStore } from "@/lib/booking/store";
-import { EXTRAS, type ExtraId } from "@/lib/booking/config";
-import { useExtrasI18n } from "@/lib/services/useExtrasI18n";
-import { isExtraId } from "@/lib/booking/guards";
+import {useMemo} from "react";
+import {useTranslations} from "next-intl";
+import {useBookingStore} from "@/lib/booking/store";
+import {type ExtraId, EXTRAS} from "@/lib/booking/config";
+import {useExtrasI18n} from "@/lib/services/useExtrasI18n";
+import {isExtraId} from "@/lib/booking/guards";
+import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/components/ui/card/CardFrame";
 
 function formatDuration(hours: number) {
     if (!hours || hours <= 0) return "";
@@ -20,20 +21,21 @@ function formatDuration(hours: number) {
 
 /** ✅ only 2 recommended */
 const RECOMMENDED: readonly ExtraId[] = ["windows-outside", "windows-inside", "sofa"];
-const POPULAR: readonly ExtraId[] = ["linen-double","linen-single"];
-
+const POPULAR: readonly ExtraId[] = ["linen-double", "linen-single"];
 
 // ✅ same black as BookingFooter / ContactSchedule
 const PRIMARY_SOLID = "bg-gray-900 text-white dark:bg-white dark:text-gray-900";
 const PRIMARY_HOVER = "hover:bg-gray-800 dark:hover:bg-white/90";
+
+// Selected text helpers
 const SEL_TEXT = "text-white dark:text-gray-900";
 const SEL_MUTED = "text-white/70 dark:text-gray-600";
 const SEL_MUTED_SOFT = "text-white/55 dark:text-gray-500";
 
 export default function ExtraServices() {
     const t = useTranslations("bookingExtras");
-    const { getExtraText } = useExtrasI18n();
-    const { extras, updateExtra } = useBookingStore();
+    const {getExtraText} = useExtrasI18n();
+    const {extras, updateExtra} = useBookingStore();
 
     const extrasTotal = useMemo(() => {
         return Object.entries(extras || {}).reduce((sum, [id, qty]) => {
@@ -49,9 +51,8 @@ export default function ExtraServices() {
             .map(([id, q]) => {
                 const e = EXTRAS.find((x) => x.id === id);
                 if (!e) return null;
-
-                const { name } = getExtraText(e.id);
-                return { id: e.id, q: Number(q) || 0, e, name };
+                const {name} = getExtraText(e.id);
+                return {id: e.id, q: Number(q) || 0, e, name};
             })
             .filter(Boolean) as Array<{ id: ExtraId; q: number; e: (typeof EXTRAS)[number]; name: string }>;
     }, [extras, getExtraText]);
@@ -61,13 +62,24 @@ export default function ExtraServices() {
             const qty = Number((extras || {})[extra.id] || 0);
             const isSelected = qty > 0;
             const duration = formatDuration(extra.hours);
-            const { name, unit } = getExtraText(extra.id);
+            const {name, unit} = getExtraText(extra.id);
             const isRec = RECOMMENDED.includes(extra.id);
             const isPop = POPULAR.includes(extra.id);
-
-            return { extra, qty, isSelected, duration, name, unit, isRec, isPop };
+            return {extra, qty, isSelected, duration, name, unit, isRec, isPop};
         });
     }, [extras, getExtraText]);
+
+    // ✅ Small control buttons: match your “input/card” visibility
+    const CONTROL_BTN = [
+        "h-10 w-10 rounded-full flex items-center justify-center text-lg",
+        "border border-black/10 dark:border-white/10",
+        "bg-white/70 dark:bg-[var(--card)]/70 backdrop-blur",
+        "text-[var(--text)]",
+        "transition-all",
+        "hover:ring-1 hover:ring-black/10 dark:hover:ring-white/15",
+        "active:scale-[0.98]",
+        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+    ].join(" ");
 
     return (
         <div className="animate-fadeIn">
@@ -79,7 +91,7 @@ export default function ExtraServices() {
 
             {/* Cards */}
             <div className="flex flex-col gap-3">
-                {extrasUi.map(({ extra, qty, isSelected, duration, name, unit, isRec, isPop }) => (
+                {extrasUi.map(({extra, qty, isSelected, duration, name, unit, isRec, isPop}) => (
                     <div
                         key={extra.id}
                         role="button"
@@ -89,63 +101,78 @@ export default function ExtraServices() {
                             if (e.key === "Enter" || e.key === " ") updateExtra(extra.id, 1);
                         }}
                         className={[
-                            "text-left w-full p-4 rounded-2xl transition-all cursor-pointer select-none",
-                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--ring)]",
+                            // ✅ new card base
+                            CARD_FRAME_BASE,
+                            CARD_FRAME_INTERACTIVE,
+                            "text-left w-full p-4 rounded-3xl",
+                            // ✅ only lift when NOT selected (selected should feel “solid”)
+                            !isSelected ? CARD_FRAME_HOVER_LIFT : "",
+                            // ✅ selected = primary style
+                            isSelected ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ") : "",
+                            // ✅ unselected keeps your card token; add a subtle hover ring only
+                            !isSelected ? "hover:ring-1 hover:ring-[var(--text)]/10" : "",
+                            // ✅ tiny active press
                             "active:scale-[0.995]",
-                            isSelected
-                                ? "bg-gray-900 text-white border border-black/10 dark:bg-white dark:text-gray-900 dark:border-black/10"
-                                : "bg-[var(--card)]/70 backdrop-blur-md border border-black/10 dark:border-white/10",
-                            isSelected ? "ring-1 ring-[var(--text)]/20" : "hover:ring-1 hover:ring-[var(--text)]/10",
-                        ].join(" ")}
+                        ]
+                            .filter(Boolean)
+                            .join(" ")}
                     >
                         <div className="flex items-center justify-between gap-4">
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className={["font-semibold text-sm truncate", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
+                                    <div
+                                        className={["font-semibold text-sm truncate", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
                                         {name}
                                     </div>
-                                    {(isPop || isRec) ? (
+
+                                    {isPop || isRec ? (
                                         <div className="flex items-center gap-1.5 shrink-0">
                                             {isPop && (
                                                 <span
                                                     className={[
                                                         "px-2 py-0.5 text-[11px] font-semibold rounded-full border",
-                                                        "bg-gray-900/10 text-gray-900 border-black/10",
-                                                        "dark:bg-white/15 dark:text-white dark:border-white/15",
+                                                        // badge stays subtle always
+                                                        "bg-black/5 text-[var(--text)] border-black/10",
+                                                        "dark:bg-white/10 dark:text-white dark:border-white/15",
                                                     ].join(" ")}
                                                 >
-                                                {t("badges.popular")}
-                                              </span>
+                          {t("badges.popular")}
+                        </span>
                                             )}
+
                                             {isRec && (
                                                 <span
                                                     className={[
-                                                        "px-2 py-0.5 text-[11px] font-semibold rounded-full border transition",
+                                                        "px-2 py-0.5 text-[11px] font-semibold rounded-full border",
+                                                        // recommended = primary pill
                                                         PRIMARY_SOLID,
                                                         PRIMARY_HOVER,
-                                                        "border-white/10",
+                                                        "border-white/10 dark:border-black/10",
                                                     ].join(" ")}
                                                 >
-                                                {t("badges.recommended")}
-                                              </span>
+                          {t("badges.recommended")}
+                        </span>
                                             )}
                                         </div>
                                     ) : null}
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm mt-1">
-                 <span className={["font-semibold tabular-nums", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
+                  <span
+                      className={["font-semibold tabular-nums", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
                     +€{extra.price.toFixed(2)}
                   </span>
+
                                     {duration ? (
                                         <span className={isSelected ? SEL_MUTED : "text-[var(--muted)]"}>
-                                    {t("adds")} ~{duration}
-                                        </span>
+                      {t("adds")} ~{duration}
+                    </span>
                                     ) : null}
 
-                                    {unit ?
-                                        <span className={isSelected ? SEL_MUTED_SOFT : "text-[var(--muted)]/70"}>/ {unit}
-                                        </span> : null}
+                                    {unit ? (
+                                        <span
+                                            className={isSelected ? SEL_MUTED_SOFT : "text-[var(--muted)]/70"}>/ {unit}</span>
+                                    ) : null}
                                 </div>
                             </div>
 
@@ -156,32 +183,24 @@ export default function ExtraServices() {
                                     onClick={() => updateExtra(extra.id, -1)}
                                     disabled={qty === 0}
                                     className={[
-                                        "w-10 h-10 rounded-full border flex items-center justify-center text-lg transition-all",
-                                        "bg-[var(--background)]/60 backdrop-blur",
-                                        "border-black/10 dark:border-white/10",
-                                        qty === 0
-                                            ? "text-[var(--muted)]/50 cursor-not-allowed"
-                                            : "text-[var(--text)] hover:ring-1 hover:ring-[var(--text)]/15",
+                                        CONTROL_BTN,
+                                        qty === 0 ? "opacity-40 cursor-not-allowed" : "",
                                     ].join(" ")}
-                                    aria-label={t("aria.decrease", { name })}
+                                    aria-label={t("aria.decrease", {name})}
                                 >
                                     −
                                 </button>
 
-                                <div className={["w-9 text-center font-semibold text-base tabular-nums", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
+                                <div
+                                    className={["w-9 text-center font-semibold text-base tabular-nums", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
                                     {qty}
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={() => updateExtra(extra.id, 1)}
-                                    className={[
-                                        "w-10 h-10 rounded-full border flex items-center justify-center text-lg transition-all",
-                                        "bg-[var(--background)]/60 backdrop-blur",
-                                        "border-black/10 dark:border-white/10",
-                                        "text-[var(--text)] hover:ring-1 hover:ring-[var(--text)]/15",
-                                    ].join(" ")}
-                                    aria-label={t("aria.increase", { name })}
+                                    className={CONTROL_BTN}
+                                    aria-label={t("aria.increase", {name})}
                                 >
                                     +
                                 </button>
@@ -194,18 +213,16 @@ export default function ExtraServices() {
             {/* Summary (same color as Continue button) */}
             <div className="mt-8">
                 {extrasTotal > 0 ? (
-                    <div className={["p-4 rounded-2xl animate-fadeIn transition", PRIMARY_SOLID, PRIMARY_HOVER].join(" ")}>
+                    <div className={[CARD_FRAME_BASE, "p-4 rounded-3xl", PRIMARY_SOLID, PRIMARY_HOVER].join(" ")}>
                         <div className="flex items-center justify-between mb-3">
                             <div className="text-xs font-semibold tracking-wide text-white/80 dark:text-gray-700">
                                 {t("summary.selectedExtras")}
                             </div>
-                            <div className="text-xs text-white/60 dark:text-gray-500">
-                                {t("summary.howto")}
-                            </div>
+                            <div className="text-xs text-white/60 dark:text-gray-500">{t("summary.howto")}</div>
                         </div>
 
                         <div className="space-y-2">
-                            {selectedExtras.map(({ id, q, e, name }) => (
+                            {selectedExtras.map(({id, q, e, name}) => (
                                 <div key={id} className="flex items-center justify-between text-sm">
                                     <div className="truncate pr-3 text-white/85 dark:text-gray-900">
                                         {name} <span className="text-white/50 dark:text-gray-500">× {q}</span>
@@ -216,25 +233,21 @@ export default function ExtraServices() {
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-4 pt-4 flex items-center justify-between font-semibold border-t border-white/10 dark:border-black/10">
+
+                        <div
+                            className="mt-4 pt-4 flex items-center justify-between font-semibold border-t border-white/10 dark:border-black/10">
                             <span className="text-white/70 dark:text-gray-600">{t("summary.total")}</span>
-                            <span className="text-white tabular-nums dark:text-gray-900">+€{extrasTotal.toFixed(2)}</span>
-                            </div>
+                            <span
+                                className="text-white tabular-nums dark:text-gray-900">+€{extrasTotal.toFixed(2)}</span>
+                        </div>
                     </div>
                 ) : (
-                    // ✅ EMPTY STATE — тот же цвет, что Continue
-                        <div
-                         className={[
-                             "p-4 rounded-2xl animate-fadeIn transition text-sm",
-                             PRIMARY_SOLID,
-                             PRIMARY_HOVER,
-                            ].join(" ")}
-                         >
-                             <span className="text-white/80 dark:text-gray-700">
-                                {t("summary.empty")}
-                              </span>
-                        </div>
+                    <div
+                        className={[CARD_FRAME_BASE, "p-4 rounded-3xl text-sm", PRIMARY_SOLID, PRIMARY_HOVER].join(" ")}>
+                        <span className="text-white/80 dark:text-gray-700">{t("summary.empty")}</span>
+                    </div>
                 )}
+
                 <div className="mt-4 text-xs text-[var(--muted)]">{t("hint")}</div>
             </div>
         </div>
