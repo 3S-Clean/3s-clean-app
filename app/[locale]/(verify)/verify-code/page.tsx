@@ -1,11 +1,17 @@
 "use client";
 
 export const dynamic = "force-dynamic";
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { useBookingStore } from "@/lib/booking/store";
-import { z } from "zod";
+
+import {Suspense, useEffect, useMemo, useState} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useTranslations} from "next-intl";
+import {createClient} from "@/lib/supabase/client";
+import {useBookingStore} from "@/lib/booking/store";
+import {z} from "zod";
+import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import OtpBoxes from "@/components/ui/auth/OtpBoxes";
+
 type Flow = "signup" | "recovery";
 const OTP_TTL_SEC = 600; // 10 minutes
 const RESEND_COOLDOWN_SEC = 120; // 2 minutes
@@ -19,18 +25,22 @@ function fmt(sec: number) {
 
 // ✅ Zod runtime-guard for link-order response
 const LinkOrderResponseSchema = z.union([
-    z.object({ orderId: z.string().min(1) }),
-    z.object({ error: z.string().min(1) }),
+    z.object({orderId: z.string().min(1)}),
+    z.object({error: z.string().min(1)}),
 ]);
 type LinkOrderResponse = z.infer<typeof LinkOrderResponseSchema>;
 
 function VerifyCodeInner() {
     const router = useRouter();
     const sp = useSearchParams();
+    const pathname = usePathname();
+    const t = useTranslations("auth.verifyCode");
+
     const flow: Flow = sp.get("flow") === "recovery" ? "recovery" : "signup";
     const pendingOrderFromQuery = useMemo(() => sp.get("pendingOrder") || "", [sp]);
     const supabase = useMemo(() => createClient(), []);
-    const { resetBooking } = useBookingStore();
+    const {resetBooking} = useBookingStore();
+
     const [pendingOrderToken, setPendingOrderToken] = useState<string>(pendingOrderFromQuery);
     const [email, setEmail] = useState<string | null>(null);
     const [code, setCode] = useState("");
@@ -40,9 +50,16 @@ function VerifyCodeInner() {
     const [showOrdersCta, setShowOrdersCta] = useState(false);
     const [expiresLeft, setExpiresLeft] = useState<number>(OTP_TTL_SEC);
     const [cooldownLeft, setCooldownLeft] = useState<number>(0);
+
     const restartOtpTimer = () => setExpiresLeft(OTP_TTL_SEC);
     const startCooldown = () => setCooldownLeft(RESEND_COOLDOWN_SEC);
+
     const storageKey = flow === "recovery" ? "pendingResetEmail" : "pendingEmail";
+
+    // locale-aware paths (/en/*, /de/*)
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
 
     useEffect(() => {
         const storedEmail = (() => {
@@ -54,7 +71,7 @@ function VerifyCodeInner() {
         })();
 
         if (!storedEmail) {
-            router.replace(flow === "signup" ? "/signup" : "/forgot-password");
+            router.replace(withLocale(flow === "signup" ? "/signup" : "/forgot-password"));
             return;
         }
 
@@ -67,7 +84,8 @@ function VerifyCodeInner() {
                 setPendingOrderToken(pendingOrderFromQuery);
                 try {
                     localStorage.setItem("pendingOrderToken", pendingOrderFromQuery);
-                } catch {}
+                } catch {
+                }
             } else {
                 const storedToken = (() => {
                     try {
@@ -95,7 +113,7 @@ function VerifyCodeInner() {
 
     async function waitForSession(maxAttempts = 7, delayMs = 250) {
         for (let i = 0; i < maxAttempts; i++) {
-            const { data } = await supabase.auth.getSession();
+            const {data} = await supabase.auth.getSession();
             if (data.session) return data.session;
             await new Promise((r) => setTimeout(r, delayMs));
         }
@@ -110,29 +128,29 @@ function VerifyCodeInner() {
 
         try {
             if (!email) {
-                setStatus({ type: "error", msg: "Missing email. Please start again." });
+                setStatus({type: "error", msg: t("errors.missingEmail")});
                 return;
             }
 
             const token = code.replace(/\D/g, "").slice(0, 8);
             if (!/^\d{8}$/.test(token)) {
-                setStatus({ type: "error", msg: "Enter the 8-digit verification code." });
+                setStatus({type: "error", msg: t("errors.invalidCode")});
                 return;
             }
 
             if (expiresLeft <= 0) {
-                setStatus({ type: "error", msg: "This code has expired. Please request a new one." });
+                setStatus({type: "error", msg: t("errors.expired")});
                 return;
             }
 
-            const { error } = await supabase.auth.verifyOtp({
+            const {error} = await supabase.auth.verifyOtp({
                 email,
                 token,
                 type: flow === "recovery" ? "recovery" : "signup",
             });
 
             if (error) {
-                setStatus({ type: "error", msg: error.message });
+                setStatus({type: "error", msg: error.message});
                 return;
             }
 
@@ -140,26 +158,25 @@ function VerifyCodeInner() {
             if (flow === "recovery") {
                 const session = await waitForSession();
                 if (!session) {
-                    setStatus({
-                        type: "error",
-                        msg: "Recovery session not found yet. Please try again or request a new code.",
-                    });
+                    setStatus({type: "error", msg: t("errors.recoverySessionMissing")});
                     return;
                 }
                 try {
                     sessionStorage.setItem("recoveryFlow", "1");
-                } catch {}
+                } catch {
+                }
             }
 
-            // ✅ signup + pendingOrder => link via API and redirect to booking success
+            // ✅ signup + pendingOrder => link via API
+            // ✅ then go to set-password, and only after that — continue to next (booking success)
             if (flow === "signup") {
                 const tokenToLink = (pendingOrderToken || "").trim();
 
                 if (tokenToLink) {
                     const res = await fetch("/api/booking/link-order", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ pendingToken: tokenToLink }),
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({pendingToken: tokenToLink}),
                     });
 
                     // ✅ parse JSON safely (unknown), then validate with Zod
@@ -172,30 +189,19 @@ function VerifyCodeInner() {
 
                     const parsed = LinkOrderResponseSchema.safeParse(raw);
                     if (!res.ok || !parsed.success || ("error" in parsed.data && !("orderId" in parsed.data))) {
-                        // 🧠 логируем реальную причину ТОЛЬКО для разработчика
-                        console.error("link-order failed", {
-                            ok: res.ok,
-                            raw,
-                            parsed,
-                        });
+                        console.error("link-order failed", {ok: res.ok, raw, parsed});
 
-                        // 🎯 пользователю — всегда чистый UX-текст
                         setStatus({
                             type: "ok",
-                            msg: "Verified. We couldn’t link the booking yet — please open your account orders.",
+                            msg: t("status.verifiedButNotLinked"),
                         });
-
                         setShowOrdersCta(true);
                         return;
                     }
 
-                    // ✅ now we are sure we have { orderId: string }
                     const json: LinkOrderResponse = parsed.data;
                     if (!("orderId" in json)) {
-                        setStatus({
-                            type: "ok",
-                            msg: "Verified. We couldn’t link the booking yet — please open your account orders.",
-                        });
+                        setStatus({type: "ok", msg: t("status.verifiedButNotLinked")});
                         setShowOrdersCta(true);
                         return;
                     }
@@ -204,22 +210,27 @@ function VerifyCodeInner() {
 
                     try {
                         localStorage.removeItem("pendingOrderToken");
-                    } catch {}
+                    } catch {
+                    }
                     try {
                         localStorage.removeItem(storageKey);
-                    } catch {}
+                    } catch {
+                    }
 
-                    router.replace(`/booking/success?orderId=${encodeURIComponent(json.orderId)}`);
+                    // ✅ set password first, then continue to booking success
+                    const nextUrl = withLocale(`/booking/success?orderId=${encodeURIComponent(json.orderId)}`);
+                    router.replace(withLocale(`/set-password?next=${encodeURIComponent(nextUrl)}`));
                     return;
                 }
             }
 
             try {
                 localStorage.removeItem(storageKey);
-            } catch {}
+            } catch {
+            }
 
-            if (flow === "signup") router.replace("/set-password");
-            else router.replace("/reset-password?flow=recovery&recovery=1");
+            if (flow === "signup") router.replace(withLocale("/set-password"));
+            else router.replace(withLocale("/reset-password?flow=recovery&recovery=1"));
         } finally {
             setLoading(false);
         }
@@ -230,12 +241,12 @@ function VerifyCodeInner() {
         setShowOrdersCta(false);
 
         if (!email) {
-            setStatus({ type: "error", msg: "Missing email. Please start again." });
+            setStatus({type: "error", msg: t("errors.missingEmail")});
             return;
         }
 
         if (cooldownLeft > 0) {
-            setStatus({ type: "error", msg: `Please wait ${fmt(cooldownLeft)} before resending.` });
+            setStatus({type: "error", msg: t("errors.cooldown", {time: fmt(cooldownLeft)})});
             return;
         }
 
@@ -244,20 +255,20 @@ function VerifyCodeInner() {
         startCooldown();
 
         if (flow === "signup") {
-            const { error } = await supabase.auth.resend({ type: "signup", email });
+            const {error} = await supabase.auth.resend({type: "signup", email});
             if (error) {
-                setStatus({ type: "error", msg: error.message });
+                setStatus({type: "error", msg: error.message});
                 setCooldownLeft(0);
             } else {
-                setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
+                setStatus({type: "ok", msg: t("status.resent")});
             }
         } else {
-            const { error } = await supabase.auth.resetPasswordForEmail(email);
+            const {error} = await supabase.auth.resetPasswordForEmail(email);
             if (error) {
-                setStatus({ type: "error", msg: error.message });
+                setStatus({type: "error", msg: error.message});
                 setCooldownLeft(0);
             } else {
-                setStatus({ type: "ok", msg: "Code resent. Check your inbox." });
+                setStatus({type: "ok", msg: t("status.resent")});
             }
         }
     };
@@ -265,7 +276,7 @@ function VerifyCodeInner() {
     if (email === null) {
         return (
             <div className="text-center">
-                <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
+                <div className="animate-pulse text-[color:var(--muted)]">{t("loading")}</div>
             </div>
         );
     }
@@ -274,105 +285,93 @@ function VerifyCodeInner() {
     const verifyDisabled = loading || code.replace(/\D/g, "").length !== 8;
 
     return (
-        <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
-                {flow === "signup" ? "Verify your email" : "Enter reset code"}
-            </h1>
+        <div className="space-y-6">
+            {/* main auth card content */}
+            <div className="text-center">
+                <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
+                    {flow === "signup" ? t("titles.signup") : t("titles.recovery")}
+                </h1>
 
-            <p className="mt-6 text-base text-[color:var(--muted)]">
-                We sent a verification code to{" "}
-                <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
-            </p>
+                <p className="mt-6 text-base text-[color:var(--muted)]">
+                    {t("sentPrefix")}{" "}
+                    <span className="font-medium text-[color:var(--text)]/90">{email}</span>.
+                </p>
 
-            {flow === "signup" && pendingOrderToken ? (
-                <div className="mt-6 rounded-2xl border bg-[var(--input-bg)] border-[var(--input-border)] px-4 py-3 backdrop-blur">
-                    <p className="text-sm text-[color:var(--muted)]">
-                        ✓ Booking detected — after verification it will be linked to your account.
-                    </p>
-                </div>
-            ) : null}
-
-            <div className="mt-10 space-y-4">
-                <input
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
-                    placeholder="••••••••"
-                    className={[
-                        "w-full rounded-2xl border px-4 py-3.5 text-center outline-none transition backdrop-blur",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "text-[20px] font-mono tracking-[0.20em]",
-                        "placeholder:text-[color:var(--muted)]/60",
-                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
-                    ].join(" ")}
-                />
-
-                <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
+                <div className="mt-10 space-y-4">
+                    <OtpBoxes value={code} onChangeAction={setCode}/>
+                    <div className="flex items-center justify-between text-xs text-[color:var(--muted)]">
           <span>
-            Code expires in <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
+            {t("meta.expiresPrefix")}{" "}
+              <span className="text-[color:var(--text)]/70">{fmt(expiresLeft)}</span>
           </span>
-                    <span>
+                        <span>
             {resendDisabled ? (
                 <>
-                    Resend available in{" "}
+                    {t("meta.resendInPrefix")}{" "}
                     <span className="text-[color:var(--text)]/70">{fmt(cooldownLeft)}</span>
                 </>
             ) : (
-                "You can resend now"
+                t("meta.resendNow")
             )}
           </span>
-                </div>
+                    </div>
 
-                <button
-                    type="button"
-                    onClick={verify}
-                    disabled={verifyDisabled}
-                    className={[
-                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                        "disabled:opacity-40 hover:opacity-90",
-                        "bg-black text-white",
-                        "dark:bg-white dark:text-black",
-                    ].join(" ")}
-                >
-                    {loading ? "Verifying…" : "Verify"}
-                </button>
-
-                <button
-                    type="button"
-                    onClick={resend}
-                    disabled={resendDisabled}
-                    className={[
-                        "w-full rounded-2xl border py-3.5 text-[15px] font-medium transition disabled:opacity-40",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "backdrop-blur hover:opacity-90",
-                    ].join(" ")}
-                >
-                    {resendDisabled ? `Resend code (${fmt(cooldownLeft)})` : "Resend code"}
-                </button>
-
-                {status && (
-                    <p className={["text-sm", status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90"].join(" ")}>
-                        {status.msg}
-                    </p>
-                )}
-
-                {showOrdersCta && (
                     <button
                         type="button"
-                        onClick={() => router.replace("/account/orders")}
+                        onClick={verify}
+                        disabled={verifyDisabled}
                         className={[
-                            "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                            "bg-black text-white hover:opacity-90",
-                            "dark:bg-white dark:text-black",
+                            "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                            "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
+                            "hover:opacity-90",
+                            "disabled:opacity-40 disabled:cursor-not-allowed",
                         ].join(" ")}
                     >
-                        Open my orders
+                        {loading ? t("cta.verifying") : t("cta.verify")}
                     </button>
-                )}
+
+                    <button
+                        type="button"
+                        onClick={resend}
+                        disabled={resendDisabled}
+                        className={[
+                            "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                            "bg-transparent",
+                            CARD_FRAME_BASE,
+                            "text-[color:var(--text)]",
+                            "hover:opacity-90",
+                            "disabled:opacity-40 disabled:cursor-not-allowed",
+                        ].join(" ")}
+                    >
+                        {resendDisabled ? t("cta.resendWithTimer", {time: fmt(cooldownLeft)}) : t("cta.resend")}
+                    </button>
+
+                    {status && (
+                        <p className={["text-sm", status.type === "ok" ? "text-black dark:text-white" : "text-red-500/90"].join(" ")}>
+                            {status.msg}
+                        </p>
+                    )}
+
+                    {showOrdersCta && (
+                        <button
+                            type="button"
+                            onClick={() => router.replace(withLocale("/account/orders"))}
+                            className={[
+                                "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                                "bg-black text-white hover:opacity-90",
+                                "dark:bg-white dark:text-black",
+                            ].join(" ")}
+                        >
+                            {t("cta.openOrders")}
+                        </button>
+                    )}
+                </div>
+
+                <p className="mt-10 text-sm text-[color:var(--muted)]">{t("footerHint")}</p>
             </div>
 
-            <p className="mt-10 text-sm text-[color:var(--muted)]">If you entered the wrong email, go back and try again.</p>
+            {/* ✅ separate card UNDER the auth card */}
+            {flow === "signup" && pendingOrderToken ? <BookingDetectedCard text={t("bookingDetected")}/> : null}
         </div>
     );
 }
@@ -386,7 +385,7 @@ export default function VerifyCodePage() {
                 </div>
             }
         >
-            <VerifyCodeInner />
+            <VerifyCodeInner/>
         </Suspense>
     );
 }

@@ -2,14 +2,14 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useEffect, useMemo, useRef, useState} from "react";
+import {useRouter} from "next/navigation";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import Link from "next/link";
 
-import { createClient } from "@/lib/supabase/client";
-import { resetPasswordSchema, type ResetPasswordValues } from "@/lib/validators";
+import {createClient} from "@/lib/supabase/client";
+import {resetPasswordSchema, type ResetPasswordValues} from "@/lib/validators";
 
 type Step = "checking" | "form" | "error" | "success";
 type Status = { type: "ok" | "error"; msg: string } | null;
@@ -21,11 +21,11 @@ export default function ResetPasswordPage() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting, isValid, submitCount },
+        formState: {errors, isSubmitting, isValid, submitCount},
         watch,
     } = useForm<ResetPasswordValues>({
         resolver: zodResolver(resetPasswordSchema),
-        defaultValues: { password: "", confirmPassword: "" },
+        defaultValues: {password: "", confirmPassword: ""},
         mode: "onChange",
     });
 
@@ -56,7 +56,8 @@ export default function ResetPasswordPage() {
     const clearRecoveryFlag = () => {
         try {
             sessionStorage.removeItem("recoveryFlow");
-        } catch {}
+        } catch {
+        }
     };
 
     useEffect(() => {
@@ -68,7 +69,7 @@ export default function ResetPasswordPage() {
             if (cancelled) return;
             if (resolvedRef.current) return;
             resolvedRef.current = true;
-            setStatus({ type: "error", msg });
+            setStatus({type: "error", msg});
             setStep("error");
         };
 
@@ -86,14 +87,14 @@ export default function ResetPasswordPage() {
             };
         }
 
-        const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+        const {data: sub} = supabase.auth.onAuthStateChange((_event, session) => {
             if (cancelled) return;
             if (session) succeed();
         });
 
         (async () => {
             for (let i = 0; i < 7; i++) {
-                const { data } = await supabase.auth.getSession();
+                const {data} = await supabase.auth.getSession();
                 if (cancelled) return;
 
                 if (data.session) {
@@ -123,16 +124,16 @@ export default function ResetPasswordPage() {
     const onSubmit = async (values: ResetPasswordValues) => {
         setStatus(null);
 
-        const { error } = await supabase.auth.updateUser({ password: values.password });
+        const {error} = await supabase.auth.updateUser({password: values.password});
         if (error) {
-            setStatus({ type: "error", msg: error.message });
+            setStatus({type: "error", msg: error.message});
             return;
         }
 
         clearRecoveryFlag();
         await supabase.auth.signOut();
 
-        setStatus({ type: "ok", msg: "Password updated. Please log in with your new password." });
+        setStatus({type: "ok", msg: "Password updated. Please log in with your new password."});
         setStep("success");
 
         setTimeout(() => {
@@ -149,13 +150,12 @@ export default function ResetPasswordPage() {
                 <p className="mt-4 text-sm text-[color:var(--muted)]">Please wait.</p>
 
                 <div className="mt-8 space-y-4 animate-pulse">
-                    <div className="h-4 w-3/4 rounded bg-[color:var(--border)]" />
-                    <div className="h-10 w-full rounded-2xl bg-[color:var(--border)]" />
+                    <div className="h-4 w-3/4 rounded bg-[color:var(--border)]"/>
+                    <div className="h-10 w-full rounded-2xl bg-[color:var(--border)]"/>
                 </div>
             </div>
         );
     }
-
     if (step === "error") {
         return (
             <div>
@@ -163,7 +163,6 @@ export default function ResetPasswordPage() {
                     Reset failed
                 </h1>
                 <p className="mt-4 text-sm text-red-500/90">{status?.msg}</p>
-
                 <div className="mt-8 space-y-3">
                     {/* primary: light black / dark white */}
                     <Link
@@ -176,7 +175,6 @@ export default function ResetPasswordPage() {
                     >
                         Request a new reset code
                     </Link>
-
                     {/* secondary glass */}
                     <Link
                         href="/login"
@@ -191,7 +189,6 @@ export default function ResetPasswordPage() {
             </div>
         );
     }
-
     if (step === "success") {
         return (
             <div>

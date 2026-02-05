@@ -1,12 +1,33 @@
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useTranslations} from "next-intl";
 import {createClient} from "@/lib/supabase/client";
+import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
 export default function SetPasswordPage() {
     const router = useRouter();
+    const sp = useSearchParams();
+    const pathname = usePathname();
+    const t = useTranslations("auth.setPassword");
     const supabase = useMemo(() => createClient(), []);
+
+    // locale-aware hrefs for /en/* and /de/*
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+
+    const nextRaw = sp.get("next") || "";
+    // next already comes encoded from verify-code; keep as-is, just decode safely
+    const nextUrl = (() => {
+        if (!nextRaw) return "";
+        try {
+            return decodeURIComponent(nextRaw);
+        } catch {
+            return nextRaw;
+        }
+    })();
 
     const [hasSession, setHasSession] = useState<boolean | null>(null);
     const [password, setPassword] = useState("");
@@ -15,9 +36,9 @@ export default function SetPasswordPage() {
     const [loading, setLoading] = useState(false);
 
     const validatePassword = (value: string): string | null => {
-        if (value.length < 8) return "Minimum 8 characters";
-        if (!/[A-Z]/.test(value)) return "Must contain at least one uppercase letter";
-        if (!/[0-9]/.test(value)) return "Must contain at least one number";
+        if (value.length < 8) return t("errors.minLen");
+        if (!/[A-Z]/.test(value)) return t("errors.uppercase");
+        if (!/[0-9]/.test(value)) return t("errors.number");
         return null;
     };
 
@@ -32,7 +53,7 @@ export default function SetPasswordPage() {
             setHasSession(ok);
 
             if (!ok) {
-                router.replace("/signup");
+                router.replace(withLocale("/signup"));
                 router.refresh();
             }
         })();
@@ -40,7 +61,7 @@ export default function SetPasswordPage() {
         return () => {
             cancelled = true;
         };
-    }, [supabase, router]);
+    }, [supabase, router, withLocale]);
 
     const submit = async () => {
         setStatus(null);
@@ -52,7 +73,7 @@ export default function SetPasswordPage() {
         }
 
         if (password !== confirm) {
-            setStatus({type: "error", msg: "Passwords do not match."});
+            setStatus({type: "error", msg: t("errors.mismatch")});
             return;
         }
 
@@ -70,9 +91,16 @@ export default function SetPasswordPage() {
             } catch {
             }
 
-            setStatus({type: "ok", msg: "Password set successfully."});
+            setStatus({type: "ok", msg: t("status.ok")});
 
-            router.replace("/account");
+            // ✅ go to next if provided, otherwise account
+            if (nextUrl) {
+                router.replace(nextUrl);
+                router.refresh();
+                return;
+            }
+
+            router.replace(withLocale("/account"));
             router.refresh();
         } finally {
             setLoading(false);
@@ -82,75 +110,76 @@ export default function SetPasswordPage() {
     if (hasSession === null) {
         return (
             <div className="text-center">
-                <h1 className="text-2xl font-semibold text-[color:var(--text)]">Loading…</h1>
-                <p className="mt-4 text-sm text-[color:var(--muted)]">Please wait.</p>
+                <h1 className="text-2xl font-semibold text-[color:var(--text)]">{t("loading.title")}</h1>
+                <p className="mt-4 text-sm text-[color:var(--muted)]">{t("loading.subtitle")}</p>
             </div>
         );
     }
 
     return (
         <div className="text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">
-                Set password
-            </h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">{t("title")}</h1>
 
-            <p className="mt-6 text-base text-[color:var(--muted)]">
-                Create a password for future logins (email + password).
-            </p>
+            <p className="mt-6 text-base text-[color:var(--muted)]">{t("subtitle")}</p>
 
             <div className="mt-10 space-y-4">
                 <input
                     type="password"
-                    placeholder="New password (min 8 chars)"
+                    placeholder={t("placeholders.password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className={[
-                        "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                        "w-full",
+                        CARD_FRAME_BASE,
+                        "rounded-2xl px-4 py-3.5 text-[15px]",
+                        "bg-transparent",
+                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                        "outline-none transition-all duration-200",
+                        "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                        "active:scale-[0.99]",
                     ].join(" ")}
                 />
 
                 <input
                     type="password"
-                    placeholder="Repeat password"
+                    placeholder={t("placeholders.confirm")}
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     className={[
-                        "w-full rounded-2xl border px-4 py-3.5 text-[15px] outline-none transition backdrop-blur",
-                        "bg-[var(--input-bg)] border-[var(--input-border)] text-[color:var(--text)]",
-                        "placeholder:text-[color:var(--muted)]/70",
-                        "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
+                        "w-full",
+                        CARD_FRAME_BASE,
+                        "rounded-2xl px-4 py-3.5 text-[15px]",
+                        "bg-transparent",
+                        "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                        "outline-none transition-all duration-200",
+                        "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                        "active:scale-[0.99]",
                     ].join(" ")}
                 />
-                {/* primary: light black / dark white */}
+
                 <button
                     type="button"
                     onClick={submit}
                     disabled={loading}
                     className={[
-                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                        "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
-                        "bg-black text-white",
-                        "dark:bg-white dark:text-black",
+                        "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                        "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
+                        "hover:opacity-90",
+                        "disabled:opacity-40 disabled:cursor-not-allowed",
                     ].join(" ")}
                 >
-                    {loading ? "Saving…" : "Save password"}
+                    {loading ? t("cta.loading") : t("cta.default")}
                 </button>
+
                 {status && (
-                    <p
-                        className={[
-                            "text-sm",
-                            status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90",
-                        ].join(" ")}
-                    >
+                    <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
             </div>
+
             <p className="mt-10 text-sm text-[color:var(--muted)]">
-                If you have any issues, contact{" "}
+                {t("support.prefix")}{" "}
                 <a className="text-[color:var(--text)] hover:underline" href="mailto:support@3s-clean.com">
                     support@3s-clean.com
                 </a>

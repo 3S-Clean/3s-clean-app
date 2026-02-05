@@ -1,19 +1,17 @@
 // proxy.ts
-import { NextResponse, type NextRequest } from "next/server";
+import {type NextRequest, NextResponse} from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
-import { createServerClient } from "@supabase/ssr";
-import type { CookieOptions } from "@supabase/ssr";
+import type {CookieOptions} from "@supabase/ssr";
+import {createServerClient} from "@supabase/ssr";
 
 const locales = ["en", "de"] as const;
 type Locale = (typeof locales)[number];
 const defaultLocale: Locale = "en";
-
-// 1) next-intl middleware (добавляет /en или /de, если нет)
+// 1) next-intl middleware (adds /en or /de if missing)
 const intlMiddleware = createIntlMiddleware({
     locales: [...locales],
-    defaultLocale
+    defaultLocale,
 });
-
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 function getLocaleAndRest(pathname: string) {
@@ -23,24 +21,22 @@ function getLocaleAndRest(pathname: string) {
 
     if (maybeLocale === "en" || maybeLocale === "de") {
         const rest = "/" + segments.slice(1).join("/");
-        return { locale: maybeLocale as Locale, rest: rest === "/" ? "/" : rest };
+        return {locale: maybeLocale as Locale, rest: rest === "/" ? "/" : rest};
     }
 
-    // если вдруг пришло без /en — считаем default (но обычно intlMiddleware сам исправит)
-    return { locale: defaultLocale, rest: pathname };
+    // if it somehow comes without /en, assume default (intlMiddleware usually fixes it)
+    return {locale: defaultLocale, rest: pathname};
 }
 
 export default async function proxy(req: NextRequest) {
-    // 0) сначала next-intl
+    // 0) run next-intl first
     let response = intlMiddleware(req);
-
-    // если next-intl сделал redirect (например / -> /en), просто возвращаем
+    // if next-intl did a redirect (e.g. / -> /en), return immediately
     if (response.headers.get("location")) {
         return response;
     }
 
     const cookiesToSet: CookieToSet[] = [];
-
     // 1) supabase server client
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -52,64 +48,64 @@ export default async function proxy(req: NextRequest) {
                 },
                 setAll(newCookies) {
                     cookiesToSet.push(
-                        ...newCookies.map((c) => ({ name: c.name, value: c.value, options: c.options }))
+                        ...newCookies.map((c) => ({name: c.name, value: c.value, options: c.options}))
                     );
-                }
-            }
+                },
+            },
         }
     );
 
     const {
-        data: { user }
+        data: {user},
     } = await supabase.auth.getUser();
-
     // 2) pathname + locale/rest
     const pathname = req.nextUrl.pathname;
-    const { locale, rest } = getLocaleAndRest(pathname);
-
-    // ✅ твоя логика, но проверяем rest без префикса /en или /de
+    const {locale, rest} = getLocaleAndRest(pathname);
+    // ✅ check rest without /en or /de prefix
     const isProtected = rest.startsWith("/account");
-
+    const isSetPassword = rest === "/set-password";
     const isReset = rest === "/reset-password";
     const flow = req.nextUrl.searchParams.get("flow");
     const isRecoveryReset = isReset && flow === "recovery";
-
     const isAuthPage = rest === "/login" || rest === "/signup" || rest === "/forgot-password";
-
-    // 3) редиректы
-    // 1) Не залогинен → нельзя на account
+    // 3) redirects
+    // 1) Not logged in -> can't access /account/*
     if (!user && isProtected) {
         const url = req.nextUrl.clone();
         url.pathname = `/${locale}/login`;
         url.searchParams.set("next", `/${locale}${rest}`);
         response = NextResponse.redirect(url);
     }
-
-    // 2) Залогинен → нечего делать на login/signup/forgot-password
+    // 1.1) Not logged in -> can't access /set-password
+    if (!user && isSetPassword) {
+        const url = req.nextUrl.clone();
+        url.pathname = `/${locale}/login`;
+        url.searchParams.set("next", `/${locale}${rest}`);
+        response = NextResponse.redirect(url);
+    }
+    // 2) Logged in -> no need to be on login/signup/forgot-password
     if (user && isAuthPage) {
         const url = req.nextUrl.clone();
         url.pathname = `/${locale}/account`;
         response = NextResponse.redirect(url);
     }
-
     // 3) reset-password:
-    // - только /reset-password?flow=recovery разрешаем
-    // - иначе всегда уводим на /forgot-password
+    // - allow only /reset-password?flow=recovery
+    // - otherwise always redirect to /forgot-password
     if (isReset && !isRecoveryReset) {
         const url = req.nextUrl.clone();
         url.pathname = `/${locale}/forgot-password`;
         response = NextResponse.redirect(url);
     }
-
     // 4) apply cookies
-    cookiesToSet.forEach(({ name, value, options }) => {
+    cookiesToSet.forEach(({name, value, options}) => {
         response.cookies.set(name, value, options);
     });
 
     return response;
 }
 
-// Запускаем proxy на всех страницах, кроме api/_next/файлов
+// Run proxy on all pages except api/_next/static files
 export const config = {
-    matcher: ["/((?!api|_next|.*\\..*).*)"]
+    matcher: ["/((?!api|_next|.*\\..*).*)"],
 };

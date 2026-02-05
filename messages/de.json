@@ -633,5 +633,121 @@
       "notifiedTitle": "Sie werden benachrichtigt",
       "notifiedBody": "Wir informieren Sie per E-Mail, sobald wir in der PLZ {postcode} verfügbar sind."
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melden Sie sich an, um Buchungen zu verwalten und Ihre Reinigungsverläufe einzusehen.",
+      "bookingDetected": "✓ Buchung erkannt — nach dem Login wird sie Ihrem Konto zugeordnet.",
+      "labels": {
+        "email": "E-Mail",
+        "password": "Passwort"
+      },
+      "placeholders": {
+        "email": "E-Mail-Adresse eingeben",
+        "password": "Passwort eingeben"
+      },
+      "links": {
+        "forgotPassword": "Passwort vergessen?"
+      },
+      "cta": {
+        "default": "Anmelden",
+        "loading": "Anmeldung läuft…"
+      },
+      "status": {
+        "confirmEmail": "Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse. Prüfen Sie Ihren Posteingang.",
+        "wrongCredentials": "E-Mail oder Passwort ist falsch."
+      },
+      "footer": {
+        "noAccount": "Noch kein Konto?",
+        "signup": "Registrieren"
+      }
+    },
+    "verifyCode": {
+      "loading": "Lädt…",
+      "titles": {
+        "signup": "E-Mail bestätigen",
+        "recovery": "Zurücksetzungscode eingeben"
+      },
+      "sentPrefix": "Wir haben einen Bestätigungscode gesendet an",
+      "bookingDetected": "✓ Buchung erkannt — nach der Bestätigung wird sie Ihrem Konto zugeordnet.",
+      "placeholders": {
+        "code": "••••••••"
+      },
+      "meta": {
+        "expiresPrefix": "Code gültig für",
+        "resendInPrefix": "Erneut senden möglich in",
+        "resendNow": "Sie können den Code jetzt erneut senden"
+      },
+      "cta": {
+        "verify": "Bestätigen",
+        "verifying": "Wird bestätigt…",
+        "resend": "Code erneut senden",
+        "resendWithTimer": "Code erneut senden ({time})",
+        "openOrders": "Meine Bestellungen öffnen"
+      },
+      "status": {
+        "resent": "Code erneut gesendet. Bitte prüfen Sie Ihren Posteingang.",
+        "verifiedButNotLinked": "Bestätigt. Die Buchung konnte noch nicht verknüpft werden — bitte öffnen Sie Ihre Bestellungen."
+      },
+      "errors": {
+        "missingEmail": "E-Mail fehlt. Bitte starten Sie den Vorgang erneut.",
+        "invalidCode": "Bitte geben Sie den 8-stelligen Bestätigungscode ein.",
+        "expired": "Dieser Code ist abgelaufen. Bitte fordern Sie einen neuen an.",
+        "recoverySessionMissing": "Wiederherstellungssitzung noch nicht gefunden. Bitte versuchen Sie es erneut oder fordern Sie einen neuen Code an.",
+        "cooldown": "Bitte warten Sie {time}, bevor Sie den Code erneut senden."
+      },
+      "footerHint": "Falls Sie eine falsche E-Mail-Adresse eingegeben haben, gehen Sie zurück und versuchen Sie es erneut."
+    },
+    "signup": {
+      "title": "Registrieren",
+      "subtitle": "Geben Sie Ihre E-Mail-Adresse ein — wir senden Ihnen einen Bestätigungscode.",
+      "bookingDetected": "✓ Buchung erkannt — nach der Bestätigung erscheint sie in Ihrer Bestellübersicht.",
+      "labels": {
+        "email": "E-Mail"
+      },
+      "placeholders": {
+        "email": "name@domain.com"
+      },
+      "cta": {
+        "default": "Code senden",
+        "loading": "Code wird gesendet…"
+      },
+      "errors": {
+        "alreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert. Bitte melden Sie sich an."
+      },
+      "footer": {
+        "haveAccount": "Bereits ein Konto?",
+        "login": "Anmelden"
+      }
+    },
+    "setPassword": {
+      "loading": {
+        "title": "Lädt…",
+        "subtitle": "Bitte warten."
+      },
+      "title": "Passwort festlegen",
+      "subtitle": "Erstellen Sie ein Passwort für zukünftige Anmeldungen (E-Mail + Passwort).",
+      "placeholders": {
+        "password": "Neues Passwort (mind. 8 Zeichen)",
+        "confirm": "Passwort wiederholen"
+      },
+      "cta": {
+        "default": "Passwort speichern",
+        "loading": "Wird gespeichert…"
+      },
+      "status": {
+        "ok": "Passwort erfolgreich gespeichert."
+      },
+      "errors": {
+        "minLen": "Mindestens 8 Zeichen erforderlich",
+        "uppercase": "Mindestens ein Großbuchstabe erforderlich",
+        "number": "Mindestens eine Zahl erforderlich",
+        "mismatch": "Die Passwörter stimmen nicht überein."
+      },
+      "support": {
+        "prefix": "Bei Problemen wenden Sie sich bitte an"
+      }
+    }
   }
 }

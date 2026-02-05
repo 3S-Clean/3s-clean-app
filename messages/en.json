@@ -634,5 +634,121 @@
       "notifiedTitle": "You’ll be notified",
       "notifiedBody": "We’ll email you when we expand to PLZ {postcode}."
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Log in to manage bookings and access your cleaning records.",
+      "bookingDetected": "✓ Booking detected — after login it will be linked to your account.",
+      "labels": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "placeholders": {
+        "email": "Enter your email address",
+        "password": "Enter your password"
+      },
+      "links": {
+        "forgotPassword": "Forgot password?"
+      },
+      "cta": {
+        "default": "Log in",
+        "loading": "Logging in…"
+      },
+      "status": {
+        "confirmEmail": "Please confirm your email first. Check your inbox.",
+        "wrongCredentials": "Wrong email or password."
+      },
+      "footer": {
+        "noAccount": "Don't have an account?",
+        "signup": "Sign up"
+      }
+    },
+    "verifyCode": {
+      "loading": "Loading…",
+      "titles": {
+        "signup": "Verify your email",
+        "recovery": "Enter reset code"
+      },
+      "sentPrefix": "We sent a verification code to",
+      "bookingDetected": "✓ Booking detected — after verification it will be linked to your account.",
+      "placeholders": {
+        "code": "••••••••"
+      },
+      "meta": {
+        "expiresPrefix": "Code expires in",
+        "resendInPrefix": "Resend available in",
+        "resendNow": "You can resend now"
+      },
+      "cta": {
+        "verify": "Verify",
+        "verifying": "Verifying…",
+        "resend": "Resend code",
+        "resendWithTimer": "Resend code ({time})",
+        "openOrders": "Open my orders"
+      },
+      "status": {
+        "resent": "Code resent. Check your inbox.",
+        "verifiedButNotLinked": "Verified. We couldn’t link the booking yet — please open your account orders."
+      },
+      "errors": {
+        "missingEmail": "Missing email. Please start again.",
+        "invalidCode": "Enter the 8-digit verification code.",
+        "expired": "This code has expired. Please request a new one.",
+        "recoverySessionMissing": "Recovery session not found yet. Please try again or request a new code.",
+        "cooldown": "Please wait {time} before resending."
+      },
+      "footerHint": "If you entered the wrong email, go back and try again."
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Enter your email — we’ll send you a verification code.",
+      "bookingDetected": "✓ Booking detected — after verification it will appear in your order history.",
+      "labels": {
+        "email": "Email"
+      },
+      "placeholders": {
+        "email": "name@domain.com"
+      },
+      "cta": {
+        "default": "Send code",
+        "loading": "Sending code…"
+      },
+      "errors": {
+        "alreadyRegistered": "This email is already registered. Try logging in."
+      },
+      "footer": {
+        "haveAccount": "Already have an account?",
+        "login": "Log in"
+      }
+    },
+    "setPassword": {
+      "loading": {
+        "title": "Loading…",
+        "subtitle": "Please wait."
+      },
+      "title": "Set password",
+      "subtitle": "Create a password for future logins (email + password).",
+      "placeholders": {
+        "password": "New password (min 8 chars)",
+        "confirm": "Repeat password"
+      },
+      "cta": {
+        "default": "Save password",
+        "loading": "Saving…"
+      },
+      "status": {
+        "ok": "Password set successfully."
+      },
+      "errors": {
+        "minLen": "Minimum 8 characters",
+        "uppercase": "Must contain at least one uppercase letter",
+        "number": "Must contain at least one number",
+        "mismatch": "Passwords do not match."
+      },
+      "support": {
+        "prefix": "If you have any issues, contact"
+      }
+    }
   }
 }

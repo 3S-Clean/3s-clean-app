@@ -2,7 +2,7 @@ export const CARD_FRAME_BASE = [
     "relative overflow-hidden",
     "rounded-3xl",
     // subtle premium gradient (light)
-    "bg-gradient-to-br from-white via-white to-gray-50/50",
+    "bg-[var(--card)] backdrop-blur-sm",
     "text-gray-900",
     // Light: subtle inner highlight (like dark)
     "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.70),0_8px_24px_rgba(0,0,0,0.08)]",

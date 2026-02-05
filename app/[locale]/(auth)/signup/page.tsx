@@ -1,23 +1,32 @@
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 import {createClient} from "@/lib/supabase/client";
 import {signupEmailSchema, type SignupEmailValues} from "@/lib/validators";
 import {useBookingStore} from "@/lib/booking/store";
+import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
 
 export default function SignupClient() {
     const router = useRouter();
     const sp = useSearchParams();
+    const pathname = usePathname();
+    const t = useTranslations("auth.signup");
 
     const supabase = useMemo(() => createClient(), []);
     const {resetBooking} = useBookingStore();
 
     const prefillEmail = sp.get("email") || "";
     const pendingOrderToken = sp.get("pendingOrder") || "";
+
+    // locale-aware hrefs for /en/* and /de/*
+    const locale = pathname.split("/")[1];
+    const hasLocale = locale === "en" || locale === "de";
+    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
 
     const {
         register,
@@ -31,7 +40,7 @@ export default function SignupClient() {
         mode: "onChange",
     });
 
-    // если query email меняется — обновим поле
+    // if query email changes — update field
     useEffect(() => {
         if (prefillEmail) setValue("email", prefillEmail, {shouldValidate: true});
     }, [prefillEmail, setValue]);
@@ -61,7 +70,7 @@ export default function SignupClient() {
                 low.includes("already exists") ||
                 low.includes("duplicate") ||
                 low.includes("already")
-                    ? "This email is already registered. Try logging in."
+                    ? t("errors.alreadyRegistered")
                     : error.message;
 
             setStatus({type: "error", msg});
@@ -74,7 +83,7 @@ export default function SignupClient() {
         } catch {
         }
 
-        // если есть pendingOrder — букинг “сохранён” в orders, store можно чистить
+        // if pendingOrder exists — booking is already in orders, can reset store
         if (pendingOrderToken) resetBooking();
 
         const qs = new URLSearchParams();
@@ -82,77 +91,75 @@ export default function SignupClient() {
         qs.set("email", values.email);
         if (pendingOrderToken) qs.set("pendingOrder", pendingOrderToken);
 
-        router.replace(`/verify-code?${qs.toString()}`);
+        router.replace(withLocale(`/verify-code?${qs.toString()}`));
     };
 
     return (
-        <div className={shouldShake ? "gc-shake" : ""}>
-            <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">Sign Up</h1>
-            <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
-                Enter your email — we’ll send you a verification code.
-                {pendingOrderToken ? (
-                    <>
-                        {" "}
-                        <span className="text-[color:var(--text)]/90">Your booking will be saved to your account.</span>
-                    </>
-                ) : null}
-            </p>
-            {pendingOrderToken ? (
-                <div
-                    className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
-                    <p className="text-sm text-[color:var(--muted)]">
-                        ✓ Booking detected — after verification it will appear in your order history.
-                    </p>
-                </div>
-            ) : null}
-            <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-[color:var(--muted)]">Email</label>
-                    <input
-                        type="email"
-                        placeholder="name@domain.com"
+        <div className={[shouldShake ? "gc-shake" : "", "space-y-6"].filter(Boolean).join(" ")}>
+            {/* main signup card content */}
+            <div>
+                <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">{t("title")}</h1>
+
+                <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">{t("subtitle")}</p>
+
+                <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-[color:var(--muted)]">{t("labels.email")}</label>
+                        <input
+                            type="email"
+                            placeholder={t("placeholders.email")}
+                            className={[
+                                "w-full",
+                                CARD_FRAME_BASE,
+                                "rounded-2xl px-4 py-3.5 text-[15px]",
+                                "bg-transparent",
+                                "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
+                                "outline-none transition-all duration-200",
+                                "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                                "active:scale-[0.99]",
+                                errors.email ? "ring-2 ring-red-400/50" : "",
+                            ].join(" ")}
+                            {...register("email")}
+                        />
+                        {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={!isValid || isSubmitting}
                         className={[
-                            "w-full",
-                            CARD_FRAME_BASE,
-                            "rounded-2xl px-4 py-3.5 text-[15px]",
-                            "bg-transparent",
-                            "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
-                            "outline-none transition-all duration-200",
-                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
-                            "active:scale-[0.99]",
-                            errors.email ? "ring-2 ring-red-400/50" : "",
+                            "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                            "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
+                            "hover:opacity-90",
+                            "disabled:opacity-40 disabled:cursor-not-allowed",
                         ].join(" ")}
-                        {...register("email")}
-                    />
-                    {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
-                </div>
-                <button
-                    type="submit"
-                    disabled={!isValid || isSubmitting}
-                    className={[
-                        "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
-                        "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
-                        "hover:opacity-90",
-                        "disabled:opacity-40 disabled:cursor-not-allowed",
-                    ].join(" ")}
-                >
-                    {isSubmitting ? "Sending code…" : "Send code"}
-                </button>
-                {status && (
-                    <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
-                        {status.msg}
-                    </p>
-                )}
-                <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
-                    Already have an account?{" "}
-                    <a
-                        className="text-[color:var(--text)] hover:underline cursor-pointer"
-                        href={pendingOrderToken ? `/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : "/login"}
                     >
-                        Log in
-                    </a>
-                </p>
-            </form>
+                        {isSubmitting ? t("cta.loading") : t("cta.default")}
+                    </button>
+
+                    {status && (
+                        <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
+                            {status.msg}
+                        </p>
+                    )}
+
+                    <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
+                        {t("footer.haveAccount")}{" "}
+                        <a
+                            className="text-[color:var(--text)] hover:underline cursor-pointer"
+                            href={
+                                pendingOrderToken
+                                    ? withLocale(`/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}`)
+                                    : withLocale("/login")
+                            }
+                        >
+                            {t("footer.login")}
+                        </a>
+                    </p>
+                </form>
+            </div>
+            {/* ✅ separate card UNDER the signup card */}
+            {pendingOrderToken ? <BookingDetectedCard text={t("bookingDetected")}/> : null}
         </div>
     );
 }

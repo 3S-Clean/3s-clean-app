@@ -91,11 +91,11 @@ export default function ServiceCard(props: ServiceCardProps) {
                 <div
                     className={[
                         "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center",
-                        "bg-gray-900 border border-white/10",
+                        "bg-gray-900 border border-white/10 dark:bg-white dark:border-black/10",
                     ].join(" ")}
                     aria-hidden="true"
                 >
-                    <Check className="w-5 h-5 text-white"/>
+                    <Check className="w-5 h-5 text-white dark:text-gray-900"/>
                 </div>
             )}
             <div className="px-6 md:px-8 py-7 md:py-8">
@@ -121,13 +121,11 @@ export default function ServiceCard(props: ServiceCardProps) {
                             "py-2.5",
                             "transition-all border",
                             "bg-gray-900 text-white border-gray-900",
-                            // Hover only on devices that actually support hover (fix Android sticky hover)
-                            "[@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-gray-900 [@media(hover:hover)]:hover:border-gray-900",
                             "dark:bg-white dark:text-gray-900 dark:border-white/20",
-                            "[@media(hover:hover)]:dark:hover:bg-gray-900 [@media(hover:hover)]:dark:hover:text-white [@media(hover:hover)]:dark:hover:border-white/20",
-                            // Touch feedback (phones/tablets)
-                            "active:bg-white active:text-gray-900 active:border-gray-900",
-                            "dark:active:bg-gray-900 dark:active:text-white dark:active:border-white/20",
+                            "[@media(hover:hover)]:hover:shadow-[inset_0_0_0_999px_rgba(255,255,255,0.06)]",
+                            "[@media(hover:hover)]:dark:hover:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.06)]",
+                            "active:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.06)]",
+                            "dark:active:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.10)]",
                         ].join(" ")}
                     >
                         {ctaLabel}
@@ -141,15 +139,15 @@ export default function ServiceCard(props: ServiceCardProps) {
                             props.onSelect();
                         }}
                         className={[
-                            "mt-5 w-full text-center font-semibold rounded-full",
+                            "mt-5 block w-full text-center font-semibold rounded-full",
                             "py-2.5",
                             "transition-all border",
                             "bg-gray-900 text-white border-gray-900",
-                            "[@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-gray-900 [@media(hover:hover)]:hover:border-gray-900",
                             "dark:bg-white dark:text-gray-900 dark:border-white/20",
-                            "[@media(hover:hover)]:dark:hover:bg-gray-900 [@media(hover:hover)]:dark:hover:text-white [@media(hover:hover)]:dark:hover:border-white/20",
-                            "active:bg-white active:text-gray-900 active:border-gray-900",
-                            "dark:active:bg-gray-900 dark:active:text-white dark:active:border-white/20",
+                            "[@media(hover:hover)]:hover:shadow-[inset_0_0_0_999px_rgba(255,255,255,0.06)]",
+                            "[@media(hover:hover)]:dark:hover:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.06)]",
+                            "active:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.06)]",
+                            "dark:active:shadow-[inset_0_0_0_999px_rgba(0,0,0,0.10)]",
                         ].join(" ")}
                     >
                         {ctaLabel}

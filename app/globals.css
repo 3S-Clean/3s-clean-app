@@ -1,41 +1,35 @@
 @import "tailwindcss";
-html { -webkit-text-size-adjust: 100%; }
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 :root {
-    --background: #fcfcfd;
+    --background: #f8f9fa;
     --foreground: #111111;
     --primary: #111111;
     --primary-text: #ffffff;
     --text: #000;
-    --card: rgba(255,255,255,.70);
-    --border: rgba(0,0,0,.10);
-    --shadow: 0 20px 60px rgba(0,0,0,.08);
-    --muted: rgba(0,0,0,.55);
-    --input-bg: rgba(255,255,255,.70);
-    --input-border: rgba(0,0,0,.10);
-    --ring: rgba(0,0,0,.10);
-
-    /* IMPORTANT:
-       --font-inter приходит из next/font через className={inter.variable}.
-       Не задаём его тут вручную, иначе перетрём next/font.
-    */
+    --card: rgba(255, 255, 255, .62);
+    --border: rgba(0, 0, 0, .10);
+    --shadow: 0 20px 60px rgba(0, 0, 0, .08);
+    --muted: rgba(0, 0, 0, .55);
+    --input-bg: rgba(255, 255, 255, .70);
+    --input-border: rgba(0, 0, 0, .10);
+    --ring: rgba(0, 0, 0, .10);
     --font-ui: var(--font-inter),
     -apple-system, BlinkMacSystemFont,
     "SF Pro Text", "SF Pro Display",
     system-ui, sans-serif;
-
-    --autofill-bg: rgba(255,255,255,.70);
-    --autofill-text: rgba(0,0,0,.92);
-    --status-ok: rgba(0,0,0,.92);
+    --autofill-bg: rgba(255, 255, 255, .70);
+    --autofill-text: rgba(0, 0, 0, .92);
+    --status-ok: rgba(0, 0, 0, .92);
 }
 
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-
-    /* основной UI-шрифт */
     --font-sans: var(--font-ui);
-
-    /* моно для кода / чисел */
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
 }
@@ -43,34 +37,30 @@ html { -webkit-text-size-adjust: 100%; }
 /* ===============================
    TOKENS (DARK via system)
 ================================ */
-@media (prefers-color-scheme: dark){
-    :root{
+@media (prefers-color-scheme: dark) {
+    :root {
         --background: #070A0D;
-        --foreground: rgba(255,255,255,.92);
-
-        --card: rgba(255,255,255,.05);
-        --border: rgba(255,255,255,.10);
-        --shadow: 0 20px 70px rgba(0,0,0,.55);
-
+        --foreground: rgba(255, 255, 255, .92);
+        --card: rgba(255, 255, 255, .05);
+        --border: rgba(255, 255, 255, .10);
+        --shadow: 0 20px 70px rgba(0, 0, 0, .55);
         --text: #FFFFFF;
         --primary: #FFFFFF;
         --primary-text: #111111;
-        --muted: rgba(255,255,255,.60);
-
-        --input-bg: rgba(255,255,255,.05);
-        --input-border: rgba(255,255,255,.12);
-        --ring: rgba(255,255,255,.10);
-
-        --autofill-bg: rgba(255,255,255,.06);
-        --autofill-text: rgba(255,255,255,.92);
-        --status-ok: rgba(255,255,255,.92);
+        --muted: rgba(255, 255, 255, .60);
+        --input-bg: rgba(255, 255, 255, .05);
+        --input-border: rgba(255, 255, 255, .12);
+        --ring: rgba(255, 255, 255, .10);
+        --autofill-bg: rgba(255, 255, 255, .06);
+        --autofill-text: rgba(255, 255, 255, .92);
+        --status-ok: rgba(255, 255, 255, .92);
     }
 }
 
 /* ===============================
    BASE
 ================================ */
-body{
+body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-ui);
@@ -78,17 +68,31 @@ body{
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
 }
+
 /* ===============================
    SHAKE
 ================================ */
-@keyframes gc-shake{
-    0%,100%{ transform: translateX(0); }
-    20%{ transform: translateX(-6px); }
-    40%{ transform: translateX(6px); }
-    60%{ transform: translateX(-4px); }
-    80%{ transform: translateX(4px); }
+@keyframes gc-shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-6px);
+    }
+    40% {
+        transform: translateX(6px);
+    }
+    60% {
+        transform: translateX(-4px);
+    }
+    80% {
+        transform: translateX(4px);
+    }
 }
-.gc-shake{ animation: gc-shake 300ms ease-in-out; }
+
+.gc-shake {
+    animation: gc-shake 300ms ease-in-out;
+}
 
 /* ===============================
    INPUT SAFETY (не ломаем Tailwind)
@@ -96,7 +100,7 @@ body{
 input[type="email"],
 input[type="password"],
 input[type="text"],
-textarea{
+textarea {
     -webkit-font-smoothing: antialiased;
 }
 
@@ -106,7 +110,7 @@ textarea{
 ================================ */
 input:-webkit-autofill,
 textarea:-webkit-autofill,
-select:-webkit-autofill{
+select:-webkit-autofill {
     -webkit-text-fill-color: var(--autofill-text) !important;
     caret-color: var(--autofill-text) !important;
 
@@ -119,7 +123,7 @@ select:-webkit-autofill{
 }
 
 /* iOS иногда меняет размер/шрифт “первой строки” */
-input:-webkit-autofill::first-line{
+input:-webkit-autofill::first-line {
     font-family: inherit;
     font-size: inherit;
 }
@@ -127,24 +131,31 @@ input:-webkit-autofill::first-line{
 /* ===============================
    Backdrop blur Android fix
 ================================ */
-@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)){
+@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)) {
     input[type="email"],
     input[type="password"],
     input[type="text"],
-    textarea{
+    textarea {
         transform: translateZ(0);
     }
 }
 
 /* hide scrollbar */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 
 /* soft snap scrolling */
 .snap-x-soft {
     scroll-snap-type: x proximity;
     scroll-behavior: smooth;
 }
+
 .snap-item {
     scroll-snap-align: start;
 }

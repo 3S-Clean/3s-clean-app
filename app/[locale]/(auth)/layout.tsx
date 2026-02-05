@@ -5,6 +5,7 @@ import {Logo} from "@/components/ui/logo/Logo";
 import Link from "next/link";
 import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 
+
 export const viewport: Viewport = {
     themeColor: "#ffffff",
 };
@@ -28,7 +29,7 @@ export default function AuthLayout({children}: { children: ReactNode }) {
                     <Suspense
                         fallback={
                             <div className="text-center">
-                                <div className="animate-pulse text-[color:var(--muted)]">Loading…</div>
+                                <div className="animate-pulse text-[color:var(--muted)]">•••</div>
                             </div>
                         }
                     >

@@ -11,7 +11,7 @@ export default function AccountFooter() {
         <footer
             className="
         flex w-full flex-col items-center justify-center
-        bg-[#f8f9fa] dark:bg-[#070A0D]
+        bg-[#F5F6F8] dark:bg-[#070A0D]
         gap-6
         pt-8 pb-5
         lg:pt-[80px] lg:pb-[50px] lg:gap-8
@@ -19,16 +19,20 @@ export default function AccountFooter() {
         >
             <div className={PAGE_CONTAINER}>
                 <div className={CONTENT_GUTTER}>
-                    {/* Navigation Columns - single row on desktop, 3 columns on tablet, 1 column on mobile */}
+                    {/* Navigation Columns */}
                     <div
                         className="
               flex w-full flex-col gap-6
-              md:grid md:grid-cols-3 md:gap-8
+              md:grid md:grid-cols-6 md:gap-8
               lg:flex lg:flex-row lg:gap-12
             "
                     >
+                        {/* Top row (3 columns) */}
                         {footerColumns.map((column) => (
-                            <div key={column.title} className="flex flex-col gap-2 lg:gap-3">
+                            <div
+                                key={column.title}
+                                className="flex flex-col gap-2 lg:gap-3 md:col-span-2"
+                            >
                                 <h3
                                     className="
                     m-0 font-semibold
@@ -60,39 +64,8 @@ export default function AccountFooter() {
                             </div>
                         ))}
 
-                        {/* Resources (3rd on tablet) */}
-                        <div className="flex flex-col gap-2 lg:gap-3">
-                            <h3
-                                className="
-                  m-0 font-semibold
-                  text-[16px] leading-[110%]
-                  text-black/90 dark:text-white/90
-                  lg:text-[18px] lg:leading-[150%]
-                "
-                            >
-                                Resources
-                            </h3>
-                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                                {legalLinks.map((link) => (
-                                    <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="
-                        cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
-                        text-[13px] leading-[100%]
-                        text-black/90 dark:text-white/70
-                        lg:text-[15px] lg:leading-[130%]
-                      "
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Connect */}
-                        <div className="flex flex-col gap-2 lg:gap-3">
+                        {/* Bottom row (2 columns) */}
+                        <div className="flex flex-col gap-2 lg:gap-3 md:col-span-2">
                             <h3
                                 className="
                   m-0 font-semibold
@@ -150,6 +123,37 @@ export default function AccountFooter() {
                                         TikTok
                                     </Link>
                                 </li>
+                            </ul>
+                        </div>
+
+                        <div className="flex flex-col gap-2 lg:gap-3 md:col-span-2">
+                            <h3
+                                className="
+                  m-0 font-semibold
+                  text-[16px] leading-[110%]
+                  text-black/90 dark:text-white/90
+                  lg:text-[18px] lg:leading-[150%]
+                "
+                            >
+                                Resources
+                            </h3>
+
+                            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                                {legalLinks.map((link) => (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            className="
+                        cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
+                        text-[13px] leading-[100%]
+                        text-black/90 dark:text-white/70
+                        lg:text-[15px] lg:leading-[130%]
+                      "
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
