@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { Info } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import {createPortal} from "react-dom";
+import {Info} from "lucide-react";
+import {AnimatePresence, motion} from "framer-motion";
 
 /* ---------------- Touch UI detection ---------------- */
 
@@ -43,7 +43,7 @@ function useIsDarkTheme() {
 
         // слушаем смену класса (если когда-то будет class-based dark)
         const obs = new MutationObserver(update);
-        obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+        obs.observe(el, {attributes: true, attributeFilter: ["class"]});
 
         return () => {
             mq.removeEventListener("change", update);
@@ -136,6 +136,7 @@ export function InfoHelp({
         return () => window.removeEventListener("pointerdown", onDown, true);
     }, [open, isTouchUI]);
 
+    // ✅ our icon style: dark stays subtle white, light stays subtle gray
     const iconClass = useMemo(
         () =>
             isDarkTheme
@@ -171,7 +172,7 @@ export function InfoHelp({
                     setOpen((v) => !v);
                 }}
             >
-        <Info className="w-4 h-4" />
+        <Info className="w-4 h-4"/>
       </button>
 
             {/* ---------- DESKTOP TOOLTIP ---------- */}
@@ -191,9 +192,10 @@ export function InfoHelp({
                         "w-[min(22rem,calc(100vw-2rem))]",
                         "px-3 py-2 text-sm leading-snug",
                         "rounded-lg shadow-lg",
+                        "backdrop-blur",
                         isDarkTheme
-                            ? "bg-white text-gray-700 border border-gray-200"
-                            : "bg-gray-900 text-white border border-white/10",
+                            ? "bg-black/90 text-white border border-white/10"
+                            : "bg-white/90 text-gray-900 border border-black/10",
                     ].join(" ")}
                 >
                     {text}
@@ -210,9 +212,9 @@ export function InfoHelp({
                             className="fixed inset-0 z-[2147483647]"
                             role="dialog"
                             aria-modal="true"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            exit={{opacity: 0}}
                             onPointerDown={(e) => {
                                 const t = e.target as HTMLElement;
                                 if (t?.dataset?.sheet === "true") return;
@@ -226,9 +228,9 @@ export function InfoHelp({
                                         ? "absolute inset-0 bg-black/60"
                                         : "absolute inset-0 bg-black/40"
                                 }
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
+                                initial={{opacity: 0}}
+                                animate={{opacity: 1}}
+                                exit={{opacity: 0}}
                             />
 
                             {/* sheet */}
@@ -237,15 +239,18 @@ export function InfoHelp({
                                 className={[
                                     "absolute bottom-0 left-0 right-0",
                                     "rounded-t-3xl px-5 pt-4 pb-6 shadow-2xl",
-                                    // ✅ inverted like tooltip
-                                    isDarkTheme ? "bg-white text-gray-900" : "bg-gray-900 text-white",
+                                    "backdrop-blur",
+                                    // ✅ our style: no white in dark
+                                    isDarkTheme
+                                        ? "bg-black/90 text-white border-t border-white/10"
+                                        : "bg-white/90 text-gray-900 border-t border-black/10",
                                 ].join(" ")}
-                                initial={{ y: 24 }}
-                                animate={{ y: 0 }}
-                                exit={{ y: 220 }}
-                                transition={{ type: "spring", stiffness: 420, damping: 38 }}
+                                initial={{y: 24}}
+                                animate={{y: 0}}
+                                exit={{y: 220}}
+                                transition={{type: "spring", stiffness: 420, damping: 38}}
                                 drag="y"
-                                dragConstraints={{ top: 0 }}
+                                dragConstraints={{top: 0}}
                                 dragElastic={0.15}
                                 onDragEnd={(_, info) => {
                                     if (info.offset.y > 90 || info.velocity.y > 800) setOpen(false);
@@ -256,8 +261,8 @@ export function InfoHelp({
                                 <div
                                     className={
                                         isDarkTheme
-                                            ? "mx-auto mb-3 h-1 w-10 rounded-full bg-black/10"
-                                            : "mx-auto mb-3 h-1 w-10 rounded-full bg-white/20"
+                                            ? "mx-auto mb-3 h-1 w-10 rounded-full bg-white/20"
+                                            : "mx-auto mb-3 h-1 w-10 rounded-full bg-black/10"
                                     }
                                 />
 
@@ -269,8 +274,8 @@ export function InfoHelp({
                                             type="button"
                                             className={
                                                 isDarkTheme
-                                                    ? "mt-2 text-left text-sm text-gray-700"
-                                                    : "mt-2 text-left text-sm text-white/80"
+                                                    ? "mt-2 text-left text-sm text-white/80"
+                                                    : "mt-2 text-left text-sm text-gray-700"
                                             }
                                             onClick={(e) => {
                                                 stop(e);
@@ -285,8 +290,8 @@ export function InfoHelp({
                                         type="button"
                                         className={
                                             isDarkTheme
-                                                ? "text-sm font-semibold text-gray-700 px-3 py-2 -mr-2"
-                                                : "text-sm font-semibold text-white/70 px-3 py-2 -mr-2"
+                                                ? "text-sm font-semibold text-white/70 px-3 py-2 -mr-2"
+                                                : "text-sm font-semibold text-gray-700 px-3 py-2 -mr-2"
                                         }
                                         onClick={(e) => {
                                             stop(e);
