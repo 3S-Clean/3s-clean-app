@@ -8,18 +8,18 @@ import {APARTMENT_SIZES, FINAL_PRICES, PEOPLE_OPTIONS} from "@/lib/booking/confi
 import {isApartmentSizeId, isPeopleCountId, isServiceId} from "@/lib/booking/guards";
 import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/components/ui/card/CardFrame";
 
-// ✅ Selected state in our system:
-// light: dark card, white text
-// dark: white card, dark text
+// ✅ Selected state: border only (no fill)
+// light: dark ring
+// dark: light ring
 const SELECTED_CARD = [
-    "bg-gray-900 text-white",
-    "dark:bg-white dark:text-gray-900",
+    "ring-1 ring-gray-900/25",
+    "dark:ring-white/25",
 ].join(" ");
 
 // ✅ Base (not selected): use our standard clickable card base
 const BASE_CARD = CARD_FRAME_ACTION;
 
-// ✅ Selected: keep it clickable + our base rounding etc, but override bg/text
+// ✅ Selected: keep it clickable + our base rounding etc, but add ring
 const SELECTED_CARD_CLASS = [CARD_FRAME_ACTION, SELECTED_CARD].join(" ");
 
 // ✅ For checkbox rows (pets/kids/allergies) we want clickable card feel too
@@ -182,7 +182,7 @@ export default function ApartmentDetails() {
                                         className={[
                                             "text-[11px] mt-1",
                                             isSelected
-                                                ? "text-white/75 dark:text-gray-600"
+                                                ? "text-[var(--muted)]"
                                                 : diff === t("people.base")
                                                     ? "text-[var(--muted)]"
                                                     : "text-[color:var(--text)] font-medium",

@@ -27,10 +27,10 @@ const POPULAR: readonly ExtraId[] = ["linen-double", "linen-single"];
 const PRIMARY_SOLID = "bg-gray-900 text-white dark:bg-white dark:text-gray-900";
 const PRIMARY_HOVER = "hover:bg-gray-800 dark:hover:bg-white/90";
 
-// Selected text helpers
-const SEL_TEXT = "text-white dark:text-gray-900";
-const SEL_MUTED = "text-white/70 dark:text-gray-600";
-const SEL_MUTED_SOFT = "text-white/55 dark:text-gray-500";
+// Selected text helpers (no fill -> keep normal text colors)
+const SEL_TEXT = "text-[var(--text)]";
+const SEL_MUTED = "text-[var(--muted)]";
+const SEL_MUTED_SOFT = "text-[var(--muted)]/70";
 
 export default function ExtraServices() {
     const t = useTranslations("bookingExtras");
@@ -107,8 +107,8 @@ export default function ExtraServices() {
                             "text-left w-full p-4 rounded-3xl",
                             // ✅ only lift when NOT selected (selected should feel “solid”)
                             !isSelected ? CARD_FRAME_HOVER_LIFT : "",
-                            // ✅ selected = primary style
-                            isSelected ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ") : "",
+                            // ✅ selected = border only (no fill)
+                            isSelected ? "ring-1 ring-gray-900/25 dark:ring-white/25" : "",
                             // ✅ unselected keeps your card token; add a subtle hover ring only
                             !isSelected ? "hover:ring-1 hover:ring-[var(--text)]/10" : "",
                             // ✅ tiny active press
