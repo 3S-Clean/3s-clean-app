@@ -3,13 +3,12 @@ export const CARD_FRAME_BASE = [
     "rounded-3xl",
     "bg-[var(--card)] backdrop-blur-sm",
     "text-gray-900",
-    // Light: subtle inner highlight (like dark)
-    "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.70),0_8px_24px_rgba(0,0,0,0.08)]",
+    // Light: subtle inner highlight + bottom shade from mid -> bottom (premium depth)
+    "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.70),inset_0_-220px_320px_rgba(0,0,0,0.095),0_8px_24px_rgba(0,0,0,0.08)]",
     // Dark: subtle premium gradient (NOT white) + glass blur
     "dark:bg-gradient-to-br dark:from-[var(--card)]/85 dark:via-[var(--card)]/70 dark:to-black/30",
     "dark:backdrop-blur-sm dark:text-white",
     "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_12px_34px_rgba(0,0,0,0.48)]",
-    "shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
 ].join(" ");
 
 export const AUTH_CARD_BASE = [
