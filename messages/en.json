@@ -29,22 +29,22 @@
       "core": {
         "title": "CORE",
         "desc": "The essential cleaning program to keep your home consistently clean and presentable",
-        "price": "From € 120 including VAT"
+        "price": "From € 120"
       },
       "reset": {
         "title": "RESET",
         "desc": "An intensive deep cleaning to revitalize homes with heavy buildup from a long cleaning gap or after events.",
-        "price": "From € 200 including VAT"
+        "price": "From € 200"
       },
       "initial": {
         "title": "INITIAL",
         "desc": "Cleaning designed for first-time clients to establish a maintainable baseline level of cleanness for homes in normal condition.",
-        "price": "Recommended From € 165 including VAT"
+        "price": "From € 165"
       },
       "handover": {
         "title": "HANDOVER",
         "desc": "Cleaning to make your home move-in ready or before handover to landlord",
-        "price": "From € 220 including VAT"
+        "price": "From € 220"
       }
     }
   },

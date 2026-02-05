@@ -4,15 +4,20 @@ export const CARD_FRAME_BASE = [
     "bg-[var(--card)] backdrop-blur-sm",
     "text-gray-900",
 
-    // ✅ Light: NO top glow. Only bottom-to-mid depth (clean + premium)
-    "[box-shadow:inset_0_-260px_380px_rgba(0,0,0,0.14),0_8px_24px_rgba(0,0,0,0.08)]",
+    // Light: 50% pure, then gentle shade, then stronger same shade
+    "before:pointer-events-none before:absolute before:inset-0 before:content-['']",
+    "before:opacity-100",
+    "before:[background:linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_50%,rgba(0,0,0,0.03)_70%,rgba(0,0,0,0.10)_100%)]",
+    "dark:before:opacity-0",
 
-    // Dark: subtle premium gradient (NOT white) + glass blur
+    // Light: subtle inner highlight + outer depth
+    "[box-shadow:inset_0_1px_0_rgba(255,255,255,0.70),0_8px_24px_rgba(0,0,0,0.08)]",
+
+    // Dark
     "dark:bg-gradient-to-br dark:from-[var(--card)]/85 dark:via-[var(--card)]/70 dark:to-black/30",
     "dark:backdrop-blur-sm dark:text-white",
     "dark:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.10),0_12px_34px_rgba(0,0,0,0.48)]",
 ].join(" ");
-
 export const AUTH_CARD_BASE = [
     "relative overflow-hidden",
     "rounded-3xl",
