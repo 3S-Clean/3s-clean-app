@@ -15,7 +15,7 @@ export default function AuthLayout({children}: { children: ReactNode }) {
             <div className="w-full max-w-md">
                 <div className="mb-10 flex items-center justify-center">
                     <Link
-                        href="/#"
+                        href="/"
                         aria-label="Go to main website"
                         className="inline-flex items-center justify-center cursor-pointer transition duration-200 ease-out text-[color:var(--muted)] hover:opacity-70 focus:outline-none focus-visible:outline-none"
                         rel="noopener noreferrer"

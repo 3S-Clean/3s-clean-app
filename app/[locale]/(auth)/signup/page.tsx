@@ -88,7 +88,6 @@ export default function SignupClient() {
     return (
         <div className={shouldShake ? "gc-shake" : ""}>
             <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--text)]">Sign Up</h1>
-
             <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">
                 Enter your email — we’ll send you a verification code.
                 {pendingOrderToken ? (
@@ -98,7 +97,6 @@ export default function SignupClient() {
                     </>
                 ) : null}
             </p>
-
             {pendingOrderToken ? (
                 <div
                     className="mt-6 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)]/60 px-4 py-3 backdrop-blur">
@@ -107,7 +105,6 @@ export default function SignupClient() {
                     </p>
                 </div>
             ) : null}
-
             <form className="mt-10 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-[color:var(--muted)]">Email</label>
@@ -117,11 +114,11 @@ export default function SignupClient() {
                         className={[
                             "w-full",
                             CARD_FRAME_BASE,
-                            "rounded-2xl px-4 py-3.5 text-[16px]",
+                            "rounded-2xl px-4 py-3.5 text-[15px]",
                             "bg-transparent",
                             "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
                             "outline-none transition-all duration-200",
-                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
                             "active:scale-[0.99]",
                             errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
@@ -129,30 +126,27 @@ export default function SignupClient() {
                     />
                     {errors.email && <p className="text-sm text-red-500/90">{errors.email.message}</p>}
                 </div>
-
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className={[
-                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
-                        "bg-[var(--primary)] text-[var(--primary-text)]",
+                        "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
+                        "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
                         "hover:opacity-90",
                         "disabled:opacity-40 disabled:cursor-not-allowed",
                     ].join(" ")}
                 >
                     {isSubmitting ? "Sending code…" : "Send code"}
                 </button>
-
                 {status && (
                     <p className={["text-sm", status.type === "ok" ? "text-[color:var(--status-ok)]" : "text-red-500/90"].join(" ")}>
                         {status.msg}
                     </p>
                 )}
-
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Already have an account?{" "}
                     <a
-                        className="text-[color:var(--text)] hover:underline"
+                        className="text-[color:var(--text)] hover:underline cursor-pointer"
                         href={pendingOrderToken ? `/login?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : "/login"}
                     >
                         Log in

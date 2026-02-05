@@ -121,13 +121,11 @@ export default function LoginClient() {
                             "w-full",
                             CARD_FRAME_BASE,
                             "rounded-2xl px-4 py-3.5 text-[16px]",
-                            // input becomes “transparent field inside card”
                             "bg-transparent",
                             "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
                             "outline-none transition-all duration-200",
-                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
                             "active:scale-[0.99]",
-                            // error override (keep subtle, but clear)
                             errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
                         {...register("email")}
@@ -146,7 +144,7 @@ export default function LoginClient() {
                             "bg-transparent",
                             "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
                             "outline-none transition-all duration-200",
-                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
                             "active:scale-[0.99]",
                             errors.password ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
@@ -160,13 +158,12 @@ export default function LoginClient() {
                         Forgot password?
                     </Link>
                 </div>
-
                 <button
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className="
-                        w-full rounded-2xl py-3.5 text-[15px] font-medium transition
-                        bg-[var(--primary)] text-[var(--primary-text)]
+                        w-full rounded-3xl py-3.5 text-[15px] font-medium transition
+                        bg-gray-900 dark:bg-white text-white dark:text-gray-900
                         hover:opacity-90
                         disabled:opacity-40 disabled:cursor-not-allowed
                     "
@@ -182,7 +179,7 @@ export default function LoginClient() {
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Don&apos;t have an account?{" "}
                     <a
-                        className="text-[color:var(--text)] hover:underline"
+                        className="text-[color:var(--text)] hover:underline cursor-pointer"
                         href={pendingOrderToken ? `/signup?pendingOrder=${encodeURIComponent(pendingOrderToken)}` : "/signup"}
                     >
                         Sign up

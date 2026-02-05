@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
                             "bg-transparent",
                             "text-[color:var(--text)] placeholder:text-[color:var(--muted)]/70",
                             "outline-none transition-all duration-200",
-                            "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
+                            "focus:outline-none focus-visible:ring-1 focus-visible:ring-black/10 dark:focus-visible:ring-white/10",
                             "active:scale-[0.99]",
                             errors.email ? "ring-2 ring-red-400/50" : "",
                         ].join(" ")}
@@ -91,10 +91,9 @@ export default function ForgotPasswordPage() {
                     type="submit"
                     disabled={!isValid || isSubmitting}
                     className={[
-                        "w-full rounded-2xl py-3.5 text-[15px] font-medium transition",
+                        "w-full rounded-3xl py-3.5 text-[15px] font-medium transition",
                         "disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90",
-                        "bg-black text-white",
-                        "dark:bg-white dark:text-black",
+                        "bg-gray-900 dark:bg-white text-white dark:text-gray-900",
                     ].join(" ")}
                 >
                     {isSubmitting ? "Sending…" : "Send code"}
@@ -109,7 +108,6 @@ export default function ForgotPasswordPage() {
                         {status.msg}
                     </p>
                 )}
-
                 <p className="pt-2 text-center text-sm text-[color:var(--muted)]">
                     Back to{" "}
                     <Link className="text-[color:var(--text)] hover:underline" href="/login">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import {useEffect, useMemo, useState} from "react";
+import {useRouter} from "next/navigation";
+import {createClient} from "@/lib/supabase/client";
 
 export default function SetPasswordPage() {
     const router = useRouter();
@@ -25,7 +25,7 @@ export default function SetPasswordPage() {
         let cancelled = false;
 
         (async () => {
-            const { data, error } = await supabase.auth.getSession();
+            const {data, error} = await supabase.auth.getSession();
             if (cancelled) return;
 
             const ok = !!data.session && !error;
@@ -47,29 +47,30 @@ export default function SetPasswordPage() {
 
         const passwordError = validatePassword(password);
         if (passwordError) {
-            setStatus({ type: "error", msg: passwordError });
+            setStatus({type: "error", msg: passwordError});
             return;
         }
 
         if (password !== confirm) {
-            setStatus({ type: "error", msg: "Passwords do not match." });
+            setStatus({type: "error", msg: "Passwords do not match."});
             return;
         }
 
         setLoading(true);
         try {
-            const { error } = await supabase.auth.updateUser({ password });
+            const {error} = await supabase.auth.updateUser({password});
 
             if (error) {
-                setStatus({ type: "error", msg: error.message });
+                setStatus({type: "error", msg: error.message});
                 return;
             }
 
             try {
                 localStorage.removeItem("pendingEmail");
-            } catch {}
+            } catch {
+            }
 
-            setStatus({ type: "ok", msg: "Password set successfully." });
+            setStatus({type: "ok", msg: "Password set successfully."});
 
             router.replace("/account");
             router.refresh();
@@ -123,7 +124,6 @@ export default function SetPasswordPage() {
                         "focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--input-border)]",
                     ].join(" ")}
                 />
-
                 {/* primary: light black / dark white */}
                 <button
                     type="button"
@@ -138,7 +138,6 @@ export default function SetPasswordPage() {
                 >
                     {loading ? "Saving…" : "Save password"}
                 </button>
-
                 {status && (
                     <p
                         className={[
@@ -150,7 +149,6 @@ export default function SetPasswordPage() {
                     </p>
                 )}
             </div>
-
             <p className="mt-10 text-sm text-[color:var(--muted)]">
                 If you have any issues, contact{" "}
                 <a className="text-[color:var(--text)] hover:underline" href="mailto:support@3s-clean.com">
