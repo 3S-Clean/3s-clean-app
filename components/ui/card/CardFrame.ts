@@ -7,7 +7,7 @@ export const CARD_FRAME_BASE = [
     // Light: 50% pure, then gentle shade, then stronger same shade
     "before:pointer-events-none before:absolute before:inset-0 before:content-['']",
     "before:opacity-100",
-    "before:[background:linear-gradient(135deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_46%,rgba(0,0,0,0.06)_66%,rgba(0,0,0,0)_100%)]",
+    "before:[background:linear-gradient(135deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_46%,rgba(0,0,0,0.09)_66%,rgba(0,0,0,0)_100%)]",
     "dark:before:opacity-0",
 
     // Light: subtle inner highlight + outer depth
