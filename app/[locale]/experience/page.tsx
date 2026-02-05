@@ -31,6 +31,7 @@ type IncludeUI = { name: string; desc?: string };
 type ServiceUI = (typeof SERVICES)[number] & {
     title: string;
     desc: string;
+    rule: string;
     includes: IncludeUI[];
 };
 
@@ -79,6 +80,7 @@ export default function ExperiencePage() {
         return SERVICES.map((s) => {
             const title = tServices(`${s.id}.title`);
             const desc = tServices(`${s.id}.desc`);
+            const rule = tServices(`${s.id}.rule`);
 
             const includes = s.includesKeys.map((key) => {
                 const raw = tIncludes.raw(key) as
@@ -94,7 +96,7 @@ export default function ExperiencePage() {
                 return {name, desc};
             });
 
-            return {...s, title, desc, includes};
+            return {...s, title, desc, rule, includes};
         });
     }, [tServices, tIncludes]);
 
@@ -125,26 +127,31 @@ export default function ExperiencePage() {
                 {/* CARDS (REUSED ServiceCard) */}
                 <section className="py-10">
                     <div className={PAGE_CONTAINER}>
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="grid md:grid-cols-2 gap-9">
                             {servicesUi.map((service) => (
-                                <ServiceCard
-                                    key={service.id}
-                                    mode="link"
-                                    href={`/booking?service=${encodeURIComponent(service.id)}`}
-                                    service={service}
-                                    title={service.title}
-                                    desc={service.desc}
-                                    includes={service.includes}
-                                    // labels
-                                    fromLabel={t("cards.from")}
-                                    incVatLabel={t("cards.incVat")}
-                                    includesHeading={includesHeadingById[service.id]}
-                                    // CTA
-                                    ctaLabel={t("cards.cta")} // "Select"
-                                    showCta={true}
-                                    // tooltip component (если в ServiceCard поддержано)
-                                    Tooltip={Tooltip}
-                                />
+                                <div key={service.id}>
+                                    <ServiceCard
+                                        mode="link"
+                                        href={`/booking?service=${encodeURIComponent(service.id)}`}
+                                        service={service}
+                                        title={service.title}
+                                        desc={service.desc}
+                                        includes={service.includes}
+                                        // labels
+                                        fromLabel={t("cards.from")}
+                                        incVatLabel={t("cards.incVat")}
+                                        includesHeading={includesHeadingById[service.id]}
+                                        // CTA
+                                        ctaLabel={t("cards.cta")} // "Select"
+                                        showCta={true}
+                                        // tooltip component (если в ServiceCard поддержано)
+                                        Tooltip={Tooltip}
+                                    />
+                                    <p className="pl-7 mt-4 text-sm text-[var(--muted)]">
+                                        <span className="font-semibold text-[var(--text)]">Rule of thumb:</span>{" "}
+                                        {service.rule}
+                                    </p>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -178,7 +185,6 @@ export default function ExperiencePage() {
                         </div>
                     </div>
                 </section>
-
                 {/* EXCLUSIONS */}
                 <section className="py-12">
                     <div className={PAGE_CONTAINER}>

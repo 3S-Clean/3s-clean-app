@@ -18,6 +18,7 @@ type IncludeUI = { name: string; desc?: string };
 type ServiceUI = (typeof SERVICES)[number] & {
     title: string;
     desc: string;
+    rule: string;
     includes: IncludeUI[];
 };
 
@@ -38,6 +39,7 @@ export default function ServiceSelection() {
         return SERVICES.map((s) => {
             const title = tServices(`${s.id}.title`);
             const desc = tServices(`${s.id}.desc`);
+            const rule = tServices(`${s.id}.rule`);
 
             const includes = s.includesKeys.map((key) => {
                 const raw = tIncludes.raw(key) as
@@ -53,7 +55,7 @@ export default function ServiceSelection() {
                 return {name, desc};
             });
 
-            return {...s, title, desc, includes};
+            return {...s, title, desc, rule, includes};
         });
     }, [tServices, tIncludes]);
 
@@ -83,27 +85,32 @@ export default function ServiceSelection() {
             </div>
 
             {/* CARDS */}
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-9">
                 {servicesUi.map((service) => {
                     const isSelected = selectedService === service.id;
 
                     return (
-                        <ServiceCard
-                            key={service.id}
-                            mode="select"
-                            selected={isSelected}
-                            onSelect={() => onSelect(service.id)}
-                            service={service}
-                            title={service.title}
-                            desc={service.desc}
-                            includes={service.includes}
-                            fromLabel={t("from")}
-                            incVatLabel={t("incVat")}
-                            includesHeading={includesHeadingById[service.id]}
-                            showCta={false}
-                            ctaLabel=""
-                            Tooltip={Tooltip}
-                        />
+                        <div key={service.id}>
+                            <ServiceCard
+                                mode="select"
+                                selected={isSelected}
+                                onSelect={() => onSelect(service.id)}
+                                service={service}
+                                title={service.title}
+                                desc={service.desc}
+                                includes={service.includes}
+                                fromLabel={t("from")}
+                                incVatLabel={t("incVat")}
+                                includesHeading={includesHeadingById[service.id]}
+                                showCta={false}
+                                ctaLabel=""
+                                Tooltip={Tooltip}
+                            />
+                            <p className="pl-7 mt-4 text-sm text-[var(--muted)]">
+                                <span className="font-semibold text-[var(--text)]">Rule of thumb:</span>{" "}
+                                {service.rule}
+                            </p>
+                        </div>
                     );
                 })}
             </div>
