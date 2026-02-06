@@ -1,16 +1,24 @@
+// ==============================
+// ContactSchedule.tsx — FINAL (same selected glass as others)
+// ONLY CHANGES vs your provided file:
+// - replace black/white PRIMARY selection with the same border+ring glass selected style
+// (calendar selected day + selected time slot + accept button in modal)
+// Everything else unchanged.
+// ==============================
+
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useBookingStore} from "@/lib/booking/store";
-import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END,} from "@/lib/booking/config";
+import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END} from "@/lib/booking/config";
 import {ChevronLeft, ChevronRight, X} from "lucide-react";
 import {isApartmentSizeId, isExtraId, isServiceId} from "@/lib/booking/guards";
-import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE,} from "@/components/ui/card/CardFrame";
+import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/components/ui/card/CardFrame";
 
 type ExistingBookingRow = {
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // HH:mm
+    scheduled_date: string;
+    scheduled_time: string;
     estimated_hours: number;
 };
 
@@ -50,7 +58,6 @@ export default function ContactSchedule() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isTermsOpen, setIsTermsOpen] = useState(false);
 
-    // ---------- hours -> minutes ----------
     const estimatedMinutes = useMemo(() => {
         const baseHours =
             isServiceId(selectedService) && isApartmentSizeId(apartmentSize)
@@ -66,7 +73,6 @@ export default function ContactSchedule() {
         return Math.max(0, Math.round((baseHours + extrasHours) * 60));
     }, [selectedService, apartmentSize, extras]);
 
-    // ---------- fetch existing bookings ----------
     useEffect(() => {
         const controller = new AbortController();
 
@@ -95,7 +101,6 @@ export default function ContactSchedule() {
         return () => controller.abort();
     }, [currentMonth]);
 
-    // ---------- slot availability ----------
     const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
         const startMin = hour * 60 + minutes;
         const endMin = startMin + estimatedMinutes;
@@ -118,7 +123,6 @@ export default function ContactSchedule() {
     const hasSlots = (dateKey: string) =>
         TIME_SLOTS.some((s) => isSlotAvailable(dateKey, s.hour, s.minutes));
 
-    // ---------- calendar calc ----------
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
@@ -137,12 +141,16 @@ export default function ContactSchedule() {
     const monthLabel = currentMonth.toLocaleString(locale, {month: "long"});
     const weekdays = t.raw("calendar.weekdays") as unknown as string[];
 
-    // ✅ primary style (same as Continue)
-    const PRIMARY_SOLID = "bg-gray-900 text-white dark:bg-white dark:text-gray-900";
-    const PRIMARY_HOVER = "hover:bg-gray-800 dark:hover:bg-white/90";
     const DISABLED = "opacity-35 cursor-not-allowed";
 
-    // ✅ inputs same as your “visible” style
+    // ✅ unified selected glass (same as Extras/ApartmentDetails)
+    const SELECTED_GLASS = [
+        "bg-white/60 dark:bg-[var(--card)]/60 backdrop-blur",
+        "border border-black/12 dark:border-white/18",
+        "ring-1 ring-black/10 dark:ring-white/12",
+        "text-[var(--text)]",
+    ].join(" ");
+
     const INPUT = [
         "w-full rounded-2xl border backdrop-blur px-4 py-3.5 text-[15px] outline-none transition",
         "bg-white/70 dark:bg-[var(--card)]/70 text-[var(--text)]",
@@ -171,7 +179,6 @@ export default function ContactSchedule() {
 
     return (
         <div className="animate-fadeIn">
-            {/* Header */}
             <div className="mb-10">
                 {formData.firstName?.trim() ? (
                     <div className="text-md text-[var(--muted)] mb-2">
@@ -183,7 +190,6 @@ export default function ContactSchedule() {
                 <p className="text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
-            {/* Contact Form */}
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.firstName")}</label>
@@ -237,7 +243,6 @@ export default function ContactSchedule() {
                 />
             </div>
 
-            {/* PLZ / City / Country */}
             <div className="grid grid-cols-3 gap-4 mb-8">
                 <div>
                     <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("form.postalCode")}</label>
@@ -274,7 +279,6 @@ export default function ContactSchedule() {
                 </div>
             </div>
 
-            {/* Calendar */}
             <div className="mb-8">
                 <h3 className="text-lg font-semibold mb-2 text-[var(--text)]">{t("calendar.title")}</h3>
                 <p className="text-sm text-[var(--muted)] mb-5">
@@ -286,12 +290,8 @@ export default function ContactSchedule() {
 
                 <div className={[CARD_FRAME_BASE, "rounded-3xl p-6"].join(" ")}>
                     <div className="flex justify-between items-center mb-6">
-                        <button
-                            type="button"
-                            onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
-                            className={ICON_BTN}
-                            aria-label={t("calendar.prev")}
-                        >
+                        <button type="button" onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
+                                className={ICON_BTN} aria-label={t("calendar.prev")}>
                             <ChevronLeft className="w-5 h-5 text-[var(--muted)]"/>
                         </button>
 
@@ -300,12 +300,8 @@ export default function ContactSchedule() {
                             <span className="text-[var(--muted)]">{year}</span>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
-                            className={ICON_BTN}
-                            aria-label={t("calendar.next")}
-                        >
+                        <button type="button" onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
+                                className={ICON_BTN} aria-label={t("calendar.next")}>
                             <ChevronRight className="w-5 h-5 text-[var(--muted)]"/>
                         </button>
                     </div>
@@ -352,7 +348,7 @@ export default function ContactSchedule() {
                                         "aspect-square rounded-2xl text-sm font-medium transition-all",
                                         "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
-                                            ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ")
+                                            ? SELECTED_GLASS
                                             : disabled
                                                 ? `${DISABLED} text-[var(--muted)] bg-[var(--card)]/40`
                                                 : "text-[var(--text)] hover:bg-[var(--card)]/60",
@@ -367,7 +363,6 @@ export default function ContactSchedule() {
                 </div>
             </div>
 
-            {/* Time Slots */}
             {selectedDate && (
                 <div className="mb-8 animate-fadeIn">
                     <h3 className="text-base font-semibold mb-2 text-[var(--text)]">
@@ -397,7 +392,7 @@ export default function ContactSchedule() {
                                         "py-2.5 rounded-2xl text-sm font-medium transition-all",
                                         "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
-                                            ? [PRIMARY_SOLID, PRIMARY_HOVER].join(" ")
+                                            ? SELECTED_GLASS
                                             : available
                                                 ? "text-[var(--text)] hover:bg-[var(--card)]/60"
                                                 : `${DISABLED} bg-[var(--card)]/40 text-[var(--muted)]`,
@@ -418,7 +413,6 @@ export default function ContactSchedule() {
                 </div>
             )}
 
-            {/* Notes */}
             <div className="mb-5">
                 <label className="block text-sm font-medium mb-2 text-[var(--text)]">{t("notes.label")}</label>
                 <textarea
@@ -429,7 +423,6 @@ export default function ContactSchedule() {
                 />
             </div>
 
-            {/* ✅ Terms */}
             <div className={[CARD_FRAME_BASE, "rounded-3xl p-4"].join(" ")}>
                 <label className="flex items-start gap-3 cursor-pointer">
           <span className="relative mt-1">
@@ -454,11 +447,8 @@ export default function ContactSchedule() {
 
                     <div className="text-sm text-[var(--text)] leading-snug">
                         {t("terms.prefix")}{" "}
-                        <button
-                            type="button"
-                            onClick={() => setIsTermsOpen(true)}
-                            className="underline underline-offset-4 hover:opacity-80"
-                        >
+                        <button type="button" onClick={() => setIsTermsOpen(true)}
+                                className="underline underline-offset-4 hover:opacity-80">
                             {t("terms.link")}
                         </button>
                         .
@@ -468,7 +458,6 @@ export default function ContactSchedule() {
                 <div className="mt-2 text-xs text-[var(--muted)]">{t("terms.hint")}</div>
             </div>
 
-            {/* ✅ Terms modal */}
             {isTermsOpen && (
                 <div
                     className="fixed inset-0 z-[80] flex items-center justify-center px-6"
@@ -484,12 +473,8 @@ export default function ContactSchedule() {
                     >
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div className="text-lg font-semibold text-[var(--text)]">{t("terms.modalTitle")}</div>
-                            <button
-                                type="button"
-                                onClick={() => setIsTermsOpen(false)}
-                                className={ICON_BTN}
-                                aria-label={t("terms.close")}
-                            >
+                            <button type="button" onClick={() => setIsTermsOpen(false)} className={ICON_BTN}
+                                    aria-label={t("terms.close")}>
                                 <X className="w-5 h-5 text-[var(--muted)]"/>
                             </button>
                         </div>
@@ -519,7 +504,10 @@ export default function ContactSchedule() {
                                     setAcceptedTerms(true);
                                     setIsTermsOpen(false);
                                 }}
-                                className={["px-5 py-2.5 rounded-full font-semibold transition", PRIMARY_SOLID, PRIMARY_HOVER].join(" ")}
+                                className={[
+                                    "px-5 py-2.5 rounded-full font-semibold transition",
+                                    SELECTED_GLASS,
+                                ].join(" ")}
                             >
                                 {t("terms.accept")}
                             </button>

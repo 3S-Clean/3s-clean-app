@@ -8,21 +8,19 @@ import {APARTMENT_SIZES, FINAL_PRICES, PEOPLE_OPTIONS} from "@/lib/booking/confi
 import {isApartmentSizeId, isPeopleCountId, isServiceId} from "@/lib/booking/guards";
 import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/components/ui/card/CardFrame";
 
-// ✅ Selected state: border only (no fill)
-// light: dark ring
-// dark: light ring
-const SELECTED_CARD = [
-    "border-2 border-gray-900/35",
-    "dark:border-white/35",
+// ✅ unified base border (same language everywhere)
+const BASE_CARD = [
+    CARD_FRAME_ACTION,
+    "border border-black/8 dark:border-white/10",
 ].join(" ");
 
-// ✅ Selected: same base + stronger border (no fill)
-const SELECTED_CARD_CLASS = [CARD_FRAME_ACTION, SELECTED_CARD].join(" ");
+// ✅ unified selected (border + ring, no fill)
+const SELECTED_CARD_CLASS = [
+    CARD_FRAME_ACTION,
+    "border border-black/12 dark:border-white/18",
+    "ring-1 ring-black/10 dark:ring-white/12",
+].join(" ");
 
-// ✅ Base (not selected): use our standard clickable card base
-const BASE_CARD = CARD_FRAME_ACTION;
-
-// ✅ For checkbox rows (pets/kids/allergies) we want clickable card feel too
 const ROW_CARD_BASE = [
     CARD_FRAME_ACTION,
     "p-4 rounded-2xl",
@@ -63,7 +61,6 @@ export default function ApartmentDetails() {
         setAllergyNote,
     } = useBookingStore();
 
-    /** ✅ normalize store values -> strong ids (fixes TS7053 indexing) */
     const serviceId: ServiceId | null = isServiceId(String(selectedService ?? ""))
         ? (selectedService as ServiceId)
         : null;
@@ -106,7 +103,6 @@ export default function ApartmentDetails() {
                 <p className="text-sm text-[var(--muted)]">{t("subtitle")}</p>
             </div>
 
-            {/* Apartment Size */}
             <div className="mb-8">
                 <h3 className="text-base font-semibold mb-3 text-[var(--text)]">{t("size.title")}</h3>
 
@@ -121,7 +117,6 @@ export default function ApartmentDetails() {
                                 onClick={() => {
                                     const nextSize = size.id;
 
-                                    // ✅ if size changed -> reset people
                                     if (sizeId && sizeId !== nextSize) {
                                         setApartmentSize(nextSize);
                                         setPeopleCount(null);
@@ -146,7 +141,6 @@ export default function ApartmentDetails() {
                 {!sizeId && <div className="mt-3 text-xs text-[var(--muted)]">{t("size.tip")}</div>}
             </div>
 
-            {/* People */}
             <div className="mb-8">
                 <div className="flex items-end justify-between gap-4 mb-3">
                     <h3 className="text-base font-semibold text-[var(--text)]">{t("people.title")}</h3>
@@ -199,97 +193,82 @@ export default function ApartmentDetails() {
                 {!sizeId && <div className="mt-3 text-xs text-[var(--muted)]">{t("people.pickSizeFirst")}</div>}
             </div>
 
-            {/* Additional Info */}
             <div className="mb-8">
                 <h3 className="text-base font-semibold mb-3 text-[var(--text)]">{t("additional.title")}</h3>
 
-                {/* Pets */}
                 <label className={[ROW_CARD_BASE, "mb-3"].join(" ")}>
                     <div className="text-left">
                         <div className="font-medium text-sm text-[var(--text)]">{t("additional.pets")}</div>
 
                         {petSurcharge > 0 && (
                             <div
-                                className={
-                                    hasPets
-                                        ? "text-sm font-semibold text-[var(--text)]"
-                                        : "text-xs text-[var(--muted)]"
-                                }
-                            >
-                                {hasPets ? `+€${petSurcharge.toFixed(2)}` : t("additional.petsAdds", {price: petSurcharge.toFixed(2)})}
+                                className={hasPets ? "text-sm font-semibold text-[var(--text)]" : "text-xs text-[var(--muted)]"}>
+                                {hasPets
+                                    ? `+€${petSurcharge.toFixed(2)}`
+                                    : t("additional.petsAdds", {price: petSurcharge.toFixed(2)})}
                             </div>
                         )}
                     </div>
 
                     <span className="relative">
-                        <input
-                            type="checkbox"
-                            checked={hasPets}
-                            onChange={(e) => setHasPets(e.target.checked)}
-                            className="sr-only"
-                        />
-                        <span
-                            className={[
-                                "grid place-items-center w-6 h-6 rounded-full border transition",
-                                hasPets
-                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
-                            ].join(" ")}
-                            aria-hidden="true"
-                        >
-                            {hasPets ? <CheckIcon/> : null}
-                        </span>
-                    </span>
+            <input type="checkbox" checked={hasPets} onChange={(e) => setHasPets(e.target.checked)}
+                   className="sr-only"/>
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasPets
+                        ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasPets ? <CheckIcon/> : null}
+            </span>
+          </span>
                 </label>
 
-                {/* Kids */}
                 <label className={[ROW_CARD_BASE, "mb-3"].join(" ")}>
                     <div className="font-medium text-sm text-[var(--text)] text-left">{t("additional.kids")}</div>
 
                     <span className="relative">
-                        <input
-                            type="checkbox"
-                            checked={hasKids}
-                            onChange={(e) => setHasKids(e.target.checked)}
-                            className="sr-only"
-                        />
-                        <span
-                            className={[
-                                "grid place-items-center w-6 h-6 rounded-full border transition",
-                                hasKids
-                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
-                            ].join(" ")}
-                            aria-hidden="true"
-                        >
-                            {hasKids ? <CheckIcon/> : null}
-                        </span>
-                    </span>
+            <input type="checkbox" checked={hasKids} onChange={(e) => setHasKids(e.target.checked)}
+                   className="sr-only"/>
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasKids
+                        ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasKids ? <CheckIcon/> : null}
+            </span>
+          </span>
                 </label>
 
-                {/* Allergies */}
                 <label className={ROW_CARD_BASE}>
                     <div className="font-medium text-sm text-[var(--text)] text-left">{t("additional.allergies")}</div>
 
                     <span className="relative">
-                        <input
-                            type="checkbox"
-                            checked={hasAllergies}
-                            onChange={(e) => setHasAllergies(e.target.checked)}
-                            className="sr-only"
-                        />
-                        <span
-                            className={[
-                                "grid place-items-center w-6 h-6 rounded-full border transition",
-                                hasAllergies
-                                    ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                                    : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
-                            ].join(" ")}
-                            aria-hidden="true"
-                        >
-                            {hasAllergies ? <CheckIcon/> : null}
-                        </span>
-                    </span>
+            <input
+                type="checkbox"
+                checked={hasAllergies}
+                onChange={(e) => setHasAllergies(e.target.checked)}
+                className="sr-only"
+            />
+            <span
+                className={[
+                    "grid place-items-center w-6 h-6 rounded-full border transition",
+                    hasAllergies
+                        ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
+                        : "bg-transparent border-black/15 text-transparent dark:border-white/20 dark:text-transparent",
+                ].join(" ")}
+                aria-hidden="true"
+            >
+              {hasAllergies ? <CheckIcon/> : null}
+            </span>
+          </span>
                 </label>
 
                 {hasAllergies && (
@@ -299,7 +278,6 @@ export default function ApartmentDetails() {
                         placeholder={t("additional.allergiesPlaceholder")}
                         className={[
                             "w-full mt-3 px-4 py-3 rounded-xl resize-none text-sm outline-none transition",
-                            // ✅ same input feel as our auth/inputs, but keep textarea compact
                             AUTH_CARD_BASE,
                             "bg-transparent",
                             "placeholder:text-[color:var(--muted)]/70",
