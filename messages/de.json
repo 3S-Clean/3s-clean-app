@@ -1290,5 +1290,19 @@
         }
       }
     }
+  },
+  "nav": {
+    "promise": "Versprechen",
+    "experiences": "Leistungen",
+    "story": "Story",
+    "faq": "FAQ",
+    "contact": "Kontakt",
+    "bookNow": "Jetzt buchen",
+    "account": "Konto",
+    "signUp": "Registrieren",
+    "logIn": "Anmelden",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "goHome": "Zur Startseite"
   }
 }

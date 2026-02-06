@@ -1290,5 +1290,19 @@
         }
       }
     }
+  },
+  "nav": {
+    "promise": "Promise",
+    "experiences": "Experiences",
+    "story": "Story",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "bookNow": "Book Now",
+    "account": "Account",
+    "signUp": "Sign Up",
+    "logIn": "Log In",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "goHome": "Go to home"
   }
 }

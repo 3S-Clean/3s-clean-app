@@ -4,6 +4,7 @@ import "@/components/header/header.css";
 import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
+import {useTranslations} from "next-intl";
 import {createClient} from "@/lib/supabase/client";
 import {Logo} from "@/components/ui/logo/Logo";
 import {mainNav} from "@/lib/navigation/navigation";
@@ -14,8 +15,7 @@ import {PAGE_CONTAINER} from "@/components/ui/layout";
 
 export default function Header() {
     const pathname = usePathname();
-
-    // ✅ locale helpers (чтобы /en/... считалось active для href "/experience")
+    const tn = useTranslations("nav");
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
     const pathnameNoLocale = hasLocale ? pathname.replace(`/${locale}`, "") || "/" : pathname;
@@ -118,7 +118,8 @@ export default function Header() {
                             "lg:pt-[15px] lg:pb-[14px]",
                         ].join(" ")}
                     >
-                        <Link href={withLocale("/")} aria-label="Go to home" className="flex items-center leading-none">
+                        <Link href={withLocale("/")} aria-label={tn("goHome")}
+                              className="flex items-center leading-none">
                             <Logo
                                 className="w-[48px] h-[48px] md:w-[48px] md:h-[48px] lg:w-[38px] lg:h-[38px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                         </Link>
@@ -135,7 +136,7 @@ export default function Header() {
                                         isActive(item.href) ? "font-medium" : "",
                                     ].join(" ")}
                                 >
-                                    {item.label}
+                                    {tn(item.key)}
                                 </Link>
                             ))}
                         </nav>
@@ -180,7 +181,7 @@ export default function Header() {
                                 "active:border-transparent active:bg-[rgba(189,175,162,0.18)] dark:active:bg-[rgba(255,255,255,0.1)]",
                             ].join(" ")}
                         >
-                            Book Now
+                            {tn("bookNow")}
                         </Link>
                     </div>
                 </div>
@@ -205,14 +206,14 @@ export default function Header() {
                     <button
                         className="flex items-center justify-center justify-self-start border-0 bg-transparent cursor-pointer pl-4"
                         onClick={toggleMenu}
-                        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                        aria-label={isMenuOpen ? tn("closeMenu") : tn("openMenu")}
                         aria-expanded={isMenuOpen}
                     >
                         <MenuIcon className="w-6 h-6 text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </button>
 
                     <Link href={withLocale("/")} className="flex items-center justify-center justify-self-center"
-                          aria-label="Go to home">
+                          aria-label={tn("goHome")}>
                         <Logo className="w-[46px] h-[46px] text-[rgb(26,26,26)] dark:text-[rgba(255,255,255,0.92)]"/>
                     </Link>
 
@@ -229,7 +230,7 @@ export default function Header() {
                             "active:border-transparent active:bg-[rgba(189,175,162,0.18)] dark:active:bg-[rgba(255,255,255,0.1)]",
                         ].join(" ")}
                     >
-                        Book Now
+                        {tn("bookNow")}
                     </Link>
                 </div>
             </header>
@@ -275,7 +276,7 @@ export default function Header() {
                   transition-opacity duration-200 hover:opacity-70
                 "
                             >
-                                {item.label}
+                                {tn(item.key)}
                             </Link>
                         )
                     )}
@@ -300,7 +301,7 @@ export default function Header() {
                   transition-opacity duration-200
                 "
                             >
-                                Account
+                                {tn("account")}
                             </Link>
                         ) : (
                             <>
@@ -316,7 +317,7 @@ export default function Header() {
                     transition-opacity duration-200
                   "
                                 >
-                                    Sign Up
+                                    {tn("signUp")}
                                 </Link>
 
                                 <Link
@@ -331,7 +332,7 @@ export default function Header() {
                     transition-opacity duration-200
                   "
                                 >
-                                    Log In
+                                    {tn("logIn")}
                                 </Link>
                             </>
                         )}

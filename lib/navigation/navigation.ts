@@ -1,11 +1,10 @@
-// /lib/navigation/navigation.ts
 export const mainNav = [
-    {label: "Promise", href: "/promise"},
-    {label: "Experiences", href: "/experience"},
-    {label: "Story", href: "/story"},
-    {label: "FAQ", href: "/faq"},
-    {label: "Contact", href: "/contact"},
-];
+    {key: "promise", href: "/promise"},
+    {key: "experiences", href: "/experience"},
+    {key: "story", href: "/story"},
+    {key: "faq", href: "/faq"},
+    {key: "contact", href: "/contact"},
+] as const;
 
 export type FooterLink = { labelKey: string; href: string };
 export type FooterColumn = { titleKey: string; links: FooterLink[] };
