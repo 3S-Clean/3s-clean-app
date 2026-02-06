@@ -4,7 +4,6 @@ import {Mail, MapPin, MessageCircle, Phone} from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
-import PillCTA from "@/components/ui/buttons/PillCTA";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT} from "@/components/ui/card/CardFrame";
 import PageTitle from "@/components/ui/typography/PageTitle";
 import PageSubtitle from "@/components/ui/typography/PageSubtitle";
@@ -201,27 +200,6 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </section>
-
-                {/* Instant booking */}
-                <section className="py-8">
-                    <div className={PAGE_CONTAINER}>
-                        <div
-                            className={[
-                                CONTENT_GUTTER,
-                                "px-2 sm:px-4",
-                                "max-w-7xl xl:max-w-[1400px] mx-auto",
-                                "text-left md:text-center",
-                            ].join(" ")}
-                        >
-                            <SectionTitle>{t("instant.title")}</SectionTitle>
-                            <BodyText className="mb-5">{t("instant.subtitle")}</BodyText>
-                            <PillCTA href={withLocale("/booking")} className="max-w-[320px] md:mx-auto">
-                                {t("instant.cta")}
-                            </PillCTA>
-                        </div>
-                    </div>
-                </section>
-
                 {/* Privacy note */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
