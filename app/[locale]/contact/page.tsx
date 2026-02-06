@@ -4,7 +4,7 @@ import {Mail, MapPin, MessageCircle, Phone} from "lucide-react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
-import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT} from "@/components/ui/card/CardFrame";
+import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/components/ui/card/CardFrame";
 import PageTitle from "@/components/ui/typography/PageTitle";
 import PageSubtitle from "@/components/ui/typography/PageSubtitle";
 import SectionTitle from "@/components/ui/typography/SectionTitle";
@@ -15,12 +15,27 @@ import {useTranslations} from "next-intl";
 type HoursItem = { day: string; hours: string };
 
 const CONTACT_CARD = [CARD_FRAME_BASE, "px-6 md:px-8 py-7 md:py-8"].join(" ");
+
 const CONTACT_CARD_HOVER = [
     CARD_FRAME_BASE,
+    CARD_FRAME_INTERACTIVE, // ✅ active animations (hover/tap/focus) like other interactive cards
     "select-none transition-all duration-200",
     CARD_FRAME_HOVER_LIFT,
     "motion-reduce:transition-none motion-reduce:hover:transform-none",
     "px-6 md:px-8 py-7 md:py-8",
+].join(" ");
+
+// ✅ CTA buttons: glass style (no blue/solid look)
+const CTA_GLASS = [
+    "inline-flex items-center gap-2",
+    "px-5 py-3 rounded-xl",
+    "font-medium transition-all",
+    "border border-black/10 dark:border-white/10",
+    "bg-white/70 dark:bg-[var(--card)]/70 backdrop-blur",
+    "text-[var(--text)]",
+    "hover:ring-1 hover:ring-black/10 dark:hover:ring-white/15",
+    "active:scale-[0.99]",
+    "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
 ].join(" ");
 
 export default function ContactPage() {
@@ -100,16 +115,7 @@ export default function ContactPage() {
 
                                     <BodyText className="mb-5">{t("phone.body")}</BodyText>
 
-                                    <a
-                                        href="tel:+4917629607551"
-                                        className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
-                                    >
+                                    <a href="tel:+4917629607551" className={CTA_GLASS}>
                                         <Phone className="w-4 h-4"/>
                                         <span>+49 176 2960 7551</span>
                                     </a>
@@ -122,16 +128,7 @@ export default function ContactPage() {
                                         <SectionTitle>{t("email.title")}</SectionTitle>
                                     </div>
                                     <BodyText className="mb-5">{t("email.body")}</BodyText>
-                                    <a
-                                        href="mailto:kontakt@3s-clean.de"
-                                        className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
-                                    >
+                                    <a href="mailto:kontakt@3s-clean.de" className={CTA_GLASS}>
                                         <Mail className="w-4 h-4"/>
                                         <span>kontakt@3s-clean.de</span>
                                     </a>
@@ -160,13 +157,7 @@ export default function ContactPage() {
                                         href="https://wa.me/491762960755"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
+                                        className={CTA_GLASS}
                                     >
                                         <MessageCircle className="w-4 h-4"/>
                                         <span>{t("whatsapp.cta")}</span>
@@ -182,16 +173,7 @@ export default function ContactPage() {
 
                                     <BodyText className="mb-5">{t("business.body")}</BodyText>
 
-                                    <a
-                                        href="mailto:business@3s-clean.de"
-                                        className="
-                      inline-flex items-center gap-2
-                      px-5 py-3 rounded-xl
-                      font-medium transition-colors
-                      bg-gray-900 text-white hover:bg-gray-800
-                      dark:bg-white dark:text-gray-900 dark:hover:bg-white/90
-                    "
-                                    >
+                                    <a href="mailto:business@3s-clean.de" className={CTA_GLASS}>
                                         <Mail className="w-5 h-5"/>
                                         <span>business@3s-clean.de</span>
                                     </a>
@@ -200,6 +182,7 @@ export default function ContactPage() {
                         </div>
                     </div>
                 </section>
+
                 {/* Privacy note */}
                 <section className="py-8">
                     <div className={PAGE_CONTAINER}>
