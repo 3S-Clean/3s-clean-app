@@ -50,7 +50,7 @@ export default function ServiceSelection() {
 
                 const name = picked?.name ?? "";
                 const rawDesc = picked?.desc ?? "";
-                const desc = typeof rawDesc === "string" && rawDesc.trim() ? rawDesc : undefined;
+                const desc = rawDesc.trim() ? rawDesc : undefined;
 
                 return {name, desc};
             });
@@ -88,7 +88,6 @@ export default function ServiceSelection() {
             <div className="flex flex-col gap-9">
                 {servicesUi.map((service) => {
                     const isSelected = selectedService === service.id;
-
                     return (
                         <div key={service.id}>
                             <ServiceCard

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {useTranslations} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import {useMemo} from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
@@ -139,12 +139,18 @@ function formatDesktopHero(raw: string) {
 ------------------------------ */
 const EXPERIENCE_ORDER = ["core", "initial", "reset", "handover"] as const;
 type ExperienceId = (typeof EXPERIENCE_ORDER)[number];
-export default function HomePageClient() {
-    const t = useTranslations("home");
 
+
+export default function HomePageClient() {
+    const locale = useLocale();
+
+    const withLocale = (href: string) => {
+        const path = href.startsWith("/") ? href : `/${href}`;
+        return `/${locale}${path}`;
+    };
+    const t = useTranslations("home");
     const heroRaw = t("hero.title");
     const desktopHeroLines = useMemo(() => formatDesktopHero(heroRaw), [heroRaw]);
-
     const promise = useMemo(
         () => [
             {id: "sauber", title: t("promise.sauber.title"), desc: t("promise.sauber.desc")},
@@ -246,7 +252,8 @@ export default function HomePageClient() {
                             {promise.map((it, index) => (
                                 <Link
                                     key={it.id}
-                                    href={`/promise#${it.id}`}
+                                    href={withLocale(`/promise#${it.id}`)}
+                                    scroll={false}
                                     className="
                                             group block w-full min-w-0
                                             opacity-100 translate-y-0
@@ -317,7 +324,10 @@ export default function HomePageClient() {
                         </div>
                         <div className="flex flex-col xl:grid xl:grid-cols-2 gap-y-6 xl:gap-y-8 gap-x-3 xl:gap-x-4">
                             {experience.map((it) => (
-                                <Link key={it.id} href={`/experience#${it.id}`} className="group block min-w-0">
+                                <Link key={it.id}
+                                      href={withLocale(`/experience#${it.id}`)}
+                                      scroll={false}
+                                      className="group block min-w-0">
                                     <div className={[
                                         CARD_FRAME_GHOST_ACTION,
                                         "w-full min-w-0",

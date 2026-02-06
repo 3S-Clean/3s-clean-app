@@ -2,7 +2,6 @@
 
 import {useMemo} from "react";
 import {useTranslations} from "next-intl";
-
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import type {ServiceId} from "@/lib/booking/config";
@@ -14,6 +13,7 @@ import PageTitle from "@/components/ui/typography/PageTitle";
 import PageSubtitle from "@/components/ui/typography/PageSubtitle";
 import SectionTitle from "@/components/ui/typography/SectionTitle";
 import BodyText from "@/components/ui/typography/BodyText";
+import HashAnchorScroll from "@/components/ui/scroll/HashAnchorScroll";
 
 /* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({text, title}: { text: string; title?: string }) {
@@ -88,11 +88,9 @@ export default function ExperiencePage() {
                     | undefined;
 
                 const picked = raw?.[s.id] ?? raw?.core;
-
                 const name = picked?.name ?? "";
                 const rawDesc = picked?.desc ?? "";
-                const desc = typeof rawDesc === "string" && rawDesc.trim() ? rawDesc : undefined;
-
+                const desc = rawDesc.trim() ? rawDesc : undefined;
                 return {name, desc};
             });
 
@@ -114,6 +112,7 @@ export default function ExperiencePage() {
         <>
             <Header/>
             <main className="min-h-screen pt-[80px] bg-[var(--background)] text-[var(--text)]">
+                <HashAnchorScroll/>
                 {/* HERO */}
                 <section className="pt-10 pb-8 md:pt-16 md:pb-12">
                     <div className={PAGE_CONTAINER}>
@@ -123,13 +122,13 @@ export default function ExperiencePage() {
                         </div>
                     </div>
                 </section>
-
                 {/* CARDS (REUSED ServiceCard) */}
                 <section className="py-10">
                     <div className={PAGE_CONTAINER}>
                         <div className="grid md:grid-cols-2 gap-9">
                             {servicesUi.map((service) => (
-                                <div key={service.id}>
+                                <div className="scroll-mt-[110px]"
+                                     key={service.id} id={service.id}>
                                     <ServiceCard
                                         mode="link"
                                         href={`/booking?service=${encodeURIComponent(service.id)}`}
@@ -137,14 +136,11 @@ export default function ExperiencePage() {
                                         title={service.title}
                                         desc={service.desc}
                                         includes={service.includes}
-                                        // labels
                                         fromLabel={t("cards.from")}
                                         incVatLabel={t("cards.incVat")}
                                         includesHeading={includesHeadingById[service.id]}
-                                        // CTA
                                         ctaLabel={t("cards.cta")} // "Select"
                                         showCta={true}
-                                        // tooltip component (если в ServiceCard поддержано)
                                         Tooltip={Tooltip}
                                     />
                                     <p className="pl-7 mt-4 text-sm text-[var(--muted)]">
