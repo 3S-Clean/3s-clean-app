@@ -936,50 +936,50 @@
       },
       "support": {
         "prefix": "If you have any issues, contact"
+      }
+    },
+    "resetPassword": {
+      "checking": {
+        "title": "Preparing reset…",
+        "subtitle": "Please wait."
       },
-      "resetPassword": {
-        "checking": {
-          "title": "Preparing reset…",
-          "subtitle": "Please wait."
-        },
-        "error": {
-          "title": "Reset failed",
-          "cta": {
-            "requestNew": "Request a new reset code",
-            "backToLogin": "Back to login"
-          }
-        },
-        "success": {
-          "title": "Password updated",
-          "fallback": "Done."
-        },
-        "form": {
-          "title": "Set new password",
-          "subtitle": "Choose a new password for your account.",
-          "labels": {
-            "password": "New password",
-            "confirm": "Confirm new password"
-          },
-          "placeholders": {
-            "confirm": "Repeat your password",
-            "password": "Minimum 8 characters"
-          },
-          "cta": {
-            "default": "Update password",
-            "loading": "Saving…"
-          },
-          "footer": {
-            "backTo": "Back to",
-            "login": "Log in"
-          }
-        },
-        "status": {
-          "updated": "Password updated. Please log in with your new password."
-        },
-        "errors": {
-          "flowNotActive": "This reset flow is not active. Please request a new reset code.",
-          "sessionMissingOrExpired": "Your reset session is missing or expired. Please request a new reset code."
+      "error": {
+        "title": "Reset failed",
+        "cta": {
+          "requestNew": "Request a new reset code",
+          "backToLogin": "Back to login"
         }
+      },
+      "success": {
+        "title": "Password updated",
+        "fallback": "Done."
+      },
+      "form": {
+        "title": "Set new password",
+        "subtitle": "Choose a new password for your account.",
+        "labels": {
+          "password": "New password",
+          "confirm": "Confirm new password"
+        },
+        "placeholders": {
+          "confirm": "Repeat your password",
+          "password": "Minimum 8 characters"
+        },
+        "cta": {
+          "default": "Update password",
+          "loading": "Saving…"
+        },
+        "footer": {
+          "backTo": "Back to",
+          "login": "Log in"
+        }
+      },
+      "status": {
+        "updated": "Password updated. Please log in with your new password."
+      },
+      "errors": {
+        "flowNotActive": "This reset flow is not active. Please request a new reset code.",
+        "sessionMissingOrExpired": "Your reset session is missing or expired. Please request a new reset code."
       }
     }
   },

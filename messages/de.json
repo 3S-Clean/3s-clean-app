@@ -936,50 +936,50 @@
       },
       "support": {
         "prefix": "Bei Problemen kontaktieren Sie bitte"
+      }
+    },
+    "resetPassword": {
+      "checking": {
+        "title": "Reset wird vorbereitet …",
+        "subtitle": "Bitte warten."
       },
-      "resetPassword": {
-        "checking": {
-          "title": "Reset wird vorbereitet …",
-          "subtitle": "Bitte warten."
-        },
-        "error": {
-          "title": "Reset fehlgeschlagen",
-          "cta": {
-            "requestNew": "Neuen Reset-Code anfordern",
-            "backToLogin": "Zur Anmeldung"
-          }
-        },
-        "success": {
-          "title": "Passwort aktualisiert",
-          "fallback": "Fertig."
-        },
-        "form": {
-          "title": "Neues Passwort festlegen",
-          "subtitle": "Wählen Sie ein neues Passwort für Ihr Konto.",
-          "labels": {
-            "password": "Neues Passwort",
-            "confirm": "Neues Passwort bestätigen"
-          },
-          "placeholders": {
-            "confirm": "Passwort wiederholen",
-            "password": "Mindestens 8 Zeichen"
-          },
-          "cta": {
-            "default": "Passwort aktualisieren",
-            "loading": "Wird gespeichert …"
-          },
-          "footer": {
-            "backTo": "Zurück zu",
-            "login": "Anmelden"
-          }
-        },
-        "status": {
-          "updated": "Passwort aktualisiert. Bitte melden Sie sich mit Ihrem neuen Passwort an."
-        },
-        "errors": {
-          "flowNotActive": "Dieser Reset-Vorgang ist nicht aktiv. Bitte fordern Sie einen neuen Reset-Code an.",
-          "sessionMissingOrExpired": "Ihre Reset-Sitzung fehlt oder ist abgelaufen. Bitte fordern Sie einen neuen Reset-Code an."
+      "error": {
+        "title": "Reset fehlgeschlagen",
+        "cta": {
+          "requestNew": "Neuen Reset-Code anfordern",
+          "backToLogin": "Zur Anmeldung"
         }
+      },
+      "success": {
+        "title": "Passwort aktualisiert",
+        "fallback": "Fertig."
+      },
+      "form": {
+        "title": "Neues Passwort festlegen",
+        "subtitle": "Wählen Sie ein neues Passwort für Ihr Konto.",
+        "labels": {
+          "password": "Neues Passwort",
+          "confirm": "Neues Passwort bestätigen"
+        },
+        "placeholders": {
+          "confirm": "Passwort wiederholen",
+          "password": "Mindestens 8 Zeichen"
+        },
+        "cta": {
+          "default": "Passwort aktualisieren",
+          "loading": "Wird gespeichert …"
+        },
+        "footer": {
+          "backTo": "Zurück zu",
+          "login": "Anmelden"
+        }
+      },
+      "status": {
+        "updated": "Passwort aktualisiert. Bitte melden Sie sich mit Ihrem neuen Passwort an."
+      },
+      "errors": {
+        "flowNotActive": "Dieser Reset-Vorgang ist nicht aktiv. Bitte fordern Sie einen neuen Reset-Code an.",
+        "sessionMissingOrExpired": "Ihre Reset-Sitzung fehlt oder ist abgelaufen. Bitte fordern Sie einen neuen Reset-Code an."
       }
     }
   },

@@ -3,8 +3,8 @@
 import "@/components/header/header.css";
 import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
 import {useTranslations} from "next-intl";
+import {usePathname} from "next/navigation";
 import {createClient} from "@/lib/supabase/client";
 import {Logo} from "@/components/ui/logo/Logo";
 import {mainNav} from "@/lib/navigation/navigation";
