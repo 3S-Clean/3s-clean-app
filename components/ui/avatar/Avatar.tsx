@@ -5,8 +5,8 @@ type AvatarProps = {
     lastName?: string | null;
     email?: string | null;
     color?: string | null; // из profiles.avatar_color
-    seed?: string | null;  // fallback: user.id / email
-    size?: number;         // px
+    seed?: string | null; // fallback: user.id / email
+    size?: number; // px
     className?: string;
 };
 
@@ -55,7 +55,10 @@ export function Avatar({
     return (
         <div
             className={[
-                "grid place-items-center rounded-full border border-black/10 select-none",
+                "grid place-items-center rounded-full select-none",
+                // ✅ no border, premium glass edge
+                "shadow-[inset_0_1px_0_rgba(255,255,255,0.80),0_10px_24px_rgba(0,0,0,0.10)]",
+                "dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_14px_34px_rgba(0,0,0,0.55)]",
                 className || "",
             ].join(" ")}
             style={{
@@ -65,7 +68,7 @@ export function Avatar({
             }}
             aria-label="Avatar"
         >
-      <span className="font-semibold text-[14px] tracking-wide text-slate-900">
+      <span className="font-semibold text-[14px] tracking-wide text-[rgb(26,26,26)]">
         {initials}
       </span>
         </div>
