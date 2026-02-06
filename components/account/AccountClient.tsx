@@ -80,7 +80,11 @@ export default function AccountClient({
             <div className="min-h-screen bg-[var(--background)] pt-[92px] text-[var(--text)]">
                 <main className="mx-auto max-w-5xl px-4 py-8 md:px-6 lg:px-8 space-y-6">
                     {/* Top Card */}
-                    <div className={[CARD_FRAME_BASE, "p-6 md:p-8"].join(" ")}>
+                    <div className={[
+                        CARD_FRAME_BASE,
+                        "p-7 md:p-10",
+                        "min-h-[140px] md:min-h-[160px]",
+                    ].join(" ")}>
                         <div className="flex items-start justify-between gap-4">
                             <div>
                                 <h1 className="text-3xl font-semibold tracking-tight text-[var(--text)]">{t("title")}</h1>

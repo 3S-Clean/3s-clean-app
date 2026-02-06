@@ -56,7 +56,6 @@ export function Avatar({
         <div
             className={[
                 "grid place-items-center rounded-full select-none",
-                // ✅ no border, premium glass edge
                 "shadow-[inset_0_1px_0_rgba(255,255,255,0.80),0_10px_24px_rgba(0,0,0,0.10)]",
                 "dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_14px_34px_rgba(0,0,0,0.55)]",
                 className || "",

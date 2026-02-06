@@ -60,12 +60,12 @@ export function AvatarColorPicker({value, onChangeAction, disabled}: Props) {
                         "absolute right-0 top-full mt-2 z-[999]",
                         "flex items-center gap-2",
                         "rounded-2xl p-3",
-                        // ✅ new glass surface (matches site cards)
+                        "overflow-hidden",
                         "bg-[rgba(255,255,255,0.70)] dark:bg-[rgba(0,0,0,0.35)]",
                         "backdrop-blur-[20px] backdrop-saturate-[180%]",
                         "shadow-[0_12px_34px_rgba(0,0,0,0.14)] dark:shadow-[0_18px_44px_rgba(0,0,0,0.55)]",
-                        // ✅ angled mid-shade (light only)
                         "before:pointer-events-none before:absolute before:inset-0 before:content-['']",
+                        "before:rounded-2xl",
                         "before:opacity-100 dark:before:opacity-0",
                         "before:[background:linear-gradient(135deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_46%,rgba(0,0,0,0.10)_66%,rgba(0,0,0,0)_100%)]",
                     ].join(" ")}
@@ -87,10 +87,8 @@ export function AvatarColorPicker({value, onChangeAction, disabled}: Props) {
                                     "h-7 w-7 rounded-full",
                                     "transition-transform duration-150",
                                     "hover:scale-110 active:scale-105",
-                                    // subtle ring always (glass feel)
                                     "ring-1 ring-black/10 dark:ring-white/10",
                                     isActive ? "ring-2 ring-[#11A97D]" : "",
-                                    // focus ring
                                     "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                 ].join(" ")}
                                 style={{background: c}}
