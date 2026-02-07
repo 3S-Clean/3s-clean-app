@@ -8,7 +8,6 @@ export function getKlaroConfig(lang: KlaroLang) {
         storageName: "klaro",
         cookieName: "klaro",
         htmlTexts: false,
-
         mustConsent: true,
         acceptAll: true,
         hideDeclineAll: false,
