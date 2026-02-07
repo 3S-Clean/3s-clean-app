@@ -160,242 +160,34 @@ input:-webkit-autofill::first-line {
     scroll-snap-align: start;
 }
 
-
 /* ======================================================================
-   KLARO — 3S Clean Styling (NOTICE + SETTINGS MODAL)
-   - Notice: bottom-right (desktop) / bottom sheet (mobile)
-   - Modal: floating panel (desktop) / bottom sheet (mobile)
-   - NO dark overlay (only blur, no dim)
-   - Click FIX: toggles work (label -> input), switch is visual-only
-   - iOS ring + ALWAYS dot, active = darker + subtle glow
-   - WAAPI handles the "wow" open/close animations (CSS keeps premium look)
+   KLARO — 3S Clean FINAL (MOBILE SAFE + CardFrame + Dark text guaranteed)
    ====================================================================== */
 
-
-/* ======================================================================
-   1) NOTICE (cookie banner)
-   ====================================================================== */
-
-.klaro .cookie-notice {
-    position: fixed !important;
-    z-index: 9999 !important;
-
-    /* Desktop: bottom-right */
-    right: 18px !important;
-    bottom: 18px !important;
-    left: auto !important;
-    top: auto !important;
-
-    width: min(360px, calc(100vw - 36px)) !important;
-
-    overflow: hidden !important;
-    border-radius: 24px !important;
-    background: var(--card) !important;
-    color: var(--text) !important;
-
-    -webkit-backdrop-filter: blur(12px) !important;
-    backdrop-filter: blur(12px) !important;
-
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70),
-    0 8px 24px rgba(0, 0, 0, 0.08) !important;
-
-    /* gentle entry (ok even without WAAPI) */
-    opacity: 0;
-    transform: translateY(24px) scale(0.97);
-    filter: blur(6px);
-    animation: klaroAppleIn 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-/* Light diagonal highlight */
-.klaro .cookie-notice::before {
-    content: "" !important;
-    position: absolute !important;
-    inset: 0 !important;
-    pointer-events: none !important;
-    opacity: 1 !important;
-    background: linear-gradient(
-            135deg,
-            rgba(0, 0, 0, 0) 0%,
-            rgba(0, 0, 0, 0) 46%,
-            rgba(0, 0, 0, 0.09) 66%,
-            rgba(0, 0, 0, 0) 100%
-    ) !important;
-}
-
-.dark .klaro .cookie-notice {
-    background: linear-gradient(
-            to bottom right,
-            rgba(255, 255, 255, 0.00),
-            rgba(255, 255, 255, 0.00),
-            rgba(0, 0, 0, 0.30)
-    ) !important;
-
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    0 12px 34px rgba(0, 0, 0, 0.48) !important;
-
-    color: #fff !important;
-}
-
-.dark .klaro .cookie-notice::before {
-    opacity: 0 !important;
-}
-
-/* Mobile: bottom sheet */
-@media (max-width: 640px) {
-    .klaro .cookie-notice {
-        left: 12px !important;
-        right: 12px !important;
-        bottom: 12px !important;
-        width: auto !important;
-
-        border-radius: 26px !important;
-        transform: translateY(30px) scale(0.975);
-    }
-}
-
-/* Notice content spacing */
-.klaro .cookie-notice .cn-body {
-    padding: 16px 16px 14px !important;
-}
-
-.klaro .cookie-notice .cn-title {
-    font-size: 14px !important;
-    line-height: 1.2 !important;
-    margin: 0 0 6px 0 !important;
-    color: inherit !important;
-}
-
-.klaro .cookie-notice .cn-text {
-    font-size: 13px !important;
-    line-height: 1.35 !important;
-    margin: 0 !important;
-    color: rgba(0, 0, 0, 0.70) !important;
-}
-
-.dark .klaro .cookie-notice .cn-text {
-    color: rgba(255, 255, 255, 0.70) !important;
-}
-
-.klaro .cookie-notice .cn-buttons {
-    display: flex !important;
-    gap: 10px !important;
-    margin-top: 12px !important;
-    flex-wrap: wrap !important;
-}
-
-/* Notice buttons */
-.klaro .cookie-notice .cm-btn,
-.klaro .cookie-notice button {
-    border-radius: 999px !important;
-    font-weight: 600 !important;
-    padding: 10px 12px !important;
-    font-size: 13px !important;
-}
-
-.klaro .cookie-notice .cm-btn.cm-btn-accept-all,
-.klaro .cookie-notice .cm-btn.cm-btn-accept,
-.klaro .cookie-notice .cm-btn.cm-btn-save {
-    background: var(--primary, #3B82F6) !important;
-    color: #fff !important;
-    border: 0 !important;
-}
-
-.klaro .cookie-notice .cm-btn.cm-btn-decline,
-.klaro .cookie-notice .cm-btn.cm-btn-accept-necessary,
-.klaro .cookie-notice .cm-btn.cm-btn-info {
-    background: rgba(0, 0, 0, 0.06) !important;
-    color: var(--text) !important;
-    border: 1px solid rgba(0, 0, 0, 0.10) !important;
-}
-
-.dark .klaro .cookie-notice .cm-btn.cm-btn-decline,
-.dark .klaro .cookie-notice .cm-btn.cm-btn-accept-necessary,
-.dark .klaro .cookie-notice .cm-btn.cm-btn-info {
-    background: rgba(255, 255, 255, 0.10) !important;
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-}
-
-@media (hover: hover) {
-    .klaro .cookie-notice:hover {
-        transform: translateY(-4px) scale(1.005);
-        transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
-}
-
-.klaro .cookie-notice:active {
-    transform: scale(0.99);
-    transition: transform 140ms cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-
-/* Notice motion */
-@keyframes klaroAppleIn {
-    0% {
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-        filter: blur(12px);
-    }
-    60% {
-        opacity: 1;
-        transform: translateY(-6px) scale(1.015);
-        filter: blur(2px);
-    }
-    82% {
-        opacity: 1;
-        transform: translateY(2px) scale(0.998);
-        filter: blur(0.4px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .klaro .cookie-notice {
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-        filter: none !important;
-    }
-}
-
-
-/* ======================================================================
-   2) SETTINGS MODAL (cookieScreen)
-   DOM based on your snippet:
-   #cookieScreen.cookie-modal
-     .cm-bg
-     .cm-modal.cm-klaro
-       .cm-header (h1.title, p)
-       .cm-body (ul.cm-purposes > li.cm-purpose)
-       .cm-footer (.cm-footer-buttons > button.cm-btn...)
-   ====================================================================== */
-
+/* Screen */
 .klaro #cookieScreen.cookie-modal {
     position: fixed !important;
     inset: 0 !important;
     z-index: 10000 !important;
-
     display: grid !important;
     place-items: end end !important;
-
     padding: 18px !important;
 }
 
-/* Overlay: NO dim, only blur */
+/* Overlay: NO dim, NO blur (mobile tap-safe), does not block clicks */
 .klaro #cookieScreen.cookie-modal .cm-bg {
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(0, 0, 0, 0) !important; /* no dark overlay */
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    pointer-events: none !important;
+    background: rgba(0, 0, 0, 0) !important;
+    z-index: 0 !important;
 }
 
-/* Modal panel card */
+/* Panel = CardFrame */
 .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
     position: relative !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
 
     width: min(420px, calc(100vw - 36px)) !important;
     max-height: min(70vh, 620px) !important;
@@ -403,15 +195,16 @@ input:-webkit-autofill::first-line {
 
     border-radius: 24px !important;
     background: var(--card) !important;
-    color: var(--text) !important;
 
-    -webkit-backdrop-filter: blur(12px) !important;
-    backdrop-filter: blur(12px) !important;
+    /* blur ONLY on card (safe) */
+    -webkit-backdrop-filter: blur(14px) !important;
+    backdrop-filter: blur(14px) !important;
 
+    /* light CardFrame shadow */
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70),
     0 18px 60px rgba(0, 0, 0, 0.20) !important;
 
-    transform-origin: 100% 100%;
+    color: rgba(0, 0, 0, 0.92) !important;
 }
 
 /* Light diagonal highlight */
@@ -430,17 +223,6 @@ input:-webkit-autofill::first-line {
     ) !important;
 }
 
-/* Dark */
-.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    0 20px 70px rgba(0, 0, 0, 0.55) !important;
-    color: #fff !important;
-}
-
-.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before {
-    opacity: 0 !important;
-}
-
 /* Header */
 .klaro #cookieScreen.cookie-modal .cm-header {
     padding: 16px 16px 0 !important;
@@ -455,10 +237,6 @@ input:-webkit-autofill::first-line {
     color: rgba(0, 0, 0, 0.92) !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-header h1.title {
-    color: rgba(255, 255, 255, 0.94) !important;
-}
-
 .klaro #cookieScreen.cookie-modal .cm-header p {
     margin: 8px 0 0 0 !important;
     font-size: 12.5px !important;
@@ -466,18 +244,10 @@ input:-webkit-autofill::first-line {
     color: rgba(0, 0, 0, 0.68) !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-header p {
-    color: rgba(255, 255, 255, 0.70) !important;
-}
-
 .klaro #cookieScreen.cookie-modal .cm-header p a {
-    color: rgba(0, 0, 0, 0.78) !important;
     text-decoration: underline !important;
     text-underline-offset: 3px !important;
-}
-
-.dark .klaro #cookieScreen.cookie-modal .cm-header p a {
-    color: rgba(255, 255, 255, 0.82) !important;
+    color: rgba(0, 0, 0, 0.78) !important;
 }
 
 /* Body */
@@ -503,17 +273,60 @@ input:-webkit-autofill::first-line {
     margin-top: 10px !important;
 }
 
-/* Row */
-.klaro #cookieScreen.cookie-modal li.cm-purpose > label.cm-list-label {
+/* Rows */
+.klaro #cookieScreen.cookie-modal label.cm-list-label {
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
-
-    padding: 8px 10px !important;
+    padding: 10px 12px !important;
     border-radius: 16px !important;
-
     cursor: pointer !important;
     user-select: none !important;
+}
+
+/* =========================
+   Rows — CardFrame feel
+   (matches your card look)
+   ========================= */
+.klaro #cookieScreen.cookie-modal label.cm-list-label {
+    position: relative !important;
+    overflow: hidden !important;
+
+    /* light: glass surface */
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
+
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* diagonal highlight like CARD_FRAME_BASE */
+.klaro #cookieScreen.cookie-modal label.cm-list-label::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    opacity: 1 !important;
+    background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0) 46%,
+            rgba(0, 0, 0, 0.09) 66%,
+            rgba(0, 0, 0, 0) 100%
+    ) !important;
+}
+
+@media (hover: hover) {
+    .klaro #cookieScreen.cookie-modal label.cm-list-label:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.60),
+        0 10px 26px rgba(0, 0, 0, 0.10) !important;
+    }
+}
+
+.klaro #cookieScreen.cookie-modal label.cm-list-label:active {
+    transform: scale(0.99) !important;
 }
 
 /* Titles */
@@ -521,85 +334,66 @@ input:-webkit-autofill::first-line {
     font-size: 13.5px !important;
     font-weight: 650 !important;
     line-height: 1.2 !important;
-    color: rgba(0, 0, 0, 0.86) !important;
-}
-
-.dark .klaro #cookieScreen.cookie-modal .cm-list-title {
-    color: rgba(255, 255, 255, 0.86) !important;
+    color: rgba(0, 0, 0, 0.92) !important;
 }
 
 .klaro #cookieScreen.cookie-modal .cm-required {
     font-size: 12px !important;
     font-weight: 600 !important;
-    color: rgba(0, 0, 0, 0.55) !important;
     margin-left: 6px !important;
+    color: rgba(0, 0, 0, 0.55) !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-required {
-    color: rgba(255, 255, 255, 0.55) !important;
-}
-
-/* Hide services breakdown and toggle-all row */
-.klaro #cookieScreen.cookie-modal .cm-services {
+/* Hide service breakdown + toggle-all */
+.klaro #cookieScreen.cookie-modal .cm-services,
+.klaro #cookieScreen.cookie-modal .cm-toggle-all {
     display: none !important;
 }
 
-.klaro #cookieScreen.cookie-modal li.cm-toggle-all {
-    display: none !important;
-}
-
-/* ======================================================================
-   CLICK FIX (critical): keep inputs "real", hide offscreen, don't steal taps
-   ====================================================================== */
-
-/* Hide actual inputs offscreen (but keep them alive for label-for toggling) */
+/* Keep inputs alive, just hide */
 .klaro #cookieScreen.cookie-modal input.cm-list-input {
     position: absolute !important;
-    left: -9999px !important;
-    top: auto !important;
-    width: 1px !important;
-    height: 1px !important;
     opacity: 0 !important;
-    pointer-events: auto !important;
-}
-
-/* Switch visual should not capture pointer events */
-.klaro #cookieScreen.cookie-modal .cm-switch,
-.klaro #cookieScreen.cookie-modal .cm-switch * {
     pointer-events: none !important;
 }
 
-/* ======================================================================
-   iOS ring + ALWAYS dot + subtle glow (active)
-   ====================================================================== */
-
+/* =========================
+   Switch (YOUR FIX)
+   default: faint ring
+   active: ring disappears + dot appears
+   ========================= */
 .klaro #cookieScreen.cookie-modal .cm-switch {
     margin-left: auto !important;
     display: inline-flex !important;
     align-items: center !important;
+    pointer-events: none !important; /* label handles click */
 }
 
-/* Ring */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round {
-    box-sizing: border-box !important;
-
+/* Default ring */
+.klaro #cookieScreen.cookie-modal .slider.round {
     width: 18px !important;
     height: 18px !important;
     border-radius: 999px !important;
 
-    border: 1.5px solid rgba(0, 0, 0, 0.28) !important;
     background: transparent !important;
+    border: 1.5px solid rgba(0, 0, 0, 0.22) !important; /* faint ring */
+    box-shadow: none !important;
 
     position: relative !important;
-    display: block !important;
+    box-sizing: border-box !important;
 
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* ALWAYS inner dot */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round::after {
+/* Remove Klaro pseudo layers */
+.klaro #cookieScreen.cookie-modal .slider::before,
+.klaro #cookieScreen.cookie-modal .slider::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Dot hidden by default */
+.klaro #cookieScreen.cookie-modal .slider.round::after {
     content: "" !important;
     position: absolute !important;
     inset: 0 !important;
@@ -609,62 +403,34 @@ input:-webkit-autofill::first-line {
     height: 7px !important;
     border-radius: 999px !important;
 
-    background: rgba(0, 0, 0, 0.22) !important;
-    transform: scale(1);
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    background 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
-}
-
-/* Active */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active {
-    border-color: rgba(0, 0, 0, 0.60) !important;
-    box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.06) !important;
-}
-
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active::after {
     background: rgba(0, 0, 0, 0.78) !important;
-    transform: scale(1.12);
+    opacity: 0 !important;
+    transform: scale(0.92) !important;
+
+    transition: opacity 180ms cubic-bezier(0.2, 1, 0.25, 1),
+    transform 180ms cubic-bezier(0.2, 1, 0.25, 1) !important;
 }
 
-/* Dark */
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round {
-    border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+/* Active: remove ring + show dot */
+.klaro #cookieScreen.cookie-modal .slider.round.active {
+    border-color: transparent !important; /* ring disappears */
+    box-shadow: none !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round::after {
-    background: rgba(255, 255, 255, 0.22) !important;
+.klaro #cookieScreen.cookie-modal .slider.round.active::after {
+    opacity: 1 !important;
+    transform: scale(1) !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active {
-    border-color: rgba(255, 255, 255, 0.60) !important;
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08) !important;
-}
-
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active::after {
-    background: rgba(255, 255, 255, 0.90) !important;
-    transform: scale(1.12);
-}
-
-/* Press feedback on row */
-.klaro #cookieScreen.cookie-modal li.cm-purpose > label.cm-list-label:active {
-    transform: scale(0.99);
-    transition: transform 140ms cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-
-/* Focus-visible ring (keyboard) */
-.klaro #cookieScreen.cookie-modal label.cm-list-label:focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.14) !important;
-}
-
-.dark .klaro #cookieScreen.cookie-modal label.cm-list-label:focus-visible {
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14) !important;
+/* Necessary locked */
+.klaro #cookieScreen.cookie-modal input.cm-list-input:disabled + label.cm-list-label {
+    opacity: 0.85 !important;
+    cursor: not-allowed !important;
 }
 
 /* Footer */
 .klaro #cookieScreen.cookie-modal .cm-footer {
-    padding: 14px 16px 16px !important;
-    margin-top: 10px !important;
+    padding: 16px !important;
 }
 
 .klaro #cookieScreen.cookie-modal .cm-footer-buttons {
@@ -674,22 +440,24 @@ input:-webkit-autofill::first-line {
     flex-wrap: wrap !important;
 }
 
-.klaro #cookieScreen.cookie-modal .cm-footer-buttons .cm-btn {
+.klaro #cookieScreen.cookie-modal .cm-btn {
     border-radius: 999px !important;
-    font-weight: 600 !important;
     padding: 10px 14px !important;
+    font-weight: 600 !important;
     font-size: 13px !important;
     line-height: 1 !important;
+    cursor: pointer !important;
 }
 
-/* Primary */
+/* Primary button (Accept all) — СИНИЙ ФОН + БЕЛЫЙ ТЕКСТ */
+.klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
 .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all {
     background: var(--primary, #3B82F6) !important;
     color: #fff !important;
     border: 0 !important;
 }
 
-/* Secondary */
+/* Secondary buttons */
 .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
 .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept {
     background: rgba(0, 0, 0, 0.06) !important;
@@ -697,11 +465,10 @@ input:-webkit-autofill::first-line {
     border: 1px solid rgba(0, 0, 0, 0.10) !important;
 }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
-.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept {
-    background: rgba(255, 255, 255, 0.10) !important;
-    color: rgba(255, 255, 255, 0.90) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+/* Focus ring */
+.klaro #cookieScreen.cookie-modal label.cm-list-label:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.14) !important;
 }
 
 /* Mobile sheet */
@@ -715,7 +482,7 @@ input:-webkit-autofill::first-line {
         width: calc(100vw - 24px) !important;
         max-height: 62vh !important;
         border-radius: 26px !important;
-        transform-origin: 50% 100%;
+        transform-origin: 50% 100% !important;
     }
 
     .klaro #cookieScreen.cookie-modal .cm-body {
@@ -723,105 +490,193 @@ input:-webkit-autofill::first-line {
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .klaro #cookieScreen.cookie-modal .cm-bg {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-}
-
-
 /* ======================================================================
-   KLARO HARD RESET for switch visuals (kills the stuck grey circle/track)
-   Put at VERY END of app/globals.css
+   DARK MODE
    ====================================================================== */
 
-/* kill any default track/background on the switch wrapper */
-.klaro #cookieScreen.cookie-modal .cm-switch {
-    background: transparent !important;
-    box-shadow: none !important;
+html.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro,
+body.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro,
+.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
+    background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0.02),
+            rgba(0, 0, 0, 0.55)
+    ) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 22px 80px rgba(0, 0, 0, 0.72) !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before,
+body.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before,
+.dark .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before {
+    opacity: 0 !important;
+}
+
+/* Dark rows like your CardFrame dark */
+html.dark .klaro #cookieScreen.cookie-modal label.cm-list-label,
+body.dark .klaro #cookieScreen.cookie-modal label.cm-list-label,
+.dark .klaro #cookieScreen.cookie-modal label.cm-list-label,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal label.cm-list-label,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal label.cm-list-label {
+    background: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 12px 34px rgba(0, 0, 0, 0.30) !important;
+}
+
+html.dark .klaro #cookieScreen.cookie-modal label.cm-list-label::before,
+body.dark .klaro #cookieScreen.cookie-modal label.cm-list-label::before,
+.dark .klaro #cookieScreen.cookie-modal label.cm-list-label::before,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal label.cm-list-label::before,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal label.cm-list-label::before {
+    opacity: 0 !important;
+}
+
+/* Dark: text colors */
+html.dark .klaro #cookieScreen.cookie-modal .cm-header h1.title,
+body.dark .klaro #cookieScreen.cookie-modal .cm-header h1.title,
+.dark .klaro #cookieScreen.cookie-modal .cm-header h1.title,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header h1.title,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header h1.title {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html.dark .klaro #cookieScreen.cookie-modal .cm-list-title,
+body.dark .klaro #cookieScreen.cookie-modal .cm-list-title,
+.dark .klaro #cookieScreen.cookie-modal .cm-list-title,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-list-title,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-list-title {
+    color: rgba(255, 255, 255, 0.90) !important;
+}
+
+html.dark .klaro #cookieScreen.cookie-modal .cm-header p,
+body.dark .klaro #cookieScreen.cookie-modal .cm-header p,
+.dark .klaro #cookieScreen.cookie-modal .cm-header p,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header p,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header p,
+html.dark .klaro #cookieScreen.cookie-modal .cm-required,
+body.dark .klaro #cookieScreen.cookie-modal .cm-required,
+.dark .klaro #cookieScreen.cookie-modal .cm-required,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-required,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-required {
+    color: rgba(255, 255, 255, 0.70) !important;
+}
+
+html.dark .klaro #cookieScreen.cookie-modal .cm-header p a,
+body.dark .klaro #cookieScreen.cookie-modal .cm-header p a,
+.dark .klaro #cookieScreen.cookie-modal .cm-header p a,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header p a,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-header p a {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Dark: primary button — БЕЛЫЙ ТЕКСТ */
+html.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+html.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all,
+body.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+body.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all,
+.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all {
+    background: var(--primary, #3B82F6) !important;
+    color: #fff !important;
     border: 0 !important;
-    padding: 0 !important;
-    margin-left: auto !important;
-    width: auto !important;
-    height: auto !important;
 }
 
-/* kill any pseudo-elements that could draw the grey circle */
-.klaro #cookieScreen.cookie-modal .cm-switch::before,
-.klaro #cookieScreen.cookie-modal .cm-switch::after,
-.klaro #cookieScreen.cookie-modal .cm-switch .slider::before,
-.klaro #cookieScreen.cookie-modal .cm-switch .slider::after {
-    content: none !important;
-    display: none !important;
+/* Dark: secondary buttons */
+html.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+html.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept,
+body.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+body.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept,
+.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+.dark .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept {
+    background: rgba(255, 255, 255, 0.10) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: rgba(255, 255, 255, 0.92) !important;
 }
 
-/* HARD reset slider base (this is usually where Klaro draws the track) */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider {
-    all: unset !important;
-    box-sizing: border-box !important;
-    display: block !important;
-
-    width: 18px !important;
-    height: 18px !important;
-    border-radius: 999px !important;
-
-    background: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    border: 1.5px solid rgba(0, 0, 0, 0.28) !important;
-
-    position: relative !important;
-
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+/* Dark: switch */
+html.dark .klaro #cookieScreen.cookie-modal .slider.round,
+body.dark .klaro #cookieScreen.cookie-modal .slider.round,
+.dark .klaro #cookieScreen.cookie-modal .slider.round,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .slider.round,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .slider.round {
+    border-color: rgba(255, 255, 255, 0.20) !important; /* subtle ring */
 }
 
-/* ALWAYS dot (we re-introduce it as AFTER, not Klaro’s own) */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round::after {
-    content: "" !important;
-    position: absolute !important;
-    inset: 0 !important;
-    margin: auto !important;
-
-    width: 7px !important;
-    height: 7px !important;
-    border-radius: 999px !important;
-
-    background: rgba(0, 0, 0, 0.22) !important;
-    transform: scale(1) !important;
-
-    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    background 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+html.dark .klaro #cookieScreen.cookie-modal .slider.round::after,
+body.dark .klaro #cookieScreen.cookie-modal .slider.round::after,
+.dark .klaro #cookieScreen.cookie-modal .slider.round::after,
+html[data-theme="dark"] .klaro #cookieScreen.cookie-modal .slider.round::after,
+body[data-theme="dark"] .klaro #cookieScreen.cookie-modal .slider.round::after {
+    background: rgba(255, 255, 255, 0.92) !important; /* white dot */
 }
 
-/* active */
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active {
-    border-color: rgba(0, 0, 0, 0.60) !important;
-    box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.06) !important;
-}
+/* Fallback: prefers-color-scheme dark */
+@media (prefers-color-scheme: dark) {
+    .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
+        background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.02),
+                rgba(0, 0, 0, 0.55)
+        ) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        0 22px 80px rgba(0, 0, 0, 0.72) !important;
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
 
-.klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active::after {
-    background: rgba(0, 0, 0, 0.78) !important;
-    transform: scale(1.12) !important;
-}
+    .klaro #cookieScreen.cookie-modal label.cm-list-label {
+        background: rgba(255, 255, 255, 0.06) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        0 12px 34px rgba(0, 0, 0, 0.30) !important;
+    }
 
-/* dark */
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider {
-    border-color: rgba(255, 255, 255, 0.28) !important;
-}
+    .klaro #cookieScreen.cookie-modal label.cm-list-label::before {
+        opacity: 0 !important;
+    }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round::after {
-    background: rgba(255, 255, 255, 0.22) !important;
-}
+    .klaro #cookieScreen.cookie-modal .cm-header h1.title,
+    .klaro #cookieScreen.cookie-modal .cm-list-title {
+        color: rgba(255, 255, 255, 0.90) !important;
+    }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active {
-    border-color: rgba(255, 255, 255, 0.60) !important;
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08) !important;
-}
+    .klaro #cookieScreen.cookie-modal .cm-header p,
+    .klaro #cookieScreen.cookie-modal .cm-required {
+        color: rgba(255, 255, 255, 0.70) !important;
+    }
 
-.dark .klaro #cookieScreen.cookie-modal .cm-switch .slider.round.active::after {
-    background: rgba(255, 255, 255, 0.90) !important;
-    transform: scale(1.12) !important;
+    .klaro #cookieScreen.cookie-modal .cm-header p a {
+        color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-success,
+    .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept-all {
+        color: #fff !important;
+    }
+
+    .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-decline,
+    .klaro #cookieScreen.cookie-modal .cm-btn.cm-btn-accept {
+        background: rgba(255, 255, 255, 0.10) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+
+    .klaro #cookieScreen.cookie-modal .slider.round {
+        border-color: rgba(255, 255, 255, 0.20) !important;
+    }
+
+    .klaro #cookieScreen.cookie-modal .slider.round::after {
+        background: rgba(255, 255, 255, 0.92) !important;
+    }
 }
