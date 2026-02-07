@@ -11,9 +11,9 @@ export function getKlaroConfig(lang: KlaroLang) {
 
         mustConsent: true,
         acceptAll: true,
-        hideDeclineAll: false, // ✅ показываем Reject all
-        hideLearnMore: false,  // ✅ показываем Settings
-        noticeAsModal: false,  // ✅ старт = маленький notice, НЕ центр-модалка
+        hideDeclineAll: false,
+        hideLearnMore: false,
+        noticeAsModal: false,
         disablePoweredBy: true,
 
         elementID: "klaro",
@@ -23,7 +23,6 @@ export function getKlaroConfig(lang: KlaroLang) {
                 privacyPolicyUrl: `/${lang}/privacy`,
                 cookiePolicyUrl: `/${lang}/privacy#cookies`,
 
-                // START (notice) — коротко + 3 действия
                 consentNotice: {
                     title: isDE ? "Cookies & Datenschutz" : "Cookies & Privacy",
                     description: isDE
@@ -31,27 +30,42 @@ export function getKlaroConfig(lang: KlaroLang) {
                         : "We use essential cookies for basic functionality. You can reject all, accept all, or adjust details.",
                 },
 
-                // MODAL (settings)
                 consentModal: {
                     title: isDE ? "Cookie-Einstellungen" : "Cookie settings",
                     description: isDE
-                        ? "Wählen Sie aus, welche Kategorien Sie erlauben. Notwendige Cookies sind immer aktiv."
-                        : "Choose which categories you allow. Essential cookies are always enabled.",
+                        ? "Wählen Sie aus, welche Kategorien Sie erlauben. Notwendige Cookies sind immer aktiv. Mehr erfahren Sie in unserer {privacyPolicy}."
+                        : "Choose which categories you allow. Essential cookies are always enabled. To learn more, please read our {privacyPolicy}.",
                 },
 
-                // Button labels
                 acceptAll: isDE ? "Alle akzeptieren" : "Accept all",
                 acceptSelected: isDE ? "Auswahl speichern" : "Save selection",
                 decline: isDE ? "Alle ablehnen" : "Reject all",
                 close: isDE ? "Schließen" : "Close",
-
-                // Klaro uses this as “learn more / settings”
                 learnMore: isDE ? "Einstellungen" : "Settings",
+                privacyPolicy: {
+                    text: isDE ? "Datenschutzerklärung" : "privacy policy",
+                    name: isDE ? "Datenschutzerklärung" : "privacy policy",
+                },
 
                 purposes: {
-                    necessary: isDE ? "Notwendig" : "Necessary",
-                    external: isDE ? "Externe Medien" : "External media",
-                    analytics: isDE ? "Statistik" : "Analytics",
+                    necessary: {
+                        title: isDE ? "Notwendig" : "Necessary",
+                        description: isDE
+                            ? "Sitzung, Sicherheit und Einwilligungsspeicher"
+                            : "Session, security, and consent storage",
+                    },
+                    external: {
+                        title: isDE ? "Externe Medien" : "External media",
+                        description: isDE
+                            ? "YouTube-Videos und eingebettete Inhalte"
+                            : "YouTube videos and embedded content",
+                    },
+                    analytics: {
+                        title: isDE ? "Statistik" : "Analytics",
+                        description: isDE
+                            ? "Anonyme Nutzungsstatistiken zur Verbesserung"
+                            : "Anonymous usage statistics for improvement",
+                    },
                 },
             },
         },
@@ -63,14 +77,12 @@ export function getKlaroConfig(lang: KlaroLang) {
                 purposes: ["necessary"],
                 required: true,
             },
-            // Оставь, если планируешь YouTube embed (iframe). Если только ссылка — можешь удалить.
             {
                 name: "youtube",
                 title: "YouTube",
                 purposes: ["external"],
                 required: false,
             },
-            // GA включишь позже
             {
                 name: "analytics",
                 title: isDE ? "Website-Statistik" : "Website analytics",

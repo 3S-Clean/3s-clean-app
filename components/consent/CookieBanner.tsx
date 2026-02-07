@@ -8,7 +8,7 @@ declare global {
     interface Window {
         klaroConfig?: unknown;
         __klaro_inited?: boolean;
-        __klaro_anim_inited?: boolean;
+        __klaro_hooks_inited?: boolean;
     }
 }
 
@@ -23,39 +23,37 @@ function stopEvent(e: Event) {
     maybe.stopImmediatePropagation?.();
 }
 
-/** Sync all .slider states with their checkbox checked state */
-function syncSliderStates(modal: HTMLElement) {
-    const inputs = modal.querySelectorAll("input.cm-list-input") as NodeListOf<HTMLInputElement>;
+/**
+ * Sync slider.active classes with actual input checked state
+ */
+function syncSliderStates(root: HTMLElement) {
+    const inputs = root.querySelectorAll("input.cm-list-input") as NodeListOf<HTMLInputElement>;
     inputs.forEach((input) => {
-        const label = modal.querySelector(`label[for="${input.id}"]`);
-        const slider = label?.querySelector<HTMLElement>(".slider.round");
+        const label = root.querySelector(`label[for="${input.id}"]`);
+        const slider = label?.querySelector(".cm-switch .slider");
         if (!slider) return;
-
-        if (input.checked) slider.classList.add("active");
-        else slider.classList.remove("active");
+        slider.classList.toggle("active", !!input.checked);
     });
 }
 
 /**
- * Reliable toggling (mobile-safe):
- * - click on label.cm-list-label
- * - resolve input by `for=...`
- * - manually toggle checked + dispatch input/change (Klaro reacts reliably)
- * - update slider visual state
+ * Mobile-safe toggling:
+ * - capture click/keydown on label.cm-list-label
+ * - resolve linked input by `for=...`
+ * - toggle checked + dispatch input/change
+ * - keep slider class in sync
  */
 function enableLabelToggles(modal: HTMLElement) {
     if (modal.dataset.klaroLabelToggles === "1") return;
     modal.dataset.klaroLabelToggles = "1";
 
-    const toggle = (input: HTMLInputElement) => {
+    const toggleInput = (input: HTMLInputElement) => {
         if (input.disabled) return;
 
         input.checked = !input.checked;
-
         input.dispatchEvent(new Event("input", {bubbles: true}));
         input.dispatchEvent(new Event("change", {bubbles: true}));
 
-        // keep UI in sync even if Klaro re-renders
         syncSliderStates(modal);
     };
 
@@ -71,7 +69,7 @@ function enableLabelToggles(modal: HTMLElement) {
         if (!input || input.disabled) return;
 
         stopEvent(e);
-        toggle(input);
+        toggleInput(input);
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -88,7 +86,7 @@ function enableLabelToggles(modal: HTMLElement) {
         if (!input || input.disabled) return;
 
         stopEvent(e);
-        toggle(input);
+        toggleInput(input);
     };
 
     modal.addEventListener("click", onClick, true);
@@ -96,50 +94,11 @@ function enableLabelToggles(modal: HTMLElement) {
 
     // initial sync
     syncSliderStates(modal);
-}
 
-function animateOpen(modal: HTMLElement, isMobile: boolean) {
-    if (prefersReducedMotion()) return;
-    if (modal.dataset.klaroOpenAnimated === "1") return;
-    modal.dataset.klaroOpenAnimated = "1";
-
-    // smoother + longer (wow, but still quick)
-    const EASE_OPEN = "cubic-bezier(0.16, 1, 0.3, 1)";
-
-    if (!isMobile) {
-        modal.animate(
-            [
-                {opacity: 0, transform: "translate(34px, 46px) scale(0.92)", filter: "blur(16px)"},
-                {opacity: 1, transform: "translate(-6px, -6px) scale(1.02)", filter: "blur(3px)", offset: 0.62},
-                {opacity: 1, transform: "translate(2px, 2px) scale(0.995)", filter: "blur(0.5px)", offset: 0.84},
-                {opacity: 1, transform: "translate(0px, 0px) scale(1)", filter: "blur(0px)"},
-            ],
-            {duration: 980, easing: EASE_OPEN, fill: "forwards"}
-        );
-    } else {
-        modal.animate(
-            [
-                {opacity: 0, transform: "translateY(56px) scale(0.92)", filter: "blur(16px)"},
-                {opacity: 1, transform: "translateY(-14px) scale(1.02)", filter: "blur(3px)", offset: 0.62},
-                {opacity: 1, transform: "translateY(5px) scale(0.995)", filter: "blur(0.5px)", offset: 0.84},
-                {opacity: 1, transform: "translateY(0px) scale(1)", filter: "blur(0px)"},
-            ],
-            {duration: 1020, easing: EASE_OPEN, fill: "forwards"}
-        );
-    }
-
-    // stagger rows
-    const items = Array.from(modal.querySelectorAll("ul.cm-purposes > li.cm-purpose:not(.cm-toggle-all)")) as HTMLElement[];
-    items.forEach((el, i) => {
-        el.animate(
-            [
-                {opacity: 0, transform: "translateY(12px) scale(0.99)", filter: "blur(3px)"},
-                {opacity: 1, transform: "translateY(-2px) scale(1.01)", filter: "blur(0.7px)", offset: 0.65},
-                {opacity: 1, transform: "translateY(0px) scale(1)", filter: "blur(0px)"},
-            ],
-            {duration: 720, delay: 160 + i * 90, easing: EASE_OPEN, fill: "forwards"}
-        );
-    });
+    // keep in sync if Klaro updates DOM/classes later
+    const obs = new MutationObserver(() => syncSliderStates(modal));
+    obs.observe(modal, {subtree: true, attributes: true, childList: true});
+    modal.dataset.klaroSyncObserver = "1";
 }
 
 export default function CookieBanner({lang}: { lang: KlaroLang }) {
@@ -156,24 +115,46 @@ export default function CookieBanner({lang}: { lang: KlaroLang }) {
             })();
         }
 
-        if (window.__klaro_anim_inited) return;
-        window.__klaro_anim_inited = true;
+        if (window.__klaro_hooks_inited) return;
+        window.__klaro_hooks_inited = true;
 
-        const obs = new MutationObserver(() => {
+        const observer = new MutationObserver(() => {
             const modal = document.querySelector("#cookieScreen .cm-modal.cm-klaro") as HTMLElement | null;
             if (!modal) return;
 
             enableLabelToggles(modal);
 
-            // keep syncing even if Klaro re-renders list after click
-            syncSliderStates(modal);
+            // (optional) softer entrance without breaking clicks
+            if (!prefersReducedMotion() && modal.dataset.klaroAnim === "1") return;
+            if (!prefersReducedMotion()) {
+                modal.dataset.klaroAnim = "1";
+                modal.animate(
+                    [
+                        {opacity: 0, transform: "translateY(18px) scale(0.98)", filter: "blur(10px)"},
+                        {opacity: 1, transform: "translateY(-4px) scale(1.01)", filter: "blur(2px)", offset: 0.6},
+                        {opacity: 1, transform: "translateY(0px) scale(1)", filter: "blur(0px)"},
+                    ],
+                    {duration: 520, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards"}
+                );
 
-            const isMobile = window.matchMedia("(max-width: 640px)").matches;
-            animateOpen(modal, isMobile);
+                const rows = Array.from(
+                    modal.querySelectorAll("ul.cm-purposes > li.cm-purpose:not(.cm-toggle-all)")
+                ) as HTMLElement[];
+
+                rows.forEach((row, i) => {
+                    row.animate(
+                        [
+                            {opacity: 0, transform: "translateY(10px)", filter: "blur(2px)"},
+                            {opacity: 1, transform: "translateY(0px)", filter: "blur(0px)"},
+                        ],
+                        {duration: 360, delay: 90 + i * 60, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards"}
+                    );
+                });
+            }
         });
 
-        obs.observe(document.documentElement, {childList: true, subtree: true});
-        return () => obs.disconnect();
+        observer.observe(document.documentElement, {childList: true, subtree: true});
+        return () => observer.disconnect();
     }, [lang]);
 
     return <div id="klaro" className="klaro"/>;
