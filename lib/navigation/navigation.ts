@@ -6,7 +6,10 @@ export const mainNav = [
     {key: "contact", href: "/contact"},
 ] as const;
 
-export type FooterLink = { labelKey: string; href: string };
+export type Locale = "de" | "en";
+export type LocalizedHref = string | { de: string; en: string };
+
+export type FooterLink = { labelKey: string; href: LocalizedHref };
 export type FooterColumn = { titleKey: string; links: FooterLink[] };
 
 export const footerColumns: FooterColumn[] = [
@@ -42,9 +45,18 @@ export const footerColumns: FooterColumn[] = [
     {
         titleKey: "footer.columns.resources.title",
         links: [
-            {labelKey: "footer.columns.resources.links.impressum", href: "/impressum"},
-            {labelKey: "footer.columns.resources.links.datenschutz", href: "/datenschutz"},
-            {labelKey: "footer.columns.resources.links.agb", href: "/agb"},
+            {
+                labelKey: "footer.columns.resources.links.impressum",
+                href: {de: "/impressum", en: "/imprint"},
+            },
+            {
+                labelKey: "footer.columns.resources.links.datenschutz",
+                href: {de: "/datenschutz", en: "/privacy"},
+            },
+            {
+                labelKey: "footer.columns.resources.links.agb",
+                href: {de: "/agb", en: "/terms"},
+            },
         ],
     },
 ];

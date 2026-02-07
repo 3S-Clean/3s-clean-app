@@ -56,17 +56,24 @@ export default function AccountFooter() {
 
                                 <ul className="m-0 flex list-none flex-col gap-2 p-0">
                                     {column.links.map((link) => {
-                                        const external = isExternal(link.href);
-                                        const href = external ? link.href : withLocale(link.href);
+                                        const rawHref =
+                                            typeof link.href === "string"
+                                                ? link.href
+                                                : link.href[locale as "de" | "en"];
+
+                                        const external = isExternal(rawHref);
+                                        const href = external ? rawHref : withLocale(rawHref);
 
                                         return (
-                                            <li key={link.href}>
+                                            <li key={rawHref}>
                                                 <Link
                                                     href={href}
-                                                    {...(external ? {
-                                                        target: "_blank",
-                                                        rel: "noopener noreferrer"
-                                                    } : {})}
+                                                    {...(external
+                                                        ? {
+                                                            target: "_blank",
+                                                            rel: "noopener noreferrer",
+                                                        }
+                                                        : {})}
                                                     className="
                             cursor-pointer no-underline transition-opacity duration-200 hover:opacity-70
                             text-[13px] leading-[100%]

@@ -1,17 +1,16 @@
-import type { Config } from "tailwindcss";
+import type {Config} from "tailwindcss";
+import typography from "@tailwindcss/typography";
 
 const config: Config = {
     content: [
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
+        "./components/**/*.{js,ts,jsx,tsx,mdx}",
+        "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+        "./content/**/*.{md,mdx}",
     ],
     theme: {
         extend: {
             fontFamily: {
-                // next/font -> variable: "--font-inter"
-                // globals.css -> --font-ui: var(--font-inter), ...
-                // поэтому sans указывает на --font-ui (самый верхний “источник истины”)
                 sans: [
                     "var(--font-ui)",
                     "-apple-system",
@@ -26,17 +25,17 @@ const config: Config = {
             },
             keyframes: {
                 fadeIn: {
-                    "0%": { opacity: "0", transform: "translateY(10px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
+                    "0%": {opacity: "0", transform: "translateY(10px)"},
+                    "100%": {opacity: "1", transform: "translateY(0)"},
                 },
                 slideIn: {
-                    "0%": { opacity: "0", transform: "translateX(20px)" },
-                    "100%": { opacity: "1", transform: "translateX(0)" },
+                    "0%": {opacity: "0", transform: "translateX(20px)"},
+                    "100%": {opacity: "1", transform: "translateX(0)"},
                 },
             },
         },
     },
-    plugins: [],
+    plugins: [typography],
 };
 
 export default config;
