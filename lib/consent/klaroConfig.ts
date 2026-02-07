@@ -8,6 +8,7 @@ export function getKlaroConfig(lang: KlaroLang) {
         storageName: "klaro",
         cookieName: "klaro",
         htmlTexts: false,
+
         mustConsent: true,
         acceptAll: true,
         hideDeclineAll: false,
@@ -41,10 +42,9 @@ export function getKlaroConfig(lang: KlaroLang) {
                 decline: isDE ? "Alle ablehnen" : "Reject all",
                 close: isDE ? "Schließen" : "Close",
                 learnMore: isDE ? "Einstellungen" : "Settings",
-                privacyPolicy: {
-                    text: isDE ? "Datenschutzerklärung" : "privacy policy",
-                    name: isDE ? "Datenschutzerklärung" : "privacy policy",
-                },
+
+                // ✅ IMPORTANT: must be a STRING for {privacyPolicy} placeholder to render as a link
+                privacyPolicy: isDE ? "Datenschutzerklärung" : "privacy policy",
 
                 purposes: {
                     necessary: {
