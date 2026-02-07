@@ -168,7 +168,7 @@ input:-webkit-autofill::first-line {
    - Dark mode via prefers-color-scheme (matching globals.css tokens)
    - Dark panel: solid dark bg, all text white
    - 3 buttons identical style
-   - Purpose descriptions visible
+   - Purpose descriptions visible ONLY when caret expanded
    ====================================================================== */
 
 /* Screen */
@@ -306,15 +306,24 @@ input:-webkit-autofill::first-line {
     color: rgba(0, 0, 0, 0.55) !important;
 }
 
-/* Purpose descriptions */
+/* =========================================================
+   Purpose descriptions — HIDDEN by default.
+   Only visible when caret expanded (li.cm-purpose.cm-expanded)
+   ========================================================= */
+
 .klaro #cookieScreen.cookie-modal .cm-purpose .cm-list-description,
 .klaro #cookieScreen.cookie-modal .cm-purpose p.purposes {
-    display: block !important;
+    display: none !important;
     margin: 4px 0 0 0 !important;
     padding: 0 12px !important;
     font-size: 12px !important;
     line-height: 1.4 !important;
     color: rgba(0, 0, 0, 0.55) !important;
+}
+
+.klaro #cookieScreen.cookie-modal .cm-purpose.cm-expanded .cm-list-description,
+.klaro #cookieScreen.cookie-modal .cm-purpose.cm-expanded p.purposes {
+    display: block !important;
 }
 
 /* Hide service breakdown + toggle-all */
@@ -458,8 +467,6 @@ input:-webkit-autofill::first-line {
    ====================================================================== */
 
 @media (prefers-color-scheme: dark) {
-
-    /* Panel: solid dark background like CARD_FRAME_BASE dark */
     .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
         background: #0d1117 !important;
         background-image: linear-gradient(
@@ -475,70 +482,58 @@ input:-webkit-autofill::first-line {
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    /* Kill light diagonal highlight */
     .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before {
         opacity: 0 !important;
     }
 
-    /* Header title */
     .klaro #cookieScreen.cookie-modal .cm-header h1.title {
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    /* Header description */
     .klaro #cookieScreen.cookie-modal .cm-header p {
         color: rgba(255, 255, 255, 0.65) !important;
     }
 
-    /* Header link */
     .klaro #cookieScreen.cookie-modal .cm-header p a {
         color: rgba(255, 255, 255, 0.80) !important;
     }
 
-    /* List titles */
     .klaro #cookieScreen.cookie-modal .cm-list-title {
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    /* Required label */
     .klaro #cookieScreen.cookie-modal .cm-required {
         color: rgba(255, 255, 255, 0.55) !important;
     }
 
-    /* Purpose descriptions */
+    /* descriptions color in dark (still hidden unless expanded) */
     .klaro #cookieScreen.cookie-modal .cm-purpose .cm-list-description,
     .klaro #cookieScreen.cookie-modal .cm-purpose p.purposes {
         color: rgba(255, 255, 255, 0.50) !important;
     }
 
-    /* Switch border */
     .klaro #cookieScreen.cookie-modal .cm-switch div.slider.round {
         border-color: rgba(255, 255, 255, 0.30) !important;
     }
 
-    /* Checkmark color */
     .klaro #cookieScreen.cookie-modal .cm-switch div.slider.round::after {
         border-color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    /* Focus ring */
     .klaro #cookieScreen.cookie-modal label.cm-list-label:focus-visible {
         box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.16) !important;
     }
 
-    /* Buttons — all 3 identical */
     .klaro #cookieScreen.cookie-modal .cm-btn {
         background: rgba(255, 255, 255, 0.08) !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    /* Catch-all: force white text on everything inside modal */
     .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro * {
         color: inherit !important;
     }
 
-    /* Then re-apply specific opacities */
     .klaro #cookieScreen.cookie-modal .cm-header h1.title {
         color: rgba(255, 255, 255, 0.92) !important;
     }
@@ -563,3 +558,7 @@ input:-webkit-autofill::first-line {
         color: rgba(255, 255, 255, 0.92) !important;
     }
 }
+
+
+
+

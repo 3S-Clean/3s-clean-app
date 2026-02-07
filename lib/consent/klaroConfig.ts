@@ -43,8 +43,11 @@ export function getKlaroConfig(lang: KlaroLang) {
                 close: isDE ? "Schließen" : "Close",
                 learnMore: isDE ? "Einstellungen" : "Settings",
 
-                // ✅ IMPORTANT: must be a STRING for {privacyPolicy} placeholder to render as a link
-                privacyPolicy: isDE ? "Datenschutzerklärung" : "privacy policy",
+                // ✅ FIX: Klaro ожидает OBJECT с полями name/text (иначе: missing translation: en/privacyPolicy/text)
+                privacyPolicy: {
+                    name: isDE ? "Datenschutzerklärung" : "privacy policy",
+                    text: isDE ? "Datenschutzerklärung" : "privacy policy",
+                },
 
                 purposes: {
                     necessary: {
