@@ -1,10 +1,10 @@
 import {
-    EXTRAS,
-    SERVICE_AREAS,
-    type ExtraId,
-    type ServiceId,
     type ApartmentSizeId,
+    type ExtraId,
+    EXTRAS,
     type PeopleCountId,
+    SERVICE_AREAS,
+    type ServiceId,
 } from "@/lib/booking/config";
 
 // ---------- unions ----------
@@ -13,7 +13,7 @@ export function isServiceId(v: unknown): v is ServiceId {
 }
 
 export function isApartmentSizeId(v: unknown): v is ApartmentSizeId {
-    return v === "up-to-60" || v === "60-80" || v === "80-110" || v === "over-110";
+    return v === "up-to-60" || v === "60-100" || v === "100-140" || v === "over-140";
 }
 
 export function isPeopleCountId(v: unknown): v is PeopleCountId {

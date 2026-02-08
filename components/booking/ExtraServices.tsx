@@ -72,11 +72,11 @@ export default function ExtraServices() {
 
     const CONTROL_BTN = [
         "h-10 w-10 rounded-full flex items-center justify-center text-lg",
-        "border border-black/10 dark:border-white/10",
+        "border border-black/10 dark:border-white/12",
         "bg-white/70 dark:bg-[var(--card)]/70 backdrop-blur",
         "text-[var(--text)]",
         "transition-all",
-        "hover:ring-1 hover:ring-black/10 dark:hover:ring-white/15",
+        "hover:ring-1 ring-black/10 dark:ring-white/12,",
         "active:scale-[0.98]",
         "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
     ].join(" ");
@@ -108,18 +108,19 @@ export default function ExtraServices() {
                             CARD_FRAME_BASE,
                             CARD_FRAME_INTERACTIVE,
                             "text-left w-full p-4 rounded-3xl",
-
-                            // ✅ unified base border
-                            "border border-black/8 dark:border-white/10",
-
+                            "outline-none focus:outline-none",
+                            "focus-visible:ring-2 focus-visible:ring-[var(--text)]/10 dark:focus-visible:ring-white/15",
+                            "focus-visible:ring-offset-0",
+                            "[-webkit-tap-highlight-color:transparent]",
                             !isSelected ? CARD_FRAME_HOVER_LIFT : "",
 
                             // ✅ unified selected style
                             isSelected
-                                ? "border border-black/12 dark:border-white/18 ring-1 ring-black/10 dark:ring-white/12"
+                                ? "border border-black/10 dark:border-white/12 ring-1 ring-black/10 dark:ring-white/12"
                                 : "",
 
                             !isSelected ? "hover:ring-1 hover:ring-[var(--text)]/10" : "",
+                            "transform-gpu [backface-visibility:hidden] [transform:translateZ(0)]",
                             "active:scale-[0.995]",
                         ]
                             .filter(Boolean)

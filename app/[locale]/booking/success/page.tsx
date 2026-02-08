@@ -1,13 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {Suspense, useEffect, useMemo, useState} from "react";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
-import { useBookingStore } from "@/lib/booking/store";
-import { SERVICES } from "@/lib/booking/config";
-import { Check } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import {useBookingStore} from "@/lib/booking/store";
+import {SERVICES} from "@/lib/booking/config";
+import {Check} from "lucide-react";
+import {createClient} from "@/lib/supabase/client";
+import {useTranslations} from "next-intl";
 
 type Order = {
     id: string;
@@ -33,6 +33,10 @@ function Content() {
     const t = useTranslations("bookingSuccess");
     const sp = useSearchParams();
     const router = useRouter();
+    const pathname = usePathname();
+    const seg = pathname.split("/")[1];
+    const locale = seg === "en" || seg === "de" ? seg : "en";
+    const href = `/${locale}/account`;
 
     const supabase = useMemo(() => createClient(), []);
 
@@ -42,8 +46,8 @@ function Content() {
 
     // ✅ priority: orderId > pendingToken
     const query = useMemo(() => {
-        if (orderId) return { orderId };
-        if (pendingToken) return { pendingToken };
+        if (orderId) return {orderId};
+        if (pendingToken) return {pendingToken};
         return null;
     }, [orderId, pendingToken]);
 
@@ -53,7 +57,7 @@ function Content() {
 
     const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
 
-    const { resetBooking } = useBookingStore();
+    const {resetBooking} = useBookingStore();
 
     useEffect(() => {
         resetBooking();
@@ -62,7 +66,7 @@ function Content() {
     // ✅ check auth
     useEffect(() => {
         let cancelled = false;
-        supabase.auth.getUser().then(({ data }) => {
+        supabase.auth.getUser().then(({data}) => {
             if (!cancelled) setIsAuthed(!!data.user);
         });
         return () => {
@@ -86,7 +90,7 @@ function Content() {
             try {
                 const res = await fetch("/api/booking/get-order-public", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(query),
                     signal: controller.signal,
                 });
@@ -169,7 +173,7 @@ function Content() {
         <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
             <div className="max-w-md w-full text-center">
                 <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-8">
-                    <Check className="w-10 h-10 text-white" />
+                    <Check className="w-10 h-10 text-white"/>
                 </div>
 
                 {/* ✅ Reservation copy */}
@@ -213,7 +217,7 @@ function Content() {
                 </span>
                             </div>
 
-                            <div className="border-t border-gray-200 pt-3 mt-3" />
+                            <div className="border-t border-gray-200 pt-3 mt-3"/>
 
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">{t("details.name")}</span>
@@ -273,7 +277,7 @@ function Content() {
                             </button>
 
                             <Link
-                                href="/"
+                                href={href}
                                 className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
                             >
                                 {t("actions.home")}
@@ -316,7 +320,7 @@ function Content() {
 export default function SuccessPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}>
-            <Content />
+            <Content/>
         </Suspense>
     );
 }

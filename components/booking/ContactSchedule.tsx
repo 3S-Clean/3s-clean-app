@@ -1,11 +1,3 @@
-// ==============================
-// ContactSchedule.tsx — FINAL (same selected glass as others)
-// ONLY CHANGES vs your provided file:
-// - replace black/white PRIMARY selection with the same border+ring glass selected style
-// (calendar selected day + selected time slot + accept button in modal)
-// Everything else unchanged.
-// ==============================
-
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
@@ -146,8 +138,7 @@ export default function ContactSchedule() {
     // ✅ unified selected glass (same as Extras/ApartmentDetails)
     const SELECTED_GLASS = [
         "bg-white/60 dark:bg-[var(--card)]/60 backdrop-blur",
-        "border border-black/12 dark:border-white/18",
-        "ring-1 ring-black/10 dark:ring-white/12",
+        "ring-2 ring-black/10 dark:ring-white/12",
         "text-[var(--text)]",
     ].join(" ");
 
@@ -346,7 +337,7 @@ export default function ContactSchedule() {
                                     }}
                                     className={[
                                         "aspect-square rounded-2xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+                                        "focus:outline-none focus-visible:ring-3 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
                                             ? SELECTED_GLASS
                                             : disabled
@@ -390,7 +381,7 @@ export default function ContactSchedule() {
                                     disabled={!available}
                                     className={[
                                         "py-2.5 rounded-2xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+                                        "focus:outline-none focus-visible:ring-3 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
                                         isSelected
                                             ? SELECTED_GLASS
                                             : available

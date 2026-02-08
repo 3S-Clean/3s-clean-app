@@ -11,13 +11,12 @@ import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/components/ui/card/CardFrame"
 // ✅ unified base border (same language everywhere)
 const BASE_CARD = [
     CARD_FRAME_ACTION,
-    "border border-black/8 dark:border-white/10",
 ].join(" ");
 
 // ✅ unified selected (border + ring, no fill)
 const SELECTED_CARD_CLASS = [
     CARD_FRAME_ACTION,
-    "border border-black/12 dark:border-white/18",
+    "border-2 border-black/10 dark:border-white/12",
     "ring-1 ring-black/10 dark:ring-white/12",
 ].join(" ");
 
@@ -26,6 +25,7 @@ const ROW_CARD_BASE = [
     "p-4 rounded-2xl",
     "flex items-center justify-between",
 ].join(" ");
+
 
 function CheckIcon() {
     return (

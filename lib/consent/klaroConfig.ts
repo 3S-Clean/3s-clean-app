@@ -1,13 +1,17 @@
-// lib/consent/klaroConfig.ts
 export type KlaroLang = "en" | "de";
 
 export function getKlaroConfig(lang: KlaroLang) {
     const isDE = lang === "de";
 
     return {
+        // ✅ Tell Klaro which language to render
+        lang,
+
         storageName: "klaro",
         cookieName: "klaro",
-        htmlTexts: false,
+
+        // ✅ Allow HTML in texts so we can render a real <a> link
+        htmlTexts: true,
 
         mustConsent: true,
         acceptAll: true,
@@ -19,54 +23,85 @@ export function getKlaroConfig(lang: KlaroLang) {
         elementID: "klaro",
 
         translations: {
-            [lang]: {
-                privacyPolicyUrl: `/${lang}/privacy`,
-                cookiePolicyUrl: `/${lang}/privacy#cookies`,
+            // ✅ Always define both languages so Klaro can resolve them
+            en: {
+                privacyPolicyUrl: "/en/privacy",
+                cookiePolicyUrl: "/en/privacy#cookies",
 
                 consentNotice: {
-                    title: isDE ? "Cookies & Datenschutz" : "Cookies & Privacy",
-                    description: isDE
-                        ? "Wir verwenden notwendige Cookies für Grundfunktionen. Sie können alles ablehnen, alles akzeptieren oder Details einstellen."
-                        : "We use essential cookies for basic functionality. You can reject all, accept all, or adjust details.",
+                    title: "Cookies & Privacy",
+                    description:
+                        "We use essential cookies for basic functionality. You can reject all, accept all, or adjust details.",
                 },
 
                 consentModal: {
-                    title: isDE ? "Cookie-Einstellungen" : "Cookie settings",
-                    description: isDE
-                        ? "Wählen Sie aus, welche Kategorien Sie erlauben. Notwendige Cookies sind immer aktiv. Mehr erfahren Sie in unserer {privacyPolicy}."
-                        : "Choose which categories you allow. Essential cookies are always enabled. To learn more, please read our {privacyPolicy}.",
+                    title: "Cookie settings",
+                    description:
+                        "Choose which categories you allow. Essential cookies are always enabled.",
                 },
 
-                acceptAll: isDE ? "Alle akzeptieren" : "Accept all",
-                acceptSelected: isDE ? "Auswahl speichern" : "Save selection",
-                decline: isDE ? "Alle ablehnen" : "Reject all",
-                close: isDE ? "Schließen" : "Close",
-                learnMore: isDE ? "Einstellungen" : "Settings",
-
-                // ✅ FIX: Klaro ожидает OBJECT с полями name/text (иначе: missing translation: en/privacyPolicy/text)
-                privacyPolicy: {
-                    name: isDE ? "Datenschutzerklärung" : "privacy policy",
-                    text: isDE ? "Datenschutzerklärung" : "privacy policy",
-                },
+                acceptAll: "Accept all",
+                acceptSelected: "Save selection",
+                decline: "Reject all",
+                close: "Close",
+                learnMore: "Settings",
 
                 purposes: {
                     necessary: {
-                        title: isDE ? "Notwendig" : "Necessary",
-                        description: isDE
-                            ? "Sitzung, Sicherheit und Einwilligungsspeicher"
-                            : "Session, security, and consent storage",
+                        title: "Necessary",
+                        description:
+                            "Session, security, and consent storage. Always required.",
                     },
                     external: {
-                        title: isDE ? "Externe Medien" : "External media",
-                        description: isDE
-                            ? "YouTube-Videos und eingebettete Inhalte"
-                            : "YouTube videos and embedded content",
+                        title: "External media",
+                        description:
+                            "YouTube videos and embedded content",
                     },
                     analytics: {
-                        title: isDE ? "Statistik" : "Analytics",
-                        description: isDE
-                            ? "Anonyme Nutzungsstatistiken zur Verbesserung"
-                            : "Anonymous usage statistics for improvement",
+                        title: "Analytics",
+                        description:
+                            "Anonymous usage statistics for improvement",
+                    },
+                },
+            },
+
+            de: {
+                privacyPolicyUrl: "/de/privacy",
+                cookiePolicyUrl: "/de/privacy#cookies",
+
+                consentNotice: {
+                    title: "Cookies & Datenschutz",
+                    description:
+                        "Wir verwenden notwendige Cookies für Grundfunktionen. Sie können alles ablehnen, alles akzeptieren oder Details einstellen.",
+                },
+
+                consentModal: {
+                    title: "Cookie-Einstellungen",
+                    description:
+                        "Wählen Sie aus, welche Kategorien Sie erlauben. Notwendige Cookies sind immer aktiv.",
+                },
+
+                acceptAll: "Alle akzeptieren",
+                acceptSelected: "Auswahl speichern",
+                decline: "Alle ablehnen",
+                close: "Schließen",
+                learnMore: "Einstellungen",
+
+                purposes: {
+                    necessary: {
+                        title: "Notwendig",
+                        description:
+                            "Sitzung, Sicherheit und Einwilligungsspeicher. Immer erforderlich.",
+                    },
+                    external: {
+                        title: "Externe Medien",
+                        description:
+                            "YouTube-Videos und eingebettete Inhalte",
+                    },
+                    analytics: {
+                        title: "Statistik",
+                        description:
+                            "Anonyme Nutzungsstatistiken zur Verbesserung",
                     },
                 },
             },

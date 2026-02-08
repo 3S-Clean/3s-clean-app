@@ -73,6 +73,7 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
+    // ✅ Close menu AFTER navigation completes (pathname changed)
     useEffect(() => {
         if (prevPathnameRef.current === pathname) return;
         prevPathnameRef.current = pathname;
@@ -263,12 +264,12 @@ export default function Header() {
                     ].join(" ")}
                     onClick={(e) => e.stopPropagation()}
                 >
+                    {/* ✅ No onClick={closeMenu} on links — menu closes via pathname useEffect AFTER navigation */}
                     {mainNav.map((item) =>
                         isActive(item.href) ? null : (
                             <Link
                                 key={item.href}
                                 href={withLocale(item.href)}
-                                onClick={closeMenu}
                                 className="
                   pointer-events-auto
                   text-[16px] font-normal tracking-[0.05rem] no-underline
@@ -291,7 +292,6 @@ export default function Header() {
                         {isAuthenticated ? (
                             <Link
                                 href={withLocale("/account")}
-                                onClick={closeMenu}
                                 className="
                   pointer-events-auto
                   flex items-center justify-center pt-[5px]
@@ -307,7 +307,6 @@ export default function Header() {
                             <>
                                 <Link
                                     href={withLocale("/signup")}
-                                    onClick={closeMenu}
                                     className="
                     pointer-events-auto
                     flex items-center justify-center pt-[5px]
@@ -322,7 +321,6 @@ export default function Header() {
 
                                 <Link
                                     href={withLocale("/login")}
-                                    onClick={closeMenu}
                                     className="
                     pointer-events-auto
                     flex items-center justify-center pt-[5px]

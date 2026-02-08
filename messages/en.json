@@ -521,8 +521,8 @@
     }
   },
   "bookingExtras": {
-    "title": "Extra Services",
-    "subtitle": "Add optional services to your cleaning.",
+    "title": "Optional Services",
+    "subtitle": "Add extras to complete your Experiences.",
     "adds": "adds",
     "hint": "You can adjust extras later if needed — no stress.",
     "badges": {
@@ -541,17 +541,17 @@
     }
   },
   "bookingDetails": {
-    "title": "Apartment Details",
-    "subtitle": "Help us understand your space for accurate pricing",
+    "title": "Tell us about your home.",
+    "subtitle": "The information you provide enables us to calculate an accurate price and reliably forecast the duration of your cleaning session.",
     "size": {
-      "title": "Apartment Size *",
+      "title": "Home Size *",
       "tip": "Tip: choose the size that best matches your usable living area."
     },
     "people": {
-      "title": "People Living There *",
+      "title": "Number of Occupants*",
       "pricesInclPets": "Prices shown incl. pets",
-      "pricesExclPets": "Prices shown excl. pets",
-      "pickSizeFirst": "Select an apartment size first.",
+      "pricesExclPets": "",
+      "pickSizeFirst": "Select your home size first.",
       "base": "Base"
     },
     "additional": {
@@ -567,21 +567,21 @@
     "footer": {
       "back": "Back",
       "continue": "Continue",
-      "bookNow": "Book now",
+      "bookNow": "Confirm",
       "booking": "Booking...",
       "price": "€ {value}",
       "fromPrice": "From € {value}",
       "hint": {
         "service": "Select a service",
         "postcode": "Enter your PLZ",
-        "details": "Apartment details",
+        "details": "Home details",
         "extras": "Extras",
         "contact": "Contact & schedule",
         "continue": "Continue"
       },
       "sub": {
         "incVatTime": "inc. VAT • ~{time}",
-        "pickSize": "Select apartment size",
+        "pickSize": "Select home size",
         "pickPeople": "Select people"
       },
       "summary": {
@@ -618,8 +618,8 @@
         "country": "Country *"
       },
       "calendar": {
-        "title": "Select Date & Time *",
-        "subtitle": "~{hours}h cleaning. Must finish by {end}:00.",
+        "title": "Select Date*",
+        "subtitle": "~{hours}h cleaning.",
         "prev": "Previous month",
         "next": "Next month",
         "weekdays": [
@@ -633,8 +633,8 @@
         ]
       },
       "slots": {
-        "title": "Available times for {date}",
-        "subtitle": "Cleaning must finish by {end}:00",
+        "title": "Select time for {date}",
+        "subtitle": "Available time slots with guaranteed completion by {end}:00.",
         "scheduled": "Cleaning scheduled: {start} - {end}"
       },
       "notes": {
@@ -654,8 +654,8 @@
     }
   },
   "bookingSuccess": {
-    "title": "Your booking is reserved",
-    "subtitle": "Your cleaning has been reserved. Please complete the payment to confirm it.",
+    "title": "Your booking is scheduled",
+    "subtitle": "Please provide payment information within 30 minutes to secure your slot.",
     "loading": "Loading booking details…",
     "errors": {
       "missingRef": "Missing booking reference (orderId or pendingToken).",
@@ -663,7 +663,7 @@
       "notFound": "Booking not found."
     },
     "details": {
-      "title": "Reservation details",
+      "title": "Booking details",
       "service": "Service",
       "date": "Date",
       "time": "Time",
@@ -676,10 +676,10 @@
       "total": "Total"
     },
     "actions": {
-      "pay": "Pay now",
-      "home": "Back to home",
+      "pay": "Proceed to payment",
+      "home": "Back to account",
       "bookAnother": "Book another",
-      "createAccountToPay": "Create account to pay"
+      "createAccountToPay": "Create account and pay"
     }
   },
   "faqPage": {
@@ -815,12 +815,12 @@
       "availableTitle": "Available",
       "availableBody": "Great — we serve PLZ {postcode}. You can continue.",
       "unavailableTitle": "Not available",
-      "unavailableBody": "We don’t serve PLZ {postcode} yet.",
-      "emailPlaceholder": "Enter your email",
+      "unavailableBody": "We don’t serve PLZ {postcode} yet. Enter your E-Mail to get notified.",
+      "emailPlaceholder": "name@domain.com",
       "notifyCta": "Notify me",
       "notifyLoading": "Sending…",
       "notifiedTitle": "You’ll be notified",
-      "notifiedBody": "We’ll email you when we expand to PLZ {postcode}."
+      "notifiedBody": "We’ll E-Mail you when we expand to PLZ {postcode}."
     }
   },
   "auth": {
@@ -829,11 +829,11 @@
       "subtitle": "Log in to manage bookings and access your cleaning records.",
       "bookingDetected": "✓ Booking detected — after login it will be linked to your account.",
       "labels": {
-        "email": "Email",
+        "email": "E-mail",
         "password": "Password"
       },
       "placeholders": {
-        "email": "Enter your email address",
+        "email": "Enter your E-mail address",
         "password": "Enter your password"
       },
       "links": {
@@ -1031,15 +1031,15 @@
     },
     "mission": {
       "title": "Home cleaning redefined",
-      "lead": "The home-cleaning market seems to be stuck in the past: clients fear something can go horribly wrong with their home without supervision, pricing is often a mystery, and cleaners too often get treated like disposable labor.",
+      "lead": "The home-cleaning market seems to be stuck in the past: clients fear something can go horribly wrong with their home without supervision, pricing is often a mystery, and cleaners sometimes get treated like disposable labor.",
       "cardTitle": "That is why 3S-Clean is designed not to “compete.” We’re here to reset the standard.",
-      "cardBody": "3S-Clean is a premium cleaning service built on one simple belief: if you’re letting someone into your home, you deserve clarity—on quality, on safety, and on fairness. And the person performing the service deserves respect and security."
+      "cardBody": "3S-Clean is a premium cleaning service built on one simple belief: if you’re letting someone into your home, you deserve clarity — on quality, on safety, and on fairness. And the person performing the service deserves respect and security."
     },
     "story": {
       "title": "The vision behind 3S",
-      "p1": "When one of the people behind the 3S-Clean concept moved to Germany in 2022, like many newcomers, he had to fight for stability: changing his life-long habits, building trust, making new connections, and becoming an active, contributing member in a new society.",
-      "p2": "What helped him stay grounded was something surprisingly simple: cleaning his own home. He enjoys the process—because it’s honest work, it shows results, and it restores control when everything else may feel uncertain. But to most people home cleaning is a black box: they do not have the time, do not know where to start, and are reluctant to hire help.",
-      "p3": "Home cleaning still remains a black box for most. But what if one could incorporate technology into the process and open it up? That is how the idea of 3S-Clean was conceived."
+      "p1": "The architect of the 3S-Clean concept moved to Germany in 2022. Like many newcomers, he had to fight for stability: changing his life-long habits, building trust, making new connections, and becoming an active, contributing member in a new society.",
+      "p2": "What helped him stay grounded was something surprisingly simple: cleaning his own home. He enjoys the process — because it’s honest work, it shows results, and it restores control when everything else may feel uncertain. But to most people home cleaning is a black box: they do not have the time, do not know where to start, and are reluctant to hire help.",
+      "p3": "But what if one could incorporate technology into the process and open it up? That is how the idea of 3S-Clean was conceived."
     },
     "fix": {
       "title": "What we want to fix"
@@ -1047,15 +1047,15 @@
     "problems": [
       {
         "title": "The visibility and accountability gap",
-        "description": "Most clients have no idea what happens during a cleaning unless they sit there and watch. That's not trust — it's blind faith. We introduced video documentation to solve the biggest trust problem in this industry. You can watch a live stream or review afterward. No guessing. No awkward questions and conversations."
+        "description": "Most clients have no idea what happens during a cleaning session unless they sit there and watch. We introduced video documentation to solve the biggest problem in this industry: trust. You can watch a live stream or review afterward. No guessing. No awkward questions and conversations. No blind faith, but reporting you can trust. "
       },
       {
         "title": "The pricing mess",
-        "description": "Most cleaning service providers charge per hour, which sounds simple—until it isn't. Clients often feel like they end up paying for time, not value. We're moving away from vague time-based logic toward clearly defined work scopes, backed by proof and consistency—so pricing becomes understandable. And clients can also save on cleaning expenses: up to 20% through tax reduction according to §35a EStG."
+        "description": "Most cleaning service providers charge per hour, which sounds simple — until it isn't. Clients often feel like they end up paying for time, not value. We're moving away from vague time-based logic toward clearly defined work scopes, backed by proof and consistency so pricing becomes understandable. And our clients can also save on cleaning expenses: up to 20% through tax reduction according to §35a EStG."
       },
       {
         "title": "Unfair working conditions",
-        "description": "A lot of cleaning happens in gray zones. Cleaners have no security, cash jobs mean no pensions, no proper medical coverage, no stability. That's not \"efficient\"—that is broken. Our model is built to support real employment, training, and long-term working dignity—because quality and fairness scale together."
+        "description": "A lot of cleaning happens in a gray zone. Cleaners have no security. Odd cash jobs mean no pensions, no proper medical coverage, no stability. That's not \"efficient\" — that is broken. Our model is built to support real employment, training, and long-term working dignity because quality and fairness scale together."
       }
     ],
     "approachTitle": "Our approach",
@@ -1066,7 +1066,7 @@
       },
       {
         "title": "Sicher",
-        "description": "Safety and liability, with transparent pricing"
+        "description": "Safety, liability, and transparent pricing"
       },
       {
         "title": "Souverän",
@@ -1079,15 +1079,15 @@
     "benefits": [
       {
         "title": "Video documentation",
-        "description": "You can watch a live stream or review later. No uncertainty and measurable quality."
+        "description": "You can watch a secure live stream or review later. Measurable quality and no uncertainty."
       },
       {
         "title": "Scope-based service",
-        "description": "We focus on what gets done—not just how long someone was present—so pricing becomes understandable and fair."
+        "description": "We focus on what gets done, not just how long someone was present. Pricing becomes understandable and fair."
       },
       {
         "title": "Secure employment",
-        "description": "Our cleaners are officially employed, trained, and insured. We want people to do this work with dignity so that our clients can rely on consistency."
+        "description": "Our cleaners are officially employed, trained, and insured. We believe in people who work with dignity so that our clients can rely on consistency."
       }
     ],
     "numbers": {
@@ -1095,45 +1095,45 @@
     },
     "stats": [
       {
-        "label": "Tax deduction",
+        "label": "tax deduction",
         "sublabel": "up to"
       },
       {
-        "label": "Liability insurance",
+        "label": "liability insurance",
         "sublabel": ""
       },
       {
-        "label": "Days video access",
+        "label": "days video access",
         "sublabel": "up to"
       },
       {
-        "label": "Free cancellation",
-        "sublabel": "before appointment"
+        "label": "up to",
+        "sublabel": "free cancellation"
       }
     ],
     "coverage": {
       "title": "We currently serve households across Stuttgart",
-      "body": "Enter your postal code during booking to confirm coverage instantly."
+      "body": "Enter your postal code to instantly check availability in your area."
     },
     "cta": {
       "title": "Ready for real transparency?",
-      "subtitle": "Experience what professional cleaning should be.",
-      "button": "Book a cleaning now"
+      "subtitle": "Experience what professional is like.",
+      "button": "Book your 3S-Clean Experience now"
     }
   },
   "contact": {
     "hero": {
       "title": "How can we help?",
-      "subtitle": "Personal consultation. Quick responses."
+      "subtitle": "With any questions or concerns - just reach out to us!"
     },
     "availability": {
-      "title": "Availability",
-      "note": "Times may vary slightly on public holidays."
+      "title": "Office hours",
+      "note": "Closed Sundays and on public holidays."
     },
     "hours": {
       "monFri": "Mon – Fri",
       "monFriTime": "08:00 – 18:00",
-      "sat": "Saturday",
+      "sat": "Sat",
       "satTime": "09:00 – 14:00",
       "sun": "Sunday",
       "sunTime": "Closed",
@@ -1141,15 +1141,15 @@
     },
     "phone": {
       "title": "Phone",
-      "body": "Direct consultation about cleanings, appointments, or individual questions."
+      "body": "In urgent cases simply call us during office hours"
     },
     "email": {
-      "title": "Email",
-      "body": "Inquiries, feedback, or report issues. Response within 24 hours."
+      "title": "E-mail",
+      "body": "Send us your inquiries, feedback, or report issues - we will reply within 24 hours."
     },
     "whatsapp": {
       "title": "WhatsApp",
-      "body": "Fastest option for quick questions, schedule changes, or updates.",
+      "body": "Fastest option for quick questions or to schedule booking changes and receive updates.",
       "cta": "Start chat"
     },
     "business": {
@@ -1161,7 +1161,7 @@
       "subtitle": "Transparent pricing. Immediate confirmation.",
       "cta": "Book a cleaning"
     },
-    "privacyNote": "Your data is handled confidentially. No marketing. No data sharing."
+    "privacyNote": "Your data is always handled confidentially. We do not share your information with third parties fur purposes of unsolicited marketing."
   },
   "account": {
     "title": "Account",

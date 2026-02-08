@@ -1,50 +1,50 @@
 {
   "home": {
     "hero": {
-      "title": "Ihr\nPremium\nHome\nCleaning\nService\nin Stuttgart!"
+      "title": "Ihr\nPremium\nHaushalts-\nreinigungs-\nservice\nin Stuttgart!"
     },
     "promise": {
       "title": "3S-Clean Versprechen:",
       "sauber": {
         "title": "SAUBER",
-        "desc": "Ein erstklassiges Wohlfühlambiente in Ihrem Zuhause. Umweltfreundliche Produkte. Transparenter Service."
+        "desc": "Ein erstklassiges Wohlfühlgefühl in Ihrem Zuhause. Umweltfreundliche Produkte. Transparenter Service."
       },
       "sicher": {
         "title": "SICHER",
-        "desc": "Feste und transparente Preise. Volle Kontrolle dank sicherem Live-Video-Monitoring."
+        "desc": "Feste und transparente Preise. Volle Kontrolle dank sicherer Live-Video-Überwachung."
       },
       "souveran": {
         "title": "SOUVERÄN",
-        "desc": "Keine Freelancer. Festangestellte Mitarbeitende, denen Qualität und Beständigkeit wichtig sind."
+        "desc": "Keine Freelancer. Festangestellte Mitarbeitende, die sich um Qualität und Konstanz kümmern."
       }
     },
     "video": {
       "kicker": "3S-Clean Raw&Uncut",
-      "title": "VIDEO-STREAM",
-      "desc": "Sicher live streamen oder das vollständige Video später ansehen."
+      "title": "VIDEO STREAM",
+      "desc": "Sicher live streamen oder später das vollständige Video ansehen."
     },
     "experience": {
       "kicker": "3S-Clean Experiences",
       "title": "",
       "core": {
         "title": "CORE",
-        "desc": "Das essentielle Reinigungsprogramm, um Ihr Zuhause dauerhaft sauber und gepflegt zu halten",
-        "price": "Ab 120 €"
+        "desc": "Das essenzielle Reinigungsprogramm, damit Ihr Zuhause dauerhaft sauber und gepflegt bleibt",
+        "price": "Ab € 120"
       },
       "reset": {
         "title": "RESET",
-        "desc": "Intensive Tiefenreinigung zur Auffrischung von Wohnungen mit starken Verschmutzungen nach längeren Reinigungspausen oder Veranstaltungen.",
-        "price": "Ab 200 €"
+        "desc": "Eine intensive Grundreinigung, um Wohnungen mit starken Ablagerungen nach langen Reinigungspausen oder nach Events zu revitalisieren.",
+        "price": "Ab € 200"
       },
       "initial": {
         "title": "INITIAL",
-        "desc": "Reinigung für Erstkund:innen, um ein dauerhaft gut haltbares Sauberkeitsniveau in normal gepflegten Wohnungen zu schaffen.",
-        "price": "Ab 165 €"
+        "desc": "Reinigung für Erstkund*innen, um ein pflegbares Basisniveau an Sauberkeit in normal gepflegten Haushalten herzustellen.",
+        "price": "Ab € 165"
       },
       "handover": {
         "title": "HANDOVER",
-        "desc": "Reinigung für den Einzug oder vor der Wohnungsübergabe an den Vermieter",
-        "price": "Ab 220 €"
+        "desc": "Reinigung, um Ihr Zuhause bezugsfertig zu machen oder vor der Übergabe an den Vermieter",
+        "price": "Ab € 220"
       }
     }
   },
@@ -58,50 +58,50 @@
     },
     "sauber": {
       "title": "SAUBER",
-      "subtitle": "– ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
-      "p1": "Wird ein Zuhause nicht regelmäßig gereinigt, sammeln sich Unordnung und Allergene an, die gesundheitlichen Risiken steigen — und der Raum fühlt sich einfach unwohl an. Das Leben in den eigenen vier Wänden wird stressig – ganz zu schweigen davon, Gäste einzuladen. Vielen Menschen fehlen dafür Zeit oder Energie – wir verstehen das.",
+      "subtitle": "- ein Zuhause, das sich leicht, gesund und bereit fürs Leben anfühlt.",
+      "p1": "Wenn ein Zuhause nicht regelmäßig gereinigt wird, entstehen Unordnung, Allergene, höhere Gesundheitsrisiken — und ein Raum, der sich schlicht unwohl anfühlt. Das Leben in den eigenen vier Wänden wird stressig — ganz zu schweigen davon, Familie oder Freunde einzuladen. Aber die meisten Menschen haben weder Zeit noch Erfahrung oder Energie, um diese Aufgabe konsequent zu bewältigen — wir verstehen das!",
       "p2": "Genau hier kommen wir ins Spiel.",
       "p3": {
-        "before": "Wir haben individuell abgestimmte Reinigungsprogramme",
-        "after": "entwickelt, um Ihre konkreten Bedürfnisse zu erfüllen und Ihr Zuhause dauerhaft sauber zu halten. Sie entscheiden, wie oft und was gereinigt wird. Wir verwenden umweltfreundliche Reinigungsmittel und professionelle Ausstattung, um jedes Mal ein makelloses, frisches Ergebnis zu liefern."
+        "before": "Wir haben verschiedene, individuell abgestimmte",
+        "after": ", um Ihre spezifischen Bedürfnisse zu erfüllen und Ihr Zuhause dauerhaft sauber zu halten. Sie entscheiden, wie oft und was gereinigt wird. Wir nutzen umweltfreundliche Reinigungsprodukte und sind professionell ausgestattet, um jedes Mal ein makelloses, aufgefrischtes Ergebnis zu liefern."
       },
       "footer": "3S-CLEAN — SAUBER. JEDES MAL."
     },
     "sicher": {
       "title": "SICHER",
-      "subtitle": "– Vertrauen, das Sie überprüfen können – nicht nur hoffen müssen.",
+      "subtitle": "- Vertrauen, das Sie prüfen können — nicht nur hoffen.",
       "p1": {
-        "before": "Es kann stressig sein, fremde Personen ins eigene Zuhause zu lassen – Vertrauen ist nichts Selbstverständliches, sondern muss verdient werden. Um Ihnen maximale Sicherheit zu bieten, nutzen wir",
+        "before": "Es kann stressig sein, eine fremde Person ins eigene Zuhause zu lassen — Vertrauen wird nicht geschenkt, es muss verdient werden. Damit Sie sich jederzeit sicher fühlen, nutzen wir",
         "strong": "GoPro-Kameras, die unsere Mitarbeitenden während jeder Reinigung tragen",
-        "after": "– so können Sie die Reinigung über einen sicheren Link als Livestream verfolgen oder den Video-Report innerhalb von 7 Tagen später ansehen."
+        "after": " — Sie können den Live-Stream über einen sicheren Link ansehen oder innerhalb von 7 Tagen einen Video-Report nachträglich prüfen."
       },
       "p2": {
-        "before": "So behalten Sie jederzeit die Kontrolle und wissen genau, was in Ihrem Zuhause passiert – auch wenn Sie während der Reinigung nicht anwesend sind. Sollte etwas unklar sein, sehen Sie sich einfach die Aufnahmen an – und",
-        "after": "wir unterstützen Sie mit vollständiger Transparenz und Professionalität."
+        "before": "So behalten Sie jederzeit die Kontrolle und wissen genau, was in Ihrem Zuhause passiert — auch wenn Sie während der Reinigung nicht vor Ort sind. Wenn etwas unklar ist, schauen Sie einfach in die Aufnahmen und",
+        "after": " — wir unterstützen Sie mit voller Transparenz und Professionalität."
       },
       "p3": {
         "strong": "Ihre Privatsphäre ist nicht verhandelbar.",
-        "after": "Es werden keinerlei identifizierende Informationen oder Details Ihres Zuhauses weitergegeben. Zugriff auf die Videos haben ausschließlich autorisierte Personen. Die Aufnahmen werden nach 7 Tagen sicher gelöscht."
+        "after": "Es werden keine identifizierenden Informationen oder Details Ihres Zuhauses weitergegeben. Zugriff auf Videos haben ausschließlich autorisierte Personen, und die Aufnahmen werden nach 7 Tagen von unseren sicheren Servern gelöscht."
       },
       "p4": {
-        "before": "Unsere Preise sind vollständig transparent – keine unklaren Stundensätze, keine versteckten Kosten. Sie erhalten keine Schätzungen, sondern verbindliche Gesamtpreise auf Basis Ihrer Buchungsdetails. Wählen Sie einfach das",
-        "after": "das zu Ihnen passt!"
+        "before": "Unsere Preise sind absolut transparent — keine vagen Stundenlöhne oder versteckten Gebühren. Sie erhalten keine Schätzungen, sondern feste Gesamtangebote basierend auf Ihren Buchungsdetails. Wählen Sie einfach die",
+        "after": ", die zu Ihnen passt!"
       },
       "footer": "3S-CLEAN — SICHER. ECHT TRANSPARENT."
     },
     "souveran": {
       "title": "SOUVERÄN",
-      "subtitle": "– ruhige Umsetzung, konstante Ergebnisse.",
-      "p1": "Jede 3S-CLEAN Fachkraft ist geschult, geprüft und fest bei uns angestellt – niemals Freelancer. Das garantiert Verlässlichkeit, Verantwortung und einen konstanten Qualitätsstandard bei jeder Reinigung.",
-      "p2": "Wir beschäftigen Menschen, die Reinigung ernst nehmen und stolz auf saubere Ergebnisse sind. Wir investieren gezielt in Schulungen, Checklisten und eine Kultur der Verantwortung.",
+      "subtitle": "- ruhige Umsetzung, konstante Ergebnisse.",
+      "p1": "Jede*r 3S-CLEAN Spezialist*in ist geschult, geprüft und direkt bei uns angestellt — niemals Freelancer. Das bedeutet für Sie Verlässlichkeit, Verantwortung und gleichbleibende Standards bei jedem Termin.",
+      "p2": "Wir stellen Menschen ein, die Reinigung wirklich gerne machen und stolz darauf sind, es richtig zu tun. Wir investieren in Training, Checklisten und eine Kultur der Verantwortung.",
       "p3": {
-        "strong": "Qualität wird aktiv gesteuert.",
-        "after": "Wir prüfen Video-Reports regelmäßig, um Leistung und Service auf hohem Niveau zu halten. Und falls doch einmal etwas passiert, sind Sie abgesichert: Eine Haftpflichtversicherung ist vorhanden."
+        "strong": "Qualität wird aktiv gemanagt.",
+        "after": "Wir prüfen regelmäßig Video-Reports, um die Leistung hoch und den Service zuverlässig zu halten. Und falls doch einmal etwas schiefgeht, sind Sie abgesichert: Eine Haftpflichtversicherung ist vorhanden."
       },
       "p4": {
-        "before": "Zusätzlich profitieren Sie finanziell: Sie können bis zu",
-        "strong": "20 % Ihrer jährlichen Reinigungskosten",
-        "after": "über die Steuerermäßigung nach §35a EStG geltend machen. Rechnungen aufbewahren – und aus Routine wird messbare finanzielle Effizienz."
+        "before": "Zusätzlich gibt es für unsere Kund*innen einen wirtschaftlichen Vorteil: Sichern Sie sich bis zu",
+        "strong": "20% Ihrer jährlichen Reinigungsausgaben zurück",
+        "after": "durch Steuerermäßigung gemäß §35a EStG: Rechnungen aufbewahren und Routine-Reinigung in messbare finanzielle Effizienz verwandeln."
       },
       "footer": "3S-CLEAN — SOUVERÄN. BIS INS DETAIL."
     },
@@ -112,32 +112,32 @@
   },
   "booking": {
     "serviceSelection": {
-      "title": "Experience auswählen",
-      "subtitle": "Wählen Sie den Reinigungsservice, der am besten zu Ihren Anforderungen passt.",
+      "title": "Wählen Sie Ihre Experience",
+      "subtitle": "Wählen Sie den Reinigungsservice, der am besten zu Ihren Bedürfnissen passt.",
       "from": "Ab",
       "incVat": "inkl. MwSt.",
       "includesHeading": {
-        "core": "Enthalten:",
-        "initial": "Enthält alle CORE-Leistungen sowie:",
-        "reset": "Enthält alle INITIAL-Leistungen sowie:",
-        "handover": "Enthält alle RESET-Leistungen sowie:"
+        "core": "Enthält:",
+        "initial": "Enthält alle CORE-Leistungen, plus:",
+        "reset": "Enthält alle INITIAL-Leistungen, plus:",
+        "handover": "Enthält alle RESET-Leistungen, plus:"
       }
     }
   },
   "experiencePage": {
     "hero": {
       "title": "3S-Clean Experiences",
-      "subtitle": "Wählen Sie die Serviceart, die am besten zu Ihnen und Ihrem Zuhause passt."
+      "subtitle": "Wählen Sie die Service-Art, die am besten zu Ihnen und Ihrem Zuhause passt."
     },
     "cards": {
       "cta": "Auswählen",
       "from": "Ab",
       "incVat": "inkl. MwSt.",
       "includesHeading": {
-        "core": "Enthalten:",
-        "initial": "Enthält alle CORE-Leistungen sowie:",
-        "reset": "Enthält alle INITIAL-Leistungen sowie:",
-        "handover": "Enthält alle RESET-Leistungen sowie:"
+        "core": "Enthält:",
+        "initial": "Enthält alle CORE-Leistungen, plus:",
+        "reset": "Enthält alle INITIAL-Leistungen, plus:",
+        "handover": "Enthält alle RESET-Leistungen, plus:"
       }
     },
     "optional": {
@@ -145,93 +145,93 @@
       "subtitle": "Extras, die Sie bei der Buchung hinzufügen können, um Ihre 3S-Clean Experience zu vervollständigen:",
       "items": {
         "linenSingle": {
-          "name": "Wäschewechsel – Einzelbett",
-          "price": "7,50 € pro Bett",
-          "time": "+10 Minuten pro Bett",
+          "name": "Bettwäsche wechseln – Einzelbett",
+          "price": "€ 7,50 pro Bett",
+          "time": "zzgl. 10 Minuten pro Bett",
           "frequency": "empfohlen bei jeder Reinigung"
         },
         "linenDouble": {
-          "name": "Wäschewechsel – Doppelbett",
-          "price": "14 € pro Bett",
-          "time": "+15 Minuten pro Bett",
+          "name": "Bettwäsche wechseln – Doppelbett",
+          "price": "€ 14 pro Bett",
+          "time": "zzgl. 15 Minuten pro Bett",
           "frequency": "empfohlen bei jeder Reinigung"
         },
         "oven": {
-          "name": "Backofen – Intensive Reinigung",
-          "price": "100 € pro Gerät",
-          "time": "+2 Stunden",
+          "name": "Backofen – Intensivreinigung",
+          "price": "€ 100 pro Gerät",
+          "time": "zzgl. 2 Stunden",
           "frequency": "empfohlen alle 4–6 Monate"
         },
         "fridge": {
-          "name": "Kühlschrank – Intensive Reinigung",
-          "price": "50 € pro Gerät",
-          "time": "+1 Stunde",
+          "name": "Kühlschrank – Intensivreinigung",
+          "price": "€ 50 pro Gerät",
+          "time": "zzgl. 1 Stunde",
           "frequency": "empfohlen alle 6 Monate"
         },
         "freezer": {
-          "name": "Gefrierschrank – Intensive Reinigung",
-          "price": "50 € pro Gerät",
-          "time": "+1 Stunde",
-          "frequency": "empfohlen einmal im Jahr"
+          "name": "Gefrierfach – Intensivreinigung",
+          "price": "€ 50 pro Gerät",
+          "time": "zzgl. 1 Stunde",
+          "frequency": "empfohlen einmal pro Jahr"
         },
         "windowsInside": {
           "name": "Fensterreinigung – innen",
-          "price": "4,25 € pro m² Glas",
-          "time": "+15 Minuten pro Standardfenster",
+          "price": "€ 4,25 pro m² Glas",
+          "time": "zzgl. 15 Minuten pro Standardfenster",
           "frequency": "empfohlen alle 4–6 Monate"
         },
         "windowsOutside": {
           "name": "Fensterreinigung – außen",
-          "price": "4,40 € pro m² Glas",
-          "time": "+15 Minuten pro Standardfenster",
+          "price": "€ 4,40 pro m² Glas",
+          "time": "zzgl. Minuten pro Standardfenster",
           "frequency": "empfohlen alle 4–6 Monate"
         },
         "balcony": {
-          "name": "Balkon-/Terrassenreinigung mit Hochdruck",
-          "price": "5,25 € pro m²",
-          "time": "+30 Minuten pro 5 m²",
+          "name": "Balkon/Terrasse – Hochdruckreinigung",
+          "price": "€ 5,25 pro m²",
+          "time": "zzgl. 30 Minuten pro 5 m²",
           "frequency": "empfohlen alle 6 Monate"
         },
         "limescale": {
           "name": "Intensive Kalkentfernung",
-          "price": "27 € pro 30-Minuten-Block",
+          "price": "€ 27 pro 30-Minuten-Block",
           "time": "",
           "frequency": "empfohlen alle 4–6 Monate"
         },
         "cupboards": {
-          "name": "Schränke organisieren",
-          "price": "50 € pro Stunde",
+          "name": "Schränke/Schubladen organisieren",
+          "price": "€ 50 pro Stunde",
           "time": "",
           "frequency": "empfohlen alle 6 Monate"
         },
         "wardrobe": {
           "name": "Kleiderschrank ordnen",
-          "price": "50 € pro Stunde",
+          "price": "€ 50 pro Stunde",
           "time": "",
-          "frequency": "empfohlen einmal im Monat"
+          "frequency": "empfohlen einmal pro Monat"
         },
         "upholstery": {
-          "name": "Polster – Intensive Reinigung",
-          "price": "6,50 € pro Sitzplatz",
-          "time": "+20 Minuten pro 3-Sitzer-Sofa",
+          "name": "Polstermöbel – Intensivreinigung",
+          "price": "€ 6,50 pro Sitzplatz",
+          "time": "zzgl. 20 Minuten pro 3-Sitzer-Sofa",
           "frequency": "empfohlen alle 2–3 Monate"
         },
         "handwash": {
-          "name": "Geschirr von Hand spülen",
-          "price": "2 € pro Teil",
+          "name": "Gläser/Teller per Hand spülen",
+          "price": "€ 2 pro Teil",
           "time": "",
           "frequency": ""
         }
       }
     },
     "exclusions": {
-      "title": "Was wir nicht übernehmen:",
+      "title": "Was wir nicht machen:",
       "items": [
         "Schwere Möbel verrücken oder hinter feststehenden Möbeln reinigen",
         "Wäsche waschen und bügeln",
         "Teppich-Shampoonierung",
-        "Starke Renovierungsverschmutzungen, Putz- oder Farbspritzer",
-        "Reparaturen, Löcher verspachteln, Ausbesserungsanstriche",
+        "Starker Renovierungs-/Bauschmutz, Putz- oder Farbspritzer",
+        "Reparaturen, Löcher spachteln, Ausbesserungsanstriche",
         "Entsorgung von Sperrmüll"
       ]
     }
@@ -239,42 +239,42 @@
   "services": {
     "core": {
       "title": "CORE",
-      "desc": "Das essentielle Reinigungsprogramm, um Ihr Zuhause dauerhaft sauber und gepflegt zu halten",
-      "rule": "Wählen Sie CORE, wenn sich Ihr Zuhause in gutem Zustand befindet und Sie diesen dauerhaft erhalten möchten (empfohlen wöchentlich oder zweiwöchentlich)."
+      "desc": "Das essenzielle Reinigungsprogramm, damit Ihr Zuhause dauerhaft sauber und gepflegt bleibt",
+      "rule": "Wählen Sie CORE, wenn Ihr Zuhause generell in gutem Zustand ist und so bleiben soll (empfohlen wöchentlich oder alle zwei Wochen)."
     },
     "initial": {
       "title": "INITIAL",
-      "desc": "Reinigung für Erstkund:innen, um ein dauerhaft gut haltbares Sauberkeitsniveau in normal gepflegten Wohnungen zu schaffen.",
-      "rule": "Wählen Sie INITIAL, wenn es sich um Ihre erste Buchung handelt und Ihr Zuhause normal gepflegt ist (keine starken Ablagerungen)."
+      "desc": "Reinigung für Erstkund*innen, um ein pflegbares Basisniveau an Sauberkeit in normal gepflegten Haushalten herzustellen.",
+      "rule": "Wählen Sie INITIAL, wenn es Ihre erste Buchung ist und Ihr Zuhause normal gepflegt ist (keine starken Ablagerungen)."
     },
     "reset": {
       "title": "RESET",
-      "desc": "Intensive Tiefenreinigung zur Auffrischung von Wohnungen mit starken Verschmutzungen nach längeren Reinigungspausen oder Veranstaltungen.",
-      "rule": "Wählen Sie RESET bei sichtbaren Ablagerungen oder wenn über einen längeren Zeitraum keine gründliche Reinigung erfolgt ist."
+      "desc": "Eine intensive Grundreinigung, um Wohnungen mit starken Ablagerungen nach langen Reinigungspausen oder nach Events zu revitalisieren.",
+      "rule": "Wählen Sie RESET, wenn sichtbare Ablagerungen vorhanden sind oder gründliche Reinigung über längere Zeit vernachlässigt wurde."
     },
     "handover": {
       "title": "HANDOVER",
-      "desc": "Reinigung für den Einzug oder vor der Wohnungsübergabe an den Vermieter",
-      "rule": "Wählen Sie HANDOVER für Ein-/Auszug oder Wohnungsübergaben, bei denen \u201Esieht sauber aus\u201C nicht ausreicht."
+      "desc": "Reinigung, um Ihr Zuhause bezugsfertig zu machen oder vor der Übergabe an den Vermieter",
+      "rule": "Wählen Sie HANDOVER für Ein-/Auszug oder Übergaben an den Vermieter, bei denen „sieht sauber aus“ nicht reicht."
     }
   },
   "servicesIncludes": {
     "floors": {
       "core": {
         "name": "Böden",
-        "desc": "Staubsaugen/Kehrarbeiten und Wischen aller zugänglichen Böden"
+        "desc": "Saugen/kehren und wischen aller zugänglichen Böden"
       },
       "initial": {
         "name": "Böden",
-        "desc": "Staubsaugen/Kehrarbeiten und Wischen aller zugänglichen Böden"
+        "desc": "Saugen/kehren und wischen aller zugänglichen Böden"
       },
       "reset": {
         "name": "Böden",
-        "desc": "Entfernung üblicher Flecken sowie Kanten-/Detailarbeit, soweit zugänglich, mit professionellen Reinigern"
+        "desc": "Entfernung üblicher Flecken punktuell sowie Kanten-/Detailarbeit (wo zugänglich) mit professionellem Reinigungsmittel"
       },
       "handover": {
         "name": "Böden",
-        "desc": "Entfernung üblicher Flecken sowie Kanten-/Detailarbeit, soweit zugänglich, mit professionellen Reinigern"
+        "desc": "Entfernung üblicher Flecken punktuell sowie Kanten-/Detailarbeit (wo zugänglich) mit professionellem Reinigungsmittel"
       }
     },
     "surfaces": {
@@ -284,25 +284,25 @@
       },
       "initial": {
         "name": "Möbeloberflächen",
-        "desc": "Detailliertes Wischen von Fußleisten, Lampenschirmen, Bilderrahmen, Heizkörpern (soweit zugänglich) und Schrankfronten; bei Bedarf mildes Reinigungsmittel"
+        "desc": "Detailliertes Abwischen von Fußleisten, Lampenschirmen, Bilderrahmen, Heizkörpern (wo zugänglich), Schrankfronten; bei Bedarf mildes Reinigungsmittel"
       },
       "reset": {
         "name": "Möbeloberflächen",
-        "desc": "Entfernung von Ablagerungen auf häufig berührten Flächen (Fett-/Staubschichten) inkl. Fußleisten, Heizkörpern (soweit zugänglich), Schrankfronten, Arbeitsflächen und Tischen; professionelle Reiniger bei Bedarf"
+        "desc": "Entfernung von Ablagerungen auf häufig berührten Flächen (Fett-/Staubschichten) inkl. Fußleisten, Heizkörper (wo zugänglich), Schrankfronten, Arbeitsflächen, Tische; professionelle Reiniger, wo erforderlich"
       },
       "handover": {
         "name": "Möbeloberflächen",
-        "desc": "Entfernung von Ablagerungen auf häufig berührten Flächen (Fett-/Staubschichten) inkl. Fußleisten, Heizkörpern (soweit zugänglich), Schrankfronten, Arbeitsflächen und Tischen; professionelle Reiniger bei Bedarf"
+        "desc": "Entfernung von Ablagerungen auf häufig berührten Flächen (Fett-/Staubschichten) inkl. Fußleisten, Heizkörper (wo zugänglich), Schrankfronten, Arbeitsflächen, Tische; professionelle Reiniger, wo erforderlich"
       }
     },
     "bathroom": {
       "core": {
         "name": "Bad & WC",
-        "desc": "Feuchtreinigung von Waschbecken, WC, Dusche/Badewanne, Spiegeln und Armaturen mit milden Reinigern; leichte Kalkentfernung"
+        "desc": "Nassreinigung von Waschbecken, Toilette, Dusche/Badewanne, Spiegeln, Armaturen; leichte Kalkentfernung"
       },
       "initial": {
         "name": "Bad & WC",
-        "desc": "Entfernung von Kalk (normaler Haushaltsgrad) an Armaturen, Duschwänden und Fliesen mit professionellen Reinigern"
+        "desc": "Entfernung von Kalk (normales Haushaltsniveau) an Armaturen, Duschwänden und Fliesen mit professionellen Reinigern"
       },
       "reset": {
         "name": "Bad & WC",
@@ -310,31 +310,31 @@
       },
       "handover": {
         "name": "Bad",
-        "desc": "Übergabe-gerechtes Entkalken von Armaturen und Fliesen, soweit Standardmethoden es erlauben (keine Demontage)"
+        "desc": "Übergabe-geeignete Entkalkung von Armaturen und Fliesen, soweit Standardmethoden es erlauben (keine Demontage)"
       }
     },
     "kitchen": {
       "core": {
         "name": "Küche",
-        "desc": "Feuchtreinigung von Arbeitsflächen, Kochfeld, Spüle, Außenflächen der Geräte sowie Schrankaußenflächen (punktuell bei Bedarf) mit milden Reinigern; Geschirrspüler ein-/ausräumen"
+        "desc": "Nassreinigung von Arbeitsflächen, Kochfeld, Spüle, Außenseiten von Geräten, Außenflächen von Schränken (bei Bedarf punktuell) mit milden Reinigern; Geschirrspüler ein-/ausräumen"
       },
       "initial": {
         "name": "Küche",
-        "desc": "Detaillierte Feuchtreinigung von Kochfeld, Fliesenspiegel, Schrankfronten und Dunstabzugshaube außen; gezielte Entfettung bei Bedarf"
+        "desc": "Detaillierte Nassreinigung von Kochfeld, Fliesenspiegel, Schrankfronten, Dunstabzugshaube außen; gezielte Entfettung bei Bedarf"
       },
       "reset": {
         "name": "Küche",
-        "desc": "Intensive Entfettung im Kochbereich und an fettanfälligen Flächen (Dunstabzugshaube außen, Fliesenspiegel, Schrankfronten), soweit Standardmethoden es erlauben"
+        "desc": "Intensive Entfettung im Kochbereich und auf fettanfälligen Flächen (Dunstabzugshaube außen, Fliesenspiegel, Schrankfronten) soweit Standardmethoden es erlauben"
       },
       "handover": {
         "name": "Küche",
-        "desc": "Intensive Entfettung im Kochbereich und an fettanfälligen Flächen (Dunstabzugshaube außen, Fliesenspiegel, Schrankfronten), soweit Standardmethoden es erlauben"
+        "desc": "Intensive Entfettung im Kochbereich und auf fettanfälligen Flächen (Dunstabzugshaube außen, Fliesenspiegel, Schrankfronten) soweit Standardmethoden es erlauben"
       }
     },
     "limescale": {
       "initial": {
         "name": "Kalkentfernung",
-        "desc": "Entfernung von Kalk (normaler Haushaltsgrad) an Armaturen, Duschwänden und Fliesen mit professionellen Reinigern"
+        "desc": "Entfernung von Kalk (normales Haushaltsniveau) an Armaturen, Duschwänden und Fliesen mit professionellen Reinigern"
       },
       "reset": {
         "name": "Kalkentfernung",
@@ -342,13 +342,13 @@
       },
       "handover": {
         "name": "Kalkentfernung",
-        "desc": "Übergabe-gerechtes Entkalken von Armaturen und Fliesen, soweit Standardmethoden es erlauben (keine Demontage)"
+        "desc": "Übergabe-geeignete Entkalkung von Armaturen und Fliesen, soweit Standardmethoden es erlauben (keine Demontage)"
       }
     },
     "insideCupboards": {
       "handover": {
         "name": "Schränke & Schubladen",
-        "desc": "Feuchtreinigung innen in leeren Schränken und Schubladen in Küche, Bad und Vorratsbereich"
+        "desc": "Nassreinigung innen in leeren Schränken und Schubladen in Küche, Bad, Vorratsraum"
       }
     },
     "windowsInside": {
@@ -358,51 +358,51 @@
       },
       "initial": {
         "name": "Fenster",
-        "desc": "Feuchtes Wischen von Fensterbänken und Rahmen (keine Glasreinigung)"
+        "desc": "Feuchtes Abwischen von Fensterbänken und Rahmen (keine Glasreinigung)"
       },
       "reset": {
         "name": "Fenster",
-        "desc": "Feuchtes Wischen von Fensterbänken und Rahmen (keine Glasreinigung)"
+        "desc": "Feuchtes Abwischen von Fensterbänken und Rahmen (keine Glasreinigung)"
       },
       "handover": {
         "name": "Fenster",
-        "desc": "Grundreinigung von Innenglas, Rahmen und Fensterbänken"
+        "desc": "Grundreinigung von Innen-Glas, Rahmen und Fensterbänken"
       }
     },
     "doors": {
       "core": {
-        "name": "Innentüren und Schalter",
+        "name": "Innentüren und Lichtschalter",
         "desc": "Abstauben und schnelle Entfernung von Fingerabdrücken"
       },
       "initial": {
-        "name": "Innentüren und Schalter",
+        "name": "Innentüren und Lichtschalter",
         "desc": "Abstauben und schnelle Entfernung von Fingerabdrücken"
       },
       "reset": {
-        "name": "Innentüren und Schalter",
+        "name": "Innentüren und Lichtschalter",
         "desc": "Abstauben und schnelle Entfernung von Fingerabdrücken"
       },
       "handover": {
-        "name": "Innentüren und Schalter",
-        "desc": "Feuchtes Wischen mit professionellen Reinigern"
+        "name": "Innentüren und Lichtschalter",
+        "desc": "Feuchtes Abwischen mit professionellen Reinigern"
       }
     },
     "beds": {
       "core": {
         "name": "Betten",
-        "desc": "Betten machen (kein Wäschewechsel)"
+        "desc": "Betten machen (kein Bettwäschewechsel)"
       },
       "initial": {
         "name": "Betten",
-        "desc": "Betten machen (kein Wäschewechsel)"
+        "desc": "Betten machen (kein Bettwäschewechsel)"
       },
       "reset": {
         "name": "Betten",
-        "desc": "Betten machen (kein Wäschewechsel)"
+        "desc": "Betten machen (kein Bettwäschewechsel)"
       },
       "handover": {
         "name": "Betten",
-        "desc": "Betten machen (kein Wäschewechsel)"
+        "desc": "Betten machen (kein Bettwäschewechsel)"
       }
     },
     "trash": {
@@ -443,40 +443,40 @@
     },
     "upholstery": {
       "reset": {
-        "name": "Polster",
+        "name": "Polstermöbel",
         "desc": "Absaugen von Sofas/Sesseln (nur Oberfläche, keine Extraktion)"
       },
       "handover": {
-        "name": "Polster",
+        "name": "Polstermöbel",
         "desc": "Absaugen von Sofas/Sesseln (nur Oberfläche, keine Extraktion)"
       }
     },
     "oven": {
       "handover": {
         "name": "Backofen",
-        "desc": "Feuchtreinigung innen mit professionellen Reinigern, soweit Standardmethoden es ohne Demontage erlauben"
+        "desc": "Nassreinigung innen mit professionellen Reinigern, soweit Standardmethoden ohne Demontage es erlauben"
       }
     },
     "fridge": {
       "handover": {
-        "name": "Kühlschrank/Gefrierschrank",
-        "desc": "Feuchtreinigung innen in leeren Geräten mit professionellen Reinigern (Gefrierschrank vorab durch Kund:innen abtauen)"
+        "name": "Kühlschrank/Gefrierfach",
+        "desc": "Nassreinigung innen in leeren Geräten mit professionellen Reinigern (Gefrierfach vorab vom Kunden abgetaut)"
       }
     },
     "walls": {
       "handover": {
         "name": "Wände",
-        "desc": "Entfernung von sichtbarem Staub und Spinnweben in erreichbaren Bereichen (trocken; keine komplette Wandwäsche)"
+        "desc": "Entfernung von sichtbarem Staub und Spinnweben in erreichbaren Bereichen (trocken; kein vollständiges Wandwaschen)"
       }
     }
   },
   "extras": {
     "linen-single": {
-      "name": "Wäschewechsel",
+      "name": "Bettwäsche wechseln",
       "unit": "Einzelbett"
     },
     "linen-double": {
-      "name": "Wäschewechsel",
+      "name": "Bettwäsche wechseln",
       "unit": "Doppelbett"
     },
     "oven": {
@@ -488,7 +488,7 @@
       "unit": "Gerät"
     },
     "freezer": {
-      "name": "Gefrierschrank – Tiefenreinigung",
+      "name": "Gefrierfach – Tiefenreinigung",
       "unit": "Gerät"
     },
     "windows-inside": {
@@ -508,7 +508,7 @@
       "unit": "30 Min"
     },
     "cupboards": {
-      "name": "Schränke organisieren",
+      "name": "Schränke / Schubladen organisieren",
       "unit": "Stunde"
     },
     "wardrobe": {
@@ -516,59 +516,59 @@
       "unit": "Stunde"
     },
     "sofa": {
-      "name": "Sofa-Polster absaugen",
+      "name": "Sofa – Polster absaugen",
       "unit": "Sitzplatz"
     }
   },
   "bookingExtras": {
-    "title": "Zusatzleistungen",
-    "subtitle": "Fügen Sie optionale Extras zu Ihrer Reinigung hinzu.",
+    "title": "Optionale Leistungen",
+    "subtitle": "Fügen Sie Extras hinzu, um Ihre Experiences zu vervollständigen.",
     "adds": "zzgl.",
-    "hint": "Sie können Extras später noch anpassen – ganz entspannt.",
+    "hint": "Sie können Extras später bei Bedarf anpassen — ganz entspannt.",
     "badges": {
       "recommended": "Empfohlen",
       "popular": "Beliebt"
     },
     "aria": {
       "increase": "{name} erhöhen",
-      "decrease": "{name} reduzieren"
+      "decrease": "{name} verringern"
     },
     "summary": {
-      "selectedExtras": "Gewählte Extras",
+      "selectedExtras": "Ausgewählte Extras",
       "howto": "Tippen Sie auf +, um hinzuzufügen",
       "total": "Extras gesamt",
       "empty": "Keine Extras ausgewählt"
     }
   },
   "bookingDetails": {
-    "title": "Wohnungsdetails",
-    "subtitle": "Helfen Sie uns, Ihre Wohnung richtig einzuschätzen – für eine genaue Preisberechnung",
+    "title": "Erzählen Sie uns von Ihrem Zuhause.",
+    "subtitle": "Die von Ihnen bereitgestellten Informationen ermöglichen es uns, einen genauen Preis zu berechnen und die Dauer Ihres Reinigungstermins zuverlässig zu planen.",
     "size": {
       "title": "Wohnungsgröße *",
-      "tip": "Tipp: Wählen Sie die Größe, die am besten zu Ihrer nutzbaren Wohnfläche passt."
+      "tip": "Tipp: Wählen Sie die Größe, die Ihrer nutzbaren Wohnfläche am besten entspricht."
     },
     "people": {
-      "title": "Anzahl Personen im Haushalt *",
-      "pricesInclPets": "Preise inkl. Haustiere",
-      "pricesExclPets": "Preise exkl. Haustiere",
-      "pickSizeFirst": "Bitte zuerst eine Wohnungsgröße auswählen.",
+      "title": "Anzahl der Bewohner*",
+      "pricesInclPets": "Angezeigte Preise inkl. Haustiere",
+      "pricesExclPets": "",
+      "pickSizeFirst": "Bitte wählen Sie zuerst die Größe Ihres Zuhauses aus.",
       "base": "Basis"
     },
     "additional": {
-      "title": "Zusätzliche Angaben",
+      "title": "Zusätzliche Informationen",
       "pets": "Haustiere im Haushalt",
-      "petsAdds": "Erhöht den Basispreis um +{price} €",
+      "petsAdds": "Erhöht den Basispreis um +€{price}",
       "kids": "Kinder im Haushalt",
       "allergies": "Allergien / Empfindlichkeiten",
-      "allergiesPlaceholder": "Bitte beschreiben Sie mögliche Allergien …"
+      "allergiesPlaceholder": "Bitte beschreiben Sie eventuelle Allergien..."
     }
   },
   "bookingFooter": {
     "footer": {
       "back": "Zurück",
       "continue": "Weiter",
-      "bookNow": "Jetzt buchen",
-      "booking": "Buchung läuft …",
+      "bookNow": "Bestätigen",
+      "booking": "Buchung...",
       "price": "€ {value}",
       "fromPrice": "Ab € {value}",
       "hint": {
@@ -581,8 +581,8 @@
       },
       "sub": {
         "incVatTime": "inkl. MwSt. • ~{time}",
-        "pickSize": "Wohnungsgröße auswählen",
-        "pickPeople": "Personen auswählen"
+        "pickSize": "Wohnungsgröße wählen",
+        "pickPeople": "Personen wählen"
       },
       "summary": {
         "pets": "Haustiere",
@@ -618,8 +618,8 @@
         "country": "Land *"
       },
       "calendar": {
-        "title": "Datum & Uhrzeit auswählen *",
-        "subtitle": "~{hours} Std. Reinigung. Muss bis {end}:00 abgeschlossen sein.",
+        "title": "Datum auswählen*",
+        "subtitle": "~{hours}h Reinigung.",
         "prev": "Vorheriger Monat",
         "next": "Nächster Monat",
         "weekdays": [
@@ -633,37 +633,37 @@
         ]
       },
       "slots": {
-        "title": "Verfügbare Zeiten am {date}",
-        "subtitle": "Reinigung muss bis {end}:00 abgeschlossen sein",
-        "scheduled": "Termin: {start} – {end}"
+        "title": "Uhrzeit auswählen für {date}",
+        "subtitle": "Verfügbare Zeitfenster mit garantierter Fertigstellung bis {end}:00.",
+        "scheduled": "Reinigung geplant: {start} - {end}"
       },
       "notes": {
         "label": "Zusätzliche Hinweise",
-        "placeholder": "Zugangshinweise, Parkplatz …"
+        "placeholder": "Zugangshinweise, Parkinfo..."
       },
       "terms": {
         "prefix": "Ich habe die",
         "link": "AGB",
-        "hint": "Wir speichern Ihre Zustimmung später zur Buchung (DB-Integration folgt als Nächstes).",
+        "hint": "Wir speichern Ihre Zustimmung später bei der Buchung (DB-Integration kommt als Nächstes).",
         "modalTitle": "AGB",
         "close": "Schließen",
         "accept": "Akzeptieren",
-        "placeholder1": "Die AGB werden hier eingefügt.",
-        "placeholder2": "Aktuell ist dies ein Platzhalter – wir verknüpfen ein echtes Dokument und speichern die Zustimmung in der Datenbank."
+        "placeholder1": "Hier wird der AGB-Text eingefügt.",
+        "placeholder2": "Aktuell ist dies ein Platzhalter-Modal — wir verknüpfen bald ein echtes Dokument und speichern die Zustimmung in der Datenbank."
       }
     }
   },
   "bookingSuccess": {
-    "title": "Ihre Buchung ist reserviert",
-    "subtitle": "Ihre Reinigung wurde reserviert. Bitte schließen Sie die Zahlung ab, um sie zu bestätigen.",
-    "loading": "Buchungsdetails werden geladen …",
+    "title": "Ihre Buchung ist eingeplant",
+    "subtitle": "Bitte hinterlegen Sie innerhalb von 30 Minuten Zahlungsinformationen, um Ihr Zeitfenster zu sichern.",
+    "loading": "Buchungsdetails werden geladen…",
     "errors": {
-      "missingRef": "Buchungsreferenz fehlt (orderId oder pendingToken).",
+      "missingRef": "Fehlende Buchungsreferenz (orderId oder pendingToken).",
       "loadFailed": "Buchung konnte nicht geladen werden.",
       "notFound": "Buchung nicht gefunden."
     },
     "details": {
-      "title": "Reservierungsdetails",
+      "title": "Buchungsdetails",
       "service": "Service",
       "date": "Datum",
       "time": "Uhrzeit",
@@ -676,20 +676,20 @@
       "total": "Gesamt"
     },
     "actions": {
-      "pay": "Jetzt bezahlen",
-      "home": "Zur Startseite",
+      "pay": "Zur Zahlung",
+      "home": "Zurück zum Konto",
       "bookAnother": "Weitere Buchung",
-      "createAccountToPay": "Konto erstellen & bezahlen"
+      "createAccountToPay": "Konto erstellen und bezahlen"
     }
   },
   "faqPage": {
     "hero": {
-      "title": "Häufige Fragen",
+      "title": "Häufig gestellte Fragen",
       "titleMobile": "FAQ",
       "subtitle": "Alles, was Sie wissen müssen"
     },
     "search": {
-      "placeholder": "Suchen …"
+      "placeholder": "Suchen..."
     },
     "filters": {
       "all": "Alle"
@@ -702,100 +702,100 @@
         "shortTitle": "Video & Datenschutz",
         "items": [
           {
-            "question": "Wer sieht die Aufnahmen?",
-            "answer": "Nur Sie über einen sicheren Link und autorisiertes QA-Personal — niemals Dritte."
+            "question": "Wer sieht das Videomaterial?",
+            "answer": "Nur Sie über einen sicheren Link und autorisierte QA-Mitarbeitende — niemals Dritte."
           },
           {
-            "question": "Warum werden Reinigungen aufgezeichnet?",
+            "question": "Warum zeichnen Sie Reinigungstermine auf?",
             "answer": "Wir bieten volle Transparenz darüber, was in Ihrem Zuhause passiert. Videoaufnahmen dienen als Nachweis der erbrachten Leistung und helfen, Qualität sicherzustellen."
           },
           {
-            "question": "Wie kann ich den Livestream oder die Videos ansehen?",
-            "answer": "Ein sicherer Zugriff ist in Ihrem Konto bis zu 7 Tage verfügbar. Auf Wunsch kann der Link auch an Ihr Telefon oder per E-Mail gesendet werden — Sie entscheiden, ob Sie diese Benachrichtigungen erhalten möchten."
+            "question": "Wie kann ich den Live-Stream oder die Videos ansehen?",
+            "answer": "Ein sicherer Zugriffslink ist in Ihrem persönlichen Konto bis zu 7 Tage verfügbar. Er kann auch an Ihr hinterlegtes Telefon oder per E-Mail gesendet werden — Sie entscheiden, wenn Sie diese Benachrichtigungen nicht erhalten möchten."
           },
           {
-            "question": "Kann ich die Löschung vor Ablauf der 7 Tage anfordern?",
-            "answer": "Ja — füllen Sie einfach das Formular in Ihrem Konto aus. Nach der Löschung sind keine Qualitätsansprüche mehr möglich."
+            "question": "Kann ich eine frühere Löschung der Aufnahmen als 7 Tage anfordern?",
+            "answer": "Ja — füllen Sie einfach das Formular in Ihrem persönlichen Konto aus. Sobald Videos gelöscht sind, können keine Qualitätsansprüche mehr geltend gemacht werden."
           },
           {
-            "question": "Ich habe Sorge, dass mein Zuhause gefilmt wird. Sind meine Daten sicher?",
-            "answer": "Bei uns wissen Sie immer, dass aufgezeichnet wird. Heimlich zu filmen wäre einfach — wir machen es transparent, damit Sie wissen, was passiert, auch wenn Sie nicht da sind. Wir teilen keine privaten Informationen über Sie oder Ihr Zuhause. Videos werden bis zu 7 Tage sicher gespeichert, der Zugriff ist auf autorisierte Personen beschränkt und anschließend werden sie gelöscht."
+            "question": "Ich mache mir Sorgen, dass mein Zuhause während der Reinigung gefilmt wird. Sind meine privaten Informationen sicher?",
+            "answer": "Bei uns wissen Sie immer, dass aufgezeichnet wird. Es ist leicht, ein Zuhause zu filmen, ohne dass es jemand merkt — wir tun es offen, damit Sie wissen, was tatsächlich passiert, auch wenn Sie nicht vor Ort sind. Wir teilen keine privaten Informationen über Sie oder Ihr Zuhause. Videos werden auf einem sicheren Server gespeichert, der Zugriff ist auf autorisiertes Personal beschränkt — bis zu 7 Tage, danach werden sie gelöscht."
           }
         ]
       },
       {
         "id": "pricing",
-        "title": "Preise, Steuern & Absicherung",
+        "title": "Preise, Steuern & rechtlicher Schutz",
         "shortTitle": "Preise",
         "items": [
           {
-            "question": "Warum ein Unternehmen beauftragen statt privat günstiger bar zu zahlen?",
-            "answer": "Weil Sie abgesichert sind. Unsere Leistungen sind versichert, wir sind verantwortlich und verschwinden nicht, wenn etwas beschädigt wird — das ist dann unser Problem, nicht Ihres. Privat ist es günstiger, bis etwas schiefgeht. Zusätzlich können Sie bis zu 20 % Ihrer Reinigungskosten nach §35a EStG steuerlich geltend machen."
+            "question": "Warum sollte ich eine Firma beauftragen statt privat günstiger bar zu zahlen?",
+            "answer": "Weil Sie geschützt sind. Unsere Leistungen sind versichert. Wir sind immer verantwortlich. Wir verschwinden nicht, wenn etwas beschädigt wird — das ist unser Risiko, nicht Ihres. Einzelne Putzkräfte sind günstiger, bis etwas schiefgeht. Und bei uns können Sie Ihre Reinigungskosten zudem steuerlich geltend machen: bis zu 20% gemäß §35a EStG."
           },
           {
             "question": "Warum sind Ihre Preise höher als bei privaten Reinigungskräften?",
-            "answer": "Private Kräfte zahlen keine Steuern und haben in der Regel keine Versicherung oder Haftungsdeckung. Wir bieten geschultes, geprüftes Personal, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfall. Sie zahlen für Stabilität und Sicherheit — nicht für Glück. Zusätzlich können Sie bis zu 20 % Ihrer Reinigungskosten nach §35a EStG steuerlich absetzen."
+            "answer": "Private Reinigungskräfte zahlen keine Steuern und haben oft keine Versicherung oder Haftungsdeckung. Wir stellen geschulte, geprüfte Mitarbeitende, Versicherungsschutz, garantierte Termine und Ersatz bei Ausfällen. Sie bezahlen für Stabilität und Ruhe — nicht für Glück. Außerdem können Sie bis zu 20% Ihrer Reinigungskosten gemäß §35a EStG steuerlich absetzen."
           },
           {
-            "question": "Bekomme ich eine Rechnung für die Steuerermäßigung (haushaltsnahe Dienstleistungen)?",
-            "answer": "Natürlich. Sie erhalten innerhalb von 48 Stunden nach jeder Reinigung eine Rechnung — und können bis zu 20 % der Kosten legal nach §35a EStG geltend machen."
+            "question": "Kann ich eine Rechnung für die Steuerermäßigung (§35a EStG) bekommen?",
+            "answer": "Natürlich. Sie erhalten innerhalb von 48 Stunden nach jeder Reinigung eine Rechnung — damit können Sie bis zu 20% der haushaltsnahen Dienstleistungen legal nach §35a EStG absetzen."
           }
         ]
       },
       {
         "id": "cleaners",
-        "title": "Personal, Verlässlichkeit & Qualität",
+        "title": "Reinigungskräfte, Zuverlässigkeit & Qualität",
         "shortTitle": "Qualität",
         "items": [
           {
-            "question": "Was passiert, wenn jemand krank ist oder nicht kommen kann?",
-            "answer": "Wir organisieren sofort Ersatz. Keine Ausfälle, kein Warten, kein Zeitverlust — Kontinuität ist gewährleistet."
+            "question": "Was passiert, wenn meine Reinigungskraft krank ist oder nicht kommen kann?",
+            "answer": "Wir schicken sofort Ersatz. Keine Ausfälle, kein Warten, keine verlorene Zeit. Kontinuität ist garantiert."
           },
           {
-            "question": "Kommt jedes Mal dieselbe Person?",
-            "answer": "Für wiederkehrende Termine planen wir in der Regel eine feste Person ein. So entsteht Vertrauen und Konstanz. Wenn Sie wechseln möchten, kontaktieren Sie uns bitte mindestens 48 Stunden vorher."
+            "question": "Bekomme ich jedes Mal dieselbe Reinigungskraft?",
+            "answer": "Für wiederkehrende Termine weisen wir in der Regel eine feste Reinigungskraft zu. Sie bauen Vertrauen auf, wir liefern Konstanz. Wenn Sie die Reinigungskraft wechseln möchten — kontaktieren Sie uns einfach mindestens 48 Stunden im Voraus."
           },
           {
-            "question": "Wir hatten schon Reinigungskräfte — die Qualität schwankte. Was macht ihr anders?",
-            "answer": "Wir steuern Qualität aktiv: Training, Standards, Ersatz bei Bedarf — und Sie haben eine direkte Ansprechperson, wenn etwas nicht passt. Sie sind nicht von einer einzelnen Person abhängig — Sie haben ein Team im Rücken."
+            "question": "Wir hatten schon Reinigungskräfte und die Qualität war schwankend — was machen Sie anders?",
+            "answer": "Wir überwachen Qualität, schulen, stellen bei Bedarf Ersatz und Sie haben einen direkten Ansprechpartner, falls Standards nachlassen. Sie sind nicht von einer Person abhängig — Sie haben ein ganzes Team im Rücken."
           },
           {
-            "question": "Werden Ihre Mitarbeitenden geprüft?",
-            "answer": "Ja — Identität, Referenzen und Zuverlässigkeit werden vor dem Einsatz geprüft."
+            "question": "Sind Ihre Reinigungskräfte background-gecheckt?",
+            "answer": "Ja — Identität, Referenzen und Zuverlässigkeitsprüfung sind vor Einsatz verpflichtend."
           }
         ]
       },
       {
         "id": "booking",
-        "title": "Buchung, Bedingungen & Stornierung",
+        "title": "Buchung, Verträge & Stornierung",
         "shortTitle": "Buchung",
         "items": [
           {
-            "question": "Muss ich einen langfristigen Vertrag abschließen?",
-            "answer": "Nein — wir bieten flexible Bedingungen. Wir empfehlen regelmäßige Reinigungen (alle 7–10 Tage), weil es langfristig günstiger ist."
+            "question": "Muss ich einen langfristigen Vertrag unterschreiben?",
+            "answer": "Nein — wir bieten flexible Bedingungen. Wir empfehlen regelmäßige, wiederkehrende Reinigungen (alle 7–10 Tage), weil es langfristig günstiger ist."
           },
           {
-            "question": "Kann ich jederzeit stornieren?",
-            "answer": "Ja — Flexibilität gehört zum Service. Kostenfrei bis spätestens 48 Stunden vorher. Spätere Stornierungen (außer nachweislicher Notfall) berechnen wir mit 50 € — wir schätzen Ihre Zeit und erwarten das auch umgekehrt."
+            "question": "Kann ich meinen Termin jederzeit stornieren?",
+            "answer": "Ja — Flexibilität gehört zum Service. Sie können kostenlos bis spätestens 48 Stunden vorher stornieren. Spätere Stornierungen (außer nachweislicher Notfall) werden mit €50 berechnet — wir schätzen Ihr Vertrauen und Ihre Zeit und erwarten das Gleiche."
           }
         ]
       },
       {
         "id": "process",
-        "title": "Ablauf & Leistungsumfang",
+        "title": "Reinigungsprozess & Leistungsumfang",
         "shortTitle": "Ablauf",
         "items": [
           {
             "question": "Bringen Sie Reinigungsmittel mit oder muss ich etwas bereitstellen?",
-            "answer": "Wir bringen alles mit — Reinigungsmittel, Tücher und Werkzeuge. Sie genießen einfach Ihr sauberes Zuhause."
+            "answer": "Wir bringen alles Nötige mit — Reiniger, Tücher, Tools. Sie genießen einfach ein sauberes Zuhause."
           },
           {
-            "question": "Wie lange dauert eine 80-m²-Wohnung in der Regel?",
-            "answer": "Im Schnitt 3–4 Stunden — je nach Zustand, Haustieren und Reinigungsfrequenz. Bei regelmäßigen Terminen dauert es oft kürzer. Für größere Haushalte kommen ggf. zwei Personen gleichzeitig."
+            "question": "Wie lange dauert eine 80 m² Wohnung normalerweise?",
+            "answer": "Im Durchschnitt 3–4 Stunden, je nach Zustand, Haustieren und Reinigungsfrequenz. Bei regelmäßigen Kund*innen dauert es pro Termin oft weniger. Für größere Haushalte schicken wir ggf. mehr als eine Reinigungskraft gleichzeitig."
           },
           {
-            "question": "Welches Programm sollte ich wählen?",
-            "answer": "Wenn Ihr Zuhause länger als einen Monat nicht professionell gereinigt wurde, empfehlen wir zum Start eine intensive Reinigung. Danach ist Standard alle 7–10 Tage ideal. Alle 2–3 Monate lohnen sich Extras wie Fenster- oder Backofenreinigung. Buchen Sie einfach eine Beratung."
+            "question": "Welchen Reinigungsplan sollte ich wählen?",
+            "answer": "Wenn Ihr Zuhause länger als 1 Monat nicht professionell gereinigt wurde, empfehlen wir einen Heavy-Duty-Start. Danach empfehlen wir Standardreinigungen alle 7–10 Tage, um alles auf Top-Niveau zu halten. Alle 2–3 Monate empfehlen wir Extras wie Fenster- oder Backofenreinigung. Buchen Sie einfach eine Beratung."
           }
         ]
       }
@@ -803,33 +803,33 @@
   },
   "errors": {
     "requiredFields": "Bitte füllen Sie alle erforderlichen Kontaktdaten aus.",
-    "createOrderFailed": "Die Buchung konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
-    "generic": "Es ist ein Fehler aufgetreten."
+    "createOrderFailed": "Wir konnten die Buchung nicht erstellen. Bitte versuchen Sie es erneut.",
+    "generic": "Etwas ist schiefgelaufen."
   },
   "postcode": {
     "postcodeCheck": {
       "title": "Verfügbarkeit prüfen",
-      "subtitle": "Geben Sie Ihre Postleitzahl ein, um zu prüfen, ob wir Ihr Gebiet aktuell bedienen.",
-      "postcodePlaceholder": "PLZ",
-      "checking": "Wird geprüft …",
+      "subtitle": "Geben Sie Ihre Postleitzahl ein, um zu sehen, ob wir Ihre Gegend aktuell bedienen.",
+      "postcodePlaceholder": "Postleitzahl",
+      "checking": "Wird geprüft…",
       "availableTitle": "Verfügbar",
-      "availableBody": "Sehr gut — wir bedienen die PLZ {postcode}. Sie können fortfahren.",
+      "availableBody": "Super — wir bedienen die PLZ {postcode}. Sie können fortfahren.",
       "unavailableTitle": "Nicht verfügbar",
-      "unavailableBody": "Die PLZ {postcode} wird aktuell noch nicht bedient.",
-      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "unavailableBody": "Wir bedienen die PLZ {postcode} derzeit noch nicht. Geben Sie Ihre E-Mail-Adresse ein, um benachrichtigt zu werden.",
+      "emailPlaceholder": "name@domain.com",
       "notifyCta": "Benachrichtigen",
-      "notifyLoading": "Wird gesendet …",
-      "notifiedTitle": "Benachrichtigung aktiviert",
-      "notifiedBody": "Wir informieren Sie per E-Mail, sobald wir die PLZ {postcode} bedienen."
+      "notifyLoading": "Wird gesendet…",
+      "notifiedTitle": "Sie werden benachrichtigt",
+      "notifiedBody": "Wir senden Ihnen eine E-Mail, sobald wir auf PLZ {postcode} erweitern."
     }
   },
   "auth": {
     "login": {
       "title": "Willkommen zurück",
       "subtitle": "Melden Sie sich an, um Buchungen zu verwalten und Ihre Reinigungsaufzeichnungen einzusehen.",
-      "bookingDetected": "✓ Buchung erkannt — sie wird nach der Anmeldung Ihrem Konto zugeordnet.",
+      "bookingDetected": "✓ Buchung erkannt — nach dem Login wird sie Ihrem Konto zugeordnet.",
       "labels": {
-        "email": "E-Mail-Adresse",
+        "email": "E-Mail",
         "password": "Passwort"
       },
       "placeholders": {
@@ -865,7 +865,7 @@
       },
       "meta": {
         "expiresPrefix": "Code läuft ab in",
-        "resendInPrefix": "Erneut senden verfügbar in",
+        "resendInPrefix": "Erneut senden möglich in",
         "resendNow": "Sie können jetzt erneut senden"
       },
       "cta": {
@@ -876,24 +876,24 @@
         "openOrders": "Meine Bestellungen öffnen"
       },
       "status": {
-        "resent": "Code wurde erneut gesendet. Bitte prüfen Sie Ihr Postfach.",
-        "verifiedButNotLinked": "Bestätigt. Wir konnten die Buchung noch nicht zuordnen — bitte öffnen Sie Ihre Bestellungen im Konto."
+        "resent": "Code erneut gesendet. Prüfen Sie Ihr Postfach.",
+        "verifiedButNotLinked": "Bestätigt. Wir konnten die Buchung noch nicht zuordnen — bitte öffnen Sie Ihre Bestellungen."
       },
       "errors": {
         "missingEmail": "E-Mail fehlt. Bitte starten Sie erneut.",
         "invalidCode": "Bitte geben Sie den 8-stelligen Bestätigungscode ein.",
-        "expired": "Dieser Code ist abgelaufen. Bitte fordern Sie einen neuen an.",
-        "recoverySessionMissing": "Reset-Sitzung noch nicht gefunden. Bitte versuchen Sie es erneut oder fordern Sie einen neuen Code an.",
+        "expired": "Dieser Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
+        "recoverySessionMissing": "Recovery-Session noch nicht gefunden. Bitte versuchen Sie es erneut oder fordern Sie einen neuen Code an.",
         "cooldown": "Bitte warten Sie {time}, bevor Sie erneut senden."
       },
-      "footerHint": "Wenn Sie die falsche E-Mail-Adresse eingegeben haben, gehen Sie zurück und versuchen Sie es erneut."
+      "footerHint": "Wenn Sie die falsche E-Mail eingegeben haben, gehen Sie zurück und versuchen Sie es erneut."
     },
     "signup": {
       "title": "Registrieren",
-      "subtitle": "Geben Sie Ihre E-Mail-Adresse ein — wir senden Ihnen einen Bestätigungscode.",
+      "subtitle": "Geben Sie Ihre E-Mail ein — wir senden Ihnen einen Bestätigungscode.",
       "bookingDetected": "✓ Buchung erkannt — nach der Bestätigung erscheint sie in Ihrer Bestellhistorie.",
       "labels": {
-        "email": "E-Mail-Adresse"
+        "email": "E-Mail"
       },
       "placeholders": {
         "email": "name@domain.com"
@@ -903,10 +903,10 @@
         "loading": "Code wird gesendet …"
       },
       "errors": {
-        "alreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert. Bitte melden Sie sich an."
+        "alreadyRegistered": "Diese E-Mail ist bereits registriert. Versuchen Sie, sich anzumelden."
       },
       "footer": {
-        "haveAccount": "Sie haben bereits ein Konto?",
+        "haveAccount": "Sie haben schon ein Konto?",
         "login": "Anmelden"
       }
     },
@@ -916,7 +916,7 @@
         "subtitle": "Bitte warten."
       },
       "title": "Passwort festlegen",
-      "subtitle": "Erstellen Sie ein Passwort für zukünftige Anmeldungen (E-Mail + Passwort).",
+      "subtitle": "Erstellen Sie ein Passwort für zukünftige Logins (E-Mail + Passwort).",
       "placeholders": {
         "password": "Neues Passwort (mind. 8 Zeichen)",
         "confirm": "Passwort wiederholen"
@@ -926,7 +926,7 @@
         "loading": "Wird gespeichert …"
       },
       "status": {
-        "ok": "Passwort wurde erfolgreich gesetzt."
+        "ok": "Passwort erfolgreich gesetzt."
       },
       "errors": {
         "minLen": "Mindestens 8 Zeichen",
@@ -935,7 +935,7 @@
         "mismatch": "Passwörter stimmen nicht überein."
       },
       "support": {
-        "prefix": "Bei Problemen kontaktieren Sie bitte"
+        "prefix": "Bei Problemen kontaktieren Sie"
       }
     },
     "resetPassword": {
@@ -947,7 +947,7 @@
         "title": "Reset fehlgeschlagen",
         "cta": {
           "requestNew": "Neuen Reset-Code anfordern",
-          "backToLogin": "Zur Anmeldung"
+          "backToLogin": "Zurück zum Login"
         }
       },
       "success": {
@@ -955,7 +955,7 @@
         "fallback": "Fertig."
       },
       "form": {
-        "title": "Neues Passwort festlegen",
+        "title": "Neues Passwort setzen",
         "subtitle": "Wählen Sie ein neues Passwort für Ihr Konto.",
         "labels": {
           "password": "Neues Passwort",
@@ -978,8 +978,8 @@
         "updated": "Passwort aktualisiert. Bitte melden Sie sich mit Ihrem neuen Passwort an."
       },
       "errors": {
-        "flowNotActive": "Dieser Reset-Vorgang ist nicht aktiv. Bitte fordern Sie einen neuen Reset-Code an.",
-        "sessionMissingOrExpired": "Ihre Reset-Sitzung fehlt oder ist abgelaufen. Bitte fordern Sie einen neuen Reset-Code an."
+        "flowNotActive": "Dieser Reset-Flow ist nicht aktiv. Bitte fordern Sie einen neuen Reset-Code an.",
+        "sessionMissingOrExpired": "Ihre Reset-Session fehlt oder ist abgelaufen. Bitte fordern Sie einen neuen Reset-Code an."
       }
     }
   },
@@ -1030,64 +1030,64 @@
       "title": "3-S Story"
     },
     "mission": {
-      "title": "Home Cleaning neu definiert",
-      "lead": "Der Markt für Haushaltsreinigung scheint in der Vergangenheit steckengeblieben zu sein: Kund:innen befürchten, dass ohne Aufsicht etwas ernsthaft schiefgehen kann, Preise sind häufig intransparent und Reinigungskräfte werden zu oft wie austauschbare Arbeitskräfte behandelt.",
-      "cardTitle": "Deshalb ist 3S-Clean nicht dafür gemacht, einfach nur \u201Ezu konkurrieren\u201C. Wir setzen einen neuen Standard.",
-      "cardBody": "3S-Clean ist ein Premium-Reinigungsservice, der auf einer einfachen Überzeugung basiert: Wenn Sie jemanden in Ihr Zuhause lassen, verdienen Sie Klarheit — bei Qualität, Sicherheit und Fairness. Und die Person, die die Leistung erbringt, verdient Respekt und Stabilität."
+      "title": "Haushaltsreinigung neu definiert",
+      "lead": "Der Markt für Haushaltsreinigung scheint in der Vergangenheit festzustecken: Kund*innen haben Angst, dass in ihrem Zuhause ohne Aufsicht etwas schiefgeht, Preise sind oft ein Rätsel, und Reinigungskräfte werden manchmal wie Wegwerf-Arbeitskräfte behandelt.",
+      "cardTitle": "Darum ist 3S-Clean nicht dafür gemacht, zu „konkurrieren“. Wir sind hier, um den Standard neu zu setzen.",
+      "cardBody": "3S-Clean ist ein Premium-Reinigungsservice, der auf einer einfachen Überzeugung basiert: Wenn Sie jemanden in Ihr Zuhause lassen, verdienen Sie Klarheit — bei Qualität, Sicherheit und Fairness. Und die Person, die die Arbeit ausführt, verdient Respekt und Stabilität."
     },
     "story": {
       "title": "Die Vision hinter 3S",
-      "p1": "Als eine der Personen hinter dem 3S-Clean Konzept 2022 nach Deutschland zog, musste er — wie viele Neuankömmlinge — um Stabilität kämpfen: Gewohnheiten verändern, Vertrauen aufbauen, Kontakte knüpfen und in einer neuen Gesellschaft aktiv Fuß fassen.",
-      "p2": "Was ihm dabei überraschend geholfen hat, war etwas Einfaches: die eigene Wohnung zu reinigen. Er mag den Prozess — weil es ehrliche Arbeit ist, sichtbare Ergebnisse liefert und Kontrolle zurückgibt, wenn vieles unsicher wirkt. Für viele Menschen ist Home Cleaning jedoch eine Black Box: Sie haben keine Zeit, wissen nicht, wo sie anfangen sollen, und zögern, Hilfe zu beauftragen.",
-      "p3": "Für die meisten bleibt Home Cleaning eine Black Box. Aber was wäre, wenn man Technologie nutzen könnte, um den Prozess zu öffnen? So entstand die Idee von 3S-Clean."
+      "p1": "Der Architekt des 3S-Clean Konzepts ist 2022 nach Deutschland gezogen. Wie viele Neuankömmlinge musste er um Stabilität kämpfen: lebenslange Gewohnheiten ändern, Vertrauen aufbauen, neue Kontakte knüpfen und ein aktives, beitragendes Mitglied einer neuen Gesellschaft werden.",
+      "p2": "Was ihm geholfen hat, geerdet zu bleiben, war etwas überraschend Einfaches: die Reinigung des eigenen Zuhauses. Er mag den Prozess — weil es ehrliche Arbeit ist, Ergebnisse sichtbar macht und Kontrolle zurückgibt, wenn sonst vieles unsicher wirkt. Für die meisten Menschen ist Haushaltsreinigung jedoch eine Black Box: Sie haben keine Zeit, wissen nicht, wo sie anfangen sollen, und zögern, Hilfe zu engagieren.",
+      "p3": "Aber was, wenn man Technologie in den Prozess integriert und ihn öffnet? So entstand die Idee von 3S-Clean."
     },
     "fix": {
-      "title": "Was wir ändern wollen"
+      "title": "Was wir verbessern wollen"
     },
     "problems": [
       {
-        "title": "Die Lücke bei Sichtbarkeit und Verantwortung",
-        "description": "Die meisten Kund:innen wissen nicht, was während einer Reinigung passiert — außer sie sitzen dabei und schauen zu. Das ist kein Vertrauen, sondern blinder Glaube. Wir nutzen Videodokumentation, um das zentrale Vertrauensproblem zu lösen. Sie können live zusehen oder später prüfen. Kein Rätselraten. Keine unangenehmen Gespräche."
+        "title": "Die Sichtbarkeits- und Verantwortlichkeitslücke",
+        "description": "Die meisten Kund*innen wissen nicht, was während einer Reinigung passiert, außer sie sitzen daneben und schauen zu. Wir haben Video-Dokumentation eingeführt, um das größte Problem der Branche zu lösen: Vertrauen. Sie können live zusehen oder später prüfen. Kein Rätselraten. Keine unangenehmen Fragen. Kein blinder Glaube — sondern Reporting, dem Sie vertrauen können."
       },
       {
         "title": "Das Preis-Chaos",
-        "description": "Viele Anbieter rechnen stundenweise ab — klingt einfach, bis es das nicht ist. Kund:innen zahlen am Ende oft für Zeit, nicht für Wert. Wir setzen statt unklarer Zeitlogik auf klar definierte Leistungsumfänge, abgesichert durch Nachweise und Konstanz — damit Preise verständlich und fair werden. Außerdem können Kund:innen bis zu 20 % nach §35a EStG steuerlich geltend machen."
+        "description": "Viele Anbieter rechnen pro Stunde ab — klingt einfach, bis es das nicht mehr ist. Kund*innen haben oft das Gefühl, am Ende für Zeit statt für Wert zu zahlen. Wir gehen weg von vager Zeitlogik hin zu klar definierten Leistungsumfängen, gestützt durch Nachweise und Konstanz — damit Preise verständlich werden. Und unsere Kund*innen können zusätzlich sparen: bis zu 20% Steuerermäßigung gemäß §35a EStG."
       },
       {
         "title": "Unfaire Arbeitsbedingungen",
-        "description": "Viel Reinigung passiert in Grauzonen. Reinigungskräfte haben keine Sicherheit, Schwarzarbeit bedeutet keine Rente, keine saubere Absicherung, keine Stabilität. Das ist nicht \u201Eeffizient\u201C \u2014 das ist kaputt. Unser Modell setzt auf echte Beschäftigung, Training und langfristige Würde — weil Qualität und Fairness zusammen skalieren."
+        "description": "Viel Reinigung passiert in einer Grauzone. Reinigungskräfte haben keine Sicherheit. Gelegenheitsjobs bar bedeuten keine Rente, keine vernünftige Absicherung, keine Stabilität. Das ist nicht „effizient“ — das ist kaputt. Unser Modell setzt auf echte Beschäftigung, Training und langfristige Würde, weil Qualität und Fairness gemeinsam skalieren."
       }
     ],
     "approachTitle": "Unser Ansatz",
     "approach": [
       {
         "title": "Sauber",
-        "description": "Klare Standards und konsistente Ergebnisse"
+        "description": "Klar definierte Standards und konstante Ergebnisse"
       },
       {
         "title": "Sicher",
-        "description": "Sicherheit und Haftung — mit transparenten Preisen"
+        "description": "Sicherheit, Haftung und transparente Preise"
       },
       {
         "title": "Souverän",
-        "description": "Planbare Leistung durch Menschen mit sicheren Arbeitsbedingungen"
+        "description": "Planbare Umsetzung durch Menschen, die Sicherheit im Job haben"
       }
     ],
     "expect": {
-      "title": "Was Sie erwarten können"
+      "title": "Was unsere Kund*innen erwarten können"
     },
     "benefits": [
       {
-        "title": "Videodokumentation",
-        "description": "Sie können live zusehen oder später prüfen. Keine Unsicherheit und messbare Qualität."
+        "title": "Video-Dokumentation",
+        "description": "Sie können einen sicheren Live-Stream ansehen oder später prüfen. Messbare Qualität, keine Unsicherheit."
       },
       {
-        "title": "Leistungsumfang statt Stundenlogik",
-        "description": "Wir fokussieren, was erledigt wird — nicht nur wie lange jemand da war. So werden Preise verständlich und fair."
+        "title": "Leistungsumfang statt Stunden",
+        "description": "Wir fokussieren uns auf das, was erledigt wird — nicht nur darauf, wie lange jemand da war. Preise werden verständlich und fair."
       },
       {
-        "title": "Sichere Beschäftigung",
-        "description": "Unser Team ist offiziell angestellt, geschult und versichert. Das schafft Würde — und für Sie verlässliche Konstanz."
+        "title": "Sichere Anstellung",
+        "description": "Unsere Reinigungskräfte sind offiziell angestellt, geschult und versichert. Wir glauben an Arbeit mit Würde — damit Sie sich auf Konstanz verlassen können."
       }
     ],
     "numbers": {
@@ -1103,37 +1103,37 @@
         "sublabel": ""
       },
       {
-        "label": "Tage Videozugriff",
+        "label": "Tage Videozugang",
         "sublabel": "bis zu"
       },
       {
-        "label": "Kostenfreie Stornierung",
-        "sublabel": "vor Termin"
+        "label": "bis zu",
+        "sublabel": "kostenlose Stornierung"
       }
     ],
     "coverage": {
       "title": "Wir bedienen aktuell Haushalte in ganz Stuttgart",
-      "body": "Geben Sie Ihre PLZ in der Buchung ein, um die Abdeckung sofort zu prüfen."
+      "body": "Geben Sie Ihre Postleitzahl ein, um sofort die Verfügbarkeit in Ihrer Gegend zu prüfen."
     },
     "cta": {
       "title": "Bereit für echte Transparenz?",
-      "subtitle": "Erleben Sie, wie professionelle Reinigung sein sollte.",
-      "button": "Jetzt Reinigung buchen"
+      "subtitle": "Erleben Sie, wie professionell wirklich aussieht.",
+      "button": "Jetzt Ihre 3S-Clean Experience buchen"
     }
   },
   "contact": {
     "hero": {
       "title": "Wie können wir helfen?",
-      "subtitle": "Persönliche Beratung. Schnelle Antworten."
+      "subtitle": "Bei Fragen oder Anliegen — melden Sie sich einfach bei uns!"
     },
     "availability": {
-      "title": "Erreichbarkeit",
-      "note": "An Feiertagen können Zeiten leicht abweichen."
+      "title": "Bürozeiten",
+      "note": "Sonntags und an Feiertagen geschlossen."
     },
     "hours": {
       "monFri": "Mo – Fr",
       "monFriTime": "08:00 – 18:00",
-      "sat": "Samstag",
+      "sat": "Sa",
       "satTime": "09:00 – 14:00",
       "sun": "Sonntag",
       "sunTime": "Geschlossen",
@@ -1141,27 +1141,27 @@
     },
     "phone": {
       "title": "Telefon",
-      "body": "Direkte Beratung zu Reinigungen, Terminen oder individuellen Fragen."
+      "body": "In dringenden Fällen rufen Sie uns während der Bürozeiten an"
     },
     "email": {
       "title": "E-Mail",
-      "body": "Anfragen, Feedback oder Probleme melden. Antwort innerhalb von 24 Stunden."
+      "body": "Senden Sie uns Anfragen, Feedback oder melden Sie Probleme — wir antworten innerhalb von 24 Stunden."
     },
     "whatsapp": {
       "title": "WhatsApp",
-      "body": "Schnellste Option für kurze Fragen, Terminänderungen oder Updates.",
+      "body": "Schnellste Option für kurze Fragen, Terminänderungen und Updates.",
       "cta": "Chat starten"
     },
     "business": {
       "title": "Business",
-      "body": "Hausverwaltung, Airbnb-Hosts, Gewerbeobjekte oder langfristige Kooperation."
+      "body": "Hausverwaltung, Airbnb-Hosts, Gewerbeobjekte oder langfristige Zusammenarbeit."
     },
     "instant": {
       "title": "Sofortbuchung",
       "subtitle": "Transparente Preise. Sofortige Bestätigung.",
       "cta": "Reinigung buchen"
     },
-    "privacyNote": "Ihre Daten werden vertraulich behandelt. Kein Marketing. Keine Weitergabe."
+    "privacyNote": "Ihre Daten werden stets vertraulich behandelt. Wir geben Ihre Informationen nicht an Dritte für unaufgefordertes Marketing weiter."
   },
   "account": {
     "title": "Konto",
@@ -1195,30 +1195,30 @@
     "orders": {
       "title": "Bestellhistorie",
       "subtitle": "Alle Ihre Buchungen erscheinen hier.",
-      "loading": "Wird geladen …",
+      "loading": "Wird geladen…",
       "meta": {
         "people": "Personen"
       },
       "status": {
         "pending": "Ausstehend",
         "confirmed": "Bestätigt",
-        "in_progress": "In Arbeit",
+        "in_progress": "In Bearbeitung",
         "completed": "Abgeschlossen",
         "cancelled": "Storniert",
         "unknown": "—"
       },
       "empty": {
         "body": "Ihre bisherigen Bestellungen erscheinen hier.",
-        "cta": "Erste Buchung erstellen"
+        "cta": "Erstellen Sie Ihre erste Buchung"
       },
       "errors": {
         "notAuthenticated": "Nicht authentifiziert.",
-        "loadFailed": "Ihre Bestellungen konnten nicht geladen werden."
+        "loadFailed": "Wir konnten Ihre Bestellungen nicht laden."
       }
     },
     "personalInfo": {
       "title": "Persönliche Daten",
-      "loading": "Wird geladen …",
+      "loading": "Wird geladen…",
       "defaults": {
         "country": "Deutschland"
       },
@@ -1226,11 +1226,11 @@
         "edit": "Bearbeiten",
         "cancel": "Abbrechen",
         "save": "Änderungen speichern",
-        "saving": "Wird gespeichert …"
+        "saving": "Wird gespeichert…"
       },
       "empty": {
         "title": "Profil vervollständigen",
-        "subtitle": "Ergänzen Sie Ihre Daten, damit die nächste Buchung schneller geht.",
+        "subtitle": "Fügen Sie Ihre Daten hinzu, damit die nächste Buchung schneller geht.",
         "emailLabel": "E-Mail:",
         "cta": "Daten hinzufügen"
       },
@@ -1245,11 +1245,11 @@
       },
       "errors": {
         "notAuthenticated": "Nicht authentifiziert.",
-        "fillFirstLast": "Bitte Vorname und Nachname ausfüllen.",
-        "fillPhone": "Bitte Telefonnummer ausfüllen.",
-        "fillAddress": "Bitte Adresse ausfüllen.",
-        "fillCity": "Bitte Stadt ausfüllen.",
-        "invalidPostal": "Bitte eine gültige Postleitzahl eingeben (5 Ziffern)."
+        "fillFirstLast": "Bitte füllen Sie Vorname und Nachname aus.",
+        "fillPhone": "Bitte füllen Sie Telefon aus.",
+        "fillAddress": "Bitte füllen Sie Adresse aus.",
+        "fillCity": "Bitte füllen Sie Stadt aus.",
+        "invalidPostal": "Bitte geben Sie eine gültige Postleitzahl ein (5 Ziffern)."
       }
     },
     "settings": {
@@ -1267,24 +1267,24 @@
         },
         "cta": {
           "default": "Passwort ändern",
-          "loading": "Wird aktualisiert …"
+          "loading": "Wird aktualisiert..."
         },
         "success": "Passwort aktualisiert.",
         "errors": {
-          "generic": "Passwort konnte nicht aktualisiert werden"
+          "generic": "Passwort-Update fehlgeschlagen"
         }
       },
       "deleteAccount": {
         "title": "Konto löschen",
-        "subtitle": "Das Löschen Ihres Kontos ist dauerhaft. Bestellungen werden aus buchhalterischen Gründen aufbewahrt, personenbezogene Daten in Bestellungen werden anonymisiert.",
+        "subtitle": "Das Löschen Ihres Kontos ist endgültig. Bestellungen werden aus buchhalterischen Gründen aufbewahrt, persönliche Daten in Bestellungen werden jedoch anonymisiert.",
         "cta": {
           "open": "Konto löschen",
           "cancel": "Abbrechen",
           "confirm": "Löschen bestätigen",
-          "deleting": "Wird gelöscht …"
+          "deleting": "Wird gelöscht..."
         },
-        "confirmHintPrefix": "Geben Sie",
-        "confirmHintSuffix": "ein, um zu bestätigen.",
+        "confirmHintPrefix": "Tippen Sie",
+        "confirmHintSuffix": "zur Bestätigung.",
         "errors": {
           "generic": "Löschen fehlgeschlagen"
         }

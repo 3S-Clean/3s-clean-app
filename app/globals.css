@@ -162,13 +162,14 @@ input:-webkit-autofill::first-line {
 
 
 /* ======================================================================
-   KLARO — 3S Clean FINAL
+   KLARO — 3S Clean FINAL v2
+   - Matches CARD_FRAME_BASE design system
    - No page dim overlay (cm-bg non-blocking)
    - Switch: border ring default, checkmark when active
    - Dark mode via prefers-color-scheme (matching globals.css tokens)
-   - Dark panel: solid dark bg, all text white
-   - 3 buttons identical style
-   - Purpose descriptions visible ONLY when caret expanded
+   - Caret toggle BELOW purpose rows, no background, ^ / v arrows
+   - "Required" badge hidden (moved into description text in config)
+   - Purpose descriptions visible ONLY when caret expanded (.is-open)
    ====================================================================== */
 
 /* Screen */
@@ -190,7 +191,9 @@ input:-webkit-autofill::first-line {
     z-index: 0 !important;
 }
 
-/* Panel — light mode */
+/* ======================================================================
+   Panel — matches CARD_FRAME_BASE
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
     position: relative !important;
     z-index: 1 !important;
@@ -206,13 +209,14 @@ input:-webkit-autofill::first-line {
     -webkit-backdrop-filter: blur(14px) !important;
     backdrop-filter: blur(14px) !important;
 
+    /* CARD_FRAME_BASE light shadow */
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70),
     0 8px 24px rgba(0, 0, 0, 0.08) !important;
 
     color: rgba(0, 0, 0, 0.92) !important;
 }
 
-/* Light diagonal highlight */
+/* Light diagonal highlight — matches CARD_FRAME_BASE before pseudo */
 .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before {
     content: "" !important;
     position: absolute !important;
@@ -228,7 +232,9 @@ input:-webkit-autofill::first-line {
     ) !important;
 }
 
-/* Header */
+/* ======================================================================
+   Header
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-header {
     padding: 16px 16px 0 !important;
 }
@@ -255,7 +261,9 @@ input:-webkit-autofill::first-line {
     color: rgba(0, 0, 0, 0.78) !important;
 }
 
-/* Body */
+/* ======================================================================
+   Body
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-body {
     padding: 12px 16px 0 !important;
     max-height: calc(min(70vh, 620px) - 168px) !important;
@@ -269,16 +277,16 @@ input:-webkit-autofill::first-line {
     padding: 0 !important;
 }
 
+/* Purpose rows */
 .klaro #cookieScreen.cookie-modal li.cm-purpose {
-    margin: 0 !important;
-    padding: 0 !important;
+    position: relative !important;
 }
 
 .klaro #cookieScreen.cookie-modal li.cm-purpose + li.cm-purpose {
     margin-top: 10px !important;
 }
 
-/* Rows */
+/* Label rows */
 .klaro #cookieScreen.cookie-modal label.cm-list-label {
     display: flex !important;
     align-items: center !important;
@@ -297,52 +305,79 @@ input:-webkit-autofill::first-line {
     font-weight: 650 !important;
     line-height: 1.2 !important;
     color: rgba(0, 0, 0, 0.92) !important;
+
+    /* Stack title + subtitle vertically */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
 }
 
-.klaro #cookieScreen.cookie-modal .cm-required {
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    margin-left: 6px !important;
-    color: rgba(0, 0, 0, 0.55) !important;
-}
-
-/* =========================================================
-   Purpose descriptions — HIDDEN by default.
-   Only visible when caret expanded (li.cm-purpose.cm-expanded)
-   ========================================================= */
-
-.klaro #cookieScreen.cookie-modal .cm-purpose .cm-list-description,
-.klaro #cookieScreen.cookie-modal .cm-purpose p.purposes {
-    display: none !important;
-    margin: 4px 0 0 0 !important;
-    padding: 0 12px !important;
-    font-size: 12px !important;
-    line-height: 1.4 !important;
-    color: rgba(0, 0, 0, 0.55) !important;
-}
-
-.klaro #cookieScreen.cookie-modal .cm-purpose.cm-expanded .cm-list-description,
-.klaro #cookieScreen.cookie-modal .cm-purpose.cm-expanded p.purposes {
+/* Subtitle — always visible, light secondary text */
+.klaro #cookieScreen.cookie-modal .cm-list-subtitle {
     display: block !important;
+    font-size: 11.5px !important;
+    font-weight: 450 !important;
+    line-height: 1.3 !important;
+    color: rgba(0, 0, 0, 0.48) !important;
+    letter-spacing: 0 !important;
 }
 
-/* Hide service breakdown + toggle-all */
-.klaro #cookieScreen.cookie-modal .cm-services,
+/* ======================================================================
+   "Required" badge — HIDDEN (text moved into purpose description)
+   ====================================================================== */
+.klaro #cookieScreen.cookie-modal .cm-required {
+    display: none !important;
+}
+
+/* ======================================================================
+   Purpose descriptions — ALWAYS HIDDEN (subtitle in label replaces them)
+   ====================================================================== */
+.klaro #cookieScreen.cookie-modal .cm-purpose .cm-list-description,
+.klaro #cookieScreen.cookie-modal .cm-purpose p.purposes,
+.klaro #cookieScreen.cookie-modal .cm-purpose > [id$="-description"] {
+    display: none !important;
+}
+
+.klaro #cookieScreen.cookie-modal li.cm-purpose.is-open .cm-list-description,
+.klaro #cookieScreen.cookie-modal li.cm-purpose.is-open p.purposes,
+.klaro #cookieScreen.cookie-modal li.cm-purpose.is-open > [id$="-description"] {
+    display: none !important;
+}
+
+/* ======================================================================
+   Services / original Klaro caret — HIDDEN
+   ====================================================================== */
+.klaro #cookieScreen.cookie-modal .cm-services {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.klaro #cookieScreen.cookie-modal .cm-services .cm-content {
+    display: none !important;
+}
+
+.klaro #cookieScreen.cookie-modal .cm-services .cm-caret {
+    display: none !important;
+}
+
+/* ======================================================================
+   Toggle all — HIDDEN
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-toggle-all {
     display: none !important;
 }
 
-/* Keep inputs alive, just hide */
+/* Keep inputs alive, just hidden */
 .klaro #cookieScreen.cookie-modal input.cm-list-input {
     position: absolute !important;
     opacity: 0 !important;
     pointer-events: none !important;
 }
 
-/* =========================================================
+/* ======================================================================
    SWITCH VISUAL — default: border ring; active: checkmark
-   ========================================================= */
-
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-switch {
     margin-left: auto !important;
     display: inline-flex !important;
@@ -406,7 +441,9 @@ input:-webkit-autofill::first-line {
     box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.14) !important;
 }
 
-/* Footer */
+/* ======================================================================
+   Footer
+   ====================================================================== */
 .klaro #cookieScreen.cookie-modal .cm-footer {
     padding: 16px !important;
 }
@@ -443,7 +480,9 @@ input:-webkit-autofill::first-line {
     transform: scale(0.98);
 }
 
-/* Mobile sheet */
+/* ======================================================================
+   Mobile sheet
+   ====================================================================== */
 @media (max-width: 640px) {
     .klaro #cookieScreen.cookie-modal {
         place-items: end center !important;
@@ -463,12 +502,13 @@ input:-webkit-autofill::first-line {
 }
 
 /* ======================================================================
-   DARK MODE — via prefers-color-scheme (matches globals.css)
+   DARK MODE — matches CARD_FRAME_BASE dark variant
    ====================================================================== */
-
 @media (prefers-color-scheme: dark) {
+
+    /* Panel — dark gradient matching CARD_FRAME_BASE */
     .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro {
-        background: #0d1117 !important;
+        background: var(--card) !important;
         background-image: linear-gradient(
                 to bottom right,
                 rgba(255, 255, 255, 0.04),
@@ -476,16 +516,24 @@ input:-webkit-autofill::first-line {
                 rgba(0, 0, 0, 0.30)
         ) !important;
 
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        /* CARD_FRAME_BASE dark shadow */
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
         0 12px 34px rgba(0, 0, 0, 0.48) !important;
 
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
+    /* Hide light-mode diagonal highlight in dark */
     .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro::before {
         opacity: 0 !important;
     }
 
+    /* Wildcard color inherit for all children */
+    .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro * {
+        color: inherit !important;
+    }
+
+    /* Header */
     .klaro #cookieScreen.cookie-modal .cm-header h1.title {
         color: rgba(255, 255, 255, 0.92) !important;
     }
@@ -498,20 +546,17 @@ input:-webkit-autofill::first-line {
         color: rgba(255, 255, 255, 0.80) !important;
     }
 
+    /* Titles */
     .klaro #cookieScreen.cookie-modal .cm-list-title {
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    .klaro #cookieScreen.cookie-modal .cm-required {
-        color: rgba(255, 255, 255, 0.55) !important;
+    /* Subtitle — dark */
+    .klaro #cookieScreen.cookie-modal .cm-list-subtitle {
+        color: rgba(255, 255, 255, 0.42) !important;
     }
 
-    /* descriptions color in dark (still hidden unless expanded) */
-    .klaro #cookieScreen.cookie-modal .cm-purpose .cm-list-description,
-    .klaro #cookieScreen.cookie-modal .cm-purpose p.purposes {
-        color: rgba(255, 255, 255, 0.50) !important;
-    }
-
+    /* Switch */
     .klaro #cookieScreen.cookie-modal .cm-switch div.slider.round {
         border-color: rgba(255, 255, 255, 0.30) !important;
     }
@@ -520,45 +565,16 @@ input:-webkit-autofill::first-line {
         border-color: rgba(255, 255, 255, 0.92) !important;
     }
 
+    /* Focus ring */
     .klaro #cookieScreen.cookie-modal label.cm-list-label:focus-visible {
         box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.16) !important;
     }
 
+    /* Buttons */
     .klaro #cookieScreen.cookie-modal .cm-btn {
         background: rgba(255, 255, 255, 0.08) !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
         color: rgba(255, 255, 255, 0.92) !important;
     }
 
-    .klaro #cookieScreen.cookie-modal .cm-modal.cm-klaro * {
-        color: inherit !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-header h1.title {
-        color: rgba(255, 255, 255, 0.92) !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-header p {
-        color: rgba(255, 255, 255, 0.65) !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-header p a {
-        color: rgba(255, 255, 255, 0.80) !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-list-title {
-        color: rgba(255, 255, 255, 0.92) !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-required {
-        color: rgba(255, 255, 255, 0.55) !important;
-    }
-
-    .klaro #cookieScreen.cookie-modal .cm-btn {
-        color: rgba(255, 255, 255, 0.92) !important;
-    }
 }
-
-
-
-
