@@ -29,6 +29,17 @@ type Order = {
     customer_notes?: string | null;
 };
 
+function formatDuration(hours: number | string) {
+    const n = typeof hours === "string" ? Number(hours) : hours;
+    if (!Number.isFinite(n) || n <= 0) return "—";
+    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const wh = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    if (wh === 0) return `${m}min`;
+    if (m === 0) return `${wh}h`;
+    return `${wh}h ${m}min`;
+}
+
 function Content() {
     const t = useTranslations("bookingSuccess");
     const sp = useSearchParams();
@@ -134,7 +145,7 @@ function Content() {
     }, [order, service, tServices]);
 
     const formatDate = (d: string) =>
-        new Date(d).toLocaleDateString("en-GB", {
+        new Date(`${d}T00:00:00`).toLocaleDateString(locale === "de" ? "de-DE" : "en-GB", {
             weekday: "long",
             day: "numeric",
             month: "long",
@@ -213,7 +224,7 @@ function Content() {
                             <div className="flex justify-between gap-4">
                                 <span className="text-gray-500">{t("details.duration")}</span>
                                 <span className="font-medium text-right">
-                  ~{order.estimated_hours}h
+                  {formatDuration(order.estimated_hours)}
                 </span>
                             </div>
 

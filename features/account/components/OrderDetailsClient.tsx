@@ -4,6 +4,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {
+    APARTMENT_SIZES,
     type ServiceId,
     type ServiceIncludeKey,
     SERVICES,
@@ -78,7 +79,33 @@ function formatMoney(v: unknown) {
 function formatHours(v: unknown) {
     const n = toNumber(v, NaN);
     if (!Number.isFinite(n)) return "—";
-    return `~${n}h`;
+    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const wh = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    if (wh === 0) return `~${m}min`;
+    if (m === 0) return `~${wh}h`;
+    return `~${wh}h ${m}min`;
+}
+
+function formatApartmentSize(v: unknown) {
+    const raw = String(v ?? "").trim();
+    if (!raw) return "—";
+
+    const mapped = APARTMENT_SIZES.find((s) => s.id === raw)?.label;
+    if (mapped) return mapped;
+    if (raw.toLowerCase().includes("m²")) return raw;
+
+    const compact = raw.replace(/\s+/g, "");
+    const range = compact.match(/^(\d+)[-–](\d+)$/);
+    if (range) return `${range[1]}–${range[2]} m²`;
+
+    const upTo = compact.match(/^up[-_]?to[-_]?(\d+)$/i);
+    if (upTo) return `< ${upTo[1]} m²`;
+
+    const over = compact.match(/^over[-_]?(\d+)$/i);
+    if (over) return `> ${over[1]} m²`;
+
+    return raw;
 }
 
 function parseExtras(input: unknown): OrderExtraLine[] {
@@ -197,6 +224,13 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
         if (!order) return "unknown";
         return normalizeDisplayStatus(order, nowMs);
     }, [order, nowMs]);
+
+    const scheduleSectionTitle = useMemo(() => {
+        const base = t("sections.schedule");
+        const statusLabel = tOrderStatus(statusKey(displayStatus));
+        if (!statusLabel || statusLabel === "—") return base;
+        return `${base} · ${statusLabel}`;
+    }, [displayStatus, t, tOrderStatus]);
 
     useEffect(() => {
         if (!order) return;
@@ -383,11 +417,11 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
             </div>
 
             <div className={[CARD_FRAME_BASE, "p-6 md:p-7"].join(" ")}>
-                <h2 className="text-lg font-semibold text-[var(--text)] mb-4">{t("sections.schedule")}</h2>
+                <h2 className="text-lg font-semibold text-[var(--text)] mb-4">{scheduleSectionTitle}</h2>
                 <div className="grid gap-2 text-sm text-[var(--muted)]">
                     <div>{serviceTitle}</div>
                     <div>{dateLabel} • {order.scheduled_time} • {formatHours(order.estimated_hours)}</div>
-                    <div>{order.apartment_size} • {order.people_count} {t("meta.people")}</div>
+                    <div>{formatApartmentSize(order.apartment_size)} • {order.people_count} {t("meta.people")}</div>
                 </div>
             </div>
 
@@ -494,17 +528,6 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
                         {busyPdf ? t("pdf.preparing") : t("actions.downloadPdf")}
                     </button>
 
-                    <Link
-                        href={`/${locale}/account`}
-                        className={[
-                            "px-5 py-2.5 rounded-full font-medium transition-all",
-                            "bg-white/45 backdrop-blur-md text-gray-900 border border-black/6",
-                            "shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]",
-                            "dark:bg-[var(--card)]/40 dark:text-white dark:border-white/12",
-                        ].join(" ")}
-                    >
-                        {t("actions.backToOrders")}
-                    </Link>
                 </div>
 
                 <p className="mt-4 text-xs text-[var(--muted)]">{t("cancel.policyHint")}</p>

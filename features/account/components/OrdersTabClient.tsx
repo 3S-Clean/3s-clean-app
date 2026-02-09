@@ -6,6 +6,7 @@ import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {BodyText, CARD_FRAME_ACTION, SectionTitle} from "@/shared/ui";
 import {computePaymentDueAt} from "@/shared/lib/orders/lifecycle";
+import {APARTMENT_SIZES} from "@/features/booking/lib/config";
 
 type OrderRow = {
     id: string;
@@ -42,7 +43,33 @@ function money(v: number | string) {
 function hours(v: number | string) {
     const n = typeof v === "string" ? Number(v) : v;
     if (!Number.isFinite(n)) return "—";
-    return `~${n}h`;
+    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const wh = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    if (wh === 0) return `~${m}min`;
+    if (m === 0) return `~${wh}h`;
+    return `~${wh}h ${m}min`;
+}
+
+function apartmentSizeLabel(v: string) {
+    const raw = String(v ?? "").trim();
+    if (!raw) return "—";
+
+    const mapped = APARTMENT_SIZES.find((s) => s.id === raw)?.label;
+    if (mapped) return mapped;
+    if (raw.toLowerCase().includes("m²")) return raw;
+
+    const compact = raw.replace(/\s+/g, "");
+    const range = compact.match(/^(\d+)[-–](\d+)$/);
+    if (range) return `${range[1]}–${range[2]} m²`;
+
+    const upTo = compact.match(/^up[-_]?to[-_]?(\d+)$/i);
+    if (upTo) return `< ${upTo[1]} m²`;
+
+    const over = compact.match(/^over[-_]?(\d+)$/i);
+    if (over) return `> ${over[1]} m²`;
+
+    return raw;
 }
 
 function formatCountdown(totalSec: number) {
@@ -271,7 +298,7 @@ export default function OrdersTabClient() {
                                 </div>
 
                                 <div className="mt-1 text-sm text-[color:var(--muted)]">
-                                    {o.apartment_size} • {o.people_count} {t("meta.people")}
+                                    {apartmentSizeLabel(o.apartment_size)} • {o.people_count} {t("meta.people")}
                                 </div>
 
                                 <div className="mt-4 flex flex-wrap items-center gap-2.5">
