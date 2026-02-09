@@ -5,6 +5,10 @@ import {
     isLegalConsentComplete,
     LEGAL_VERSION,
 } from "@/shared/lib/legal/consent";
+import {
+    isBlockingForSchedule,
+    paymentDueAtFromNow,
+} from "@/shared/lib/orders/lifecycle";
 
 type CreateOrderBody = {
     orderData?: unknown;
@@ -18,6 +22,7 @@ type SlotRow = {
     estimated_hours: number | null;
     status: string | null;
     created_at: string | null;
+    payment_due_at?: string | null;
 };
 
 type LegalConsentPayload = {
@@ -37,7 +42,12 @@ function omitServerManagedFields(order: OrderPayload): OrderPayload {
     return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
 }
 
-const PENDING_HOLD_MS = 30 * 60 * 1000;
+type PostgrestErrorLike = {
+    code?: string | null;
+    message?: string | null;
+    details?: string | null;
+    hint?: string | null;
+};
 
 function parseTimeToMinutes(v: unknown) {
     const raw = s(v);
@@ -53,6 +63,19 @@ function parseDurationMinutes(v: unknown) {
     const hours = Number(v);
     if (!Number.isFinite(hours) || hours <= 0) return 0;
     return Math.round(hours * 60);
+}
+
+function isMissingOrderLifecycleColumns(error: PostgrestErrorLike | null) {
+    if (!error) return false;
+    const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
+    return error.code === "42703" && joined.includes("payment_due_at");
+}
+
+function isAwaitingPaymentStatusConstraintError(error: PostgrestErrorLike | null) {
+    if (!error) return false;
+    if (error.code !== "23514") return false;
+    const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
+    return joined.includes("status") && joined.includes("check");
 }
 
 function readLegalConsent(order: OrderPayload): LegalConsentPayload | null {
@@ -75,15 +98,6 @@ function readLegalConsent(order: OrderPayload): LegalConsentPayload | null {
     }
 
     return {termsRead, privacyRead, accepted, acceptedAt, version};
-}
-
-function isBlockingStatus(row: SlotRow, nowMs: number) {
-    if (row.status === "confirmed" || row.status === "in_progress") return true;
-    if (row.status !== "pending") return false;
-
-    const createdAt = row.created_at ? Date.parse(row.created_at) : NaN;
-    if (Number.isNaN(createdAt)) return false;
-    return nowMs - createdAt <= PENDING_HOLD_MS;
 }
 
 export async function POST(req: Request) {
@@ -146,19 +160,52 @@ export async function POST(req: Request) {
     }
     const endMin = startMin + durationMin;
 
-    const {data: dayRows, error: dayRowsError} = await admin
+    let dayRows: SlotRow[] = [];
+    const dayRowsRes = await admin
         .from("orders")
-        .select("id, scheduled_time, estimated_hours, status, created_at")
+        .select("id, scheduled_time, estimated_hours, status, created_at, payment_due_at")
         .eq("scheduled_date", scheduledDate)
-        .in("status", ["pending", "confirmed", "in_progress"]);
+        .in("status", [
+            "awaiting_payment",
+            "payment_pending",
+            "paid",
+            "reserved",
+            "in_progress",
+            // legacy compatibility
+            "pending",
+            "confirmed",
+        ]);
+
+    let dayRowsError = dayRowsRes.error as PostgrestErrorLike | null;
+    if (isMissingOrderLifecycleColumns(dayRowsError)) {
+        const fallbackRowsRes = await admin
+            .from("orders")
+            .select("id, scheduled_time, estimated_hours, status, created_at")
+            .eq("scheduled_date", scheduledDate)
+            .in("status", [
+                "awaiting_payment",
+                "payment_pending",
+                "paid",
+                "reserved",
+                "in_progress",
+                // legacy compatibility
+                "pending",
+                "confirmed",
+            ]);
+
+        dayRows = (fallbackRowsRes.data ?? []) as SlotRow[];
+        dayRowsError = fallbackRowsRes.error as PostgrestErrorLike | null;
+    } else {
+        dayRows = (dayRowsRes.data ?? []) as SlotRow[];
+    }
 
     if (dayRowsError) {
         return NextResponse.json({error: dayRowsError.message}, {status: 500});
     }
 
     const nowMs = Date.now();
-    const conflict = ((dayRows ?? []) as SlotRow[]).some((row) => {
-        if (!isBlockingStatus(row, nowMs)) return false;
+    const conflict = dayRows.some((row) => {
+        if (!isBlockingForSchedule(row, nowMs)) return false;
         const rowStart = parseTimeToMinutes(row.scheduled_time);
         const rowDuration = parseDurationMinutes(row.estimated_hours);
         if (rowStart === null || rowDuration <= 0) return false;
@@ -177,10 +224,26 @@ export async function POST(req: Request) {
         ...safe,
         user_id: user?.id ?? null,
         pending_token: pendingToken,
-        status: "pending",
+        status: "awaiting_payment",
+        payment_due_at: paymentDueAtFromNow(),
     };
 
-    const {data, error} = await admin.from("orders").insert(payload).select("id, pending_token").single();
+    let {data, error} = await admin.from("orders").insert(payload).select("id, pending_token").single();
+    if (isMissingOrderLifecycleColumns(error as PostgrestErrorLike | null) || isAwaitingPaymentStatusConstraintError(error as PostgrestErrorLike | null)) {
+        const fallbackPayload = {
+            ...safe,
+            user_id: user?.id ?? null,
+            pending_token: pendingToken,
+            status: "pending",
+        };
+        const fallbackInsert = await admin
+            .from("orders")
+            .insert(fallbackPayload)
+            .select("id, pending_token")
+            .single();
+        data = fallbackInsert.data;
+        error = fallbackInsert.error;
+    }
 
     if (error || !data) {
         return NextResponse.json({error: error?.message ?? "Failed to create order"}, {status: 500});

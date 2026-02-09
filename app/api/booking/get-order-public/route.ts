@@ -1,8 +1,31 @@
 // app/api/booking/get-order-public/route.ts
 import {NextResponse} from "next/server";
 import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
+import {
+    isAwaitingPaymentExpired,
+    normalizeDisplayStatus,
+} from "@/shared/lib/orders/lifecycle";
 
 type Body = { orderId?: string; pendingToken?: string };
+type PostgrestErrorLike = {
+    code?: string | null;
+    message?: string | null;
+    details?: string | null;
+    hint?: string | null;
+};
+type OrderPublicRow = {
+    id: string;
+    status: string | null;
+    created_at: string | null;
+    payment_due_at?: string | null;
+    [key: string]: unknown;
+};
+
+function isMissingPaymentDueColumn(error: PostgrestErrorLike | null) {
+    if (!error) return false;
+    const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
+    return error.code === "42703" && joined.includes("payment_due_at");
+}
 
 function isUuid(v: string) {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -29,7 +52,14 @@ export async function POST(req: Request) {
     const selectSafe = `
     id,
     status,
+    payment_due_at,
+    paid_at,
     service_type,
+    apartment_size,
+    people_count,
+    extras,
+    base_price,
+    extras_price,
     scheduled_date,
     scheduled_time,
     estimated_hours,
@@ -46,6 +76,7 @@ export async function POST(req: Request) {
     customer_country,
     customer_notes
   `;
+    const selectFallback = selectSafe.replace("    payment_due_at,\n", "").replace("    paid_at,\n", "");
 
     let q = supabase.from("orders").select(selectSafe).limit(1);
 
@@ -57,10 +88,41 @@ export async function POST(req: Request) {
         q = q.eq("pending_token", pendingToken);
     }
 
-    const {data, error} = await q.maybeSingle();
+    const primaryRes = await q.maybeSingle();
+    let orderRow = primaryRes.data as OrderPublicRow | null;
+    let orderError = primaryRes.error as PostgrestErrorLike | null;
+    if (isMissingPaymentDueColumn(orderError)) {
+        let qFallback = supabase.from("orders").select(selectFallback).limit(1);
+        if (orderId) qFallback = qFallback.eq("id", orderId);
+        else qFallback = qFallback.eq("pending_token", pendingToken);
+        const fallbackRes = await qFallback.maybeSingle();
+        orderRow = fallbackRes.data as OrderPublicRow | null;
+        orderError = fallbackRes.error as PostgrestErrorLike | null;
+    }
 
-    if (error) return NextResponse.json({error: error.message}, {status: 500});
-    if (!data) return NextResponse.json({error: "Order not found"}, {status: 404});
+    if (orderError) {
+        return NextResponse.json({error: orderError.message ?? "Failed to load order"}, {status: 500});
+    }
+    if (!orderRow) return NextResponse.json({error: "Order not found"}, {status: 404});
 
-    return NextResponse.json({order: data}, {status: 200});
+    const nowMs = Date.now();
+    if (isAwaitingPaymentExpired(orderRow, nowMs)) {
+        await supabase
+            .from("orders")
+            .update({
+                status: "expired",
+            })
+            .eq("id", orderRow.id)
+            .in("status", ["awaiting_payment", "pending"]);
+    }
+
+    return NextResponse.json(
+        {
+            order: {
+                ...orderRow,
+                status: normalizeDisplayStatus(orderRow, nowMs),
+            },
+        },
+        {status: 200}
+    );
 }

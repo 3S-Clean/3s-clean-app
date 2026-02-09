@@ -2,13 +2,16 @@
 
 import {Check, Euro, Shield, Users, Video} from "lucide-react";
 import {Footer, Header} from "@/shared/layout";
-import {CARD_FRAME_BASE} from "@/shared/ui";
-import {PageTitle} from "@/shared/ui";
-import {BodyText} from "@/shared/ui";
-import {SectionTitle} from "@/shared/ui";
-import {BodyMuted} from "@/shared/ui";
-import {PillCTA} from "@/shared/ui";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {
+    BodyMuted,
+    BodyText,
+    CARD_FRAME_BASE,
+    CONTENT_GUTTER,
+    PAGE_CONTAINER,
+    PageTitle,
+    PillCTA,
+    SectionTitle
+} from "@/shared/ui";
 import {usePathname} from "next/navigation";
 import {useTranslations} from "next-intl";
 
@@ -41,10 +44,10 @@ export default function InsidePage() {
     ];
 
     const stats = [
-        {value: "20%", label: t("stats.0.label"), sublabel: t("stats.0.sublabel")},
-        {value: "100%", label: t("stats.1.label"), sublabel: t("stats.1.sublabel")},
-        {value: "7", label: t("stats.2.label"), sublabel: t("stats.2.sublabel")},
-        {value: "24h", label: t("stats.3.label"), sublabel: t("stats.3.sublabel")},
+        {value: "20%", label: t("stats.0.label")},
+        {value: "100%", label: t("stats.1.label")},
+        {value: "7", label: t("stats.2.label")},
+        {value: "24h", label: t("stats.3.label")},
     ];
 
     return (
@@ -170,9 +173,6 @@ export default function InsidePage() {
                                 key={index}
                                 className={[CARD_FRAME_BASE, "p-6 md:p-8"].join(" ")}
                             >
-                                {stat.sublabel && (
-                                    <p className="mb-1 text-sm text-[var(--muted)]">{stat.sublabel}</p>
-                                )}
                                 <p className="mb-2 text-3xl font-bold text-[var(--text)] md:text-4xl">
                                     {stat.value}
                                 </p>

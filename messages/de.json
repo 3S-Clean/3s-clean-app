@@ -1108,20 +1108,16 @@
     },
     "stats": [
       {
-        "label": "Steuerermäßigung",
-        "sublabel": "bis zu"
+        "label": "Steuerermäßigung"
       },
       {
-        "label": "Haftpflichtversicherung",
-        "sublabel": ""
+        "label": "Haftpflichtversicherung"
       },
       {
-        "label": "Tage Videozugang",
-        "sublabel": "bis zu"
+        "label": "Tage Videozugang"
       },
       {
-        "label": "bis zu",
-        "sublabel": "kostenlose Stornierung"
+        "label": "kostenlose Stornierung"
       }
     ],
     "coverage": {
@@ -1213,11 +1209,17 @@
         "people": "Personen"
       },
       "status": {
-        "pending": "Ausstehend",
-        "confirmed": "Bestätigt",
+        "reserved": "Reserviert",
+        "awaiting_payment": "Warten auf Zahlung",
+        "payment_pending": "Zahlung ausstehend",
+        "expired": "Abgelaufen",
+        "paid": "Bezahlt",
         "in_progress": "In Bearbeitung",
         "completed": "Abgeschlossen",
         "cancelled": "Storniert",
+        "refunded": "Erstattet",
+        "pending": "Ausstehend",
+        "confirmed": "Bestätigt",
         "unknown": "—"
       },
       "empty": {

@@ -1,13 +1,10 @@
 "use client";
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
-import {createClient} from "@/shared/lib/supabase/client";
-import {SectionTitle} from "@/shared/ui";
-import {BodyText} from "@/shared/ui";
-import {CARD_FRAME_ACTION, CARD_FRAME_STATIC} from "@/shared/ui";
+import {BodyText, CARD_FRAME_ACTION, SectionTitle} from "@/shared/ui";
 
 type OrderRow = {
     id: string;
@@ -15,19 +12,17 @@ type OrderRow = {
     service_type: string;
     apartment_size: string;
     people_count: string;
-    scheduled_date: string; // YYYY-MM-DD
-    scheduled_time: string; // HH:mm
+    scheduled_date: string;
+    scheduled_time: string;
     estimated_hours: number | string;
     total_price: number | string;
     created_at: string;
+    payment_due_at?: string | null;
 };
 
 function formatDate(d: string, locale: string) {
     const dt = new Date(d + "T00:00:00");
-
-    // next-intl locale: "en" | "de" → for Intl use "en-GB" or "de-DE"
     const intlLocale = locale === "de" ? "de-DE" : "en-GB";
-
     return dt.toLocaleDateString(intlLocale, {
         weekday: "short",
         day: "2-digit",
@@ -50,16 +45,28 @@ function hours(v: number | string) {
 
 function statusKey(s: string) {
     switch (s) {
+        case "reserved":
+            return "reserved";
+        case "awaiting_payment":
+            return "awaiting_payment";
+        case "payment_pending":
+            return "payment_pending";
+        case "expired":
+            return "expired";
         case "pending":
-            return "pending";
+            return "awaiting_payment";
         case "confirmed":
-            return "confirmed";
+            return "reserved";
+        case "paid":
+            return "paid";
         case "in_progress":
             return "in_progress";
         case "completed":
             return "completed";
         case "cancelled":
             return "cancelled";
+        case "refunded":
+            return "refunded";
         default:
             return "unknown";
     }
@@ -89,8 +96,8 @@ function OrderHistoryEmpty({bookingHref}: { bookingHref: string }) {
 }
 
 export default function OrdersTabClient() {
-    const supabase = useMemo(() => createClient(), []);
     const t = useTranslations("account.orders");
+    const tServices = useTranslations("services");
     const pathname = usePathname();
 
     const locale = pathname.split("/")[1];
@@ -110,41 +117,43 @@ export default function OrdersTabClient() {
             setError(null);
 
             try {
-                const {data: u, error: uErr} = await supabase.auth.getUser();
-                if (uErr || !u?.user) {
-                    if (!cancelled) setError(t("errors.notAuthenticated"));
-                    if (!cancelled) setOrders([]);
-                    return;
-                }
-
-                const {data, error} = await supabase
-                    .from("orders")
-                    .select(
-                        "id,status,service_type,apartment_size,people_count,scheduled_date,scheduled_time,estimated_hours,total_price,created_at"
-                    )
-                    .eq("user_id", u.user.id)
-                    .order("scheduled_date", {ascending: true})
-                    .order("scheduled_time", {ascending: true});
+                const res = await fetch("/api/booking/my-orders", {
+                    method: "GET",
+                    cache: "no-store",
+                });
+                const json = (await res.json().catch(() => null)) as {
+                    orders?: OrderRow[];
+                    error?: string;
+                } | null;
 
                 if (cancelled) return;
 
-                if (error) {
-                    setError(t("errors.loadFailed"));
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        setError(t("errors.notAuthenticated"));
+                    } else {
+                        setError(json?.error || t("errors.loadFailed"));
+                    }
                     setOrders([]);
                     return;
                 }
 
-                setOrders((data ?? []) as OrderRow[]);
+                setOrders(Array.isArray(json?.orders) ? json.orders : []);
+            } catch {
+                if (!cancelled) {
+                    setError(t("errors.loadFailed"));
+                    setOrders([]);
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
         };
 
-        run();
+        void run();
         return () => {
             cancelled = true;
         };
-    }, [supabase, t]);
+    }, [t]);
 
     if (loading) {
         return (
@@ -191,10 +200,9 @@ export default function OrdersTabClient() {
                         className={[CARD_FRAME_ACTION, "block p-6"].join(" ")}
                     >
                         <div className="flex items-start justify-between gap-6">
-                            {/* LEFT */}
                             <div>
                                 <div className="text-lg font-semibold capitalize text-[color:var(--text)]">
-                                    {o.service_type}
+                                    {tServices.has(`${o.service_type}.title`) ? tServices(`${o.service_type}.title`) : o.service_type}
                                 </div>
 
                                 <div className="mt-2 text-sm text-[color:var(--muted)]">
@@ -204,12 +212,14 @@ export default function OrdersTabClient() {
                                 <div className="mt-1 text-sm text-[color:var(--muted)]">
                                     {o.apartment_size} • {o.people_count} {t("meta.people")}
                                 </div>
+
+                                <div className="mt-4 inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)]">
+                                    {t("actions.viewDetails")}
+                                </div>
                             </div>
 
-                            {/* RIGHT */}
                             <div className="text-right shrink-0">
-                                <div
-                                    className="text-xl font-semibold text-[color:var(--text)]">{money(o.total_price)}</div>
+                                <div className="text-xl font-semibold text-[color:var(--text)]">{money(o.total_price)}</div>
                                 <div className="mt-1 text-sm text-[color:var(--muted)]">
                                     {t(`status.${statusKey(o.status)}`)}
                                 </div>
@@ -217,10 +227,6 @@ export default function OrdersTabClient() {
                         </div>
                     </Link>
                 ))}
-            </div>
-            {/* пример обычной НЕкликабельной карточки (если понадобится позже) */}
-            <div className="mt-6 hidden">
-                <div className={[CARD_FRAME_STATIC, "p-6"].join(" ")}>...</div>
             </div>
         </div>
     );

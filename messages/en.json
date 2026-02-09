@@ -1108,20 +1108,16 @@
     },
     "stats": [
       {
-        "label": "tax deduction",
-        "sublabel": "up to"
+        "label": "tax deduction"
       },
       {
-        "label": "liability insurance",
-        "sublabel": ""
+        "label": "liability insurance"
       },
       {
-        "label": "days video access",
-        "sublabel": "up to"
+        "label": "days video access"
       },
       {
-        "label": "up to",
-        "sublabel": "free cancellation"
+        "label": "free cancellation"
       }
     ],
     "coverage": {
@@ -1213,11 +1209,17 @@
         "people": "people"
       },
       "status": {
-        "pending": "Pending",
-        "confirmed": "Confirmed",
+        "reserved": "Reserved",
+        "awaiting_payment": "Awaiting payment",
+        "payment_pending": "Payment pending",
+        "expired": "Expired",
+        "paid": "Paid",
         "in_progress": "In progress",
         "completed": "Completed",
         "cancelled": "Cancelled",
+        "refunded": "Refunded",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
         "unknown": "—"
       },
       "empty": {
