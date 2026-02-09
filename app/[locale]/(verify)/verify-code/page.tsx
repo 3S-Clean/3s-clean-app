@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import {Suspense, useEffect, useMemo, useState} from "react";
+import {Suspense, useCallback, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
 import {createClient} from "@/shared/lib/supabase/client";
@@ -58,7 +58,10 @@ function VerifyCodeInner() {
     // locale-aware paths (/en/*, /de/*)
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
-    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+    const withLocale = useCallback(
+        (href: string) => (hasLocale ? `/${locale}${href}` : href),
+        [hasLocale, locale]
+    );
 
     useEffect(() => {
         const storedEmail = (() => {
@@ -96,7 +99,7 @@ function VerifyCodeInner() {
                 if (storedToken) setPendingOrderToken(storedToken);
             }
         }
-    }, [flow, router, storageKey, pendingOrderFromQuery]);
+    }, [flow, router, storageKey, pendingOrderFromQuery, withLocale]);
 
     useEffect(() => {
         if (!email) return;

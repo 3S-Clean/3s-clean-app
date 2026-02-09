@@ -13,8 +13,9 @@ function s(v: unknown) {
     return String(v ?? "").trim();
 }
 
-function isFilled(v: unknown) {
-    return typeof v === "string" ? v.trim().length > 0 : s(v).length > 0;
+function omitServerManagedFields(order: OrderPayload): OrderPayload {
+    const blocked = new Set(["user_id", "pending_token", "status", "id", "created_at", "updated_at"]);
+    return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
 }
 
 export async function POST(req: Request) {
@@ -58,15 +59,7 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
     const pendingToken = crypto.randomUUID();
     const admin = createSupabaseAdminClient();
-    const {
-        user_id: _ignoreUserId,
-        pending_token: _ignorePending,
-        status: _ignoreStatus,
-        id: _ignoreId,
-        created_at: _ignoreCreatedAt,
-        updated_at: _ignoreUpdatedAt,
-        ...safe
-    } = orderData;
+    const safe = omitServerManagedFields(orderData);
 
     const payload = {
         ...safe,

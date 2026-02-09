@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
 import {createClient} from "@/shared/lib/supabase/client";
@@ -16,7 +16,10 @@ export default function SetPasswordPage() {
     // locale-aware hrefs for /en/* and /de/*
     const locale = pathname.split("/")[1];
     const hasLocale = locale === "en" || locale === "de";
-    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
+    const withLocale = useCallback(
+        (href: string) => (hasLocale ? `/${locale}${href}` : href),
+        [hasLocale, locale]
+    );
 
     const nextRaw = sp.get("next") || "";
     // next already comes encoded from verify-code; keep as-is, just decode safely

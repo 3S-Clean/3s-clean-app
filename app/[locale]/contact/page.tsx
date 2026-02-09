@@ -9,7 +9,6 @@ import PageTitle from "@/shared/ui/typography/PageTitle";
 import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
 import SectionTitle from "@/shared/ui/typography/SectionTitle";
 import BodyText from "@/shared/ui/typography/BodyText";
-import {usePathname} from "next/navigation";
 import {useTranslations} from "next-intl";
 
 type HoursItem = { day: string; hours: string };
@@ -40,11 +39,6 @@ const CTA_GLASS = [
 
 export default function ContactPage() {
     const t = useTranslations("contact");
-
-    const pathname = usePathname();
-    const locale = pathname.split("/")[1];
-    const hasLocale = locale === "en" || locale === "de";
-    const withLocale = (href: string) => (hasLocale ? `/${locale}${href}` : href);
 
     const businessHours: HoursItem[] = [
         {day: t("hours.monFri"), hours: t("hours.monFriTime")},

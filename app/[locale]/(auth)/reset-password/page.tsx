@@ -115,7 +115,7 @@ export default function ResetPasswordPage() {
             cancelled = true;
             sub?.subscription?.unsubscribe();
         };
-    }, [supabase, queryFlow]);
+    }, [supabase, queryFlow, t]);
 
     const password = watch("password");
     const confirmPassword = watch("confirmPassword");
