@@ -1,12 +1,12 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {BodyText, CARD_FRAME_ACTION, SectionTitle} from "@/shared/ui";
 import {computePaymentDueAt} from "@/shared/lib/orders/lifecycle";
-import {APARTMENT_SIZES} from "@/features/booking/lib/config";
+import {APARTMENT_SIZES, roundMinutesToQuarterUp} from "@/features/booking/lib/config";
 
 type OrderRow = {
     id: string;
@@ -22,6 +22,8 @@ type OrderRow = {
     payment_due_at?: string | null;
     paid_at?: string | null;
 };
+
+type FilterKey = "all" | "active" | "needsAction" | "past";
 
 function formatDate(d: string, locale: string) {
     const dt = new Date(d + "T00:00:00");
@@ -43,7 +45,7 @@ function money(v: number | string) {
 function hours(v: number | string) {
     const n = typeof v === "string" ? Number(v) : v;
     if (!Number.isFinite(n)) return "—";
-    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const totalMinutes = roundMinutesToQuarterUp(n * 60);
     const wh = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
     if (wh === 0) return `~${m}min`;
@@ -110,6 +112,36 @@ function statusKey(s: string) {
     }
 }
 
+function hasPaid(order: OrderRow) {
+    if (typeof order.paid_at === "string" && order.paid_at.trim().length > 0) return true;
+    const key = statusKey(order.status);
+    return key === "paid" || key === "in_progress" || key === "completed" || key === "refunded";
+}
+
+function needsAction(order: OrderRow) {
+    const key = statusKey(order.status);
+    if (key === "awaiting_payment" || key === "payment_pending") return true;
+    return key === "reserved" && !hasPaid(order);
+}
+
+function isPast(order: OrderRow) {
+    const key = statusKey(order.status);
+    return key === "cancelled" || key === "completed" || key === "refunded" || key === "expired";
+}
+
+function isActive(order: OrderRow) {
+    if (needsAction(order)) return true;
+    const key = statusKey(order.status);
+    return key === "reserved" || key === "paid" || key === "in_progress";
+}
+
+function orderTimeMs(order: OrderRow) {
+    const direct = Date.parse(`${order.scheduled_date}T${order.scheduled_time || "00:00"}:00`);
+    if (!Number.isNaN(direct)) return direct;
+    const created = Date.parse(order.created_at);
+    return Number.isNaN(created) ? 0 : created;
+}
+
 function OrderHistoryEmpty({bookingHref}: { bookingHref: string }) {
     const t = useTranslations("account.orders");
     return (
@@ -148,6 +180,7 @@ export default function OrdersTabClient() {
     const [error, setError] = useState<string | null>(null);
     const [busyCancelId, setBusyCancelId] = useState<string | null>(null);
     const [nowMs, setNowMs] = useState(Date.now());
+    const [filter, setFilter] = useState<FilterKey>("all");
 
     const canCancel = (status: string) => {
         const key = statusKey(status);
@@ -155,8 +188,7 @@ export default function OrdersTabClient() {
     };
 
     const paymentSecondsLeft = (order: OrderRow) => {
-        if (statusKey(order.status) !== "reserved") return null;
-        if (typeof order.paid_at === "string" && order.paid_at.trim().length > 0) return null;
+        if (!needsAction(order)) return null;
         const dueIso = computePaymentDueAt(order);
         if (!dueIso) return null;
         const dueMs = Date.parse(dueIso);
@@ -165,14 +197,55 @@ export default function OrdersTabClient() {
     };
 
     useEffect(() => {
-        const hasPendingTimer = orders.some((o) => {
-            if (statusKey(o.status) !== "reserved") return false;
-            return !(typeof o.paid_at === "string" && o.paid_at.trim().length > 0);
-        });
+        const hasPendingTimer = orders.some((o) => needsAction(o));
         if (!hasPendingTimer) return;
         const timer = setInterval(() => setNowMs(Date.now()), 1000);
         return () => clearInterval(timer);
     }, [orders]);
+
+    const sortedOrders = useMemo(() => {
+        const rank = (order: OrderRow) => {
+            if (needsAction(order)) return 0;
+            if (isActive(order)) return 1;
+            if (isPast(order)) return 2;
+            return 3;
+        };
+
+        return [...orders].sort((a, b) => {
+            const ra = rank(a);
+            const rb = rank(b);
+            if (ra !== rb) return ra - rb;
+
+            const ta = orderTimeMs(a);
+            const tb = orderTimeMs(b);
+
+            if (ra === 2) return tb - ta;
+            return ta - tb;
+        });
+    }, [orders]);
+
+    const counts = useMemo(
+        () => ({
+            all: sortedOrders.length,
+            active: sortedOrders.filter((o) => isActive(o)).length,
+            needsAction: sortedOrders.filter((o) => needsAction(o)).length,
+            past: sortedOrders.filter((o) => isPast(o)).length,
+        }),
+        [sortedOrders]
+    );
+
+    const filteredOrders = useMemo(() => {
+        switch (filter) {
+            case "active":
+                return sortedOrders.filter((o) => isActive(o));
+            case "needsAction":
+                return sortedOrders.filter((o) => needsAction(o));
+            case "past":
+                return sortedOrders.filter((o) => isPast(o));
+            default:
+                return sortedOrders;
+        }
+    }, [filter, sortedOrders]);
 
     const cancelOrder = async (orderId: string) => {
         if (busyCancelId) return;
@@ -244,6 +317,26 @@ export default function OrdersTabClient() {
         };
     }, [t]);
 
+    const statusToneClass = (order: OrderRow) => {
+        const key = statusKey(order.status);
+        if (key === "cancelled" || key === "expired" || key === "refunded") {
+            return "text-red-600 dark:text-red-300";
+        }
+        if (key === "completed") {
+            return "text-emerald-700 dark:text-emerald-300";
+        }
+        if (needsAction(order)) {
+            return "text-amber-700 dark:text-amber-300";
+        }
+        return "text-[color:var(--muted)]";
+    };
+
+    const primaryActionLabel = (order: OrderRow) => {
+        if (needsAction(order)) return t("actions.payNow");
+        if (isPast(order)) return t("actions.viewSummary");
+        return t("actions.manageOrder");
+    };
+
     if (loading) {
         return (
             <div className="text-center">
@@ -281,8 +374,61 @@ export default function OrdersTabClient() {
                 </div>
             </div>
 
+            <div className="mb-6 flex flex-wrap gap-2">
+                {(
+                    [
+                        {id: "all", label: t("filters.all"), count: counts.all},
+                        {id: "active", label: t("filters.active"), count: counts.active},
+                        {id: "needsAction", label: t("filters.needsAction"), count: counts.needsAction},
+                        {id: "past", label: t("filters.past"), count: counts.past},
+                    ] as Array<{id: FilterKey; label: string; count: number}>
+                ).map((item) => {
+                    const active = filter === item.id;
+                    return (
+                        <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setFilter(item.id)}
+                            className={[
+                                "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                                active
+                                    ? "bg-gray-900 text-white border border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white"
+                                    : "border border-black/10 dark:border-white/15 text-[var(--text)] hover:bg-[var(--text)]/5",
+                            ].join(" ")}
+                        >
+                            <span>{item.label}</span>
+                            <span
+                                className={[
+                                    "inline-flex min-w-5 justify-center rounded-full px-1.5 py-0.5 text-[10px]",
+                                    active
+                                        ? "bg-white/20 text-white dark:bg-black/15 dark:text-gray-900"
+                                        : "bg-black/5 text-[var(--muted)] dark:bg-white/10",
+                                ].join(" ")}
+                            >
+                                {item.count}
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            {filteredOrders.length === 0 ? (
+                <div className="rounded-2xl border border-black/8 dark:border-white/12 p-4">
+                    <BodyText className="text-[var(--muted)]">{t("empty.filtered")}</BodyText>
+                    {filter !== "all" ? (
+                        <button
+                            type="button"
+                            onClick={() => setFilter("all")}
+                            className="mt-3 inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)]"
+                        >
+                            {t("actions.showAll")}
+                        </button>
+                    ) : null}
+                </div>
+            ) : null}
+
             <div className="space-y-5">
-                {orders.map((o) => (
+                {filteredOrders.map((o) => (
                     <div
                         key={o.id}
                         className={[CARD_FRAME_ACTION, "block p-6"].join(" ")}
@@ -304,9 +450,14 @@ export default function OrdersTabClient() {
                                 <div className="mt-4 flex flex-wrap items-center gap-2.5">
                                     <Link
                                         href={withLocale(`/account/orders/${o.id}`)}
-                                        className="inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)]"
+                                        className={[
+                                            "inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                                            needsAction(o)
+                                                ? "bg-gray-900 text-white border border-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:border-white"
+                                                : "border border-black/10 dark:border-white/15 text-[var(--text)] hover:bg-[var(--text)]/5",
+                                        ].join(" ")}
                                     >
-                                        {t("actions.viewDetails")}
+                                        {primaryActionLabel(o)}
                                     </Link>
                                     {canCancel(o.status) ? (
                                         <button
@@ -331,7 +482,7 @@ export default function OrdersTabClient() {
 
                             <div className="text-right shrink-0">
                                 <div className="text-xl font-semibold text-[color:var(--text)]">{money(o.total_price)}</div>
-                                <div className="mt-1 text-sm text-[color:var(--muted)]">
+                                <div className={["mt-1 text-sm", statusToneClass(o)].join(" ")}>
                                     {t(`status.${statusKey(o.status)}`)}
                                 </div>
                                 {paymentSecondsLeft(o) !== null ? (

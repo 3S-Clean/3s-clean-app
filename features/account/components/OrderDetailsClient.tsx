@@ -5,6 +5,7 @@ import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {
     APARTMENT_SIZES,
+    roundMinutesToQuarterUp,
     type ServiceId,
     type ServiceIncludeKey,
     SERVICES,
@@ -79,7 +80,7 @@ function formatMoney(v: unknown) {
 function formatHours(v: unknown) {
     const n = toNumber(v, NaN);
     if (!Number.isFinite(n)) return "—";
-    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const totalMinutes = roundMinutesToQuarterUp(n * 60);
     const wh = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
     if (wh === 0) return `~${m}min`;

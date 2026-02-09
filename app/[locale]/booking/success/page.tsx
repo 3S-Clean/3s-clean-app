@@ -4,7 +4,7 @@ import {Suspense, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {useBookingStore} from "@/features/booking/lib/store";
-import {SERVICES} from "@/features/booking/lib/config";
+import {roundMinutesToQuarterUp, SERVICES} from "@/features/booking/lib/config";
 import {Check} from "lucide-react";
 import {createClient} from "@/shared/lib/supabase/client";
 import {useTranslations} from "next-intl";
@@ -32,7 +32,7 @@ type Order = {
 function formatDuration(hours: number | string) {
     const n = typeof hours === "string" ? Number(hours) : hours;
     if (!Number.isFinite(n) || n <= 0) return "—";
-    const totalMinutes = Math.max(0, Math.round(n * 60));
+    const totalMinutes = roundMinutesToQuarterUp(n * 60);
     const wh = Math.floor(totalMinutes / 60);
     const m = totalMinutes % 60;
     if (wh === 0) return `${m}min`;

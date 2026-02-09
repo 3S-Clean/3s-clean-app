@@ -1253,7 +1253,14 @@
       },
       "empty": {
         "body": "Your past orders will appear here.",
-        "cta": "Create your first booking"
+        "cta": "Create your first booking",
+        "filtered": "No orders in this filter yet."
+      },
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "needsAction": "Needs action",
+        "past": "Past"
       },
       "errors": {
         "notAuthenticated": "Not authenticated.",
@@ -1261,6 +1268,10 @@
       },
       "actions": {
         "viewDetails": "View details",
+        "manageOrder": "Manage order",
+        "payNow": "Pay now",
+        "viewSummary": "View summary",
+        "showAll": "Show all",
         "cancelOrder": "Cancel order",
         "cancelling": "Cancelling…",
         "cancelConfirm": "Cancel this order?",

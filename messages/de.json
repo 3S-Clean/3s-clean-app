@@ -1253,7 +1253,14 @@
       },
       "empty": {
         "body": "Ihre bisherigen Bestellungen erscheinen hier.",
-        "cta": "Erstellen Sie Ihre erste Buchung"
+        "cta": "Erstellen Sie Ihre erste Buchung",
+        "filtered": "In diesem Filter sind noch keine Bestellungen vorhanden."
+      },
+      "filters": {
+        "all": "Alle",
+        "active": "Aktiv",
+        "needsAction": "Aktion nötig",
+        "past": "Vergangen"
       },
       "errors": {
         "notAuthenticated": "Nicht authentifiziert.",
@@ -1261,6 +1268,10 @@
       },
       "actions": {
         "viewDetails": "Details ansehen",
+        "manageOrder": "Bestellung verwalten",
+        "payNow": "Jetzt bezahlen",
+        "viewSummary": "Zusammenfassung",
+        "showAll": "Alle anzeigen",
         "cancelOrder": "Stornieren",
         "cancelling": "Wird storniert…",
         "cancelConfirm": "Diese Bestellung stornieren?",
