@@ -7,6 +7,8 @@ import {Footer, Header} from "@/shared/layout";
 import PersonalInfoClient from "@/features/account/components/PersonalInfoClient";
 import OrdersTabClient from "@/features/account/components/OrdersTabClient";
 import Settings from "@/features/account/components/Settings";
+import LiveCleaningVideoTab from "@/features/account/components/LiveCleaningVideoTab";
+import VideoHistoryTab from "@/features/account/components/VideoHistoryTab";
 
 import {createClient} from "@/shared/lib/supabase/client";
 import {Avatar} from "@/shared/ui";
@@ -189,11 +191,8 @@ export default function AccountClient({
                     {/* Content */}
                     <div className={[CARD_FRAME_BASE, "p-6 md:p-8"].join(" ")}>
                         {activeTab === "personal" && <PersonalInfoClient email={email}/>}
-                        {activeTab === "live" &&
-                            <LiveCleaningVideo title={t("content.live.title")} body={t("content.live.body")}/>}
-                        {activeTab === "history" && (
-                            <VideoHistory title={t("content.history.title")} body={t("content.history.body")}/>
-                        )}
+                        {activeTab === "live" && <LiveCleaningVideoTab/>}
+                        {activeTab === "history" && <VideoHistoryTab/>}
                         {activeTab === "orders" && <OrdersTabClient/>}
                         {activeTab === "settings" && <Settings/>}
                     </div>
@@ -202,25 +201,5 @@ export default function AccountClient({
                 <Footer/>
             </div>
         </>
-    );
-}
-
-/* ----------------- Tabs Content ----------------- */
-
-function LiveCleaningVideo({title, body}: { title: string; body: string }) {
-    return (
-        <div className="text-center">
-            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">{title}</h2>
-            <p className="mt-4 text-[var(--muted)]">{body}</p>
-        </div>
-    );
-}
-
-function VideoHistory({title, body}: { title: string; body: string }) {
-    return (
-        <div className="text-center">
-            <h2 className="text-xl font-semibold text-[var(--text)] md:text-2xl">{title}</h2>
-            <p className="mt-4 text-[var(--muted)]">{body}</p>
-        </div>
     );
 }

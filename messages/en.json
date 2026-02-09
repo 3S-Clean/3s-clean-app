@@ -1191,11 +1191,40 @@
     "content": {
       "live": {
         "title": "Live Cleaning Video",
-        "body": "..."
+        "body": "Watch the active cleaning session when it is running.",
+        "loading": "Loading live stream…",
+        "errors": {
+          "loadFailed": "Could not load live stream data."
+        },
+        "state": {
+          "notConfigured": "Live stream is not configured yet.",
+          "noSession": "No active session right now.",
+          "statusLabel": "Status"
+        },
+        "actions": {
+          "openStream": "Open stream",
+          "openOrder": "Open order"
+        }
       },
       "history": {
         "title": "Video History",
-        "body": "..."
+        "body": "Recordings are available for 7 days after the session.",
+        "loading": "Loading video history…",
+        "errors": {
+          "loadFailed": "Could not load video history."
+        },
+        "state": {
+          "notConfigured": "Video storage is not configured yet.",
+          "empty": "No recordings available yet."
+        },
+        "meta": {
+          "duration": "Duration: {duration}",
+          "expiresAt": "Expires: {date}"
+        },
+        "actions": {
+          "watch": "Watch",
+          "openOrder": "Open order"
+        }
       }
     },
     "errors": {

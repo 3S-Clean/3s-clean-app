@@ -1191,11 +1191,40 @@
     "content": {
       "live": {
         "title": "Live-Reinigungsvideo",
-        "body": "..."
+        "body": "Verfolgen Sie die aktive Reinigungssitzung, sobald sie live ist.",
+        "loading": "Live-Stream wird geladen…",
+        "errors": {
+          "loadFailed": "Live-Stream-Daten konnten nicht geladen werden."
+        },
+        "state": {
+          "notConfigured": "Live-Stream ist noch nicht konfiguriert.",
+          "noSession": "Aktuell ist keine Live-Sitzung aktiv.",
+          "statusLabel": "Status"
+        },
+        "actions": {
+          "openStream": "Stream öffnen",
+          "openOrder": "Bestellung öffnen"
+        }
       },
       "history": {
         "title": "Videoverlauf",
-        "body": "..."
+        "body": "Aufzeichnungen sind 7 Tage nach der Sitzung verfügbar.",
+        "loading": "Videoverlauf wird geladen…",
+        "errors": {
+          "loadFailed": "Videoverlauf konnte nicht geladen werden."
+        },
+        "state": {
+          "notConfigured": "Videospeicherung ist noch nicht konfiguriert.",
+          "empty": "Noch keine Aufzeichnungen verfügbar."
+        },
+        "meta": {
+          "duration": "Dauer: {duration}",
+          "expiresAt": "Läuft ab: {date}"
+        },
+        "actions": {
+          "watch": "Ansehen",
+          "openOrder": "Bestellung öffnen"
+        }
       }
     },
     "errors": {
