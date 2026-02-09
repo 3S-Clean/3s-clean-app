@@ -7,7 +7,7 @@ import Footer from "@/components/footer/Footer";
 import type {ServiceId} from "@/lib/booking/config";
 import {SERVICES} from "@/lib/booking/config";
 import ServiceCard from "@/components/booking/ServiceCard";
-import {InfoHelp} from "@/components/ui/infohelp/InfoHelp";
+import {InfoHelp} from "@/components/ui/info-help/InfoHelp";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
 import PageTitle from "@/components/ui/typography/PageTitle";
 import PageSubtitle from "@/components/ui/typography/PageSubtitle";

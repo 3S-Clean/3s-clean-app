@@ -127,7 +127,7 @@ export function InfoHelp({
         const onDown = (e: PointerEvent) => {
             const target = e.target as Node | null;
             if (!target) return;
-            const root = btnRef.current?.closest("[data-infohelp-root]");
+            const root = btnRef.current?.closest("[data-info-help-root]");
             if (root && root.contains(target)) return;
             setOpen(false);
         };

@@ -7,7 +7,7 @@ import {useBookingStore} from "@/lib/booking/store";
 import {type ServiceId, SERVICES} from "@/lib/booking/config";
 
 import ServiceCard from "@/components/booking/ServiceCard";
-import {InfoHelp} from "@/components/ui/infohelp/InfoHelp";
+import {InfoHelp} from "@/components/ui/info-help/InfoHelp";
 
 /* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({text, title}: { text: string; title?: string }) {

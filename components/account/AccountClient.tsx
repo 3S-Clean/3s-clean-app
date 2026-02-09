@@ -11,7 +11,7 @@ import Settings from "@/components/account/Settings";
 
 import {createClient} from "@/lib/supabase/client";
 import {Avatar} from "@/components/ui/avatar/Avatar";
-import {AvatarColorPicker} from "@/components/ui/avatarcolor/AvatarColorPicker";
+import {AvatarColorPicker} from "@/components/ui/avatar-color/AvatarColorPicker";
 import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
 import {useTranslations} from "next-intl";
 
