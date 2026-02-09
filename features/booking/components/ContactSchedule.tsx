@@ -93,6 +93,7 @@ export default function ContactSchedule() {
                 const res = await fetch("/api/booking/existing-bookings", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
+                    cache: "no-store",
                     body: JSON.stringify({startDate: start, endDate: end}),
                     signal: controller.signal,
                 });

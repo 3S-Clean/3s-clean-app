@@ -278,8 +278,22 @@ export default function BookingClient() {
                 }),
             });
 
-            const json = await res.json().catch(() => null);
-            if (!res.ok || !isCreateOrderOk(json)) throw new Error("create-order failed");
+            const json = (await res.json().catch(() => null)) as unknown;
+            if (!res.ok) {
+                const message =
+                    json &&
+                    typeof json === "object" &&
+                    "error" in json &&
+                    typeof (json as {error?: unknown}).error === "string"
+                        ? (json as {error: string}).error
+                        : "";
+                if (res.status === 409) {
+                    alert(message || "This slot has just been booked. Please choose another time.");
+                    return;
+                }
+                throw new Error(message || "create-order failed");
+            }
+            if (!isCreateOrderOk(json)) throw new Error("create-order failed");
 
             setPendingToken(json.pendingToken);
             router.push(`/booking/success?pendingOrder=${encodeURIComponent(json.pendingToken)}`);

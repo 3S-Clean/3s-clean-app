@@ -2,7 +2,6 @@ import {NextResponse} from "next/server";
 import {createSupabaseServerClient} from "@/shared/lib/supabase/server";
 import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
 import {
-    formatLegalConsentNote,
     isLegalConsentComplete,
     LEGAL_VERSION,
 } from "@/shared/lib/legal/consent";
@@ -13,7 +12,13 @@ type CreateOrderBody = {
 };
 
 type OrderPayload = Record<string, unknown>;
-type PostgrestErrorLike = {code?: string | null; message?: string | null; details?: string | null; hint?: string | null};
+type SlotRow = {
+    id: string;
+    scheduled_time: string | null;
+    estimated_hours: number | null;
+    status: string | null;
+    created_at: string | null;
+};
 
 type LegalConsentPayload = {
     termsRead: boolean;
@@ -32,27 +37,22 @@ function omitServerManagedFields(order: OrderPayload): OrderPayload {
     return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
 }
 
-function omitLegalFields(order: OrderPayload): OrderPayload {
-    const blocked = new Set([
-        "legal_terms_read",
-        "legal_privacy_read",
-        "legal_accepted",
-        "legal_accepted_at",
-        "legal_version",
-    ]);
-    return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
+const PENDING_HOLD_MS = 30 * 60 * 1000;
+
+function parseTimeToMinutes(v: unknown) {
+    const raw = s(v);
+    const m = raw.match(/^(\d{1,2}):(\d{2})/);
+    if (!m) return null;
+    const h = Number(m[1]);
+    const mm = Number(m[2]);
+    if (!Number.isInteger(h) || !Number.isInteger(mm) || h < 0 || h > 23 || mm < 0 || mm > 59) return null;
+    return h * 60 + mm;
 }
 
-function appendNotes(base: unknown, legalNote: string) {
-    const current = s(base);
-    return current ? `${current}\n\n${legalNote}` : legalNote;
-}
-
-function isMissingLegalColumnError(error: PostgrestErrorLike | null) {
-    if (!error) return false;
-    const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
-    if (error.code === "42703" && joined.includes("legal_")) return true;
-    return joined.includes("does not exist") && joined.includes("legal_");
+function parseDurationMinutes(v: unknown) {
+    const hours = Number(v);
+    if (!Number.isFinite(hours) || hours <= 0) return 0;
+    return Math.round(hours * 60);
 }
 
 function readLegalConsent(order: OrderPayload): LegalConsentPayload | null {
@@ -75,6 +75,15 @@ function readLegalConsent(order: OrderPayload): LegalConsentPayload | null {
     }
 
     return {termsRead, privacyRead, accepted, acceptedAt, version};
+}
+
+function isBlockingStatus(row: SlotRow, nowMs: number) {
+    if (row.status === "confirmed" || row.status === "in_progress") return true;
+    if (row.status !== "pending") return false;
+
+    const createdAt = row.created_at ? Date.parse(row.created_at) : NaN;
+    if (Number.isNaN(createdAt)) return false;
+    return nowMs - createdAt <= PENDING_HOLD_MS;
 }
 
 export async function POST(req: Request) {
@@ -129,6 +138,41 @@ export async function POST(req: Request) {
     const admin = createSupabaseAdminClient();
     const safe = omitServerManagedFields(orderData);
 
+    const scheduledDate = s(orderData.scheduled_date);
+    const startMin = parseTimeToMinutes(orderData.scheduled_time);
+    const durationMin = parseDurationMinutes(orderData.estimated_hours);
+    if (!scheduledDate || startMin === null || durationMin <= 0) {
+        return NextResponse.json({error: "Invalid schedule values"}, {status: 400});
+    }
+    const endMin = startMin + durationMin;
+
+    const {data: dayRows, error: dayRowsError} = await admin
+        .from("orders")
+        .select("id, scheduled_time, estimated_hours, status, created_at")
+        .eq("scheduled_date", scheduledDate)
+        .in("status", ["pending", "confirmed", "in_progress"]);
+
+    if (dayRowsError) {
+        return NextResponse.json({error: dayRowsError.message}, {status: 500});
+    }
+
+    const nowMs = Date.now();
+    const conflict = ((dayRows ?? []) as SlotRow[]).some((row) => {
+        if (!isBlockingStatus(row, nowMs)) return false;
+        const rowStart = parseTimeToMinutes(row.scheduled_time);
+        const rowDuration = parseDurationMinutes(row.estimated_hours);
+        if (rowStart === null || rowDuration <= 0) return false;
+        const rowEnd = rowStart + rowDuration;
+        return startMin < rowEnd && endMin > rowStart;
+    });
+
+    if (conflict) {
+        return NextResponse.json(
+            {error: "Selected slot is no longer available. Please choose another time."},
+            {status: 409}
+        );
+    }
+
     const payload = {
         ...safe,
         user_id: user?.id ?? null,
@@ -136,29 +180,7 @@ export async function POST(req: Request) {
         status: "pending",
     };
 
-    let {data, error} = await admin.from("orders").insert(payload).select("id, pending_token").single();
-
-    if (isMissingLegalColumnError(error as PostgrestErrorLike | null)) {
-        const withoutLegal = omitLegalFields(payload);
-        withoutLegal.customer_notes = appendNotes(
-            withoutLegal.customer_notes,
-            formatLegalConsentNote({
-                termsRead: legalConsent.termsRead,
-                privacyRead: legalConsent.privacyRead,
-                accepted: legalConsent.accepted,
-                acceptedAt: legalConsent.acceptedAt,
-                version: legalConsent.version,
-            })
-        );
-
-        const retry = await admin
-            .from("orders")
-            .insert(withoutLegal)
-            .select("id, pending_token")
-            .single();
-        data = retry.data;
-        error = retry.error;
-    }
+    const {data, error} = await admin.from("orders").insert(payload).select("id, pending_token").single();
 
     if (error || !data) {
         return NextResponse.json({error: error?.message ?? "Failed to create order"}, {status: 500});
