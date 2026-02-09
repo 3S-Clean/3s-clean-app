@@ -50,6 +50,7 @@ export default function InsidePage() {
         {value: "24h", label: t("stats.3.label")},
     ];
 
+
     return (
         <>
             <Header/>
