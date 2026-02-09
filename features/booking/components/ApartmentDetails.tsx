@@ -11,13 +11,15 @@ import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/shared/ui";
 // ✅ unified base border (same language everywhere)
 const BASE_CARD = [
     CARD_FRAME_ACTION,
+    "appearance-none",
+    "border-0",
+    "[-webkit-tap-highlight-color:transparent]",
 ].join(" ");
 
 // ✅ unified selected (border + ring, no fill)
 const SELECTED_CARD_CLASS = [
-    CARD_FRAME_ACTION,
-    "border-2 border-black/10 dark:border-white/12",
-    "ring-1 ring-black/10 dark:ring-white/12",
+    BASE_CARD,
+    "!ring-2 !ring-inset !ring-black/14 dark:!ring-white/18 !ring-offset-0",
 ].join(" ");
 
 const ROW_CARD_BASE = [

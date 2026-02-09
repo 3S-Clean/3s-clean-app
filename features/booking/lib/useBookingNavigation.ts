@@ -22,6 +22,9 @@ export function useBookingNavigation() {
     const formData = useBookingStore((s) => s.formData);
     const selectedDate = useBookingStore((s) => s.selectedDate);
     const selectedTime = useBookingStore((s) => s.selectedTime);
+    const termsRead = useBookingStore((s) => s.termsRead);
+    const privacyRead = useBookingStore((s) => s.privacyRead);
+    const legalAccepted = useBookingStore((s) => s.legalAccepted);
 
     const canContinue = useMemo(() => {
         switch (step) {
@@ -44,9 +47,13 @@ export function useBookingNavigation() {
                     formData.phone?.trim() &&
                     formData.address?.trim() &&
                     formData.postalCode?.trim() &&
+                    formData.city?.trim() &&
                     formData.country?.trim() &&
                     selectedDate &&
-                    selectedTime
+                    selectedTime &&
+                    termsRead &&
+                    privacyRead &&
+                    legalAccepted
                 );
 
             default:
@@ -63,9 +70,13 @@ export function useBookingNavigation() {
         formData.phone,
         formData.address,
         formData.postalCode,
+        formData.city,
         formData.country,
         selectedDate,
         selectedTime,
+        termsRead,
+        privacyRead,
+        legalAccepted,
     ]);
 
     const scrollTop = () => {

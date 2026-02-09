@@ -28,6 +28,17 @@ const SEL_TEXT = "text-[var(--text)]";
 const SEL_MUTED = "text-[var(--muted)]";
 const SEL_MUTED_SOFT = "text-[var(--muted)]/70";
 
+const SELECTABLE_CARD_BASE = [
+    CARD_FRAME_BASE,
+    CARD_FRAME_INTERACTIVE,
+    "appearance-none",
+    "[-webkit-tap-highlight-color:transparent]",
+].join(" ");
+
+const SELECTED_CARD_CLASS = [
+    "!ring-2 !ring-inset !ring-black/14 dark:!ring-white/18 !ring-offset-0",
+].join(" ");
+
 export default function ExtraServices() {
     const t = useTranslations("bookingExtras");
     const {getExtraText} = useExtrasI18n();
@@ -76,7 +87,7 @@ export default function ExtraServices() {
         "bg-white/70 dark:bg-[var(--card)]/70 backdrop-blur",
         "text-[var(--text)]",
         "transition-all",
-        "hover:ring-1 ring-black/10 dark:ring-white/12,",
+        "hover:ring-1 hover:ring-black/10 dark:hover:ring-white/12",
         "active:scale-[0.98]",
         "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
     ].join(" ");
@@ -100,13 +111,17 @@ export default function ExtraServices() {
                         key={extra.id}
                         role="button"
                         tabIndex={0}
-                        onClick={() => updateExtra(extra.id, 1)}
+                        onClick={() => {
+                            if (!isSelected) updateExtra(extra.id, 1);
+                        }}
                         onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") updateExtra(extra.id, 1);
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                if (!isSelected) updateExtra(extra.id, 1);
+                            }
                         }}
                         className={[
-                            CARD_FRAME_BASE,
-                            CARD_FRAME_INTERACTIVE,
+                            SELECTABLE_CARD_BASE,
                             "text-left w-full p-4 rounded-3xl",
                             "outline-none focus:outline-none",
                             "focus-visible:ring-2 focus-visible:ring-[var(--text)]/10 dark:focus-visible:ring-white/15",
@@ -115,11 +130,8 @@ export default function ExtraServices() {
                             !isSelected ? CARD_FRAME_HOVER_LIFT : "",
 
                             // ✅ unified selected style
-                            isSelected
-                                ? "border border-black/10 dark:border-white/12 ring-1 ring-black/10 dark:ring-white/12"
-                                : "",
+                            isSelected ? SELECTED_CARD_CLASS : "",
 
-                            !isSelected ? "hover:ring-1 hover:ring-[var(--text)]/10" : "",
                             "transform-gpu [backface-visibility:hidden] [transform:translateZ(0)]",
                             "active:scale-[0.995]",
                         ]

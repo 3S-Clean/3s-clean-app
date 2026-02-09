@@ -25,6 +25,7 @@ import {
 
 import {useExtrasI18n} from "@/features/booking/lib/useExtrasI18n";
 import {isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId} from "@/features/booking/lib/guards";
+import {isLegalConsentComplete, LEGAL_VERSION} from "@/shared/lib/legal/consent";
 
 /* ----------------------------- Types ----------------------------- */
 type OrderExtraLine = { id: string; quantity: number; price: number; name: string };
@@ -81,6 +82,10 @@ export default function BookingClient() {
 
         selectedDate,
         selectedTime,
+        termsRead,
+        privacyRead,
+        legalAccepted,
+        legalAcceptedAt,
 
         setPendingToken,
     } = useBookingStore();
@@ -207,9 +212,22 @@ export default function BookingClient() {
             !formData.phone ||
             !formData.address ||
             !formData.postalCode ||
+            !formData.city ||
             !formData.country
         ) {
             alert("Please fill in all required contact details.");
+            return;
+        }
+
+        if (
+            !isLegalConsentComplete({
+                termsRead,
+                privacyRead,
+                accepted: legalAccepted,
+                acceptedAt: legalAcceptedAt,
+            })
+        ) {
+            alert("Please read Terms & Conditions and Privacy Policy, then confirm consent.");
             return;
         }
 
@@ -247,6 +265,12 @@ export default function BookingClient() {
                         customer_city: formData.city?.trim() || null,
                         customer_country: formData.country.trim(),
                         customer_notes: formData.notes?.trim() || null,
+
+                        legal_terms_read: termsRead,
+                        legal_privacy_read: privacyRead,
+                        legal_accepted: legalAccepted,
+                        legal_accepted_at: legalAcceptedAt,
+                        legal_version: LEGAL_VERSION,
 
                         scheduled_date: selectedDate,
                         scheduled_time: selectedTime,

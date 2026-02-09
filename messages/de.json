@@ -643,13 +643,26 @@
       },
       "terms": {
         "prefix": "Ich habe die",
-        "link": "AGB",
-        "hint": "Wir speichern Ihre Zustimmung später bei der Buchung (DB-Integration kommt als Nächstes).",
-        "modalTitle": "AGB",
+        "termsLink": "AGB",
+        "and": "und die",
+        "privacyLink": "Datenschutzerklärung",
+        "statusTermsRead": "AGB gelesen",
+        "statusTermsUnread": "AGB nicht gelesen",
+        "statusPrivacyRead": "Datenschutz gelesen",
+        "statusPrivacyUnread": "Datenschutz nicht gelesen",
+        "statusConsentAccepted": "Zustimmung erteilt",
+        "statusConsentPending": "Zustimmung ausstehend",
+        "readBothHint": "Öffnen Sie beide Dokumente, scrollen Sie bis zum Ende und markieren Sie sie als gelesen.",
+        "acceptedAt": "Zustimmung gespeichert am {date}.",
+        "toggleHint": "Aktivieren Sie die Zustimmung, um die Buchung zu bestätigen.",
+        "termsTitle": "Allgemeine Geschäftsbedingungen (AGB)",
+        "privacyTitle": "Datenschutzerklärung",
         "close": "Schließen",
-        "accept": "Akzeptieren",
-        "placeholder1": "Hier wird der AGB-Text eingefügt.",
-        "placeholder2": "Aktuell ist dies ein Platzhalter-Modal — wir verknüpfen bald ein echtes Dokument und speichern die Zustimmung in der Datenbank."
+        "scrollDone": "Ende erreicht. Sie können dieses Dokument jetzt als gelesen markieren.",
+        "scrollHint": "Scrollen Sie bis zum Ende, um „Als gelesen markieren“ zu aktivieren.",
+        "loading": "Dokument wird geladen...",
+        "loadError": "Dokument konnte nicht geladen werden. Bitte erneut versuchen.",
+        "markRead": "Als gelesen markieren"
       }
     }
   },

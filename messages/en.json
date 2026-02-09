@@ -643,13 +643,26 @@
       },
       "terms": {
         "prefix": "I have read and accept the",
-        "link": "Terms & Conditions",
-        "hint": "We’ll save your acceptance to the booking later (DB integration comes next).",
-        "modalTitle": "Terms & Conditions",
+        "termsLink": "Terms & Conditions",
+        "and": "and",
+        "privacyLink": "Privacy Policy",
+        "statusTermsRead": "Terms read",
+        "statusTermsUnread": "Terms not read",
+        "statusPrivacyRead": "Privacy read",
+        "statusPrivacyUnread": "Privacy not read",
+        "statusConsentAccepted": "Consent accepted",
+        "statusConsentPending": "Consent not accepted",
+        "readBothHint": "Open both documents, scroll to the end, and mark them as read.",
+        "acceptedAt": "Consent recorded at {date}.",
+        "toggleHint": "Enable consent to continue with booking confirmation.",
+        "termsTitle": "Terms & Conditions",
+        "privacyTitle": "Privacy Policy",
         "close": "Close",
-        "accept": "Accept",
-        "placeholder1": "Terms content will be placed here.",
-        "placeholder2": "For now this is a placeholder modal — we’ll connect a real document and store acceptance in the database."
+        "scrollDone": "End reached. You can now mark this document as read.",
+        "scrollHint": "Scroll to the end to enable \"Mark as read\".",
+        "loading": "Loading document...",
+        "loadError": "Failed to load the document. Please try again.",
+        "markRead": "Mark as read"
       }
     }
   },

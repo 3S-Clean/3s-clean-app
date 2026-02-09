@@ -68,6 +68,18 @@ export interface BookingState {
     selectedTime: string | null;
     setSelectedTime: (time: string | null) => void;
 
+    termsRead: boolean;
+    setTermsRead: (v: boolean) => void;
+
+    privacyRead: boolean;
+    setPrivacyRead: (v: boolean) => void;
+
+    legalAccepted: boolean;
+    setLegalAccepted: (v: boolean) => void;
+
+    legalAcceptedAt: string | null;
+    setLegalAcceptedAt: (v: string | null) => void;
+
     pendingToken: string | null;
     setPendingToken: (token: string | null) => void;
 
@@ -116,6 +128,10 @@ type BookingStateData = Omit<
     | "setFormData"
     | "setSelectedDate"
     | "setSelectedTime"
+    | "setTermsRead"
+    | "setPrivacyRead"
+    | "setLegalAccepted"
+    | "setLegalAcceptedAt"
     | "setPendingToken"
     | "setPlzAutofillDisabled"
     | "resetBooking"
@@ -142,6 +158,10 @@ const initialState: BookingStateData = {
 
     selectedDate: null,
     selectedTime: null,
+    termsRead: false,
+    privacyRead: false,
+    legalAccepted: false,
+    legalAcceptedAt: null,
 
     pendingToken: null,
 };
@@ -150,6 +170,10 @@ type PersistSlice = {
     formData: BookingState["formData"];
     selectedDate: string | null;
     selectedTime: string | null;
+    termsRead: boolean;
+    privacyRead: boolean;
+    legalAccepted: boolean;
+    legalAcceptedAt: string | null;
     _savedAt: number;
 };
 
@@ -216,6 +240,10 @@ export const useBookingStore = create<BookingState>()(
 
             setSelectedDate: (selectedDate) => set({selectedDate}),
             setSelectedTime: (selectedTime) => set({selectedTime}),
+            setTermsRead: (termsRead) => set({termsRead}),
+            setPrivacyRead: (privacyRead) => set({privacyRead}),
+            setLegalAccepted: (legalAccepted) => set({legalAccepted}),
+            setLegalAcceptedAt: (legalAcceptedAt) => set({legalAcceptedAt}),
 
             setPendingToken: (pendingToken) => set({pendingToken}),
 
@@ -235,6 +263,10 @@ export const useBookingStore = create<BookingState>()(
                     formData: state.formData,
                     selectedDate: state.selectedDate,
                     selectedTime: state.selectedTime,
+                    termsRead: state.termsRead,
+                    privacyRead: state.privacyRead,
+                    legalAccepted: state.legalAccepted,
+                    legalAcceptedAt: state.legalAcceptedAt,
                     _savedAt: Date.now(),
                 };
             },
@@ -249,6 +281,10 @@ export const useBookingStore = create<BookingState>()(
                     formData: p.formData ?? current.formData,
                     selectedDate: p.selectedDate ?? current.selectedDate,
                     selectedTime: p.selectedTime ?? current.selectedTime,
+                    termsRead: p.termsRead ?? current.termsRead,
+                    privacyRead: p.privacyRead ?? current.privacyRead,
+                    legalAccepted: p.legalAccepted ?? current.legalAccepted,
+                    legalAcceptedAt: p.legalAcceptedAt ?? current.legalAcceptedAt,
                 };
             },
         }

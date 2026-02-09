@@ -1,18 +1,21 @@
 "use client";
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useBookingStore} from "@/features/booking/lib/store";
 import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END} from "@/features/booking/lib/config";
 import {ChevronLeft, ChevronRight, X} from "lucide-react";
 import {isApartmentSizeId, isExtraId, isServiceId} from "@/features/booking/lib/guards";
 import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/shared/ui";
+import ReactMarkdown from "react-markdown";
 
 type ExistingBookingRow = {
     scheduled_date: string;
     scheduled_time: string;
     estimated_hours: number;
 };
+
+type LegalDocId = "terms" | "privacy";
 
 function CheckIcon() {
     return (
@@ -43,12 +46,24 @@ export default function ContactSchedule() {
         setSelectedDate,
         selectedTime,
         setSelectedTime,
+        termsRead,
+        setTermsRead,
+        privacyRead,
+        setPrivacyRead,
+        legalAccepted,
+        setLegalAccepted,
+        legalAcceptedAt,
+        setLegalAcceptedAt,
     } = useBookingStore();
 
     const [currentMonth, setCurrentMonth] = useState(() => new Date());
     const [existingBookings, setExistingBookings] = useState<ExistingBookingRow[]>([]);
-    const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const [isTermsOpen, setIsTermsOpen] = useState(false);
+    const [legalOpenDoc, setLegalOpenDoc] = useState<LegalDocId | null>(null);
+    const [legalMarkdown, setLegalMarkdown] = useState("");
+    const [legalLoading, setLegalLoading] = useState(false);
+    const [legalLoadError, setLegalLoadError] = useState(false);
+    const [legalScrolledToEnd, setLegalScrolledToEnd] = useState(false);
+    const legalScrollRef = useRef<HTMLDivElement | null>(null);
 
     const estimatedMinutes = useMemo(() => {
         const baseHours =
@@ -93,6 +108,63 @@ export default function ContactSchedule() {
         return () => controller.abort();
     }, [currentMonth]);
 
+    useEffect(() => {
+        if (!legalOpenDoc) return;
+        const controller = new AbortController();
+
+        setLegalLoading(true);
+        setLegalLoadError(false);
+        setLegalMarkdown("");
+        setLegalScrolledToEnd(false);
+
+        const run = async () => {
+            try {
+                const q = new URLSearchParams({doc: legalOpenDoc, locale});
+                const res = await fetch(`/api/legal?${q.toString()}`, {
+                    method: "GET",
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+                const json = (await res.json().catch(() => null)) as {markdown?: unknown} | null;
+
+                if (!res.ok || !json || typeof json.markdown !== "string") {
+                    throw new Error("legal-load-failed");
+                }
+
+                setLegalMarkdown(json.markdown);
+            } catch {
+                if (!controller.signal.aborted) setLegalLoadError(true);
+            } finally {
+                if (!controller.signal.aborted) setLegalLoading(false);
+            }
+        };
+
+        void run();
+        return () => controller.abort();
+    }, [legalOpenDoc, locale]);
+
+    useEffect(() => {
+        if (!legalOpenDoc || legalLoading || legalLoadError) return;
+        const el = legalScrollRef.current;
+        if (!el) return;
+        const noScroll = el.scrollHeight <= el.clientHeight + 4;
+        if (noScroll) setLegalScrolledToEnd(true);
+    }, [legalOpenDoc, legalLoading, legalLoadError, legalMarkdown]);
+
+    useEffect(() => {
+        if (termsRead && privacyRead) return;
+        if (!legalAccepted && !legalAcceptedAt) return;
+        setLegalAccepted(false);
+        setLegalAcceptedAt(null);
+    }, [
+        termsRead,
+        privacyRead,
+        legalAccepted,
+        legalAcceptedAt,
+        setLegalAccepted,
+        setLegalAcceptedAt,
+    ]);
+
     const isSlotAvailable = (dateKey: string, hour: number, minutes: number) => {
         const startMin = hour * 60 + minutes;
         const endMin = startMin + estimatedMinutes;
@@ -135,8 +207,22 @@ export default function ContactSchedule() {
 
     const DISABLED = "opacity-35 cursor-not-allowed";
 
-    // ✅ unified selected glass (same as Extras/ApartmentDetails)
-    const SELECTED_GLASS = [
+    const SELECTABLE_BTN_BASE = [
+        "appearance-none",
+        "border-0",
+        "rounded-2xl text-sm font-medium transition-all",
+        "focus:outline-none focus-visible:ring-3 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+        "[-webkit-tap-highlight-color:transparent]",
+        "active:scale-[0.99]",
+    ].join(" ");
+
+    // ✅ same selected language as ApartmentDetails (border + ring, no fill)
+    const SELECTED_CARD_CLASS = [
+        "!ring-2 !ring-inset !ring-black/14 dark:!ring-white/18 !ring-offset-0",
+        "text-[var(--text)]",
+    ].join(" ");
+
+    const MODAL_PRIMARY_BTN = [
         "bg-white/60 dark:bg-[var(--card)]/60 backdrop-blur",
         "ring-2 ring-black/10 dark:ring-white/12",
         "text-[var(--text)]",
@@ -167,6 +253,30 @@ export default function ContactSchedule() {
         "p-2 rounded-full",
         "hover:bg-[var(--card)]/60",
     ].join(" ");
+
+    const CONSENT_CHIP = [
+        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
+        "border border-black/12 dark:border-white/16",
+    ].join(" ");
+
+    const canToggleLegalAccepted = termsRead && privacyRead;
+    const activeDocTitle =
+        legalOpenDoc === "terms" ? t("terms.termsTitle") : t("terms.privacyTitle");
+
+    const handleLegalScroll = () => {
+        const el = legalScrollRef.current;
+        if (!el || legalScrolledToEnd) return;
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 16) {
+            setLegalScrolledToEnd(true);
+        }
+    };
+
+    const markCurrentDocRead = () => {
+        if (!legalOpenDoc || !legalScrolledToEnd) return;
+        if (legalOpenDoc === "terms") setTermsRead(true);
+        if (legalOpenDoc === "privacy") setPrivacyRead(true);
+        setLegalOpenDoc(null);
+    };
 
     return (
         <div className="animate-fadeIn">
@@ -336,14 +446,13 @@ export default function ContactSchedule() {
                                         setSelectedTime(null);
                                     }}
                                     className={[
-                                        "aspect-square rounded-2xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-3 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+                                        "aspect-square",
+                                        SELECTABLE_BTN_BASE,
                                         isSelected
-                                            ? SELECTED_GLASS
+                                            ? SELECTED_CARD_CLASS
                                             : disabled
                                                 ? `${DISABLED} text-[var(--muted)] bg-[var(--card)]/40`
                                                 : "text-[var(--text)] hover:bg-[var(--card)]/60",
-                                        "active:scale-[0.99]",
                                     ].join(" ")}
                                 >
                                     {day}
@@ -380,14 +489,13 @@ export default function ContactSchedule() {
                                     onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
                                     disabled={!available}
                                     className={[
-                                        "py-2.5 rounded-2xl text-sm font-medium transition-all",
-                                        "focus:outline-none focus-visible:ring-3 focus-visible:ring-black/15 dark:focus-visible:ring-white/15",
+                                        "py-2.5",
+                                        SELECTABLE_BTN_BASE,
                                         isSelected
-                                            ? SELECTED_GLASS
+                                            ? SELECTED_CARD_CLASS
                                             : available
                                                 ? "text-[var(--text)] hover:bg-[var(--card)]/60"
                                                 : `${DISABLED} bg-[var(--card)]/40 text-[var(--muted)]`,
-                                        "active:scale-[0.99]",
                                     ].join(" ")}
                                 >
                                     {slot.label}
@@ -419,66 +527,183 @@ export default function ContactSchedule() {
           <span className="relative mt-1">
             <input
                 type="checkbox"
-                checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                checked={legalAccepted}
+                disabled={!canToggleLegalAccepted}
+                onChange={(e) => {
+                    if (!canToggleLegalAccepted) return;
+                    const next = e.target.checked;
+                    setLegalAccepted(next);
+                    setLegalAcceptedAt(next ? new Date().toISOString() : null);
+                }}
                 className="sr-only"
             />
             <span
                 className={[
                     "grid place-items-center w-5 h-5 rounded-full border transition",
-                    acceptedTerms
+                    legalAccepted
                         ? "bg-gray-900 border-gray-900 text-white dark:bg-white dark:border-black/10 dark:text-gray-900"
-                        : "bg-white border-black/15 text-transparent dark:bg-[var(--card)]/70 dark:border-white/20 dark:text-transparent",
+                        : canToggleLegalAccepted
+                            ? "bg-white border-black/15 text-transparent dark:bg-[var(--card)]/70 dark:border-white/20 dark:text-transparent"
+                            : "bg-black/[0.04] border-black/10 text-transparent dark:bg-white/[0.04] dark:border-white/12 dark:text-transparent",
                 ].join(" ")}
                 aria-hidden="true"
             >
-              {acceptedTerms ? <CheckIcon/> : null}
+              {legalAccepted ? <CheckIcon/> : null}
             </span>
           </span>
 
                     <div className="text-sm text-[var(--text)] leading-snug">
                         {t("terms.prefix")}{" "}
-                        <button type="button" onClick={() => setIsTermsOpen(true)}
-                                className="underline underline-offset-4 hover:opacity-80">
-                            {t("terms.link")}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLegalOpenDoc("terms");
+                            }}
+                            className="underline underline-offset-4 hover:opacity-80"
+                        >
+                            {t("terms.termsLink")}
+                        </button>
+                        {" "}{t("terms.and")}{" "}
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLegalOpenDoc("privacy");
+                            }}
+                            className="underline underline-offset-4 hover:opacity-80"
+                        >
+                            {t("terms.privacyLink")}
                         </button>
                         .
                     </div>
                 </label>
 
-                <div className="mt-2 text-xs text-[var(--muted)]">{t("terms.hint")}</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                    <span
+                        className={[
+                            CONSENT_CHIP,
+                            termsRead ? "bg-black/8 text-[var(--text)] dark:bg-white/12" : "bg-transparent text-[var(--muted)]",
+                        ].join(" ")}
+                    >
+                        {termsRead ? t("terms.statusTermsRead") : t("terms.statusTermsUnread")}
+                    </span>
+                    <span
+                        className={[
+                            CONSENT_CHIP,
+                            privacyRead ? "bg-black/8 text-[var(--text)] dark:bg-white/12" : "bg-transparent text-[var(--muted)]",
+                        ].join(" ")}
+                    >
+                        {privacyRead ? t("terms.statusPrivacyRead") : t("terms.statusPrivacyUnread")}
+                    </span>
+                    <span
+                        className={[
+                            CONSENT_CHIP,
+                            legalAccepted ? "bg-black/8 text-[var(--text)] dark:bg-white/12" : "bg-transparent text-[var(--muted)]",
+                        ].join(" ")}
+                    >
+                        {legalAccepted ? t("terms.statusConsentAccepted") : t("terms.statusConsentPending")}
+                    </span>
+                </div>
+
+                <div className="mt-2 text-xs text-[var(--muted)]">
+                    {!canToggleLegalAccepted
+                        ? t("terms.readBothHint")
+                        : legalAcceptedAt
+                            ? t("terms.acceptedAt", {date: new Date(legalAcceptedAt).toLocaleString(locale)})
+                            : t("terms.toggleHint")}
+                </div>
             </div>
 
-            {isTermsOpen && (
+            {legalOpenDoc && (
                 <div
                     className="fixed inset-0 z-[80] flex items-center justify-center px-6"
                     role="dialog"
                     aria-modal="true"
-                    onMouseDown={() => setIsTermsOpen(false)}
+                    onMouseDown={() => setLegalOpenDoc(null)}
                 >
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"/>
+                    <div className="absolute inset-0 bg-black/58 backdrop-blur-md"/>
 
                     <div
-                        className={[CARD_FRAME_BASE, "relative w-full max-w-xl rounded-3xl p-5"].join(" ")}
+                        className={[CARD_FRAME_BASE, "relative w-full max-w-2xl rounded-3xl p-5 sm:p-6"].join(" ")}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between gap-3 mb-3">
-                            <div className="text-lg font-semibold text-[var(--text)]">{t("terms.modalTitle")}</div>
-                            <button type="button" onClick={() => setIsTermsOpen(false)} className={ICON_BTN}
-                                    aria-label={t("terms.close")}>
+                            <div className="text-lg font-semibold text-[var(--text)]">{activeDocTitle}</div>
+                            <button
+                                type="button"
+                                onClick={() => setLegalOpenDoc(null)}
+                                className={ICON_BTN}
+                                aria-label={t("terms.close")}
+                            >
                                 <X className="w-5 h-5 text-[var(--muted)]"/>
                             </button>
                         </div>
 
-                        <div className="text-sm text-[var(--muted)] leading-relaxed space-y-3">
-                            <p>{t("terms.placeholder1")}</p>
-                            <p>{t("terms.placeholder2")}</p>
+                        <div className="mb-2 text-xs text-[var(--muted)]">
+                            {legalScrolledToEnd ? t("terms.scrollDone") : t("terms.scrollHint")}
+                        </div>
+
+                        <div
+                            ref={legalScrollRef}
+                            onScroll={handleLegalScroll}
+                            className={[
+                                "max-h-[58vh] overflow-y-auto pr-2",
+                                "rounded-2xl border border-black/10 dark:border-white/12",
+                                "bg-white/70 dark:bg-[var(--card)]/60",
+                                "p-4 sm:p-5 no-scrollbar",
+                            ].join(" ")}
+                        >
+                            {legalLoading ? (
+                                <p className="text-sm text-[var(--muted)]">{t("terms.loading")}</p>
+                            ) : legalLoadError ? (
+                                <p className="text-sm text-red-600 dark:text-red-300">{t("terms.loadError")}</p>
+                            ) : (
+                                <ReactMarkdown
+                                    components={{
+                                        h1: (props) => (
+                                            <h1 className="mb-3 text-xl sm:text-2xl font-semibold leading-tight">
+                                                {props.children}
+                                            </h1>
+                                        ),
+                                        h2: (props) => (
+                                            <h2 className="mt-6 mb-2 text-base sm:text-lg font-semibold leading-tight">
+                                                {props.children}
+                                            </h2>
+                                        ),
+                                        p: (props) => (
+                                            <p className="text-sm sm:text-[15px] leading-relaxed text-[var(--text)]">
+                                                {props.children}
+                                            </p>
+                                        ),
+                                        ul: (props) => <ul className="my-3 list-disc pl-5 space-y-1">{props.children}</ul>,
+                                        ol: (props) => <ol className="my-3 list-decimal pl-5 space-y-1">{props.children}</ol>,
+                                        li: (props) => (
+                                            <li className="text-sm sm:text-[15px] leading-relaxed text-[var(--text)]">
+                                                {props.children}
+                                            </li>
+                                        ),
+                                        a: (props) => (
+                                            <a className="underline underline-offset-2 hover:opacity-80" {...props} />
+                                        ),
+                                        strong: (props) => (
+                                            <strong className="font-semibold text-black/90 dark:text-white/90">
+                                                {props.children}
+                                            </strong>
+                                        ),
+                                    }}
+                                >
+                                    {legalMarkdown}
+                                </ReactMarkdown>
+                            )}
                         </div>
 
                         <div className="mt-5 flex justify-end gap-2">
                             <button
                                 type="button"
-                                onClick={() => setIsTermsOpen(false)}
+                                onClick={() => setLegalOpenDoc(null)}
                                 className={[
                                     "px-5 py-2.5 rounded-full font-medium transition",
                                     "border border-black/15 dark:border-white/15",
@@ -491,16 +716,15 @@ export default function ContactSchedule() {
 
                             <button
                                 type="button"
-                                onClick={() => {
-                                    setAcceptedTerms(true);
-                                    setIsTermsOpen(false);
-                                }}
+                                disabled={legalLoading || legalLoadError || !legalScrolledToEnd}
+                                onClick={markCurrentDocRead}
                                 className={[
                                     "px-5 py-2.5 rounded-full font-semibold transition",
-                                    SELECTED_GLASS,
+                                    MODAL_PRIMARY_BTN,
+                                    "disabled:opacity-45 disabled:cursor-not-allowed",
                                 ].join(" ")}
                             >
-                                {t("terms.accept")}
+                                {t("terms.markRead")}
                             </button>
                         </div>
                     </div>

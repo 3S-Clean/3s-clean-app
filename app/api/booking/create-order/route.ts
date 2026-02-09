@@ -1,6 +1,11 @@
 import {NextResponse} from "next/server";
 import {createSupabaseServerClient} from "@/shared/lib/supabase/server";
 import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
+import {
+    formatLegalConsentNote,
+    isLegalConsentComplete,
+    LEGAL_VERSION,
+} from "@/shared/lib/legal/consent";
 
 type CreateOrderBody = {
     orderData?: unknown;
@@ -8,6 +13,15 @@ type CreateOrderBody = {
 };
 
 type OrderPayload = Record<string, unknown>;
+type PostgrestErrorLike = {code?: string | null; message?: string | null; details?: string | null; hint?: string | null};
+
+type LegalConsentPayload = {
+    termsRead: boolean;
+    privacyRead: boolean;
+    accepted: boolean;
+    acceptedAt: string;
+    version: string;
+};
 
 function s(v: unknown) {
     return String(v ?? "").trim();
@@ -16,6 +30,51 @@ function s(v: unknown) {
 function omitServerManagedFields(order: OrderPayload): OrderPayload {
     const blocked = new Set(["user_id", "pending_token", "status", "id", "created_at", "updated_at"]);
     return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
+}
+
+function omitLegalFields(order: OrderPayload): OrderPayload {
+    const blocked = new Set([
+        "legal_terms_read",
+        "legal_privacy_read",
+        "legal_accepted",
+        "legal_accepted_at",
+        "legal_version",
+    ]);
+    return Object.fromEntries(Object.entries(order).filter(([key]) => !blocked.has(key)));
+}
+
+function appendNotes(base: unknown, legalNote: string) {
+    const current = s(base);
+    return current ? `${current}\n\n${legalNote}` : legalNote;
+}
+
+function isMissingLegalColumnError(error: PostgrestErrorLike | null) {
+    if (!error) return false;
+    const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
+    if (error.code === "42703" && joined.includes("legal_")) return true;
+    return joined.includes("does not exist") && joined.includes("legal_");
+}
+
+function readLegalConsent(order: OrderPayload): LegalConsentPayload | null {
+    const termsRead = order.legal_terms_read === true;
+    const privacyRead = order.legal_privacy_read === true;
+    const accepted = order.legal_accepted === true;
+    const acceptedAt = s(order.legal_accepted_at);
+    const version = s(order.legal_version) || LEGAL_VERSION;
+
+    if (
+        !isLegalConsentComplete({
+            termsRead,
+            privacyRead,
+            accepted,
+            acceptedAt,
+            version,
+        })
+    ) {
+        return null;
+    }
+
+    return {termsRead, privacyRead, accepted, acceptedAt, version};
 }
 
 export async function POST(req: Request) {
@@ -52,6 +111,15 @@ export async function POST(req: Request) {
             return NextResponse.json({error: `Missing field: ${k}`}, {status: 400});
         }
     }
+
+    const legalConsent = readLegalConsent(orderData);
+    if (!legalConsent) {
+        return NextResponse.json(
+            {error: "Missing or invalid legal consent (terms/privacy read + accepted)."},
+            {status: 400}
+        );
+    }
+
     // кто залогинен (если есть)
     const supabase = await createSupabaseServerClient();
     const {
@@ -68,13 +136,33 @@ export async function POST(req: Request) {
         status: "pending",
     };
 
-    const {data, error} = await admin
-        .from("orders")
-        .insert(payload)
-        .select("id, pending_token")
-        .single();
+    let {data, error} = await admin.from("orders").insert(payload).select("id, pending_token").single();
 
-    if (error) return NextResponse.json({error: error.message}, {status: 500});
+    if (isMissingLegalColumnError(error as PostgrestErrorLike | null)) {
+        const withoutLegal = omitLegalFields(payload);
+        withoutLegal.customer_notes = appendNotes(
+            withoutLegal.customer_notes,
+            formatLegalConsentNote({
+                termsRead: legalConsent.termsRead,
+                privacyRead: legalConsent.privacyRead,
+                accepted: legalConsent.accepted,
+                acceptedAt: legalConsent.acceptedAt,
+                version: legalConsent.version,
+            })
+        );
+
+        const retry = await admin
+            .from("orders")
+            .insert(withoutLegal)
+            .select("id, pending_token")
+            .single();
+        data = retry.data;
+        error = retry.error;
+    }
+
+    if (error || !data) {
+        return NextResponse.json({error: error?.message ?? "Failed to create order"}, {status: 500});
+    }
 
     // ✅ NEW: если user залогинен — подливаем данные в profile (только если пусто)
     if (user?.id) {
