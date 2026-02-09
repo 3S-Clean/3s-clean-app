@@ -16,7 +16,7 @@ import {
     SERVICES,
 } from "@/features/booking/lib/config";
 import {isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId} from "@/features/booking/lib/guards";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {CARD_FRAME_BASE} from "@/shared/ui";
 
 interface Props {
     onSubmit?: () => void;

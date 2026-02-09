@@ -1,7 +1,7 @@
 import type {Viewport} from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import {DeviceDetector} from "@/shared/ui/device-detector/DeviceDetector";
+import {DeviceDetector} from "@/shared/ui";
 
 const inter = localFont({
     src: [

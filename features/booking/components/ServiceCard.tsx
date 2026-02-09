@@ -4,9 +4,9 @@ import type React from "react";
 import Link from "next/link";
 import {Check} from "lucide-react";
 import type {ServiceId} from "@/features/booking/lib/config";
-import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui/card/CardFrame";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import BodyText from "@/shared/ui/typography/BodyText";
+import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
 
 type IncludeUI = { name: string; desc?: string };
 type TooltipComp = (p: { text: string; title?: string; dark?: boolean }) => React.ReactElement;

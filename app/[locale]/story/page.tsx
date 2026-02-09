@@ -1,15 +1,14 @@
 "use client";
 
 import {Check, Euro, Shield, Users, Video} from "lucide-react";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
-import PageTitle from "@/shared/ui/typography/PageTitle";
-import BodyText from "@/shared/ui/typography/BodyText";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import BodyMuted from "@/shared/ui/typography/BodyMuted";
-import PillCTA from "@/shared/ui/buttons/PillCTA";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
+import {Footer, Header} from "@/shared/layout";
+import {CARD_FRAME_BASE} from "@/shared/ui";
+import {PageTitle} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {BodyMuted} from "@/shared/ui";
+import {PillCTA} from "@/shared/ui";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
 import {usePathname} from "next/navigation";
 import {useTranslations} from "next-intl";
 

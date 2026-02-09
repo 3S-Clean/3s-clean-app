@@ -6,8 +6,8 @@ import {useTranslations} from "next-intl";
 import {useBookingStore} from "@/features/booking/lib/store";
 import {type ServiceId, SERVICES} from "@/features/booking/lib/config";
 
-import ServiceCard from "@/features/booking/components/ServiceCard";
-import {InfoHelp} from "@/shared/ui/info-help/InfoHelp";
+import {ServiceCard} from "@/features/booking/components";
+import {InfoHelp} from "@/shared/ui";
 
 /* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({text, title}: { text: string; title?: string }) {

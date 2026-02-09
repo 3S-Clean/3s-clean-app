@@ -1,14 +1,13 @@
 "use client";
 
 import {Mail, MapPin, MessageCircle, Phone} from "lucide-react";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
-import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui/card/CardFrame";
-import PageTitle from "@/shared/ui/typography/PageTitle";
-import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import BodyText from "@/shared/ui/typography/BodyText";
+import {Footer, Header} from "@/shared/layout";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui";
+import {PageTitle} from "@/shared/ui";
+import {PageSubtitle} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
 import {useTranslations} from "next-intl";
 
 type HoursItem = { day: string; hours: string };

@@ -5,11 +5,11 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/shared/ui";
 import {createClient} from "@/shared/lib/supabase/client";
 import {signupEmailSchema, type SignupEmailValues} from "@/shared/lib/auth/validators";
 import {useBookingStore} from "@/features/booking/lib/store";
-import BookingDetectedCard from "@/features/auth/components/BookingDetectedCard";
+import {BookingDetectedCard} from "@/features/auth/components";
 
 export default function SignupClient() {
     const router = useRouter();

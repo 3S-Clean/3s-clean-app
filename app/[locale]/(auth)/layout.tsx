@@ -1,9 +1,9 @@
 import type {ReactNode} from "react";
 import {Suspense} from "react";
 import type {Viewport} from "next";
-import {Logo} from "@/shared/ui/logo/Logo";
+import {Logo} from "@/shared/ui";
 import Link from "next/link";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {CARD_FRAME_BASE} from "@/shared/ui";
 
 
 export const viewport: Viewport = {

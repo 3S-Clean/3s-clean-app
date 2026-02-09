@@ -6,7 +6,7 @@ import {useBookingStore} from "@/features/booking/lib/store";
 import {type ExtraId, EXTRAS} from "@/features/booking/lib/config";
 import {useExtrasI18n} from "@/features/booking/lib/useExtrasI18n";
 import {isExtraId} from "@/features/booking/lib/guards";
-import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui/card/CardFrame";
+import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui";
 
 function formatDuration(hours: number) {
     if (!hours || hours <= 0) return "";

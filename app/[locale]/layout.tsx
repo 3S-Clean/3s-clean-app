@@ -1,6 +1,6 @@
 import {notFound} from "next/navigation";
 import {NextIntlClientProvider} from "next-intl";
-import CookieBanner from "@/features/consent/components/CookieBanner";
+import {CookieBanner} from "@/features/consent/components";
 
 const locales = ["en", "de"] as const;
 type Locale = (typeof locales)[number];

@@ -3,15 +3,14 @@
 import {useEffect} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
-import PillCTA from "@/shared/ui/buttons/PillCTA";
-import PageTitle from "@/shared/ui/typography/PageTitle";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
-import BodyMuted from "@/shared/ui/typography/BodyMuted";
-import BodyText from "@/shared/ui/typography/BodyText";
+import {Footer, Header} from "@/shared/layout";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {PillCTA} from "@/shared/ui";
+import {PageTitle} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {CARD_FRAME_BASE} from "@/shared/ui";
+import {BodyMuted} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
 
 function SectionShell({children}: { children: React.ReactNode }) {
     const shellBase = [

@@ -5,9 +5,9 @@ import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {createClient} from "@/shared/lib/supabase/client";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import BodyText from "@/shared/ui/typography/BodyText";
-import {CARD_FRAME_ACTION, CARD_FRAME_STATIC} from "@/shared/ui/card/CardFrame";
+import {SectionTitle} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
+import {CARD_FRAME_ACTION, CARD_FRAME_STATIC} from "@/shared/ui";
 
 type OrderRow = {
     id: string;

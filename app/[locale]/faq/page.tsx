@@ -3,14 +3,13 @@
 import {useMemo, useState} from "react";
 import {Plus, Search} from "lucide-react";
 import {useTranslations} from "next-intl";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
-import PageTitle from "@/shared/ui/typography/PageTitle";
-import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
-import BodyMuted from "@/shared/ui/typography/BodyMuted";
+import {Footer, Header} from "@/shared/layout";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {PageTitle} from "@/shared/ui";
+import {PageSubtitle} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {CARD_FRAME_BASE} from "@/shared/ui";
+import {BodyMuted} from "@/shared/ui";
 /* -------------------------------- types -------------------------------- */
 type FAQItem = {
     question: string;

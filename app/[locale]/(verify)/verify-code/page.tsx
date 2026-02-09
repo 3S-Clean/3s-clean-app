@@ -8,8 +8,7 @@ import {useTranslations} from "next-intl";
 import {createClient} from "@/shared/lib/supabase/client";
 import {useBookingStore} from "@/features/booking/lib/store";
 import {z} from "zod";
-import BookingDetectedCard from "@/features/auth/components/BookingDetectedCard";
-import OtpBoxes from "@/features/auth/components/OtpBoxes";
+import {BookingDetectedCard, OtpBoxes} from "@/features/auth/components";
 
 type Flow = "signup" | "recovery";
 const OTP_TTL_SEC = 600; // 10 minutes

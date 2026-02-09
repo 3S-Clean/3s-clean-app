@@ -8,7 +8,7 @@ import {useTranslations} from "next-intl";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import Link from "next/link";
-import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/shared/ui";
 import {createClient} from "@/shared/lib/supabase/client";
 import {resetPasswordSchema, type ResetPasswordValues} from "@/shared/lib/auth/validators";
 

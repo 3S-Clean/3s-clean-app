@@ -6,12 +6,12 @@ import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {createClient} from "@/shared/lib/supabase/client";
-import {Logo} from "@/shared/ui/logo/Logo";
+import {Logo} from "@/shared/ui";
 import {mainNav} from "@/shared/lib/navigation/navigation";
-import {UserIcon} from "@/shared/ui/icons/UserIcon";
-import {UserCheckIcon} from "@/shared/ui/icons/UserCheckIcon";
-import {MenuIcon} from "@/shared/ui/icons/MenuIcon";
-import {PAGE_CONTAINER} from "@/shared/ui/layout";
+import {UserIcon} from "@/shared/ui";
+import {UserCheckIcon} from "@/shared/ui";
+import {MenuIcon} from "@/shared/ui";
+import {PAGE_CONTAINER} from "@/shared/ui";
 
 export default function Header() {
     const pathname = usePathname();

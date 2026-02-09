@@ -6,7 +6,7 @@ import {useBookingStore} from "@/features/booking/lib/store";
 import type {ApartmentSizeId, PeopleCountId, ServiceId} from "@/features/booking/lib/config";
 import {APARTMENT_SIZES, FINAL_PRICES, PEOPLE_OPTIONS} from "@/features/booking/lib/config";
 import {isApartmentSizeId, isPeopleCountId, isServiceId} from "@/features/booking/lib/guards";
-import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE, CARD_FRAME_ACTION} from "@/shared/ui";
 
 // ✅ unified base border (same language everywhere)
 const BASE_CARD = [

@@ -3,7 +3,7 @@
 import {useMemo, useState} from "react";
 import {useTranslations} from "next-intl";
 import {createClient} from "@/shared/lib/supabase/client";
-import {AUTH_CARD_BASE, CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE, CARD_FRAME_BASE} from "@/shared/ui";
 
 function ChangePassword() {
     const t = useTranslations("account.settings.changePassword");

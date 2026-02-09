@@ -6,7 +6,7 @@ import {useBookingStore} from "@/features/booking/lib/store";
 import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END} from "@/features/booking/lib/config";
 import {ChevronLeft, ChevronRight, X} from "lucide-react";
 import {isApartmentSizeId, isExtraId, isServiceId} from "@/features/booking/lib/guards";
-import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/shared/ui/card/CardFrame";
+import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/shared/ui";
 
 type ExistingBookingRow = {
     scheduled_date: string;

@@ -7,7 +7,7 @@ import {createClient} from "@/shared/lib/supabase/client";
 import {isServiceAreaPostcode} from "@/features/booking/lib/guards";
 import {Check, X} from "lucide-react";
 import {z} from "zod";
-import {AUTH_CARD_BASE, CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE, CARD_FRAME_BASE} from "@/shared/ui";
 
 type Status = "idle" | "checking" | "available" | "unavailable" | "notified";
 type ProfileRow = { postal_code: string | null };

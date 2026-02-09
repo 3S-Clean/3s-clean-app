@@ -2,17 +2,16 @@
 
 import {useState} from "react";
 import {BookOpen, Film, LogOut, User, UserRoundPen, Video} from "lucide-react";
-import LogoutButton from "@/features/auth/components/LogoutButton";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
+import {LogoutButton} from "@/features/auth/components";
+import {Footer, Header} from "@/shared/layout";
 import PersonalInfoClient from "@/features/account/components/PersonalInfoClient";
 import OrdersTabClient from "@/features/account/components/OrdersTabClient";
 import Settings from "@/features/account/components/Settings";
 
 import {createClient} from "@/shared/lib/supabase/client";
-import {Avatar} from "@/shared/ui/avatar/Avatar";
-import {AvatarColorPicker} from "@/shared/ui/avatar-color/AvatarColorPicker";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {Avatar} from "@/shared/ui";
+import {AvatarColorPicker} from "@/shared/ui";
+import {CARD_FRAME_BASE} from "@/shared/ui";
 import {useTranslations} from "next-intl";
 
 type Tab = "personal" | "live" | "history" | "orders" | "settings";

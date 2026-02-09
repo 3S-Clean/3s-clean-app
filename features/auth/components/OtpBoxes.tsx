@@ -1,7 +1,7 @@
 "use client";
 
 import {useMemo, useRef} from "react";
-import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import {CARD_FRAME_BASE} from "@/shared/ui";
 
 export default function OtpBoxes({
                                      value,

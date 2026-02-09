@@ -9,8 +9,8 @@ import {loginSchema, type LoginValues} from "@/shared/lib/auth/validators";
 import {createClient} from "@/shared/lib/supabase/client";
 import {useBookingStore} from "@/features/booking/lib/store";
 import Link from "next/link";
-import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
-import BookingDetectedCard from "@/features/auth/components/BookingDetectedCard";
+import {AUTH_CARD_BASE} from "@/shared/ui";
+import {BookingDetectedCard} from "@/features/auth/components";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 

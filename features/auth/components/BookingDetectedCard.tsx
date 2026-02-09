@@ -1,5 +1,5 @@
 import type React from "react";
-import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
+import {AUTH_CARD_BASE} from "@/shared/ui";
 
 
 export default function BookingDetectedCard({

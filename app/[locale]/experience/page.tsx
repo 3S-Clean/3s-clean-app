@@ -2,18 +2,17 @@
 
 import {useMemo} from "react";
 import {useTranslations} from "next-intl";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
+import {Footer, Header} from "@/shared/layout";
 import type {ServiceId} from "@/features/booking/lib/config";
 import {SERVICES} from "@/features/booking/lib/config";
-import ServiceCard from "@/features/booking/components/ServiceCard";
-import {InfoHelp} from "@/shared/ui/info-help/InfoHelp";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
-import PageTitle from "@/shared/ui/typography/PageTitle";
-import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
-import SectionTitle from "@/shared/ui/typography/SectionTitle";
-import BodyText from "@/shared/ui/typography/BodyText";
-import HashAnchorScroll from "@/shared/ui/scroll/HashAnchorScroll";
+import {ServiceCard} from "@/features/booking/components";
+import {InfoHelp} from "@/shared/ui";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {PageTitle} from "@/shared/ui";
+import {PageSubtitle} from "@/shared/ui";
+import {SectionTitle} from "@/shared/ui";
+import {BodyText} from "@/shared/ui";
+import {HashAnchorScroll} from "@/shared/ui";
 
 /* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({text, title}: { text: string; title?: string }) {

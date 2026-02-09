@@ -3,10 +3,9 @@
 import Link from "next/link";
 import {useLocale, useTranslations} from "next-intl";
 import {useMemo} from "react";
-import Header from "@/shared/layout/header/Header";
-import Footer from "@/shared/layout/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
-import {CARD_FRAME_GHOST_ACTION} from "@/shared/ui/card/CardFrame";
+import {Footer, Header} from "@/shared/layout";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui";
+import {CARD_FRAME_GHOST_ACTION} from "@/shared/ui";
 
 /* -----------------------------
    Arrow
