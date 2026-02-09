@@ -3,7 +3,14 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useBookingStore} from "@/features/booking/lib/store";
-import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END} from "@/features/booking/lib/config";
+import {
+    EXTRAS,
+    getEstimatedHours,
+    HOLIDAYS,
+    roundMinutesToQuarterUp,
+    TIME_SLOTS,
+    WORKING_HOURS_END
+} from "@/features/booking/lib/config";
 import {AlertTriangle, ChevronLeft, ChevronRight, X} from "lucide-react";
 import {isApartmentSizeId, isExtraId, isServiceId} from "@/features/booking/lib/guards";
 import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/shared/ui";
@@ -87,7 +94,7 @@ export default function ContactSchedule({
             return sum + (e ? e.hours * (Number(qty) || 0) : 0);
         }, 0);
 
-        return Math.max(0, Math.round((baseHours + extrasHours) * 60));
+        return roundMinutesToQuarterUp((baseHours + extrasHours) * 60);
     }, [selectedService, apartmentSize, extras]);
 
     useEffect(() => {

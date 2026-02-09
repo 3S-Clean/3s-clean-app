@@ -187,6 +187,20 @@ export const TIME_SLOTS = Array.from({length: 40}, (_, i) => {
 export const WORKING_HOURS_END = 18;
 
 /* =========================
+   ROUNDING HELPERS
+========================= */
+
+export function roundMinutesToQuarterUp(minutes: number) {
+    if (!Number.isFinite(minutes) || minutes <= 0) return 0;
+    return Math.ceil(minutes / 15) * 15;
+}
+
+export function roundHoursToQuarterUp(hours: number) {
+    if (!Number.isFinite(hours) || hours <= 0) return 0;
+    return roundMinutesToQuarterUp(hours * 60) / 60;
+}
+
+/* =========================
    HOLIDAYS (blocking dates)
 ========================= */
 

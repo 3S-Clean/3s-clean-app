@@ -8,24 +8,12 @@ import {useExtrasI18n} from "@/features/booking/lib/useExtrasI18n";
 import {isExtraId} from "@/features/booking/lib/guards";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui";
 
-function formatDuration(hours: number) {
-    if (!hours || hours <= 0) return "";
-    if (hours >= 1) {
-        const wh = Math.floor(hours);
-        const m = Math.round((hours - wh) * 60);
-        if (m === 0) return `${wh}h`;
-        return `${wh}h ${m}min`;
-    }
-    return `${Math.round(hours * 60)}min`;
-}
-
 /** ✅ only 2 recommended */
 const RECOMMENDED: readonly ExtraId[] = ["windows-outside", "windows-inside", "sofa"];
 const POPULAR: readonly ExtraId[] = ["linen-double", "linen-single"];
 
 // Selected text helpers
 const SEL_TEXT = "text-[var(--text)]";
-const SEL_MUTED = "text-[var(--muted)]";
 const SEL_MUTED_SOFT = "text-[var(--muted)]/70";
 
 const SELECTABLE_CARD_BASE = [
@@ -73,11 +61,10 @@ export default function ExtraServices() {
         return EXTRAS.map((extra) => {
             const qty = Number((extras || {})[extra.id] || 0);
             const isSelected = qty > 0;
-            const duration = formatDuration(extra.hours);
             const {name, unit} = getExtraText(extra.id);
             const isRec = RECOMMENDED.includes(extra.id);
             const isPop = POPULAR.includes(extra.id);
-            return {extra, qty, isSelected, duration, name, unit, isRec, isPop};
+            return {extra, qty, isSelected, name, unit, isRec, isPop};
         });
     }, [extras, getExtraText]);
 
@@ -106,7 +93,7 @@ export default function ExtraServices() {
             </div>
 
             <div className="flex flex-col gap-3">
-                {extrasUi.map(({extra, qty, isSelected, duration, name, unit, isRec, isPop}) => (
+                {extrasUi.map(({extra, qty, isSelected, name, unit, isRec, isPop}) => (
                     <div
                         key={extra.id}
                         role="button"
@@ -174,12 +161,6 @@ export default function ExtraServices() {
                       className={["font-semibold tabular-nums", isSelected ? SEL_TEXT : "text-[var(--text)]"].join(" ")}>
                     +€{extra.price.toFixed(2)}
                   </span>
-
-                                    {duration && (
-                                        <span className={isSelected ? SEL_MUTED : "text-[var(--muted)]"}>
-                      {t("adds")} ~{duration}
-                    </span>
-                                    )}
 
                                     {unit && (
                                         <span className={isSelected ? SEL_MUTED_SOFT : "text-[var(--muted)]/70"}>

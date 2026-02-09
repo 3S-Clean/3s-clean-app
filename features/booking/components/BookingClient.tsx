@@ -19,6 +19,7 @@ import {
     getBasePrice,
     getEstimatedHours,
     type PeopleCountId,
+    roundHoursToQuarterUp,
     type ServiceId,
     SERVICES,
 } from "@/features/booking/lib/config";
@@ -192,7 +193,7 @@ export default function BookingClient() {
                 });
             }
 
-            const estimatedHours = getEstimatedHours(service, size) + extrasHours;
+            const estimatedHours = roundHoursToQuarterUp(getEstimatedHours(service, size) + extrasHours);
 
             return {
                 basePrice: r2(basePrice),

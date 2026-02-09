@@ -12,6 +12,7 @@ import {
     getEstimatedHours,
     PEOPLE_OPTIONS,
     type PeopleCountId,
+    roundHoursToQuarterUp,
     type ServiceId,
     SERVICES,
 } from "@/features/booking/lib/config";
@@ -96,7 +97,7 @@ export default function BookingFooter({onSubmit, isSubmitting}: Props) {
             if (e && q > 0) h += e.hours * q;
         });
 
-        return formatDuration(h);
+        return formatDuration(roundHoursToQuarterUp(h));
     }, [serviceId, sizeId, extras]);
 
     const summarySubtitle = useMemo(() => {

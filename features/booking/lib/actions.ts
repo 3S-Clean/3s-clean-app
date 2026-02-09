@@ -7,6 +7,7 @@ import {
     getBasePrice,
     getEstimatedHours,
     type PeopleCountId,
+    roundHoursToQuarterUp,
     type ServiceId,
 } from "@/features/booking/lib/config";
 import {isApartmentSizeId, isExtraId, isPeopleCountId, isServiceId} from "@/features/booking/lib/guards";
@@ -161,7 +162,7 @@ export function calculateOrderTotals(
         });
     }
 
-    const estimatedHours = getEstimatedHours(serviceId, sizeId) + extrasHours;
+    const estimatedHours = roundHoursToQuarterUp(getEstimatedHours(serviceId, sizeId) + extrasHours);
 
     return {
         basePrice: r2(basePrice),
