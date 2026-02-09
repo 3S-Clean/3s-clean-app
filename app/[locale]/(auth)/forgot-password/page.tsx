@@ -6,9 +6,9 @@ import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
-import {forgotPasswordSchema, type ForgotPasswordValues} from "@/lib/validators";
-import {createClient} from "@/lib/supabase/client";
+import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
+import {forgotPasswordSchema, type ForgotPasswordValues} from "@/shared/lib/auth/validators";
+import {createClient} from "@/shared/lib/supabase/client";
 import Link from "next/link";
 
 type Status = null | { type: "ok" | "error"; msg: string };

@@ -5,12 +5,12 @@ import {Plus, Search} from "lucide-react";
 import {useTranslations} from "next-intl";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
-import PageTitle from "@/components/ui/typography/PageTitle";
-import PageSubtitle from "@/components/ui/typography/PageSubtitle";
-import SectionTitle from "@/components/ui/typography/SectionTitle";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
-import BodyMuted from "@/components/ui/typography/BodyMuted";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
+import PageTitle from "@/shared/ui/typography/PageTitle";
+import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
+import SectionTitle from "@/shared/ui/typography/SectionTitle";
+import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
+import BodyMuted from "@/shared/ui/typography/BodyMuted";
 /* -------------------------------- types -------------------------------- */
 type FAQItem = {
     question: string;

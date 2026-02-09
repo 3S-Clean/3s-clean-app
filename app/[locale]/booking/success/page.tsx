@@ -3,10 +3,10 @@
 import {Suspense, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import Link from "next/link";
-import {useBookingStore} from "@/lib/booking/store";
-import {SERVICES} from "@/lib/booking/config";
+import {useBookingStore} from "@/features/booking/lib/store";
+import {SERVICES} from "@/features/booking/lib/config";
 import {Check} from "lucide-react";
-import {createClient} from "@/lib/supabase/client";
+import {createClient} from "@/shared/lib/supabase/client";
 import {useTranslations} from "next-intl";
 
 type Order = {

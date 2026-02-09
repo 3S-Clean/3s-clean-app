@@ -5,13 +5,13 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
-import {createClient} from "@/lib/supabase/client";
-import {Logo} from "@/components/ui/logo/Logo";
-import {mainNav} from "@/lib/navigation/navigation";
-import {UserIcon} from "@/components/ui/icons/UserIcon";
-import {UserCheckIcon} from "@/components/ui/icons/UserCheckIcon";
-import {MenuIcon} from "@/components/ui/icons/MenuIcon";
-import {PAGE_CONTAINER} from "@/components/ui/layout";
+import {createClient} from "@/shared/lib/supabase/client";
+import {Logo} from "@/shared/ui/logo/Logo";
+import {mainNav} from "@/shared/lib/navigation/navigation";
+import {UserIcon} from "@/shared/ui/icons/UserIcon";
+import {UserCheckIcon} from "@/shared/ui/icons/UserCheckIcon";
+import {MenuIcon} from "@/shared/ui/icons/MenuIcon";
+import {PAGE_CONTAINER} from "@/shared/ui/layout";
 
 export default function Header() {
     const pathname = usePathname();

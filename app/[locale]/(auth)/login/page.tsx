@@ -5,12 +5,12 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
-import {loginSchema, type LoginValues} from "@/lib/validators";
-import {createClient} from "@/lib/supabase/client";
-import {useBookingStore} from "@/lib/booking/store";
+import {loginSchema, type LoginValues} from "@/shared/lib/auth/validators";
+import {createClient} from "@/shared/lib/supabase/client";
+import {useBookingStore} from "@/features/booking/lib/store";
 import Link from "next/link";
-import {AUTH_CARD_BASE} from "@/components/ui/card/CardFrame";
-import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
+import {AUTH_CARD_BASE} from "@/shared/ui/card/CardFrame";
+import BookingDetectedCard from "@/features/auth/components/BookingDetectedCard";
 
 type Status = null | { type: "ok" | "error"; msg: string };
 

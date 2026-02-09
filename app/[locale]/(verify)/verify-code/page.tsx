@@ -5,11 +5,11 @@ export const dynamic = "force-dynamic";
 import {Suspense, useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
-import {createClient} from "@/lib/supabase/client";
-import {useBookingStore} from "@/lib/booking/store";
+import {createClient} from "@/shared/lib/supabase/client";
+import {useBookingStore} from "@/features/booking/lib/store";
 import {z} from "zod";
-import BookingDetectedCard from "@/components/auth/BookingDetectedCard";
-import OtpBoxes from "@/components/ui/auth/OtpBoxes";
+import BookingDetectedCard from "@/features/auth/components/BookingDetectedCard";
+import OtpBoxes from "@/features/auth/components/OtpBoxes";
 
 type Flow = "signup" | "recovery";
 const OTP_TTL_SEC = 600; // 10 minutes

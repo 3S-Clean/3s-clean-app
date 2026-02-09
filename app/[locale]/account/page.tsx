@@ -1,6 +1,6 @@
 import {redirect} from "next/navigation";
-import {createSupabaseServerClient} from "@/lib/supabase/server";
-import AccountClient from "@/components/account/AccountClient";
+import {createSupabaseServerClient} from "@/shared/lib/supabase/server";
+import AccountClient from "@/features/account/components/AccountClient";
 
 export default async function AccountPage() {
     const supabase = await createSupabaseServerClient();

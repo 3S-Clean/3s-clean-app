@@ -4,16 +4,16 @@ import {useMemo} from "react";
 import {useTranslations} from "next-intl";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import type {ServiceId} from "@/lib/booking/config";
-import {SERVICES} from "@/lib/booking/config";
-import ServiceCard from "@/components/booking/ServiceCard";
-import {InfoHelp} from "@/components/ui/info-help/InfoHelp";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
-import PageTitle from "@/components/ui/typography/PageTitle";
-import PageSubtitle from "@/components/ui/typography/PageSubtitle";
-import SectionTitle from "@/components/ui/typography/SectionTitle";
-import BodyText from "@/components/ui/typography/BodyText";
-import HashAnchorScroll from "@/components/ui/scroll/HashAnchorScroll";
+import type {ServiceId} from "@/features/booking/lib/config";
+import {SERVICES} from "@/features/booking/lib/config";
+import ServiceCard from "@/features/booking/components/ServiceCard";
+import {InfoHelp} from "@/shared/ui/info-help/InfoHelp";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
+import PageTitle from "@/shared/ui/typography/PageTitle";
+import PageSubtitle from "@/shared/ui/typography/PageSubtitle";
+import SectionTitle from "@/shared/ui/typography/SectionTitle";
+import BodyText from "@/shared/ui/typography/BodyText";
+import HashAnchorScroll from "@/shared/ui/scroll/HashAnchorScroll";
 
 /* ----------------------------- Tooltip ----------------------------- */
 function Tooltip({text, title}: { text: string; title?: string }) {

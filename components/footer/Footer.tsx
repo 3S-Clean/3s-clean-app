@@ -3,8 +3,8 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useTranslations} from "next-intl";
-import {footerColumns} from "@/lib/navigation/navigation";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
+import {footerColumns} from "@/shared/lib/navigation/navigation";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
 
 function isExternal(href: string) {
     return href.startsWith("http://") || href.startsWith("https://");

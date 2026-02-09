@@ -5,8 +5,8 @@ import {useLocale, useTranslations} from "next-intl";
 import {useMemo} from "react";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/components/ui/layout";
-import {CARD_FRAME_GHOST_ACTION} from "@/components/ui/card/CardFrame";
+import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
+import {CARD_FRAME_GHOST_ACTION} from "@/shared/ui/card/CardFrame";
 
 /* -----------------------------
    Arrow

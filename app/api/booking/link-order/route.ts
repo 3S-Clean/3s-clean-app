@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import {NextResponse} from "next/server";
+import {createSupabaseServerClient} from "@/shared/lib/supabase/server";
+import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
 
 /* =========================
    Types
@@ -64,29 +64,29 @@ export async function POST(req: Request) {
     try {
         body = (await req.json()) as LinkOrderBody;
     } catch {
-        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        return NextResponse.json({error: "Invalid JSON"}, {status: 400});
     }
 
     const pendingToken = String(body?.pendingToken ?? "").trim();
     if (!pendingToken) {
-        return NextResponse.json({ error: "Missing pendingToken" }, { status: 400 });
+        return NextResponse.json({error: "Missing pendingToken"}, {status: 400});
     }
 
     // 🔐 authenticated user
     const supabase = await createSupabaseServerClient();
     const {
-        data: { user },
+        data: {user},
         error: authErr,
     } = await supabase.auth.getUser();
 
     if (authErr || !user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({error: "Unauthorized"}, {status: 401});
     }
 
     const admin = createSupabaseAdminClient();
 
     // 1️⃣ Find order by pending_token
-    const { data: found, error: findErr } = await admin
+    const {data: found, error: findErr} = await admin
         .from("orders")
         .select(
             `
@@ -108,16 +108,16 @@ export async function POST(req: Request) {
 
     if (findErr) {
         console.error("link-order: find error", findErr);
-        return NextResponse.json({ error: "Could not link booking" }, { status: 500 });
+        return NextResponse.json({error: "Could not link booking"}, {status: 500});
     }
 
     if (!found) {
-        return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        return NextResponse.json({error: "Order not found"}, {status: 404});
     }
 
     if (!isOrderRow(found)) {
         console.error("link-order: invalid order shape", found);
-        return NextResponse.json({ error: "Could not link booking" }, { status: 500 });
+        return NextResponse.json({error: "Could not link booking"}, {status: 500});
     }
 
     const order = found;
@@ -125,13 +125,13 @@ export async function POST(req: Request) {
     // already linked to another user
     if (order.user_id && order.user_id !== user.id) {
         return NextResponse.json(
-            { error: "Order already linked to another user" },
-            { status: 409 }
+            {error: "Order already linked to another user"},
+            {status: 409}
         );
     }
 
     // 2️⃣ Link order → user + clear pending_token
-    const { data: updated, error: updErr } = await admin
+    const {data: updated, error: updErr} = await admin
         .from("orders")
         .update({
             user_id: user.id,
@@ -143,12 +143,12 @@ export async function POST(req: Request) {
 
     if (updErr) {
         console.error("link-order: update error", updErr);
-        return NextResponse.json({ error: "Could not link booking" }, { status: 500 });
+        return NextResponse.json({error: "Could not link booking"}, {status: 500});
     }
 
     // 3️⃣ Soft-fill profile (ONLY missing fields)
     try {
-        const { data: profile } = await admin
+        const {data: profile} = await admin
             .from("profiles")
             .select(
                 "id, first_name, last_name, email, phone, address, postal_code, city, country, notes"
@@ -186,7 +186,7 @@ export async function POST(req: Request) {
             patch.notes = order.customer_notes.trim();
 
         if (Object.keys(patch).length > 0) {
-            const { error: profErr } = await admin
+            const {error: profErr} = await admin
                 .from("profiles")
                 .update(patch)
                 .eq("id", user.id);
@@ -201,7 +201,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-        { orderId: String(updated.id) },
-        { status: 200 }
+        {orderId: String(updated.id)},
+        {status: 200}
     );
 }

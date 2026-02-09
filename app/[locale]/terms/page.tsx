@@ -1,5 +1,5 @@
 import type {Metadata} from "next";
-import {getLegalMarkdown} from "@/lib/legal/getLegalMarkdown";
+import {getLegalMarkdown} from "@/shared/lib/legal/getLegalMarkdown";
 import ReactMarkdown from "react-markdown";
 import {unstable_noStore as noStore} from "next/cache";
 import Footer from "@/components/footer/Footer";

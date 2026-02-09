@@ -1,7 +1,7 @@
 // app/api/booking/notify/route.ts
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import {NextResponse} from "next/server";
+import {z} from "zod";
+import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
 
 const NotifySchema = z.object({
     email: z.string().email(),
@@ -12,21 +12,21 @@ export async function POST(req: Request) {
     const parsed = NotifySchema.safeParse(await req.json().catch(() => null));
 
     if (!parsed.success) {
-        return NextResponse.json({ success: false }, { status: 400 });
+        return NextResponse.json({success: false}, {status: 400});
     }
 
-    const { email, postcode } = parsed.data;
+    const {email, postcode} = parsed.data;
 
     const admin = createSupabaseAdminClient();
 
-    const { error } = await admin
+    const {error} = await admin
         .from("notify_requests")
-        .insert({ email, postal_code: postcode });
+        .insert({email, postal_code: postcode});
 
     if (error) {
         console.error("notify insert error", error);
-        return NextResponse.json({ success: false }, { status: 500 });
+        return NextResponse.json({success: false}, {status: 500});
     }
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json({success: true}, {status: 200});
 }

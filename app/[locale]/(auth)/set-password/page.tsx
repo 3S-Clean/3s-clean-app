@@ -3,8 +3,8 @@
 import {useEffect, useMemo, useState} from "react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useTranslations} from "next-intl";
-import {createClient} from "@/lib/supabase/client";
-import {CARD_FRAME_BASE} from "@/components/ui/card/CardFrame";
+import {createClient} from "@/shared/lib/supabase/client";
+import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
 
 export default function SetPasswordPage() {
     const router = useRouter();

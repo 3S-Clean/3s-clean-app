@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import {NextResponse} from "next/server";
+import {createSupabaseServerClient} from "@/shared/lib/supabase/server";
+import {createSupabaseAdminClient} from "@/shared/lib/supabase/admin";
 
 type CreateOrderBody = {
     orderData?: unknown;
@@ -12,19 +12,21 @@ type OrderPayload = Record<string, unknown>;
 function s(v: unknown) {
     return String(v ?? "").trim();
 }
+
 function isFilled(v: unknown) {
     return typeof v === "string" ? v.trim().length > 0 : s(v).length > 0;
 }
+
 export async function POST(req: Request) {
     let body: CreateOrderBody = {};
     try {
         body = (await req.json()) as CreateOrderBody;
     } catch {
-        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        return NextResponse.json({error: "Invalid JSON"}, {status: 400});
     }
     const orderDataRaw = (body?.orderData ?? body) as unknown;
     if (!orderDataRaw || typeof orderDataRaw !== "object") {
-        return NextResponse.json({ error: "Missing order data" }, { status: 400 });
+        return NextResponse.json({error: "Missing order data"}, {status: 400});
     }
     const orderData = orderDataRaw as OrderPayload;
     const required = [
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
         "customer_address",
         "customer_postal_code",
         "customer_city",
-	    "customer_country",
+        "customer_country",
         "scheduled_date",
         "scheduled_time",
         "total_price",
@@ -46,13 +48,13 @@ export async function POST(req: Request) {
     for (const k of required) {
         const v = orderData[k];
         if (v === null || v === undefined || String(v).trim() === "") {
-            return NextResponse.json({ error: `Missing field: ${k}` }, { status: 400 });
+            return NextResponse.json({error: `Missing field: ${k}`}, {status: 400});
         }
     }
     // кто залогинен (если есть)
     const supabase = await createSupabaseServerClient();
     const {
-        data: { user },
+        data: {user},
     } = await supabase.auth.getUser();
     const pendingToken = crypto.randomUUID();
     const admin = createSupabaseAdminClient();
@@ -73,18 +75,18 @@ export async function POST(req: Request) {
         status: "pending",
     };
 
-    const { data, error } = await admin
+    const {data, error} = await admin
         .from("orders")
         .insert(payload)
         .select("id, pending_token")
         .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({error: error.message}, {status: 500});
 
     // ✅ NEW: если user залогинен — подливаем данные в profile (только если пусто)
     if (user?.id) {
         try {
-            const { data: profile } = await admin
+            const {data: profile} = await admin
                 .from("profiles")
                 .select("id, first_name, last_name, phone, email, address, postal_code, city, country")
                 .eq("id", user.id)
@@ -107,7 +109,7 @@ export async function POST(req: Request) {
             if (ccity && s(profile?.city) !== ccity) patch.city = ccity;
             if (ccountry && s(profile?.country) !== ccountry) patch.country = ccountry;
             if (Object.keys(patch).length > 0) {
-                await admin.from("profiles").upsert({ id: user.id, ...patch }, { onConflict: "id" });
+                await admin.from("profiles").upsert({id: user.id, ...patch}, {onConflict: "id"});
             }
         } catch (e) {
             // не ломаем заказ из-за профиля
@@ -120,6 +122,6 @@ export async function POST(req: Request) {
             orderId: String(data.id),
             pendingToken: String(data.pending_token),
         },
-        { status: 200 }
+        {status: 200}
     );
 }
