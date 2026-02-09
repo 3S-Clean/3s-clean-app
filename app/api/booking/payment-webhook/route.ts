@@ -47,8 +47,8 @@ const EVENT_TO_STATUS: Record<string, LifecycleStatus> = {
 const ALLOWED_TRANSITIONS: Record<LifecycleStatus, Set<LifecycleStatus>> = {
     awaiting_payment: new Set(["payment_pending", "paid", "expired", "cancelled"]),
     payment_pending: new Set(["paid", "expired", "cancelled"]),
-    paid: new Set(["reserved", "refunded", "cancelled"]),
-    reserved: new Set(["in_progress", "cancelled", "refunded"]),
+    paid: new Set(["reserved", "in_progress", "refunded", "cancelled"]),
+    reserved: new Set(["payment_pending", "paid", "in_progress", "cancelled", "refunded"]),
     in_progress: new Set(["completed", "cancelled", "refunded"]),
     completed: new Set(["refunded"]),
     expired: new Set(["cancelled"]),

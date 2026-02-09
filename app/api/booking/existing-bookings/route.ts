@@ -14,6 +14,7 @@ type BookingRow = {
     status: string | null;
     created_at: string | null;
     payment_due_at?: string | null;
+    paid_at?: string | null;
 };
 
 type PostgrestErrorLike = {
@@ -26,7 +27,7 @@ type PostgrestErrorLike = {
 function isMissingPaymentDueColumn(error: PostgrestErrorLike | null) {
     if (!error) return false;
     const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
-    return error.code === "42703" && joined.includes("payment_due_at");
+    return error.code === "42703" && (joined.includes("payment_due_at") || joined.includes("paid_at"));
 }
 
 export async function POST(req: Request) {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
 
     const readRes = await supabase
         .from("orders")
-        .select("id, scheduled_date, scheduled_time, estimated_hours, status, created_at, payment_due_at")
+        .select("id, scheduled_date, scheduled_time, estimated_hours, status, created_at, payment_due_at, paid_at")
         .gte("scheduled_date", String(startDate))
         .lte("scheduled_date", String(endDate))
         .in("status", [
@@ -92,10 +93,11 @@ export async function POST(req: Request) {
         await supabase
             .from("orders")
             .update({
-                status: "expired",
+                status: "cancelled",
+                cancelled_at: new Date(now).toISOString(),
             })
             .in("id", overdueAwaiting)
-            .in("status", ["awaiting_payment", "pending"]);
+            .in("status", ["reserved", "awaiting_payment", "payment_pending", "pending"]);
     }
 
     const activeBookings = rows

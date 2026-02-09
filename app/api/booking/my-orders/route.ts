@@ -25,7 +25,7 @@ type OrderRow = {
 function isMissingPaymentDueColumn(error: PostgrestErrorLike | null) {
     if (!error) return false;
     const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
-    return error.code === "42703" && joined.includes("payment_due_at");
+    return error.code === "42703" && (joined.includes("payment_due_at") || joined.includes("paid_at"));
 }
 
 export async function GET() {
@@ -40,9 +40,9 @@ export async function GET() {
 
     const admin = createSupabaseAdminClient();
     const select = `
-        id,status,payment_due_at,service_type,apartment_size,people_count,scheduled_date,scheduled_time,estimated_hours,total_price,created_at,extras
+        id,status,payment_due_at,paid_at,service_type,apartment_size,people_count,scheduled_date,scheduled_time,estimated_hours,total_price,created_at,extras
     `;
-    const selectFallback = select.replace("payment_due_at,", "");
+    const selectFallback = select.replace("payment_due_at,", "").replace("paid_at,", "");
 
     const primaryRes = await admin
         .from("orders")
@@ -76,10 +76,11 @@ export async function GET() {
         await admin
             .from("orders")
             .update({
-                status: "expired",
+                status: "cancelled",
+                cancelled_at: new Date(nowMs).toISOString(),
             })
             .in("id", overdueIds)
-            .in("status", ["awaiting_payment", "pending"])
+            .in("status", ["reserved", "awaiting_payment", "payment_pending", "pending"])
             .eq("user_id", user.id);
     }
 

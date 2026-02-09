@@ -5,6 +5,7 @@ import Link from "next/link";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {BodyText, CARD_FRAME_ACTION, SectionTitle} from "@/shared/ui";
+import {computePaymentDueAt} from "@/shared/lib/orders/lifecycle";
 
 type OrderRow = {
     id: string;
@@ -18,6 +19,7 @@ type OrderRow = {
     total_price: number | string;
     created_at: string;
     payment_due_at?: string | null;
+    paid_at?: string | null;
 };
 
 function formatDate(d: string, locale: string) {
@@ -41,6 +43,15 @@ function hours(v: number | string) {
     const n = typeof v === "string" ? Number(v) : v;
     if (!Number.isFinite(n)) return "—";
     return `~${n}h`;
+}
+
+function formatCountdown(totalSec: number) {
+    const s = Math.max(0, totalSec);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    return `${m}:${String(sec).padStart(2, "0")}`;
 }
 
 function statusKey(s: string) {
@@ -108,6 +119,57 @@ export default function OrdersTabClient() {
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<OrderRow[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [busyCancelId, setBusyCancelId] = useState<string | null>(null);
+    const [nowMs, setNowMs] = useState(Date.now());
+
+    const canCancel = (status: string) => {
+        const key = statusKey(status);
+        return key === "reserved" || key === "awaiting_payment" || key === "payment_pending" || key === "paid";
+    };
+
+    const paymentSecondsLeft = (order: OrderRow) => {
+        if (statusKey(order.status) !== "reserved") return null;
+        if (typeof order.paid_at === "string" && order.paid_at.trim().length > 0) return null;
+        const dueIso = computePaymentDueAt(order);
+        if (!dueIso) return null;
+        const dueMs = Date.parse(dueIso);
+        if (Number.isNaN(dueMs)) return null;
+        return Math.max(0, Math.floor((dueMs - nowMs) / 1000));
+    };
+
+    useEffect(() => {
+        const hasPendingTimer = orders.some((o) => {
+            if (statusKey(o.status) !== "reserved") return false;
+            return !(typeof o.paid_at === "string" && o.paid_at.trim().length > 0);
+        });
+        if (!hasPendingTimer) return;
+        const timer = setInterval(() => setNowMs(Date.now()), 1000);
+        return () => clearInterval(timer);
+    }, [orders]);
+
+    const cancelOrder = async (orderId: string) => {
+        if (busyCancelId) return;
+        if (!window.confirm(t("actions.cancelConfirm"))) return;
+
+        setBusyCancelId(orderId);
+        try {
+            const res = await fetch("/api/booking/cancel-order", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({orderId}),
+            });
+            const json = (await res.json().catch(() => null)) as {error?: string} | null;
+            if (!res.ok) {
+                window.alert(json?.error || t("actions.cancelFailed"));
+                return;
+            }
+            setOrders((prev) => prev.map((o) => (o.id === orderId ? {...o, status: "cancelled"} : o)));
+        } catch {
+            window.alert(t("actions.cancelFailed"));
+        } finally {
+            setBusyCancelId(null);
+        }
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -194,9 +256,8 @@ export default function OrdersTabClient() {
 
             <div className="space-y-5">
                 {orders.map((o) => (
-                    <Link
+                    <div
                         key={o.id}
-                        href={withLocale(`/account/orders/${o.id}`)}
                         className={[CARD_FRAME_ACTION, "block p-6"].join(" ")}
                     >
                         <div className="flex items-start justify-between gap-6">
@@ -213,8 +274,25 @@ export default function OrdersTabClient() {
                                     {o.apartment_size} • {o.people_count} {t("meta.people")}
                                 </div>
 
-                                <div className="mt-4 inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)]">
-                                    {t("actions.viewDetails")}
+                                <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                                    <Link
+                                        href={withLocale(`/account/orders/${o.id}`)}
+                                        className="inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)]"
+                                    >
+                                        {t("actions.viewDetails")}
+                                    </Link>
+                                    {canCancel(o.status) ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                void cancelOrder(o.id);
+                                            }}
+                                            disabled={busyCancelId === o.id}
+                                            className="inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {busyCancelId === o.id ? t("actions.cancelling") : t("actions.cancelOrder")}
+                                        </button>
+                                    ) : null}
                                 </div>
                             </div>
 
@@ -223,9 +301,14 @@ export default function OrdersTabClient() {
                                 <div className="mt-1 text-sm text-[color:var(--muted)]">
                                     {t(`status.${statusKey(o.status)}`)}
                                 </div>
+                                {paymentSecondsLeft(o) !== null ? (
+                                    <div className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                        {t("actions.paymentDueIn", {time: formatCountdown(paymentSecondsLeft(o) ?? 0)})}
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
-                    </Link>
+                    </div>
                 ))}
             </div>
         </div>

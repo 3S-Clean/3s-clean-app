@@ -24,7 +24,7 @@ type OrderRow = {
 function isMissingPaymentDueColumn(error: PostgrestErrorLike | null) {
     if (!error) return false;
     const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
-    return error.code === "42703" && joined.includes("payment_due_at");
+    return error.code === "42703" && (joined.includes("payment_due_at") || joined.includes("paid_at"));
 }
 
 export async function POST(req: Request) {
@@ -116,13 +116,14 @@ export async function POST(req: Request) {
         await admin
             .from("orders")
             .update({
-                status: "expired",
+                status: "cancelled",
+                cancelled_at: new Date(nowMs).toISOString(),
             })
             .eq("id", orderRow.id)
-            .in("status", ["awaiting_payment", "pending"]);
+            .in("status", ["reserved", "awaiting_payment", "payment_pending", "pending"]);
         orderRow = {
             ...orderRow,
-            status: "expired",
+            status: "cancelled",
         };
     }
 

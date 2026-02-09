@@ -5,15 +5,22 @@ export type OrderLifecycleLike = {
     status: string | null;
     created_at: string | null;
     payment_due_at?: string | null;
+    paid_at?: string | null;
 };
 
-const ALWAYS_BLOCKING_STATUSES = new Set([
+const PAYMENT_WINDOW_STATUSES = new Set([
     "reserved",
+    "awaiting_payment",
     "payment_pending",
+    // legacy compatibility
+    "pending",
+]);
+
+const PAID_STATUSES = new Set([
     "paid",
     "in_progress",
-    // legacy compatibility
-    "confirmed",
+    "completed",
+    "refunded",
 ]);
 
 function toMs(v: string | null | undefined) {
@@ -33,12 +40,18 @@ export function computePaymentDueAt(order: {
     return new Date(createdMs + PAYMENT_HOLD_MS).toISOString();
 }
 
+function isPaid(order: OrderLifecycleLike) {
+    if (typeof order.paid_at === "string" && order.paid_at.trim()) return true;
+    return PAID_STATUSES.has(String(order.status ?? ""));
+}
+
 export function isAwaitingPaymentStatus(status: string | null | undefined) {
-    return status === "awaiting_payment" || status === "pending";
+    return PAYMENT_WINDOW_STATUSES.has(String(status ?? ""));
 }
 
 export function isAwaitingPaymentExpired(order: OrderLifecycleLike, nowMs = Date.now()) {
     if (!isAwaitingPaymentStatus(order.status)) return false;
+    if (isPaid(order)) return false;
     const dueIso = computePaymentDueAt(order);
     const dueMs = toMs(dueIso);
     if (Number.isNaN(dueMs)) return false;
@@ -47,15 +60,15 @@ export function isAwaitingPaymentExpired(order: OrderLifecycleLike, nowMs = Date
 
 export function isBlockingForSchedule(order: OrderLifecycleLike, nowMs = Date.now()) {
     const status = String(order.status ?? "");
-    if (ALWAYS_BLOCKING_STATUSES.has(status)) return true;
+    if (status === "paid" || status === "in_progress" || status === "confirmed") return true;
     if (isAwaitingPaymentStatus(status)) return !isAwaitingPaymentExpired(order, nowMs);
     return false;
 }
 
 export function normalizeDisplayStatus(order: OrderLifecycleLike, nowMs = Date.now()) {
     const status = String(order.status ?? "");
-    if (isAwaitingPaymentExpired(order, nowMs)) return "expired";
-    if (status === "pending") return "awaiting_payment";
+    if (isAwaitingPaymentExpired(order, nowMs)) return "cancelled";
+    if (status === "pending" || status === "awaiting_payment" || status === "payment_pending") return "reserved";
     if (status === "confirmed") return "reserved";
     return status || "unknown";
 }

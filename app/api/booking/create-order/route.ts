@@ -23,6 +23,7 @@ type SlotRow = {
     status: string | null;
     created_at: string | null;
     payment_due_at?: string | null;
+    paid_at?: string | null;
 };
 
 type LegalConsentPayload = {
@@ -68,7 +69,7 @@ function parseDurationMinutes(v: unknown) {
 function isMissingOrderLifecycleColumns(error: PostgrestErrorLike | null) {
     if (!error) return false;
     const joined = `${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`.toLowerCase();
-    return error.code === "42703" && joined.includes("payment_due_at");
+    return error.code === "42703" && (joined.includes("payment_due_at") || joined.includes("paid_at"));
 }
 
 function isAwaitingPaymentStatusConstraintError(error: PostgrestErrorLike | null) {
@@ -163,7 +164,7 @@ export async function POST(req: Request) {
     let dayRows: SlotRow[];
     const dayRowsRes = await admin
         .from("orders")
-        .select("id, scheduled_time, estimated_hours, status, created_at, payment_due_at")
+        .select("id, scheduled_time, estimated_hours, status, created_at, payment_due_at, paid_at")
         .eq("scheduled_date", scheduledDate)
         .in("status", [
             "awaiting_payment",
@@ -224,7 +225,7 @@ export async function POST(req: Request) {
         ...safe,
         user_id: user?.id ?? null,
         pending_token: pendingToken,
-        status: "awaiting_payment",
+        status: "reserved",
         payment_due_at: paymentDueAtFromNow(),
     };
 

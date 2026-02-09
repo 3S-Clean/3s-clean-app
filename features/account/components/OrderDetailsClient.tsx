@@ -200,7 +200,9 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
 
     useEffect(() => {
         if (!order) return;
-        if (normalizeDisplayStatus(order, Date.now()) !== "awaiting_payment") return;
+        const hasPaidAt = typeof order.paid_at === "string" && order.paid_at.trim().length > 0;
+        const isPaymentWindow = isAwaitingPaymentStatus(order.status) || normalizeDisplayStatus(order, Date.now()) === "reserved";
+        if (!isPaymentWindow || hasPaidAt) return;
 
         const timer = setInterval(() => setNowMs(Date.now()), 1000);
         return () => clearInterval(timer);
@@ -209,7 +211,9 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
     const paymentDueAt = useMemo(() => (order ? computePaymentDueAt(order) : null), [order]);
     const remainingSeconds = useMemo(() => {
         if (!order) return null;
-        if (displayStatus !== "awaiting_payment" && !isAwaitingPaymentStatus(order.status)) return null;
+        const hasPaidAt = typeof order.paid_at === "string" && order.paid_at.trim().length > 0;
+        if (hasPaidAt) return null;
+        if (displayStatus !== "reserved" && !isAwaitingPaymentStatus(order.status)) return null;
         if (!paymentDueAt) return null;
         const dueMs = Date.parse(paymentDueAt);
         if (Number.isNaN(dueMs)) return null;
@@ -369,7 +373,7 @@ export default function OrderDetailsClient({orderId, locale}: Props) {
                         <div className="mt-1 text-sm text-[var(--muted)]">
                             {tOrderStatus(statusKey(displayStatus))}
                         </div>
-                        {displayStatus === "awaiting_payment" && remainingSeconds !== null ? (
+                        {remainingSeconds !== null ? (
                             <div className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
                                 {t("payment.dueIn", {time: formatCountdown(remainingSeconds)})}
                             </div>
