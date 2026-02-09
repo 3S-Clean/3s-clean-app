@@ -288,7 +288,13 @@ export default function OrdersTabClient() {
                                                 void cancelOrder(o.id);
                                             }}
                                             disabled={busyCancelId === o.id}
-                                            className="inline-flex items-center rounded-full border border-black/10 dark:border-white/15 px-3.5 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className={[
+                                                "inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                                                "border border-black/10 text-[var(--text)]",
+                                                "hover:border-red-600/70 hover:bg-red-600 hover:text-white",
+                                                "dark:border-white/15 dark:hover:border-red-500 dark:hover:bg-red-600 dark:hover:text-white",
+                                                "disabled:opacity-50 disabled:cursor-not-allowed",
+                                            ].join(" ")}
                                         >
                                             {busyCancelId === o.id ? t("actions.cancelling") : t("actions.cancelOrder")}
                                         </button>
