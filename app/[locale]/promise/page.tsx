@@ -3,8 +3,8 @@
 import {useEffect} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
 import PillCTA from "@/shared/ui/buttons/PillCTA";
 import PageTitle from "@/shared/ui/typography/PageTitle";

@@ -3,8 +3,8 @@
 import {useMemo, useState} from "react";
 import {Plus, Search} from "lucide-react";
 import {useTranslations} from "next-intl";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
 import PageTitle from "@/shared/ui/typography/PageTitle";
 import PageSubtitle from "@/shared/ui/typography/PageSubtitle";

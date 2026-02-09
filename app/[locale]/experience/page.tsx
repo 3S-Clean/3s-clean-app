@@ -2,8 +2,8 @@
 
 import {useMemo} from "react";
 import {useTranslations} from "next-intl";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import type {ServiceId} from "@/features/booking/lib/config";
 import {SERVICES} from "@/features/booking/lib/config";
 import ServiceCard from "@/features/booking/components/ServiceCard";

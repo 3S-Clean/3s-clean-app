@@ -1,8 +1,8 @@
 "use client";
 
 import {Mail, MapPin, MessageCircle, Phone} from "lucide-react";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import {CONTENT_GUTTER, PAGE_CONTAINER} from "@/shared/ui/layout";
 import {CARD_FRAME_BASE, CARD_FRAME_HOVER_LIFT, CARD_FRAME_INTERACTIVE,} from "@/shared/ui/card/CardFrame";
 import PageTitle from "@/shared/ui/typography/PageTitle";

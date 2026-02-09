@@ -2,8 +2,8 @@ import type {Metadata} from "next";
 import {getLegalMarkdown} from "@/shared/lib/legal/getLegalMarkdown";
 import ReactMarkdown from "react-markdown";
 import {unstable_noStore as noStore} from "next/cache";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

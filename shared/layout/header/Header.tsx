@@ -1,6 +1,6 @@
 "use client";
 
-import "@/components/header/header.css";
+import "@/shared/layout/header/header.css";
 import {useCallback, useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {useTranslations} from "next-intl";

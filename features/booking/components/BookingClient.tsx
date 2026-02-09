@@ -10,7 +10,7 @@ import ApartmentDetails from "@/features/booking/components/ApartmentDetails";
 import ExtraServices from "@/features/booking/components/ExtraServices";
 import ContactSchedule from "@/features/booking/components/ContactSchedule";
 import BookingFooter from "@/features/booking/components/BookingFooter";
-import Header from "@/components/header/Header";
+import Header from "@/shared/layout/header/Header";
 
 import {useBookingStore} from "@/features/booking/lib/store";
 import {

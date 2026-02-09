@@ -3,8 +3,8 @@
 import {useState} from "react";
 import {BookOpen, Film, LogOut, User, UserRoundPen, Video} from "lucide-react";
 import LogoutButton from "@/features/auth/components/LogoutButton";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import PersonalInfoClient from "@/features/account/components/PersonalInfoClient";
 import OrdersTabClient from "@/features/account/components/OrdersTabClient";
 import Settings from "@/features/account/components/Settings";

@@ -1,8 +1,8 @@
 "use client";
 
 import {Check, Euro, Shield, Users, Video} from "lucide-react";
-import Header from "@/components/header/Header";
-import Footer from "@/components/footer/Footer";
+import Header from "@/shared/layout/header/Header";
+import Footer from "@/shared/layout/footer/Footer";
 import {CARD_FRAME_BASE} from "@/shared/ui/card/CardFrame";
 import PageTitle from "@/shared/ui/typography/PageTitle";
 import BodyText from "@/shared/ui/typography/BodyText";
