@@ -160,7 +160,7 @@ export async function POST(req: Request) {
     }
     const endMin = startMin + durationMin;
 
-    let dayRows: SlotRow[] = [];
+    let dayRows: SlotRow[];
     const dayRowsRes = await admin
         .from("orders")
         .select("id, scheduled_time, estimated_hours, status, created_at, payment_due_at")
