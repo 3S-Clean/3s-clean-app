@@ -1137,15 +1137,15 @@
     },
     "availability": {
       "title": "Office hours",
-      "note": "Closed Sundays and on public holidays."
+      "note": "Sundays and on public holidays."
     },
     "hours": {
       "monFri": "Mon – Fri",
       "monFriTime": "08:00 – 18:00",
       "sat": "Sat",
       "satTime": "09:00 – 14:00",
-      "sun": "Sunday",
-      "sunTime": "Closed",
+      "sun": "Closed",
+      "sunTime": "Sundays and on public holidays.",
       "closed": "Closed"
     },
     "phone": {
@@ -1229,6 +1229,57 @@
       "errors": {
         "notAuthenticated": "Not authenticated.",
         "loadFailed": "We couldn’t load your orders."
+      },
+      "actions": {
+        "viewDetails": "View details"
+      }
+    },
+    "orderDetails": {
+      "loading": "Loading order…",
+      "title": "Order details",
+      "subtitle": "Reference #{orderId}",
+      "errors": {
+        "loadFailed": "We couldn’t load this order.",
+        "notFound": "Order not found."
+      },
+      "payment": {
+        "dueIn": "Payment due in {time}"
+      },
+      "sections": {
+        "schedule": "Schedule",
+        "included": "What is included",
+        "noIncluded": "No included items found.",
+        "extras": "Extra services",
+        "noExtras": "No extras selected.",
+        "contact": "Contact details"
+      },
+      "meta": {
+        "people": "people"
+      },
+      "price": {
+        "base": "Base price",
+        "extras": "Extras",
+        "total": "Total"
+      },
+      "contact": {
+        "allergies": "Allergies / sensitivity",
+        "notes": "Additional notes"
+      },
+      "actions": {
+        "cancelOrder": "Cancel order",
+        "downloadPdf": "Download PDF",
+        "backToOrders": "Back to orders"
+      },
+      "cancel": {
+        "confirmPrompt": "Cancel this order?",
+        "processing": "Cancelling…",
+        "success": "Order cancelled.",
+        "failed": "Could not cancel order.",
+        "policyHint": "If payment is completed, cancellation and refund rules apply based on service policy."
+      },
+      "pdf": {
+        "preparing": "Preparing…",
+        "notReady": "PDF is not ready yet."
       }
     },
     "personalInfo": {

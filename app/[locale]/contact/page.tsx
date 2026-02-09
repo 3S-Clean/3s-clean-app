@@ -38,6 +38,8 @@ const CTA_GLASS = [
 
 export default function ContactPage() {
     const t = useTranslations("contact");
+    const availabilityNote = t("availability.note");
+    const sundayLine = t("hours.sunTime");
 
     const businessHours: HoursItem[] = [
         {day: t("hours.monFri"), hours: t("hours.monFriTime")},
@@ -75,18 +77,16 @@ export default function ContactPage() {
                                         {businessHours.map((item, index) => (
                                             <div key={index} className="flex justify-start items-center gap-6">
                                                 <span className="text-[var(--muted)]">{item.day}</span>
-                                                <span
-                                                    className={`font-medium ${
-                                                        item.hours === t("hours.closed") ? "text-[var(--muted)]" : "text-[var(--text)]"
-                                                    }`}
-                                                >
+                                                <span className="font-medium text-[var(--text)]">
                           {item.hours}
                         </span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <p className="mt-4 text-sm text-[var(--muted)]">{t("availability.note")}</p>
+                                    {availabilityNote && availabilityNote !== sundayLine ? (
+                                        <p className="mt-4 text-sm text-[var(--muted)]">{availabilityNote}</p>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>

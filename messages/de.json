@@ -1137,15 +1137,15 @@
     },
     "availability": {
       "title": "Bürozeiten",
-      "note": "Sonntags und an Feiertagen geschlossen."
+      "note": "Sonntags und an Feiertagen."
     },
     "hours": {
       "monFri": "Mo – Fr",
       "monFriTime": "08:00 – 18:00",
       "sat": "Sa",
       "satTime": "09:00 – 14:00",
-      "sun": "Sonntag",
-      "sunTime": "Geschlossen",
+      "sun": "Geschlossen",
+      "sunTime": "Sonntags und an Feiertagen.",
       "closed": "Geschlossen"
     },
     "phone": {
@@ -1229,6 +1229,57 @@
       "errors": {
         "notAuthenticated": "Nicht authentifiziert.",
         "loadFailed": "Wir konnten Ihre Bestellungen nicht laden."
+      },
+      "actions": {
+        "viewDetails": "Details ansehen"
+      }
+    },
+    "orderDetails": {
+      "loading": "Bestellung wird geladen…",
+      "title": "Bestelldetails",
+      "subtitle": "Referenz #{orderId}",
+      "errors": {
+        "loadFailed": "Diese Bestellung konnte nicht geladen werden.",
+        "notFound": "Bestellung nicht gefunden."
+      },
+      "payment": {
+        "dueIn": "Zahlung fällig in {time}"
+      },
+      "sections": {
+        "schedule": "Termin",
+        "included": "Was enthalten ist",
+        "noIncluded": "Keine enthaltenen Leistungen gefunden.",
+        "extras": "Zusatzleistungen",
+        "noExtras": "Keine Extras ausgewählt.",
+        "contact": "Kontaktdaten"
+      },
+      "meta": {
+        "people": "Personen"
+      },
+      "price": {
+        "base": "Grundpreis",
+        "extras": "Extras",
+        "total": "Gesamt"
+      },
+      "contact": {
+        "allergies": "Allergien / Empfindlichkeit",
+        "notes": "Zusätzliche Hinweise"
+      },
+      "actions": {
+        "cancelOrder": "Bestellung stornieren",
+        "downloadPdf": "PDF herunterladen",
+        "backToOrders": "Zurück zu Bestellungen"
+      },
+      "cancel": {
+        "confirmPrompt": "Diese Bestellung stornieren?",
+        "processing": "Wird storniert…",
+        "success": "Bestellung storniert.",
+        "failed": "Bestellung konnte nicht storniert werden.",
+        "policyHint": "Falls die Zahlung abgeschlossen ist, gelten Storno- und Erstattungsregeln gemäß Leistungsrichtlinie."
+      },
+      "pdf": {
+        "preparing": "Wird vorbereitet…",
+        "notReady": "PDF ist noch nicht verfügbar."
       }
     },
     "personalInfo": {

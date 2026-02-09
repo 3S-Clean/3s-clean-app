@@ -277,7 +277,7 @@ function Content() {
                             </button>
 
                             <Link
-                                href={href}
+                                href="/"
                                 className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
                             >
                                 {t("actions.home")}
@@ -303,12 +303,12 @@ function Content() {
                                 </Link>
                             )}
 
-                            <Link
-                                href="/"
-                                className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
-                            >
-                                {t("actions.home")}
-                            </Link>
+                                <Link
+                                    href={href}
+                                    className="block w-full py-4 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-all"
+                                >
+                                    {t("actions.home")}
+                                </Link>
                         </>
                     )}
                 </div>
