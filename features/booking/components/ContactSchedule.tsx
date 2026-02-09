@@ -4,7 +4,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useLocale, useTranslations} from "next-intl";
 import {useBookingStore} from "@/features/booking/lib/store";
 import {EXTRAS, getEstimatedHours, HOLIDAYS, TIME_SLOTS, WORKING_HOURS_END} from "@/features/booking/lib/config";
-import {ChevronLeft, ChevronRight, X} from "lucide-react";
+import {AlertTriangle, ChevronLeft, ChevronRight, X} from "lucide-react";
 import {isApartmentSizeId, isExtraId, isServiceId} from "@/features/booking/lib/guards";
 import {CARD_FRAME_BASE, CARD_FRAME_INTERACTIVE} from "@/shared/ui";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,12 @@ type ExistingBookingRow = {
 };
 
 type LegalDocId = "terms" | "privacy";
+type Props = {
+    slotConflictMessage?: string | null;
+    onDismissSlotConflict?: () => void;
+    refreshSeed?: number;
+};
+const LEGAL_SCROLL_UNLOCK_PX = 72;
 
 function CheckIcon() {
     return (
@@ -32,7 +38,11 @@ function CheckIcon() {
     );
 }
 
-export default function ContactSchedule() {
+export default function ContactSchedule({
+    slotConflictMessage,
+    onDismissSlotConflict,
+    refreshSeed = 0,
+}: Props) {
     const t = useTranslations("bookingSchedule.contactSchedule");
     const locale = useLocale();
 
@@ -107,7 +117,7 @@ export default function ContactSchedule() {
 
         void run();
         return () => controller.abort();
-    }, [currentMonth]);
+    }, [currentMonth, refreshSeed]);
 
     useEffect(() => {
         if (!legalOpenDoc) return;
@@ -129,7 +139,8 @@ export default function ContactSchedule() {
                 const json = (await res.json().catch(() => null)) as {markdown?: unknown} | null;
 
                 if (!res.ok || !json || typeof json.markdown !== "string") {
-                    throw new Error("legal-load-failed");
+                    if (!controller.signal.aborted) setLegalLoadError(true);
+                    return;
                 }
 
                 setLegalMarkdown(json.markdown);
@@ -223,10 +234,17 @@ export default function ContactSchedule() {
         "text-[var(--text)]",
     ].join(" ");
 
-    const MODAL_PRIMARY_BTN = [
-        "bg-white/60 dark:bg-[var(--card)]/60 backdrop-blur",
-        "ring-2 ring-black/10 dark:ring-white/12",
-        "text-[var(--text)]",
+    const MODAL_BACK_BTN = [
+        "px-5 py-2.5 rounded-full font-medium transition-all",
+        "bg-white/45 backdrop-blur-md text-gray-900",
+        "border border-black/6",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]",
+        "[@media(hover:hover)]:hover:bg-white/55",
+        "active:scale-[0.985]",
+        "focus:outline-none focus-visible:ring-4 focus-visible:ring-black/10",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
+        "dark:bg-[var(--card)]/40 dark:text-white dark:border-white/12",
+        "dark:focus-visible:ring-white/12",
     ].join(" ");
 
     const INPUT = [
@@ -267,7 +285,10 @@ export default function ContactSchedule() {
     const handleLegalScroll = () => {
         const el = legalScrollRef.current;
         if (!el || legalScrolledToEnd) return;
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 16) {
+        if (
+            el.scrollTop >= LEGAL_SCROLL_UNLOCK_PX ||
+            el.scrollTop + el.clientHeight >= el.scrollHeight - 16
+        ) {
             setLegalScrolledToEnd(true);
         }
     };
@@ -443,6 +464,7 @@ export default function ContactSchedule() {
                                     type="button"
                                     disabled={disabled}
                                     onClick={() => {
+                                        onDismissSlotConflict?.();
                                         setSelectedDate(dateKey);
                                         setSelectedTime(null);
                                     }}
@@ -478,6 +500,15 @@ export default function ContactSchedule() {
 
                     <p className="text-sm text-[var(--muted)] mb-4">{t("slots.subtitle", {end: String(WORKING_HOURS_END)})}</p>
 
+                    {slotConflictMessage ? (
+                        <div className={[CARD_FRAME_BASE, "mb-4 rounded-2xl p-3.5"].join(" ")}>
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-300"/>
+                                <div className="text-sm leading-relaxed text-[var(--text)]">{slotConflictMessage}</div>
+                            </div>
+                        </div>
+                    ) : null}
+
                     <div className="grid grid-cols-4 gap-2">
                         {TIME_SLOTS.map((slot) => {
                             const available = isSlotAvailable(selectedDate, slot.hour, slot.minutes);
@@ -487,7 +518,11 @@ export default function ContactSchedule() {
                                 <button
                                     key={slot.id}
                                     type="button"
-                                    onClick={() => available && setSelectedTime(isSelected ? null : slot.id)}
+                                    onClick={() => {
+                                        if (!available) return;
+                                        onDismissSlotConflict?.();
+                                        setSelectedTime(isSelected ? null : slot.id);
+                                    }}
                                     disabled={!available}
                                     className={[
                                         "py-2.5",
@@ -651,10 +686,8 @@ export default function ContactSchedule() {
                             ref={legalScrollRef}
                             onScroll={handleLegalScroll}
                             className={[
-                                "max-h-[58vh] overflow-y-auto pr-2",
-                                "rounded-2xl border border-black/10 dark:border-white/12",
-                                "bg-white/70 dark:bg-[var(--card)]/60",
-                                "p-4 sm:p-5 no-scrollbar",
+                                "max-h-[58vh] overflow-y-auto no-scrollbar",
+                                "pr-1",
                             ].join(" ")}
                         >
                             {legalLoading ? (
@@ -719,11 +752,7 @@ export default function ContactSchedule() {
                                 type="button"
                                 disabled={legalLoading || legalLoadError || !legalScrolledToEnd}
                                 onClick={markCurrentDocRead}
-                                className={[
-                                    "px-5 py-2.5 rounded-full font-semibold transition",
-                                    MODAL_PRIMARY_BTN,
-                                    "disabled:opacity-45 disabled:cursor-not-allowed",
-                                ].join(" ")}
+                                className={MODAL_BACK_BTN}
                             >
                                 {t("terms.markRead")}
                             </button>

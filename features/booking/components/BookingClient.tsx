@@ -57,6 +57,8 @@ export default function BookingClient() {
     const searchParams = useSearchParams();
     const supabase = useMemo(() => createClient(), []);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [slotConflictMessage, setSlotConflictMessage] = useState<string | null>(null);
+    const [slotsRefreshSeed, setSlotsRefreshSeed] = useState(0);
 
     const {getExtraText} = useExtrasI18n();
 
@@ -82,6 +84,7 @@ export default function BookingClient() {
 
         selectedDate,
         selectedTime,
+        setSelectedTime,
         termsRead,
         privacyRead,
         legalAccepted,
@@ -92,10 +95,14 @@ export default function BookingClient() {
 
     /* ---------------- Guard step ---------------- */
     useEffect(() => {
-        if (typeof step !== "number" || Number.isNaN(step) || step < 0 || step > 4) {
+        if (!Number.isFinite(step) || step < 0 || step > 4) {
             setStep(0);
         }
     }, [step, setStep]);
+
+    useEffect(() => {
+        if (step !== 4 && slotConflictMessage) setSlotConflictMessage(null);
+    }, [step, slotConflictMessage]);
 
     /* ---------------- Deep link ?service= ---------------- */
     useEffect(() => {
@@ -288,12 +295,20 @@ export default function BookingClient() {
                         ? (json as {error: string}).error
                         : "";
                 if (res.status === 409) {
-                    alert(message || "This slot has just been booked. Please choose another time.");
+                    setSelectedTime(null);
+                    setSlotConflictMessage(message || "This slot has just been booked. Please choose another time.");
+                    setSlotsRefreshSeed((n) => n + 1);
                     return;
                 }
-                throw new Error(message || "create-order failed");
+                console.error("create-order failed", {status: res.status, message});
+                alert(message || "Something went wrong.");
+                return;
             }
-            if (!isCreateOrderOk(json)) throw new Error("create-order failed");
+            if (!isCreateOrderOk(json)) {
+                console.error("create-order failed: invalid response shape", json);
+                alert("Something went wrong.");
+                return;
+            }
 
             setPendingToken(json.pendingToken);
             router.push(`/booking/success?pendingOrder=${encodeURIComponent(json.pendingToken)}`);
@@ -332,7 +347,13 @@ export default function BookingClient() {
                     {step === 1 && <PostcodeCheck/>}
                     {step === 2 && <ApartmentDetails/>}
                     {step === 3 && <ExtraServices/>}
-                    {step === 4 && <ContactSchedule/>}
+                    {step === 4 && (
+                        <ContactSchedule
+                            slotConflictMessage={slotConflictMessage}
+                            onDismissSlotConflict={() => setSlotConflictMessage(null)}
+                            refreshSeed={slotsRefreshSeed}
+                        />
+                    )}
                 </main>
 
                 <BookingFooter onSubmit={submitBooking} isSubmitting={isSubmitting}/>

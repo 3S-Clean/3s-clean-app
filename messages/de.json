@@ -658,8 +658,8 @@
         "termsTitle": "Allgemeine Geschäftsbedingungen (AGB)",
         "privacyTitle": "Datenschutzerklärung",
         "close": "Schließen",
-        "scrollDone": "Ende erreicht. Sie können dieses Dokument jetzt als gelesen markieren.",
-        "scrollHint": "Scrollen Sie bis zum Ende, um „Als gelesen markieren“ zu aktivieren.",
+        "scrollDone": "Sie können dieses Dokument jetzt als gelesen markieren.",
+        "scrollHint": "Scrollen Sie ein Stück nach unten, um „Als gelesen markieren“ zu aktivieren.",
         "loading": "Dokument wird geladen...",
         "loadError": "Dokument konnte nicht geladen werden. Bitte erneut versuchen.",
         "markRead": "Als gelesen markieren"

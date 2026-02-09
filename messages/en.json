@@ -658,8 +658,8 @@
         "termsTitle": "Terms & Conditions",
         "privacyTitle": "Privacy Policy",
         "close": "Close",
-        "scrollDone": "End reached. You can now mark this document as read.",
-        "scrollHint": "Scroll to the end to enable \"Mark as read\".",
+        "scrollDone": "You can now mark this document as read.",
+        "scrollHint": "Scroll down a little to enable \"Mark as read\".",
         "loading": "Loading document...",
         "loadError": "Failed to load the document. Please try again.",
         "markRead": "Mark as read"
